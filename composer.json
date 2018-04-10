@@ -1,0 +1,37 @@
+{
+    "name": "mallto/laravel-admin-enhance",
+    "description": "laravel admin enhance",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "admin-enhance"
+    ],
+    "authors": [
+        {
+            "name": "never615",
+            "email": "never615@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "laravel/framework": "5.6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mallto\\Admin\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mallto\\Admin\\ServiceProvider"
+            ],
+            "aliases": {
+                "AdminE": "Mallto\\Admin\\Facades\\AdminE"
+            }
+        }
+    }
+}

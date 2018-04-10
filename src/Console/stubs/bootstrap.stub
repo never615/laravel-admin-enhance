@@ -1,0 +1,21 @@
+\Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
+\Encore\Admin\Form::extend('buttonE', \Mallto\Admin\Form\Field\Button::class);
+\Encore\Admin\Form::extend('filePrivate', \Mallto\Admin\Form\Field\FilePrivate::class);
+\Encore\Admin\Form::extend('selectE', \Mallto\Admin\Form\Field\Select::class);
+\Encore\Admin\Form::extend('multipleSelectE', \Mallto\Admin\Form\Field\MultipleSelect::class);
+\Encore\Admin\Form::extend('selectOrNew', \Mallto\Admin\Form\Field\SelectOrNew::class);
+\Encore\Admin\Form::extend('editor2', \Mallto\Admin\Form\Field\WangEditor::class);
+
+
+
+\Encore\Admin\Grid\Column::extend("expand", \Mallto\Admin\Grid\Displayers\ExpandRow::class);
+\Encore\Admin\Grid\Column::extend("urlWrapper", \Mallto\Admin\Grid\Displayers\UrlWrapper::class);
+\Encore\Admin\Grid\Column::extend("numberFormat", \Mallto\Admin\Grid\Displayers\NumberFomart::class);
+\Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
+\Encore\Admin\Grid\Column::extend("linkE", \Mallto\Admin\Grid\Displayers\Link::class);
+
+
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/clipboard/clipboard.min.js');
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/common.js');
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/notify/notify.js');

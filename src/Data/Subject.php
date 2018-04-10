@@ -1,0 +1,248 @@
+<?php
+
+namespace Mallto\Admin\Data;
+
+
+
+
+use Encore\Admin\Facades\Admin;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Mallto\Admin\Data\Traits\SelectSource;
+use Mallto\Admin\Traits\ModelTree;
+
+
+class Subject extends Model
+{
+    use ModelTree, SelectSource;
+
+    protected $tempChildrenSubjectIds;
+
+    protected $tempParentSubject;
+
+    protected $tempBaseSubject;
+
+
+    /**
+     * Subject constructor.
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->setTitleColumn("name");
+    }
+
+
+    protected $guarded = [
+    ];
+
+
+    public function getLogoAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix").$value;
+    }
+
+    public function subjectAdminUsers()
+    {
+        return $this->morphMany(Administrator::class, 'adminable');
+    }
+
+
+    public function subjectConfigs()
+    {
+        return $this->hasMany(SubjectConfig::class);
+    }
+
+
+    /**
+     * 获取该主题下所有管理账号,包括店铺账号和主体账号
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function adminUsers()
+    {
+        return $this->hasMany(Administrator::class);
+    }
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
+
+
+    /**
+     * 获得该主体拥有的全部权限
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, "subject_permissions", 'subject_id', 'permission_id');
+    }
+
+
+    /**
+     * 动态设定查询数据范围
+     *
+     * 项目拥有者和招商拥有查看全部业务数据的能力
+     * 子主体只能查看自己拥有的数据
+     *
+     * @param $query
+     */
+    public function scopeDynamicData($query)
+    {
+        //1.获取当前登录账户属于哪一个主体
+        $adminUser = Admin::user();
+
+        //处理数据查看范围
+        //如果设置了manager_subject_ids,则优先处理该值
+        $managerSubjectIds = $adminUser->manager_subject_ids;
+        if (!empty($managerSubjectIds)) {
+            $tempSubject = new Subject();
+            $tempSubjectIds = $managerSubjectIds;
+
+            foreach ($managerSubjectIds as $managerSubjectId) {
+                $tempSubjectIds = array_merge($tempSubjectIds,
+                    $tempSubject->getChildrenSubject($managerSubjectId));
+            }
+            $tempSubjectIds = array_unique($tempSubjectIds);
+        } else {
+            $currentSubject = $adminUser->subject;
+            $tempSubjectIds = $currentSubject->getChildrenSubject();
+        }
+
+
+        //3.限定查询范围为所有子主体
+        $query->whereIn('id', $tempSubjectIds);
+    }
+
+    /**
+     * 获取父类的基主体,一般来说是总公司的身份
+     *
+     * @return $this|mixed|static
+     */
+    public function baseSubject()
+    {
+
+        if ($this->tempBaseSubject && isset($this->tempBaseSubject[$this->id])) {
+            return $this->tempBaseSubject[$this->id];
+        }
+
+        $baseSubject = null;
+
+        if ($this->base) {
+            $baseSubject = $this;
+        } else {
+            $parentSubject = static::find($this->parent_id);
+            if (!$parentSubject || $this->parent_id == 1 || $this->parent_id == 0) {
+                $baseSubject = $this;
+            } else {
+                if ($parentSubject->base) {
+                    $baseSubject = $parentSubject;
+                } else {
+                    $baseSubject = $parentSubject->baseSubject();
+                }
+            }
+        }
+
+        $this->tempBaseSubject[$this->id] = $baseSubject;
+
+        return $baseSubject;
+    }
+
+    /**
+     * 获取所有子主体id,包括自身
+     *
+     * @param string $subjectId
+     * @return array
+     */
+    public function getChildrenSubject($subjectId = null)
+    {
+        $currentSubjectId = $subjectId ?: $this->id;
+        if ($this->tempChildrenSubjectIds && isset($this->tempChildrenSubjectIds[$currentSubjectId])) {
+            return $this->tempChildrenSubjectIds[$currentSubjectId];
+        }
+
+
+        $subjectId = [$subjectId ?: $this->id];
+        $idResults = $subjectId;
+
+        $ids = static::where("parent_id", $subjectId)->pluck("id");
+        if (count($ids) > 0) {
+            foreach ($ids as $id) {
+                $idResults = array_merge($idResults, $this->getChildrenSubject($id));
+            }
+        }
+
+        $this->tempChildrenSubjectIds[$currentSubjectId] = $idResults;
+
+        return $idResults;
+    }
+
+    /**
+     * 获取所有父级主体,不包括自己
+     *
+     * @return Collection
+     */
+    public function getParentSubjects()
+    {
+        $subjects = new Collection();
+
+
+        $currentSubjectId = $this->id;
+        if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
+            return $this->tempParentSubject[$currentSubjectId];
+        }
+
+        $subject = Subject::find($this->parent_id);
+        if ($subject) {
+            $subjects->push($subject);
+            $parentSubjects = $subject->getParentSubjects();
+            $subjects = $subjects->merge($parentSubjects);
+        }
+
+        $this->tempParentSubject[$currentSubjectId] = $subjects;
+
+        return $subjects;
+    }
+
+    /**
+     * 判断该主体是否有子主体
+     *
+     * @return bool
+     */
+    public function hasChildrenSubject()
+    {
+        return static::where("parent_id", $this->id)->count() > 0 ? true : false;
+    }
+
+    /**
+     * Get options for Select field in form.
+     *
+     * @param array $nodes
+     * @param bool  $root         ,是否返回root节点
+     * @param bool  $defaultBlack ,是否使用默认的空格大小
+     * @param int   $parentId
+     * @return \Illuminate\Support\Collection
+     */
+    public static function selectOptions(array $nodes = null, $root = true, $defaultBlack = true, $parentId = 0)
+    {
+        $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
+
+        if ($root) {
+            return collect($options)->prepend('Root', 0)->all();
+        } else {
+            return collect($options)->all();
+        }
+    }
+}

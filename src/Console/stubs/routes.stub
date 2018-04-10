@@ -1,0 +1,5 @@
+<?php
+
+use Illuminate\Routing\Router;
+
+//使用项目routes来编写路由
