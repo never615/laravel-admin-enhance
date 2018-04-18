@@ -13,7 +13,7 @@ use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Administrator;
-use Mallto\Mall\Data\Subject;
+use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 

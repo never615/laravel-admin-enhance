@@ -31,6 +31,8 @@ trait ExporterTrait
                     $tableName = $tempKeys[$tempKeysCount - 2];
                 }
 
+                $tableName = str_plural($tableName);
+
                 return admin_translate($tempKeys[$tempKeysCount - 1], $tableName);
             }
         );
@@ -58,7 +60,8 @@ trait ExporterTrait
     public function getFileName($extension = "")
     {
         $tableName = $this->getTable();
-        $now =  date('Y-m-d H:i:s');
+        $now = date('Y-m-d H:i:s');
+
         return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
     }
 
@@ -68,7 +71,7 @@ trait ExporterTrait
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
-     * @param  $records ,orm查询结果经过array_dot后得到$records
+     * @param  $records ,orm查询结果经过array_dot后得到$records数组
      * @return array
      */
     public function customData($records)
@@ -81,6 +84,7 @@ trait ExporterTrait
 
     /**
      * 一般用来处理关联对象的属性
+     * 使用类似 array_map
      *
      * @param $records
      * @param $keys
@@ -105,11 +109,12 @@ trait ExporterTrait
      * Remove an item from the collection/array by key.
      *
      * @param              $records
-     * @param array|string $keys
-     * @param bool         $default
+     * @param array|string $keys       ,需要保留的字段
+     * @param              $remainKeys ,设置此字段,会忽略keys的设置
+     * @param bool         $default    true,卡其默认移除一些字段
      * @return array
      */
-    public function forget($records, $keys = [], $default = true)
+    public function forget($records, $keys = [], $remainKeys = [], $default = true)
     {
         if ($default) {
             $keys = array_merge([
@@ -124,19 +129,35 @@ trait ExporterTrait
             ], $keys);
         }
 
-        return array_map(function ($record) use ($keys) {
-            foreach ((array) $keys as $key) {
+        if ($remainKeys && count($remainKeys) > 0) {
+            $records = array_map(function ($record) use ($remainKeys) {
                 foreach ($record as $recordKey => $recordValue) {
-                    if (starts_with($recordKey, trim($key, '.').".")) {
+                    //只要不是$remainKeys中的就unset
+                    if (!in_array($recordKey, $remainKeys)) {
                         unset($record[$recordKey]);
                     }
                 }
 
-                unset($record[$key]);
-            }
+                return $record;
+            }, $records);
+        } else {
+            $records = array_map(function ($record) use ($keys) {
+                foreach ((array) $keys as $key) {
+                    foreach ($record as $recordKey => $recordValue) {
+                        //特别处理xxx.yyy形式的key的数据
+                        if (starts_with($recordKey, trim($key, '.').".")) {
+                            unset($record[$recordKey]);
+                        }
+                    }
+                    unset($record[$key]);
+                }
 
-            return $record;
-        }, $records);
+                return $record;
+            }, $records);
+        }
+
+
+        return $records;
 
 
 //

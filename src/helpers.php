@@ -2,7 +2,45 @@
 /**
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
+if (!function_exists('array_dot2')) {
+    /**
+     * Flatten a multi-dimensional associative array with dots.
+     *
+     * @param        $array
+     * @param array  $ignores,忽略转成数据的字段,把忽略的数组转换成json字符串输出
+     * @param string $prepend
+     * @return array
+     */
+    function array_dot2($array, $ignores = [], $prepend = '')
+    {
+        $results = [];
 
+        foreach ($array as $key => $value) {
+
+            if (!empty($prepend)) {
+                //处理ignore设置为xxx.yyy的情况
+                $ignores = array_map(function ($ignore, $key) use ($prepend) {
+                    if (starts_with($ignore, $prepend)) {
+                        return str_replace($prepend, "", $ignore);
+                    }
+                }, $ignores);
+            }
+
+            if (in_array($key, $ignores)&&is_array($value)) {
+                $value=json_encode($value);
+            }
+
+
+            if (is_array($value) && !empty($value)) {
+                $results = array_merge($results, array_dot2($value, $ignores, $prepend.$key.'.'));
+            } else {
+                $results[$prepend.$key] = $value;
+            }
+        }
+
+        return $results;
+    }
+}
 
 if (!function_exists('admin_url')) {
     /**
@@ -25,9 +63,6 @@ if (!function_exists('admin_url')) {
         return url($prefix ? "/$prefix" : '', [], $security).'/'.trim($path, '/');
     }
 }
-
-
-
 
 
 if (!function_exists('arr_is_unique')) {

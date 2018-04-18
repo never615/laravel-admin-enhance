@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
-use Mallto\Mall\Data\Subject;
+use Mallto\Admin\Data\Subject;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends AdminCommonController

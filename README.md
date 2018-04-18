@@ -99,11 +99,43 @@ Route::group([
 ### 异常
 本库抛出的异常均继承自`Symfony\Component\HttpKernel\Exception\HttpException`,包含响应码和错误信息
 
+### 翻译
+自己添加的项目翻译放在resoureces/lang中的admin2.php里面.
+其中表名作为数组key的翻译,使用表名的复数形式(如果表名本身就是复数则直接使用表名),如:
+```
+    "coupons" => [
+        "limit"          => "每人限领",
+        'limit_day'      => "限领时间间隔",
+        'member_level'   => "可领取的会员等级",
+        'verify_subject' => "可核销主体",
+        'verify_shop'    => "可核销店铺",
+    ],
+```
+
 ### 报表导出
 在admin配置文件中,设置默认的导出处理者为`Mallto\Admin\Grid\Exporters\CsvExporter::class,`,
 相比原库,支持关联数据导出,支持自动翻译字段.
 
 如果需要更进一步的自定义数据,继承`Mallto\Admin\Grid\Exporters\CsvExporter::class,`复写`customData()`方法即可.
+
+$records即为表格页面一样的数据源通过array_dot方法转换成了一维数组.
+如果想忽略某属性转换成一维数组(该属性在数据库是json格式,通过orm查询变成了数组格式),可以复写:
+```
+    protected $ignore2Array = [
+        "member_level",
+        "verify_subject",
+        "verify_shop",
+    ];
+```
+
+
+forget方法可以传入关联数据的模型名来忽略全部,如传入member会忽略member所有的关联数据.
+transform方法除了做已有数据转换外,还可以通过此方法添加新的字段,如示例中增加xxx字段.
+
+
+
+更多使用及解释可以参考源码注释.
+
 示例:
 
 为了避免在执行transform的时候,数据已经被forget,所以建议先执行transform()方法,然后在执行forget(),
@@ -113,19 +145,19 @@ public function customData($records)
         $records = $this->transform($records, [
             "member.sex",
             "member.member_level_id",
+            "xxx",
         ], function ($record, $key) {
             switch ($key) {
                 case "member.sex":
                     $record[$key] = isset($record[$key]) ? SelectConstants::GENGDER[$record[$key]] : "";
-
-                    return $record;
                     break;
                 case  "member.member_level_id":
                     $record[$key] = isset($record[$key]) ? (MemberLevel::find($record[$key]))->name : "";
-
-                    return $record;
-
                     break;
+                case  "xxx":
+                    $record[$key] = 'yyy';
+                    break;  
+                 return $record;
             }
         });
 
@@ -163,7 +195,30 @@ public function customData($records)
 
 #### Form
 
-* qiniuFile：支持直传文件到七牛,适合大文件上传
+* qiniuFile：支持直传文件到七牛,适合大文件上传,视频个是文件使用示例:
+```
+        $form->qiniuFile("url", "视频")
+            ->options([
+                'initialPreviewConfig'   => [
+                    ['key' => 0, 'filetype' => 'video/mp4'],
+                ],
+                'initialPreviewFileType' => 'video',
+                'allowedFileTypes'       => ['video'],
+//                'dropZoneEnabled'         => false,
+                'uploadLabel'             => '上传',
+                'dropZoneTitle'          => '拖拽文件到这里 &hellip;',
+                'msgInvalidFileExtension' => '不正确的文件扩展名 "{name}". 只支持 "{extensions}" 的文件扩展名.',
+                'showUpload'              => true,
+                'uploadUrl'              => 'https://up-z2.qbox.me/',
+                'uploadExtraData'        => [
+                    'token' => $this->getUploadTokenInter('upload/video/'.$this->currentId),
+                ],
+                'allowedFileExtensions'  => ['mp4'],
+                'maxFileCount'           => 1, //同时上传的文件数量
+            ])
+            ->help("视频只支持mp4格式文件,添加视频后需点击上传按钮上传,只能上传一个");
+
+```
 * buttonE：修复laravel-admin，button的bug
 * selectE/multipleSelectE: 增加ajaxLoad方法，和load方法类似，不过支持ajax动态分页加载数据
 * editor2：集成wangEditor编辑器，开箱可用，支持七牛
@@ -173,10 +228,21 @@ public function customData($records)
 * urlWrapper：支持一键复制按钮和二维码预览
 * numberFormat： 内部调用了number_format方法
 * switchE：请求失败时的错误提示处理
-* linkE： 支持回调方法，回调中可以获取当前条目数据，一般获取一些id来拼接url
+* linkE： 支持回调方法，回调中可以获取当前条目数据，一般获取一些id来拼接url.使用示例:
+```
+->linkE(function () {
+            return '/admin/study_banks/'.$this->row->study_bank_id;
+        })
+```
 
 
 ### 其他
+#### AdminCommonController
+管理端的实现类继承自`AdminCommonController`,提供了一些共有方法和实现了一些共有逻辑.
+* 自动设置创建主体,使用:`$this->autoSubjectSet($form);`,需要关联的model有subject_id.
+* 自动设置创建者,使用:`$this->autoAdminUser($form);`,需要关联的model有admin_user_id.
+
+
 #### 在common.js中
 封装过的ajax请求，内部异常统一处理,示例：
 ```

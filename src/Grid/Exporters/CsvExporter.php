@@ -12,6 +12,9 @@ use Illuminate\Support\Collection;
 /**
  * csv 导出
  *
+ * 数据导出源即为页面表格的数据源
+ *
+ *
  * 相比larvel-admin库的csv导出:
  * 1. 导出文件名:表名+时间(表名支持自动翻译)
  * 2. 导出数据,支持关联表数据导出
@@ -25,6 +28,9 @@ use Illuminate\Support\Collection;
 class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
     use ExporterTrait;
+
+    //只支持设置为json
+    protected $ignore2Array=[];
 
     /**
      * {@inheritdoc}
@@ -53,7 +59,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 
 
                     $records = $records->map(function (Model $record) {
-                        return array_dot($record->toArray());
+                        return array_dot2($record->toArray(),$this->ignore2Array);
                     });
                     $records = $records->toArray();
 
