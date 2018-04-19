@@ -89,8 +89,6 @@ class RoleController extends AdminCommonController
 
 
         $form->saving(function (Form $form) {
-            $this->autoAdminUser($form);
-
             if ($form->slug == config("admin.roles.owner")) {
                 throw new HttpException(403,"没有权限创建标识为owner的角色");
             }

@@ -24,6 +24,15 @@ trait AdminOption
     protected abstract function getHeaderTitle();
 
     /**
+     * 获取模块的副标题
+     * @return array|\Illuminate\Contracts\Translation\Translator|null|string
+     */
+    protected function getIndexDesc()
+    {
+        return trans('admin.list');
+    }
+
+    /**
      * 获取这个模块的Model
      *
      * @return mixed
@@ -32,5 +41,11 @@ trait AdminOption
 
     protected abstract function gridOption(Grid $grid);
 
+    /**
+     * 需要实现的form设置
+     *
+     * @param Form $form
+     * @return mixed
+     */
     protected abstract function formOption(Form $form);
 }

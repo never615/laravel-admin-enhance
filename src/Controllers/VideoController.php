@@ -99,19 +99,7 @@ class VideoController extends AdminCommonController
         $form->display("show_url", "视频地址")->with(function () {
             return $this->url;
         });
-//            ->with(function ($value) {
-//                return $this->url ? rtrim(config('admin.upload.host'), '/').'/'.trim($this->url, '/') : "";
-//            });
 
-//        $form->display("adminuser.name", "上传者");
-//        $form->hideFieldsByCreate(["adminuser.name"]);
-
-
-        $form->saving(function ($form) {
-            $this->autoAdminUser($form);
-//            $admin = Auth::guard("admin")->user();
-//            $form->model()->admin_user_id = $admin->id;
-        });
 
     }
 }

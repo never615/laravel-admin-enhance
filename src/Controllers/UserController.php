@@ -119,9 +119,6 @@ class UserController extends AdminCommonController
             if ($form->password && $form->model() && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
             }
-
-            $this->autoAdminUser($form);
-
         });
     }
 

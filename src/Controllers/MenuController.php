@@ -144,11 +144,6 @@ class MenuController extends AdminCommonController
             $form->multipleSelect('roles', trans('admin.roles'))
                 ->options(Role::all()->pluck('name', 'id'));
         }
-
-        $form->saving(function ($form) {
-            $this->autoAdminUser($form);
-
-        });
     }
 
 

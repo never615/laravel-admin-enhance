@@ -114,7 +114,7 @@ class FilePrivate extends Field
      *
      * @return mixed
      */
-    protected function uploadAndDeleteOriginal(UploadedFile $file)
+    protected function uploadAndDeleteOriginal(Field\UploadField $file)
     {
         $this->renameIfExists($file);
 

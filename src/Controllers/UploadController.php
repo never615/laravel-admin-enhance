@@ -45,7 +45,6 @@ class UploadController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
-//        $grid->name("文件名");
         $grid->desc("文件描述");
     }
 
@@ -53,42 +52,21 @@ class UploadController extends AdminCommonController
     {
         $form->text("desc", "文件描述");
         $form->file2("url", "文件")
-//            ->fileType('video/mp4')
             ->options([
                 'dropZoneEnabled' => false,
                 'uploadLabel'     => '上传',
                 'dropZoneTitle'   => '拖拽文件到这里 &hellip;',
                 'showUpload'      => true,
-//                'initialPreviewFileType' => 'video',
                 'uploadUrl'       => 'https://up-z2.qbox.me/',
                 'uploadExtraData' => [
                     'token' => $this->getUploadTokenInter('upload/file/'.$this->currentId),
                 ],
                 'maxFileCount'    => 1,
             ])
-//            ->rules("mimetypes:video/mp4")
             ->help("添加文件后请点击上传按钮");
         $form->display("show_url", "文件地址")->with(function ($value) {
             return $this->url ? rtrim(config('admin.upload.host'), '/').'/'.trim($this->url, '/') : "";
         });
-//        $form->display("adminuser.name", "上传者");
-//        $form->hideFieldsByCreate(["adminuser.name"]);
-
-
-        $form->saving(function ($form) {
-//            $admin = Auth::guard("admin")->user();
-//            $form->model()->admin_user_id = $admin->id;
-            $this->autoAdminUser($form);
-        });
-
-
-//            $form->multipleFile("tel")
-//                ->uniqueName()
-//                ->move('subject/address/'.$this->currentId)
-//                ->fileType('video/mp4')
-//                ->options([
-//                    'initialPreviewFileType' => 'video',
-//                ])->rules("mimetypes:video/mp4");
 
     }
 }

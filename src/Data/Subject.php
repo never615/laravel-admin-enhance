@@ -3,8 +3,6 @@
 namespace Mallto\Admin\Data;
 
 
-
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -128,6 +126,7 @@ class Subject extends Model
 
     /**
      * 获取父类的基主体,一般来说是总公司的身份
+     * 即父主体活着自己base属性为true的主体
      *
      * @return $this|mixed|static
      */
@@ -145,6 +144,7 @@ class Subject extends Model
         } else {
             $parentSubject = static::find($this->parent_id);
             if (!$parentSubject || $this->parent_id == 1 || $this->parent_id == 0) {
+                //递归没有找到父主体base属性设置为true的,返回自身
                 $baseSubject = $this;
             } else {
                 if ($parentSubject->base) {

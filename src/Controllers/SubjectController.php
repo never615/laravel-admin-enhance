@@ -145,12 +145,7 @@ class SubjectController extends AdminCommonController
         });
 
 
-        $form->saving(/**
-         * @param Form $form
-         */
-            function (Form $form) {
-            $this->autoAdminUser($form);
-
+        $form->saving(function (Form $form) {
             if (!Admin::user()->isOwner()) {
                 //修改的是自己或者是自己的父级
                 $currentSubject = Admin::user()->subject;
