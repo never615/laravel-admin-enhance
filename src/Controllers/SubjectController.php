@@ -6,11 +6,11 @@
 namespace Mallto\Admin\Controllers;
 
 
-use Encore\Admin\Auth\Database\Permission;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

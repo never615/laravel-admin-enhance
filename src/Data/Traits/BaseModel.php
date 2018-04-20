@@ -6,8 +6,10 @@
 namespace Mallto\Admin\Data\Traits;
 
 
-
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\SubjectUtils;
+use Request;
 
 /**
  * Created by PhpStorm.
@@ -23,6 +25,43 @@ abstract class BaseModel extends Model
     protected $hidden = ['deleted_at'];
 
     protected $guarded = [];
+
+
+    /**
+     *  重载save方法
+     *
+     * @desc 新建对象时自动加subject_id
+     * @param array $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        $tableHasSubjectId = Schema::hasColumn($this->getTable(), 'subject_id');
+        $attrsHasSubjectId = empty($this->attributes['subject_id']);
+        if ($tableHasSubjectId && !$this->exists && $attrsHasSubjectId) {
+            $this->attributes['subject_id'] = SubjectUtils::getSubjectId();
+        }
+
+        return parent::save($options);
+    }
+
+
+    /**
+     *  重载newEloquentBuilder方法
+     *
+     * @desc 查询条件自动加subject条件
+     */
+    public function newEloquentBuilder($query)
+    {
+        if(Request::header("mode")=="api"){
+            if (Schema::hasColumn($this->getTable(), 'subject_id')) {
+                $subjectId=SubjectUtils::getSubjectId();
+                $query->where("subject_id",$subjectId);
+            }
+        }
+
+        return parent::newEloquentBuilder($query);
+    }
 
 
     public function getLogoAttribute($value)
@@ -67,7 +106,7 @@ abstract class BaseModel extends Model
     {
         $values = json_decode($value);
 
-        if ($values&&count($values) > 0) {
+        if ($values && count($values) > 0) {
             foreach ($values as $key => $value) {
                 if (starts_with($value, "http")) {
                     $values[$key] = $value;
