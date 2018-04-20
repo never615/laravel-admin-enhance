@@ -43,7 +43,7 @@ trait DynamicData
             //1.获取当前登录账户属于哪一个主体
             $currentSubject = Auth::guard("admin")->user()->subject;
             //2.获取当前主体的所有子主体
-            $ids = $currentSubject->getChildrenSubject($currentSubject->id);
+            $ids = $currentSubject->getChildrenSubject();
             //3.限定查询范围为所有子主体
             $query->whereIn('subject_id', $ids)->orderBy('id');
         }

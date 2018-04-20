@@ -94,8 +94,8 @@ class UserController extends AdminCommonController
                     if ($managerSubjectId) {
                         //获取它的父级们,看看提交的数组中有没有包含的
                         $tempSubject = Subject::find($managerSubjectId);
-                        $tempParentSubjects = $tempSubject->getParentSubjects();
-                        $tempParentSubjectIds = $tempParentSubjects->pluck("id");
+
+                        $tempParentSubjectIds=$tempSubject->getParentSubjectIds();
 
                         foreach ($managerSubjectIds as $managerSubjectId) {
                             if (in_array($managerSubjectId, $tempParentSubjectIds->toArray())) {

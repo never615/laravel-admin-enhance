@@ -6,6 +6,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Mallto\Admin\Data\Traits\SelectSource;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -132,32 +133,54 @@ class Subject extends Model
      */
     public function baseSubject()
     {
-
-        if ($this->tempBaseSubject && isset($this->tempBaseSubject[$this->id])) {
-            return $this->tempBaseSubject[$this->id];
-        }
-
-        $baseSubject = null;
-
         if ($this->base) {
-            $baseSubject = $this;
+            return $this;
         } else {
-            $parentSubject = static::find($this->parent_id);
-            if (!$parentSubject || $this->parent_id == 1 || $this->parent_id == 0) {
-                //递归没有找到父主体base属性设置为true的,返回自身
-                $baseSubject = $this;
+
+            if ($this->tempBaseSubject && isset($this->tempBaseSubject[$this->id])) {
+                return $this->tempBaseSubject[$this->id];
+            }
+
+            $currentId = $this->id;
+            $tempSubjects = DB::select("with recursive tab as (
+                 select * from subjects where id = $currentId
+                  union all
+                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
+                )
+           select * from tab where base = true");
+
+            if (empty($tempSubjects)) {
+                return $this;
             } else {
-                if ($parentSubject->base) {
-                    $baseSubject = $parentSubject;
-                } else {
-                    $baseSubject = $parentSubject->baseSubject();
-                }
+                $baseSubject = Subject::find($tempSubjects[0]->id);
+                $this->tempBaseSubject[$this->id] = $baseSubject;
+
+                return $baseSubject;
             }
         }
 
-        $this->tempBaseSubject[$this->id] = $baseSubject;
 
-        return $baseSubject;
+//        $baseSubject = null;
+//
+//        if ($this->base) {
+//            $baseSubject = $this;
+//        } else {
+//            $parentSubject = static::find($this->parent_id);
+//            if (!$parentSubject || $this->parent_id == 1 || $this->parent_id == 0) {
+//                //递归没有找到父主体base属性设置为true的,返回自身
+//                $baseSubject = $this;
+//            } else {
+//                if ($parentSubject->base) {
+//                    $baseSubject = $parentSubject;
+//                } else {
+//                    $baseSubject = $parentSubject->baseSubject();
+//                }
+//            }
+//        }
+//
+//        $this->tempBaseSubject[$this->id] = $baseSubject;
+//
+//        return $baseSubject;
     }
 
     /**
@@ -174,46 +197,81 @@ class Subject extends Model
         }
 
 
-        $subjectId = [$subjectId ?: $this->id];
-        $idResults = $subjectId;
+        $tempSubjects = DB::select("with recursive tab as (
+                   select * from subjects where id = $currentSubjectId
+                   union all
+                   select s.* from subjects as s inner join tab on tab.id = s.parent_id
+                )
+           select * from tab");
 
-        $ids = static::where("parent_id", $subjectId)->pluck("id");
-        if (count($ids) > 0) {
-            foreach ($ids as $id) {
-                $idResults = array_merge($idResults, $this->getChildrenSubject($id));
-            }
-        }
+        $idResults = array_pluck($tempSubjects, "id");
 
         $this->tempChildrenSubjectIds[$currentSubjectId] = $idResults;
 
         return $idResults;
+//        $subjectId = [$subjectId ?: $this->id];
+//        $idResults = $subjectId;
+//
+//        $ids = static::where("parent_id", $subjectId)->pluck("id");
+//        if (count($ids) > 0) {
+//            foreach ($ids as $id) {
+//                $idResults = array_merge($idResults, $this->getChildrenSubject($id));
+//            }
+//        }
+//
+//        $this->tempChildrenSubjectIds[$currentSubjectId] = $idResults;
+//
+//        return $idResults;
     }
 
     /**
      * 获取所有父级主体,不包括自己
      *
+     * 一般获取用来进行健壮性检查
+     *
      * @return Collection
      */
-    public function getParentSubjects()
+    public function getParentSubjectIds()
     {
-        $subjects = new Collection();
-
-
         $currentSubjectId = $this->id;
         if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
             return $this->tempParentSubject[$currentSubjectId];
         }
 
-        $subject = Subject::find($this->parent_id);
-        if ($subject) {
-            $subjects->push($subject);
-            $parentSubjects = $subject->getParentSubjects();
-            $subjects = $subjects->merge($parentSubjects);
+
+        $tempSubjects = DB::select("with recursive tab as (
+                 select * from subjects where id = $currentSubjectId
+                  union all
+                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
+                )
+           select * from tab where id != $currentSubjectId");
+
+        if (empty($tempSubjects)) {
+            $idResults = [];
+        } else {
+            $idResults = array_pluck($tempSubjects, "id");
+            $this->tempParentSubject[$currentSubjectId] = $idResults;
+
         }
 
-        $this->tempParentSubject[$currentSubjectId] = $subjects;
-
-        return $subjects;
+        return $idResults;
+//        $subjects = new Collection();
+//
+//        $currentSubjectId = $this->id;
+//        if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
+//            return $this->tempParentSubject[$currentSubjectId];
+//        }
+//
+//        $subject = Subject::find($this->parent_id);
+//        if ($subject) {
+//            $subjects->push($subject);
+//            $parentSubjects = $subject->getParentSubjects();
+//            $subjects = $subjects->merge($parentSubjects);
+//        }
+//
+//        $this->tempParentSubject[$currentSubjectId] = $subjects;
+//
+//        return $subjects;
     }
 
     /**
