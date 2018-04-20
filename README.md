@@ -196,6 +196,7 @@ public function customData($records)
 #### Form
 
 * qiniuFile：支持直传文件到七牛,适合大文件上传,视频个是文件使用示例:
+
 ```
         $form->qiniuFile("url", "视频")
             ->options([
@@ -219,6 +220,7 @@ public function customData($records)
             ->help("视频只支持mp4格式文件,添加视频后需点击上传按钮上传,只能上传一个");
 
 ```
+
 * buttonE：修复laravel-admin，button的bug
 * selectE/multipleSelectE: 增加ajaxLoad方法，和load方法类似，不过支持ajax动态分页加载数据
 * editor2：集成wangEditor编辑器，开箱可用，支持七牛
@@ -229,6 +231,7 @@ public function customData($records)
 * numberFormat： 内部调用了number_format方法
 * switchE：请求失败时的错误提示处理
 * linkE： 支持回调方法，回调中可以获取当前条目数据，一般获取一些id来拼接url.使用示例:
+
 ```
 ->linkE(function () {
             return '/admin/study_banks/'.$this->row->study_bank_id;
@@ -246,6 +249,7 @@ public function customData($records)
 
 #### 在common.js中
 封装过的ajax请求，内部异常统一处理,示例：
+
 ```
  doAjax("{{$url}}", "POST", {
                     _token: LA.token,
@@ -257,7 +261,9 @@ public function customData($records)
 //                    toastr.success("设置成功");
                 });
 ```
+
 X-editable初始化：
+
 ```
     $.fn.editable.defaults.error = function (response, newValue) {
         if (response.responseJSON && response.responseJSON.error) {
@@ -292,6 +298,7 @@ X-editable初始化：
 2. 跟随业务库,在seeder中编写对应的权限.便于安装该库时自动生成相应的权限.
 如:
 !!! 为了防止seeder重复运行创建/插入重复数据,需要在创建之前判断是否已经存在.
+
 ```
  $parentId = $this->createPermissions("问题", "qa_questions", true, $parentId);
  Permission::create([
@@ -301,10 +308,12 @@ X-editable初始化：
      "slug"      => "qa_questions.publish",
 ]);
 ```
+
 说明:
 `Mallto\Admin\Seedern\SeederMaker` trait中包含创建权限的基础方法,即上面调用的`$parentId = $this->createPermissions("问题", "qa_questions", true, $parentId);`则会创建:问题管理和相关的子权限(问题管理查看;问题管理创建/修改;问题管理删除)
 
-`trait SeederMaker
+```
+trait SeederMaker
 {
     protected $routeNames = [
         "index"   => "查看",  //列表页/详情页/show
@@ -334,7 +343,7 @@ X-editable初始化：
       ...
     }
 }
-`
+```
 
 
 #### 自动校验权限
