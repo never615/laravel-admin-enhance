@@ -37,7 +37,7 @@ class UpdateCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
 //        $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__) . '/../../migrations/']);
         $this->call('db:seed', ['--class' => PemissionSeeder::class]);

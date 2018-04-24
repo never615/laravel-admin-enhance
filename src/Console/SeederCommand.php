@@ -6,10 +6,10 @@
 namespace Mallto\Admin\Console;
 
 
-use Encore\Admin\Seeder\AdminTablesSeeder;
-use Encore\Admin\Seeder\MenuSeeder;
-use Encore\Admin\Seeder\PemissionSeeder;
 use Illuminate\Console\Command;
+use Mallto\Admin\Seeder\MenuSeeder;
+use Mallto\Admin\Seeder\PemissionSeeder;
+use Malto\Admin\Seeder\AdminTablesSeeder;
 
 class SeederCommand extends Command
 {
@@ -32,7 +32,7 @@ class SeederCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $type = $this->option("type");
 

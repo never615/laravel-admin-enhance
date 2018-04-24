@@ -54,7 +54,7 @@ abstract class BaseModel extends Model
     public function newEloquentBuilder($query)
     {
         if(Request::header("mode")=="api"){
-            if (Schema::hasColumn($this->getTable(), 'subject_id')) {
+            if (Schema::hasColumn($this->getTable(), 'subject_id')&&!Schema::hasColumn($this->getTable(), 'top_subject_id')) {
                 $subjectId=SubjectUtils::getSubjectId();
                 $query->where("subject_id",$subjectId);
             }
