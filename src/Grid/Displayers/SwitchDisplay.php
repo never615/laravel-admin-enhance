@@ -21,7 +21,6 @@ class SwitchDisplay extends \Encore\Admin\Grid\Displayers\SwitchDisplay
 
         $script = <<<EOT
         
-        console.log(11111);
 var isError=false;
 
 $('.$class').bootstrapSwitch({

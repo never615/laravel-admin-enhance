@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
 /**
@@ -23,7 +24,7 @@ use Mallto\Admin\Traits\ModelTree;
  */
 class Menu extends Model
 {
-    use AdminBuilder, ModelTree {
+    use PermissionHelp, AdminBuilder, ModelTree {
         ModelTree::boot as treeBoot;
     }
 
@@ -51,7 +52,7 @@ class Menu extends Model
      *
      * @return BelongsToMany
      */
-    public function roles() : BelongsToMany
+    public function roles(): BelongsToMany
     {
         $pivotTable = config('admin.database.role_menu_table');
 
@@ -61,16 +62,23 @@ class Menu extends Model
     }
 
 
+    /**
+     * 获取菜单的父菜单
+     *
+     * @return array
+     */
     public function parentMenu()
     {
-        $menus = new Collection();
-        if ($this->parent_id != 0) {
-            $tempMenu = static::where("id", $this->parent_id)->get();
-            $menus = $menus->merge($tempMenu);
-            foreach ($tempMenu as $item) {
-                $menus = $menus->merge($item->parentMenu());
-            }
-        }
+
+        $tempMenus = \DB::select("with recursive tab as (
+                   select * from admin_menu where id = $this->parent_id
+                   union all
+                   select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
+                )
+           select * from tab");
+
+
+        $menus = json_decode(json_encode($tempMenus), true);
 
         return $menus;
     }
@@ -79,7 +87,7 @@ class Menu extends Model
     /**
      * @return array
      */
-    public function allNodes() : array
+    public function allNodes(): array
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
         $byOrder = $orderColumn.' = 0,'.$orderColumn;
@@ -91,18 +99,11 @@ class Menu extends Model
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
                 //用来保存用户拥有的所有权限
-                $userPermissions = new Collection();
 
                 $permissions = Auth::guard("admin")->user()->allPermissions();
 
-                foreach ($permissions as $permission) {
-                    //查询权限的所有子权限
-                    $userPermissions = $userPermissions->merge($permission->subPermissions());
-                }
-
-                $userPermissions = $userPermissions->merge($permissions);
-
-                $userPermissionSlugs = $userPermissions->pluck('slug');
+                $userPermissions = $this->withSubPermissions($permissions);
+                $userPermissionSlugs = array_pluck($userPermissions, "slug");
 
                 $tempPermissionSlugs = $userPermissionSlugs;
 
@@ -114,21 +115,32 @@ class Menu extends Model
 
                 $userPermissionSlugs = $tempPermissionSlugs;
 
-                $menu = new Collection();
+                $menus = new Collection();
                 //任何人都可以看到控制面板菜单
-                $menu = $menu->merge(static::where("uri", "dashboard")->get());
+                $menus = $menus->merge(static::where("uri", "dashboard")->get());
                 //查询权限对应的菜单
-                $menu = $menu->merge(static::whereIn("uri", $userPermissionSlugs)->get());
+                $menus = $menus->merge(static::whereIn("uri", $userPermissionSlugs)->get());
 
 
-                $tempMenu = $menu;
+                $tempMenus = $menus->toArray();
 
                 //查出来的菜单如果有父菜单也要返回,直到parent_id为0
-                foreach ($menu as $item) {
-                    $tempMenu = $tempMenu->merge($item->parentMenu());
+                foreach ($menus as $item) {
+                    $tempMenus = array_merge($tempMenus, $item->parentMenu());
                 }
-//                $result = $tempMenu->sortBy($orderColumn)->toArray();
-                $result = $tempMenu->sortBy($this->orderColumn)->toArray();
+
+                $uniqueTempArray = [];
+                $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
+                    if (!in_array($menu["id"], $uniqueTempArray)) {
+                        $uniqueTempArray[] = $menu["id"];
+                        return true;
+                    }else{
+                        return false;
+                    }
+                });
+
+
+                $result = array_sort($tempMenus, $this->orderColumn);
 
                 return $result;
             }

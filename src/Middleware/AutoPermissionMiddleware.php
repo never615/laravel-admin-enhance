@@ -71,6 +71,10 @@ class AutoPermissionMiddleware
             if (Auth::guard("admin")->user()->can($routenameArr[0])) {
                 //拥有父权限,则通过所有子权限
                 //pass 因为一个模块下面有增删改查子权限,懒得创建,就通过拥有父级的
+
+
+
+
                 return $next($request);
             } else {
                 //不拥有或者不存在对应权限的路由不能访问,控制面板除外

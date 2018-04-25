@@ -139,6 +139,7 @@ abstract class AdminCommonController extends Controller
                 $actions->disableDelete();
             });
         });
+
     }
 
 
@@ -159,6 +160,7 @@ abstract class AdminCommonController extends Controller
         $this->formAdminUser($form);
         $form->display('created_at', trans('admin.created_at'));
         $form->display('updated_at', trans('admin.updated_at'));
+
 
         $form->saving(function ($form) {
             $this->autoSubjectSaving($form);

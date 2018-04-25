@@ -209,6 +209,10 @@ class Subject extends Model
         $this->tempChildrenSubjectIds[$currentSubjectId] = $idResults;
 
         return $idResults;
+
+
+
+//        $currentSubjectId = $subjectId ?: $this->id;
 //        $subjectId = [$subjectId ?: $this->id];
 //        $idResults = $subjectId;
 //

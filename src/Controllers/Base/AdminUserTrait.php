@@ -47,10 +47,7 @@ trait AdminUserTrait
     {
         if (Schema::hasColumn($this->tableName, "admin_user_id")) {
             $adminUser = Admin::user();
-            $tableName = $form->model()->getTable();
-            if (Schema::hasColumn($tableName, "admin_user_id")) {
-                $form->model()->admin_user_id = $adminUser->id;
-            }
+            $form->model()->admin_user_id = $adminUser->id;
         }
 
     }

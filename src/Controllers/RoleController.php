@@ -9,16 +9,17 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Illuminate\Database\Eloquent\Collection;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\Traits\PermissionHelp;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends AdminCommonController
 {
 
+    use PermissionHelp;
 
     /**
      * 获取这个模块的标题
@@ -60,44 +61,33 @@ class RoleController extends AdminCommonController
         $form->text('slug', trans('admin.slug'))->rules('required');
         $form->text('name', trans('admin.name'))->rules('required');
 
-        $form->multipleSelect('permissions', trans('admin.permissions'))->options(function () {
+        $that=$this;
+        $form->multipleSelect('permissions', trans('admin.permissions'))->options(function () use($that){
             $subjectId = Admin::user()->subject_id;
-//            $subjectId = $this->subject_id;
             if ($subjectId == 1) {
-                $permissions = Permission::all();
+                $permissions = Permission::all()->toArray();
             } else {
                 //主体拥有的权限需要加上那几个公共功能模块的权限
 
-                $permissions = new Collection();
                 $permissionsTemp = Subject::find($subjectId)->permissions;
                 $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
-
-                $permissions = $permissions->merge($permissionsTemp);
-                //查找子权限
-                foreach ($permissionsTemp as $permission) {
-                    //subPermissions
-//                    \Log::info($permission->subPermissions());
-                    $permissions = $permissions->merge($permission->subPermissions());
-//                    $permissions = $permissions->merge(Permission::where("slug", 'like',
-//                        "%$permission->slug%")->get());
-                }
-
+                $permissions = $that->withSubPermissions($permissionsTemp);
             }
 
-            return Permission::selectOptions($permissions->toArray(), false, false);
+            return Permission::selectOptions($permissions, false, false);
         });
 
 
         $form->saving(function (Form $form) {
             if ($form->slug == config("admin.roles.owner")) {
-                throw new HttpException(403,"没有权限创建标识为owner的角色");
+                throw new HttpException(403, "没有权限创建标识为owner的角色");
             }
 
             //已经存在的slug标识不能创建
             if ($form->slug && $form->slug != $form->model()->slug) {
                 $tempSubjectId = $form->subject_id ?: $form->model()->subject_id;
                 if (Role::where('slug', $form->slug)->where("subject_id", $tempSubjectId)->exists()) {
-                    throw new HttpException(422,"标识:".$form->slug."已经存在,无法创建");
+                    throw new HttpException(422, "标识:".$form->slug."已经存在,无法创建");
                 }
             }
         });

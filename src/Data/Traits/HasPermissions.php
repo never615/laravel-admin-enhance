@@ -109,8 +109,9 @@ trait HasPermissions
         if (!$permission) {
             return false;
         }
+        //查询该权限的父权限
         $elderPermissions = $permission->elderPermissions();
-        //检查用户的权限中有没有$elderPermissions中的权限
+        //检查用户的权限中有没有父权限
         if ($elderPermissions && $this->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
             return true;
         }

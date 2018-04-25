@@ -7,7 +7,7 @@ if (!function_exists('array_dot2')) {
      * Flatten a multi-dimensional associative array with dots.
      *
      * @param        $array
-     * @param array  $ignores,忽略转成数据的字段,把忽略的数组转换成json字符串输出
+     * @param array  $ignores ,忽略转成数据的字段,把忽略的数组转换成json字符串输出
      * @param string $prepend
      * @return array
      */
@@ -26,8 +26,8 @@ if (!function_exists('array_dot2')) {
                 }, $ignores);
             }
 
-            if (in_array($key, $ignores)&&is_array($value)) {
-                $value=json_encode($value);
+            if (in_array($key, $ignores) && is_array($value)) {
+                $value = json_encode($value);
             }
 
 
@@ -114,4 +114,5 @@ if (!function_exists('mt_trans')) {
         }
     }
 }
+
 
