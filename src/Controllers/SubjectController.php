@@ -80,9 +80,9 @@ class SubjectController extends AdminCommonController
         $form->tab("基本信息", function ($form) {
 
             $form->text("name")->rules('required');
-            $form->image("logo")
-                ->uniqueName()
-                ->move('subject/logo/'.$this->currentId);
+//            $form->image("logo")
+//                ->uniqueName()
+//                ->move('subject/logo/'.$this->currentId);
 
         })->tab("系统必要配置", function ($form) {
 
