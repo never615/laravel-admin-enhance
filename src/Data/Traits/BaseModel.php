@@ -28,7 +28,10 @@ abstract class BaseModel extends Model
 
 
     /**
-     *  重载save方法
+     * 重载save方法,
+     * 管理端编辑的对象不能使用此配置,
+     * 因为管理端的saving方法可能会使用当前编辑对象的subject_id设置值.
+     * 而form->saving方法是在调用下面方法之前调用的
      *
      * @desc 新建对象时自动加subject_id
      * @param array $options

@@ -10,6 +10,7 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
+use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -51,7 +52,9 @@ class UserController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        $form->text('username', trans('admin.username'))->rules('required');
+        $form->text('username', trans('admin.username'))
+            ->help("登录名")
+            ->rules('required');
         $form->text('name', trans('admin.name'))->rules('required');
         $form->image('avatar', trans('admin.avatar'));
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
@@ -70,7 +73,7 @@ class UserController extends AdminCommonController
                 $tempSubjects = Subject::whereIn("id", $childrenSubjectIds)
                     ->get();
 
-                return Subject::selectOptions($tempSubjects->toArray(), false, false,$baseSubject->parent_id);
+                return Subject::selectOptions($tempSubjects->toArray(), false, false, $baseSubject->parent_id);
             });
 
 
@@ -81,6 +84,19 @@ class UserController extends AdminCommonController
             ->options(Role::dynamicData()->get()->pluck('name', 'id'));
 
         $form->saving(function (Form $form) {
+
+            //检查账户名称是否已经存在
+            if ($form->username && $form->username != $form->model()->username) {
+
+                $subjectId = $form->subject_id ?: $form->model()->subject_id;
+                $adminUser = Administrator::where("subject_id", $subjectId)
+                    ->where("username", $form->username)
+                    ->first();
+
+                if ($adminUser) {
+                    throw new ResourceException("用户名".$form->username."已经存在");
+                }
+            }
 
             //设置数据查看范围的时候,设置了父范围,就不能设置子范围,做检查
             if ($form->manager_subject_ids &&
@@ -95,12 +111,12 @@ class UserController extends AdminCommonController
                         //获取它的父级们,看看提交的数组中有没有包含的
                         $tempSubject = Subject::find($managerSubjectId);
 
-                        $tempParentSubjectIds=$tempSubject->getParentSubjectIds();
+                        $tempParentSubjectIds = $tempSubject->getParentSubjectIds();
 
                         foreach ($managerSubjectIds as $managerSubjectId) {
                             if (in_array($managerSubjectId, $tempParentSubjectIds->toArray())) {
                                 //提交上来的数据,存在某个id的父级id,抛出错误
-                                throw new HttpException(422,"数据查看范围:设置了父级就不能同时设置子级");
+                                throw new HttpException(422, "数据查看范围:设置了父级就不能同时设置子级");
                             }
                         }
                     }

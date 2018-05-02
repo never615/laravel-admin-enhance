@@ -75,6 +75,10 @@ trait AdminSubjectTrait
      * 只要model的表中有subject_id字段,就会自动设置subject_id,
      * subject_id设置为当前账号所属的基主体,即自己或者父主体中总部设置有打开的(对应数据表中的base字段)
      *
+     *
+     * 管理端编辑的对象不能使用basemodel的自动设置subject_id,
+     * 因为管理端的saving方法可能会使用当前编辑对象的subject_id设置值.
+     * 而form->saving方法是在调用下面方法之前调用的
      * @param $form
      */
     protected function autoSubjectSaving($form)
