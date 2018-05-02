@@ -39,10 +39,12 @@ abstract class BaseModel extends Model
      */
     public function save(array $options = [])
     {
-        $tableHasSubjectId = Schema::hasColumn($this->getTable(), 'subject_id');
-        $attrsHasSubjectId = empty($this->attributes['subject_id']);
-        if ($tableHasSubjectId && !$this->exists && $attrsHasSubjectId) {
-            $this->attributes['subject_id'] = SubjectUtils::getSubjectId();
+        if (Request::header("mode") == "api") {
+            $tableHasSubjectId = Schema::hasColumn($this->getTable(), 'subject_id');
+            $attrsHasSubjectId = empty($this->attributes['subject_id']);
+            if ($tableHasSubjectId && !$this->exists && $attrsHasSubjectId) {
+                $this->attributes['subject_id'] = SubjectUtils::getSubjectId();
+            }
         }
 
         return parent::save($options);
@@ -56,10 +58,12 @@ abstract class BaseModel extends Model
      */
     public function newEloquentBuilder($query)
     {
-        if(Request::header("mode")=="api"){
-            if (Schema::hasColumn($this->getTable(), 'subject_id')&&!Schema::hasColumn($this->getTable(), 'top_subject_id')) {
-                $subjectId=SubjectUtils::getSubjectId();
-                $query->where("subject_id",$subjectId);
+        if (Request::header("mode") == "api") {
+            if (Schema::hasColumn($this->getTable(), 'subject_id') && !Schema::hasColumn($this->getTable(),
+                    'top_subject_id')
+            ) {
+                $subjectId = SubjectUtils::getSubjectId();
+                $query->where("subject_id", $subjectId);
             }
         }
 
