@@ -17,7 +17,7 @@ use Request;
  * Date: 21/04/2017
  * Time: 5:13 PM
  */
-abstract class BaseModel extends Model
+abstract class BaseModel2 extends Model
 {
     use DynamicData, SelectSource;
 
@@ -25,6 +25,50 @@ abstract class BaseModel extends Model
     protected $hidden = ['deleted_at'];
 
     protected $guarded = [];
+
+
+    /**
+     * 重载save方法,
+     * 管理端编辑的对象不能使用此配置,
+     * 因为管理端的saving方法可能会使用当前编辑对象的subject_id设置值.
+     * 而form->saving方法是在调用下面方法之前调用的
+     *
+     * @desc 新建对象时自动加subject_id
+     * @param array $options
+     * @return bool
+     */
+    public function save(array $options = [])
+    {
+        if (Request::header("mode") == "api") {
+            $tableHasSubjectId = Schema::hasColumn($this->getTable(), 'subject_id');
+            $attrsHasSubjectId = empty($this->attributes['subject_id']);
+            if ($tableHasSubjectId && !$this->exists && $attrsHasSubjectId) {
+                $this->attributes['subject_id'] = SubjectUtils::getSubjectId();
+            }
+        }
+
+        return parent::save($options);
+    }
+
+
+    /**
+     *  重载newEloquentBuilder方法
+     *
+     * @desc 查询条件自动加subject条件
+     */
+    public function newEloquentBuilder($query)
+    {
+        if (Request::header("mode") == "api") {
+            if (Schema::hasColumn($this->getTable(), 'subject_id') && !Schema::hasColumn($this->getTable(),
+                    'top_subject_id')
+            ) {
+                $subjectId = SubjectUtils::getSubjectId();
+                $query->where("subject_id", $subjectId);
+            }
+        }
+
+        return parent::newEloquentBuilder($query);
+    }
 
 
     public function getLogoAttribute($value)

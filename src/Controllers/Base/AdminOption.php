@@ -25,6 +25,7 @@ trait AdminOption
 
     /**
      * 获取模块的副标题
+     *
      * @return array|\Illuminate\Contracts\Translation\Translator|null|string
      */
     protected function getIndexDesc()
@@ -43,6 +44,9 @@ trait AdminOption
 
     /**
      * 需要实现的form设置
+     *
+     * 如果需要使用tab,则需要复写defaultFormOption()方法,
+     * 然后formOption留空即可
      *
      * @param Form $form
      * @return mixed
