@@ -114,7 +114,7 @@ class UserController extends AdminCommonController
                         $tempParentSubjectIds = $tempSubject->getParentSubjectIds();
 
                         foreach ($managerSubjectIds as $managerSubjectId) {
-                            if (in_array($managerSubjectId, $tempParentSubjectIds->toArray())) {
+                            if (in_array($managerSubjectId, $tempParentSubjectIds)) {
                                 //提交上来的数据,存在某个id的父级id,抛出错误
                                 throw new HttpException(422, "数据查看范围:设置了父级就不能同时设置子级");
                             }
