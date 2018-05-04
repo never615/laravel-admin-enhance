@@ -151,6 +151,10 @@ abstract class AdminCommonController extends Controller
         });
     }
 
+    /**
+     * 如果form中使用到了tab,需要复写此方法
+     * @param Form $form
+     */
     protected function defaultFormOption(Form $form)
     {
         $form->display('id', 'ID');

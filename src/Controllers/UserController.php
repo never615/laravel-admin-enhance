@@ -50,6 +50,9 @@ class UserController extends AdminCommonController
         });
     }
 
+
+
+
     protected function formOption(Form $form)
     {
         $form->text('username', trans('admin.username'))

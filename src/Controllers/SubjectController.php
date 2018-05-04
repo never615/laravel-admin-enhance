@@ -75,14 +75,27 @@ class SubjectController extends AdminCommonController
 
     }
 
-    protected function formOption(Form $form)
+    /**
+     * 如果form中使用到了tab,需要复写此方法
+     *
+     * @param Form $form
+     */
+    protected function defaultFormOption(Form $form)
     {
         $form->tab("基本信息", function ($form) {
+
+            $form->display('id', 'ID');
+
 
             $form->text("name")->rules('required');
 //            $form->image("logo")
 //                ->uniqueName()
 //                ->move('subject/logo/'.$this->currentId);
+
+            $this->formSubject($form);
+            $this->formAdminUser($form);
+            $form->display('created_at', trans('admin.created_at'));
+            $form->display('updated_at', trans('admin.updated_at'));
 
         })->tab("系统必要配置", function ($form) {
 
@@ -134,7 +147,7 @@ class SubjectController extends AdminCommonController
 
         })->tab("其他配置", function ($form) {
             if (Admin::user()->isOwner()) {
-                $form->hasMany("subjectconfigs", "",function (Form\NestedForm $form) {
+                $form->hasMany("subjectconfigs", "", function (Form\NestedForm $form) {
                     $form->select("type")
                         ->options(SubjectConfig::TYPE);
                     $form->text("key");
@@ -145,12 +158,16 @@ class SubjectController extends AdminCommonController
         });
 
 
-        $form->saving(function (Form $form) {
+
+
+        $form->saving(function ($form) {
+            $this->autoSubjectSaving($form);
+            $this->autoAdminUserSaving($form);
             if (!Admin::user()->isOwner()) {
                 //修改的是自己或者是自己的父级
                 $currentSubject = Admin::user()->subject;
 
-                $parentSubjectIds=$currentSubject->getParentSubjectIds();
+                $parentSubjectIds = $currentSubject->getParentSubjectIds();
 
                 if (Admin::user()->subject_id == $form->model()->id || in_array($form->model()->id,
                         $parentSubjectIds)
@@ -190,16 +207,20 @@ class SubjectController extends AdminCommonController
 
                 if ($currentSubject) {
                     if ($form->parent_id == $currentSubject->id) {
-                        throw new HttpException(422,"不能设置自己为自己的父主体");
+                        throw new HttpException(422, "不能设置自己为自己的父主体");
                     }
 
                     $childIds = $currentSubject->getChildrenSubject();
 
                     if (in_array($form->parent_id, $childIds)) {
-                        throw new HttpException(422,"不能设置子级主体为自己的父主体");
+                        throw new HttpException(422, "不能设置子级主体为自己的父主体");
                     }
                 }
             }
         });
+    }
+
+    protected function formOption(Form $form)
+    {
     }
 }
