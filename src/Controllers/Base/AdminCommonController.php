@@ -181,7 +181,7 @@ abstract class AdminCommonController extends Controller
      */
     protected function gridOrder($grid)
     {
-        $grid->model()->orderBy('id');
+        $grid->model()->orderBy('id','desc');
     }
 
 }
