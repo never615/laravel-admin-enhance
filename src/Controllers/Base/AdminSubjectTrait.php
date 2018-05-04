@@ -47,7 +47,11 @@ trait AdminSubjectTrait
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             if (Admin::user()->isOwner()) {
                 $form->select("subject_id", "主体")
-                    ->options(Subject::where("base", true)->pluck("name", "id"))
+                    ->options(
+//                        Subject::where("base", true)
+//                            ->pluck("name", "id")
+                        Subject::pluck("name", "id")
+                    )
                     ->rules("required");
             } else {
                 $form->display("subject.name", "主体");
@@ -79,6 +83,7 @@ trait AdminSubjectTrait
      * 管理端编辑的对象不能使用basemodel的自动设置subject_id,
      * 因为管理端的saving方法可能会使用当前编辑对象的subject_id设置值.
      * 而form->saving方法是在调用下面方法之前调用的
+     *
      * @param $form
      */
     protected function autoSubjectSaving($form)
