@@ -84,9 +84,7 @@ class SubjectController extends AdminCommonController
     {
         $form->tab("基本信息", function ($form) {
 
-            $form->display('id', 'ID');
-
-
+//            $form->display('id', 'ID');
             $form->text("name")->rules('required');
 //            $form->image("logo")
 //                ->uniqueName()
@@ -94,8 +92,8 @@ class SubjectController extends AdminCommonController
 
             $this->formSubject($form);
             $this->formAdminUser($form);
-            $form->display('created_at', trans('admin.created_at'));
-            $form->display('updated_at', trans('admin.updated_at'));
+//            $form->display('created_at', trans('admin.created_at'));
+//            $form->display('updated_at', trans('admin.updated_at'));
 
         })->tab("系统必要配置", function ($form) {
 
