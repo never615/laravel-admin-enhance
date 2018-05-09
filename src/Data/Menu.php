@@ -30,6 +30,8 @@ class Menu extends Model
 
 //    protected $fillable = ['parent_id', 'order', 'title', 'icon', 'uri'];
     protected $guarded = [];
+    protected $fillable = [];
+
 
     /**
      * Create a new Eloquent model instance.

@@ -12,6 +12,7 @@ class Role extends \Encore\Admin\Auth\Database\Role
 {
     use DynamicData;
 
+    protected $fillable = [];
 
     protected $guarded = [];
 

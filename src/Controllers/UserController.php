@@ -66,18 +66,18 @@ class UserController extends AdminCommonController
                 return $form->model()->password;
             });
 
-        $form->multipleSelect("manager_subject_ids", "数据查看范围")
-            ->help("不设置,则默认只能查看管理账号所属主体下的数据")
-            ->options(function () {
-                $user = Admin::user();
-                $subject = $user->subject;
-                $baseSubject = $subject->baseSubject();
-                $childrenSubjectIds = $baseSubject->getChildrenSubject();
-                $tempSubjects = Subject::whereIn("id", $childrenSubjectIds)
-                    ->get();
-
-                return Subject::selectOptions($tempSubjects->toArray(), false, false, $baseSubject->parent_id);
-            });
+//        $form->multipleSelect("manager_subject_ids", "数据查看范围")
+//            ->help("不设置,则默认只能查看管理账号所属主体下的数据")
+//            ->options(function () {
+//                $user = Admin::user();
+//                $subject = $user->subject;
+//                $baseSubject = $subject->baseSubject();
+//                $childrenSubjectIds = $baseSubject->getChildrenSubject();
+//                $tempSubjects = Subject::whereIn("id", $childrenSubjectIds)
+//                    ->get();
+//
+//                return Subject::selectOptions($tempSubjects->toArray(), false, false, $baseSubject->parent_id);
+//            });
 
 
         $form->ignore(['password_confirmation']);
