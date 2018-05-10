@@ -26,7 +26,7 @@ Route::group($attributes, function ($router) {
     /**
      * 需要经过验证
      */
-    Route::group(['middleware' => ['requestCheck','owner_api']], function ($router) {
+    Route::group(['middleware' => []], function ($router) {
 
         //获取七牛upload token
         $router->get('uptoken', '\Mallto\Admin\Controllers\FileController@getUploadToken');
