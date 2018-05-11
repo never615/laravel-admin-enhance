@@ -14,6 +14,9 @@ use Mallto\Admin\Data\Menu;
  */
 class AdminE
 {
+
+
+
     /**
      * Left sider-bar menu.
      *
