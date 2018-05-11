@@ -100,7 +100,7 @@ class Permission extends Model
         $temps = \DB::select("with recursive tab as (
                  select * from admin_permissions where id = $this->parent_id
                   union all
-                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
+                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
                 )
            select * from tab");
 
