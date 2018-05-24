@@ -1,5 +1,7 @@
 //表单文件上传控件:支持直传文件到七牛,目前只支持单文件
 \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
+//表单文件上传控件:支持直传文件到七牛,目前支持多文件
+\Encore\Admin\Form::extend('qiniuMultipleFile', \Mallto\Admin\Form\Field\QiniuMultipleFile::class);
 //表单按钮控件:laravel-admin的button有bug,此为修复版本
 \Encore\Admin\Form::extend('buttonE', \Mallto\Admin\Form\Field\Button::class);
 //表单文件上传控件:支持上传文件到七牛的私有空间
@@ -22,6 +24,8 @@
 \Encore\Admin\Grid\Column::extend("numberFormat", \Mallto\Admin\Grid\Displayers\NumberFomart::class);
 //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理
 \Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
+//select:在laravel-admin select,增加了对错误信息展示的处理
+\Encore\Admin\Grid\Column::extend("selectE", \Mallto\Admin\Grid\Displayers\Select::class);
 //表格link控件:在laravel-admin的link的基础上,支持回调方法,可以获取当前操作的数据对象
 \Encore\Admin\Grid\Column::extend("linkE", \Mallto\Admin\Grid\Displayers\Link::class);
 

@@ -35,19 +35,35 @@ php artisan admin_enhance:install
 此外安装命令会追加以下内容在`app/Admin/bootstrap.php`中：
 
 ```
+//表单文件上传控件:支持直传文件到七牛,目前支持单文件
 \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
+//表单文件上传控件:支持直传文件到七牛,目前支持多文件
+\Encore\Admin\Form::extend('qiniuMultipleFile', \Mallto\Admin\Form\Field\QiniuMultipleFile::class);
+//表单按钮控件:laravel-admin的button有bug,此为修复版本
 \Encore\Admin\Form::extend('buttonE', \Mallto\Admin\Form\Field\Button::class);
+//表单文件上传控件:支持上传文件到七牛的私有空间
 \Encore\Admin\Form::extend('filePrivate', \Mallto\Admin\Form\Field\FilePrivate::class);
+//表单select控件,支持ajaxLoad,即:select联动支持分页加载
 \Encore\Admin\Form::extend('selectE', \Mallto\Admin\Form\Field\Select::class);
+//表单multipleSelect,支持ajaxLoad,即:select联动支持分页加载
+\Encore\Admin\Form::extend('multipleSelectE', \Mallto\Admin\Form\Field\MultipleSelect::class);
+//表单select控件:支持动态新增选项
 \Encore\Admin\Form::extend('selectOrNew', \Mallto\Admin\Form\Field\SelectOrNew::class);
+//表单富文本编辑器控件
 \Encore\Admin\Form::extend('editor2', \Mallto\Admin\Form\Field\WangEditor::class);
 
 
+//表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
 \Encore\Admin\Grid\Column::extend("expand", \Mallto\Admin\Grid\Displayers\ExpandRow::class);
+//表格url控件:支持显示url二维码,和一键复制url
 \Encore\Admin\Grid\Column::extend("urlWrapper", \Mallto\Admin\Grid\Displayers\UrlWrapper::class);
+//表格数字格式化控件:支持格式化数字到指定位数
 \Encore\Admin\Grid\Column::extend("numberFormat", \Mallto\Admin\Grid\Displayers\NumberFomart::class);
+//表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理
 \Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
+//select:在laravel-admin select,增加了对错误信息展示的处理
 \Encore\Admin\Grid\Column::extend("selectE", \Mallto\Admin\Grid\Displayers\Select::class);
+//表格link控件:在laravel-admin的link的基础上,支持回调方法,可以获取当前操作的数据对象
 \Encore\Admin\Grid\Column::extend("linkE", \Mallto\Admin\Grid\Displayers\Link::class);
 
 
@@ -55,6 +71,7 @@ php artisan admin_enhance:install
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/common.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/notify/notify.js');
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/chartjs/Chart.min.js');
 
 ```
 
@@ -221,6 +238,33 @@ public function customData($records)
             ])
             ->help("视频只支持mp4格式文件,添加视频后需点击上传按钮上传,只能上传一个");
 
+```
+
+* qiniuMultipleFile: 支持直传文件到七牛,支持多文件.使用示例:
+其中filetype设置项只有qiniuMultipleFile才有,统一设置多个文件文件类型,方便显示.
+
+```
+ $form->qiniuMultipleFile("url", "文件")
+            ->options([
+                'filetype'               => 'video/mp4',
+                'initialPreviewFileType' => 'video',
+                'dropZoneEnabled'        => false,
+                'uploadLabel'            => '上传',
+                'dropZoneTitle'          => '拖拽文件到这里 &hellip;',
+                'showUpload'             => true,
+                'uploadUrl'              => 'https://up-z2.qbox.me/',
+                'uploadExtraData'        => [
+                    'token' => $this->getUploadTokenInter('upload/file/'.$this->currentId),
+                ],
+            ])
+            ->help("添加文件后请点击上传按钮");
+
+```
+数据是数组格式,如配置:
+```
+    protected $casts=[
+      "url"=>"array"
+    ];
 ```
 
 * buttonE：修复laravel-admin，button的bug
