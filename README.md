@@ -136,9 +136,9 @@ Route::group([
 相比原库,支持关联数据导出,支持自动翻译字段.
 
 如果需要更进一步的自定义数据,继承`Mallto\Admin\Grid\Exporters\CsvExporter::class,`复写`customData()`方法即可.
-
-$records即为表格页面一样的数据源通过array_dot方法转换成了一维数组.
-如果想忽略某属性转换成一维数组(该属性在数据库是json格式,通过orm查询变成了数组格式),可以复写:
+##### 忽略数据库中的json格式转成数组
+$records的内容和管理端列表页面一样,只是通过array_dot方法转换成了一维数组的形式.
+如果想忽略某属性转换成一维数组(比如有些情况下属性在数据库是json格式,我们不想让orm查询把它装换成数组格式),可以复写:
 ```
     protected $ignore2Array = [
         "member_level",
@@ -147,15 +147,13 @@ $records即为表格页面一样的数据源通过array_dot方法转换成了一
     ];
 ```
 
-
-forget方法可以传入关联数据的模型名来忽略全部,如传入member会忽略member所有的关联数据.
+##### 排除导出字段
+forget方法可以传入关联数据的**模型名**来忽略全部,如导出user数据的时候,传入member会忽略user关联的member数据.
+##### 数据形式转换
 transform方法除了做已有数据转换外,还可以通过此方法添加新的字段,如示例中增加xxx字段.
-
-
-
 更多使用及解释可以参考源码注释.
 
-示例:
+#### 示例:
 
 为了避免在执行transform的时候,数据已经被forget,所以建议先执行transform()方法,然后在执行forget(),
 ````
