@@ -9,6 +9,7 @@ namespace Mallto\Admin\Data\Traits;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Mall\Data\AdminUser;
 use Request;
 
 /**
@@ -82,6 +83,11 @@ abstract class BaseModel extends Model
         }
 
         return $values;
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(AdminUser::class, "admin_user_id");
     }
 
 }

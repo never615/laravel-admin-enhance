@@ -96,6 +96,8 @@ trait AdminSubjectTrait
             $baseSubject = $subject->baseSubject();
             if ($baseSubject && $baseSubject->base) {
                 $form->model()->subject_id = $baseSubject->id;
+            } else {
+                return $subject->id;
             }
         }
 
