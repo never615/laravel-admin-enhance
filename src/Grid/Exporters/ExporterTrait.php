@@ -87,7 +87,27 @@ trait ExporterTrait
      * 使用类似 array_map
      *
      * @param $records
-     * @param $keys
+     * @param $callback
+     * @return array
+     */
+    public function transform2($records, $callback)
+    {
+        $newRecords = [];
+        foreach ($records as $record) {
+            $record = $callback($record);
+            $newRecords[] = $record;
+        }
+
+        return $newRecords;
+    }
+
+    /**
+     * 一般用来处理关联对象的属性
+     * 使用类似 array_map
+     *
+     * @deprecated use transform2
+     * @param $records
+     * @param $keys,需要做变形的key
      * @param $callback
      * @return array
      */
@@ -126,7 +146,7 @@ trait ExporterTrait
                 "top_subject_id",
                 "admin_user_id",
                 "subject_id",
-            ], $keys);
+            ], (array)$keys);
         }
 
         if ($remainKeys && count($remainKeys) > 0) {

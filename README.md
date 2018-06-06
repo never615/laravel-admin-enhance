@@ -157,52 +157,39 @@ transform方法除了做已有数据转换外,还可以通过此方法添加新�
 
 为了避免在执行transform的时候,数据已经被forget,所以建议先执行transform()方法,然后在执行forget(),
 ````
-public function customData($records)
+    public function customData($records)
     {
-        $records = $this->transform($records, [
-            "member.sex",
-            "member.member_level_id",
-            "xxx",
-        ], function ($record, $key) {
-            switch ($key) {
-                case "member.sex":
-                    $record[$key] = isset($record[$key]) ? SelectConstants::GENGDER[$record[$key]] : "";
-                    break;
-                case  "member.member_level_id":
-                    $record[$key] = isset($record[$key]) ? (MemberLevel::find($record[$key]))->name : "";
-                    break;
-                case  "xxx":
-                    $record[$key] = 'yyy';
-                    break;  
-                 return $record;
-            }
+        $records = $this->transform2($records, function ($record) {
+
+            $user = User::find($record["user_id"]);
+            $exam = Exam::find($record["exam_id"]);
+            $subject = Subject::find($record["subject_id"]);
+            $record["user_id"] = $user->nickname;
+            $record["exam_id"] = $exam->name;
+            $record["time"] = number_format($record["time"], 2);
+            $record["pass"] = $record["pass"] ? "通过" : "未通过";
+            $record["finish"] = $record["finish"] ? "完成" : "未完成";
+            $record["perfect"] = $record["perfect"] ? "获得" : "未获得";
+            $record["scores"] = $record["success_num"]."/".$record["total_question_num"];
+            $record["subject_id"] = $subject->name;
+
+            return $record;
+
         });
 
-        $records = $this->forget($records, [
-            "avatar",
-            "username",
-            "email",
-            "free_parking_time",
-            "free_parking_time_weekly",
-            "preferential_parking_times",
-            "free_parking_money",
-            "free_parking_money_weekly",
-            "preferential_parking_times_weekly",
-            "subject_id",
-            "admin_user_id",
-            "user_role",
-            "top_subject_id",
-            "updated_at",
-            "member.id",
-            "member.subject_id",
-            "member.mobile",
-            "member.consume_point",
-            "member.period_point",
-            "member.user_id",
-            "member.vip_card_status",
-            "member.deleted_at",
-        ]);
 
+        $records = $this->forget($records, null, [
+            "user_id",
+            "exam_id",
+            "subject_id",
+            "finish",
+            "pass",
+            "perfect",
+            "exam_num",
+            "scores",
+            "time",
+            "acquired_time",
+        ]);
 
         return $records;
     }
