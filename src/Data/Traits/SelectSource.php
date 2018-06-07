@@ -5,7 +5,8 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
+use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -14,9 +15,16 @@ namespace Mallto\Admin\Data\Traits;
  * Date: 08/04/2017
  * Time: 5:20 PM
  */
-trait SelectSource{
-    public static function selectSourceDate(){
-        return static::dynamicData()->pluck("name","id");
+trait SelectSource
+{
+    public static function selectSourceDate()
+    {
+        if (Admin::user()->isOwner()) {
+            return static::dynamicData()
+                ->select(DB::raw("name||subject_id as name,id"))->pluck("name", "id");
+        } else {
+            return static::dynamicData()->pluck("name", "id");
+        }
     }
 
 }
