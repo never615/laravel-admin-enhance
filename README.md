@@ -133,7 +133,7 @@ Route::group([
 
 ### 报表导出
 在admin配置文件中,设置默认的导出处理者为`Mallto\Admin\Grid\Exporters\CsvExporter::class,`,
-相比原库,支持关联数据导出,支持自动翻译字段.
+相比原库,支持关联数据导出,支持自动翻译字段.(根据grid设置的字段名进行翻译,翻译规则参见admin_translate()方法)
 
 如果需要更进一步的自定义数据,继承`Mallto\Admin\Grid\Exporters\CsvExporter::class,`复写`customData()`方法即可.
 ##### 忽略数据库中的json格式转成数组
@@ -147,20 +147,18 @@ $records的内容和管理端列表页面一样,只是通过array_dot方法转�
     ];
 ```
 
-##### 排除导出字段
-forget方法可以传入关联数据的**模型名**来忽略全部,如导出user数据的时候,传入member会忽略user关联的member数据.
-##### 数据形式转换
-transform方法除了做已有数据转换外,还可以通过此方法添加新的字段,如示例中增加xxx字段.
-更多使用及解释可以参考源码注释.
-
 #### 示例:
 
-为了避免在执行transform的时候,数据已经被forget,所以建议先执行transform()方法,然后在执行forget(),
 ````
+    /**
+     * 自定义数据处理
+     *
+     * @param $records
+     * @return mixed
+     */
     public function customData($records)
     {
-        $records = $this->transform2($records, function ($record) {
-
+        $records = array_map(function ($record) {
             $user = User::find($record["user_id"]);
             $exam = Exam::find($record["exam_id"]);
             $subject = Subject::find($record["subject_id"]);
@@ -174,8 +172,7 @@ transform方法除了做已有数据转换外,还可以通过此方法添加新�
             $record["subject_id"] = $subject->name;
 
             return $record;
-
-        });
+        }, $records);
 
 
         $records = $this->forget($records, null, [
@@ -194,6 +191,22 @@ transform方法除了做已有数据转换外,还可以通过此方法添加新�
         return $records;
     }
 ````
+forget方法说明:
+```
+ /**
+     * Remove an item from the collection/array by key.
+     *
+     * @param              $records
+     * @param array|string $keys       ,需要保留的字段,
+     * @param              $remainKeys ,设置此字段,会忽略keys的设置
+     * @param bool         $default    true,是否默认移除一些字段
+     * @return array
+     */
+    public function forget($records, $keys = [], $remainKeys = [], $default = true);
+
+```
+forget方法的第二个参数可以传入关联数据的**模型名**来忽略全部,如导出user数据的时候,传入member会忽略user关联的member数据.
+
 
 ### 新增扩展说明
 
