@@ -8,6 +8,7 @@ namespace Mallto\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FilePrivate extends Field
 {
@@ -114,7 +115,7 @@ class FilePrivate extends Field
      *
      * @return mixed
      */
-    protected function uploadAndDeleteOriginal(Field\UploadField $file)
+    protected function uploadAndDeleteOriginal(UploadedFile $file)
     {
         $this->renameIfExists($file);
 
