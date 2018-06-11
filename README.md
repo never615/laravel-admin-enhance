@@ -122,6 +122,15 @@ Route::group([
 自己添加的项目翻译放在resoureces/lang中的admin2.php里面.
 其中表名作为数组key的翻译,使用表名的复数形式(如果表名本身就是复数则直接使用表名),如:
 ```
+    'table' => [ //控制导出文件的表名翻译
+        "user_coupons"    => "用户卡券",
+        "users"           => "用户",
+        "user_seckills"   => "用户秒杀记录",
+        "coupons"         => "卡券",
+        "tickets"         => "小票",
+        "parking_records" => "停车记录",
+    ],
+    
     "coupons" => [
         "limit"          => "每人限领",
         'limit_day'      => "限领时间间隔",
@@ -206,6 +215,13 @@ forget方法说明:
 
 ```
 forget方法的第二个参数可以传入关联数据的**模型名**来忽略全部,如导出user数据的时候,传入member会忽略user关联的member数据.
+
+
+
+### 数据导入
+#### 整体流程说明
+导入任务会创建到import_records表中,在admin/import_records模块可以创建任务和查看任务记录.
+每一条任务都要要处理的导入文件和对应的导入处理者,导入处理者通过一个标识记录,具体执行导入任务的时候在注入相应的处理对象.
 
 
 ### 新增扩展说明

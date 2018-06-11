@@ -39,6 +39,13 @@ Route::group($attributes, function ($router) {
                 $router->resource("reports", "ReportController");
                 $router->resource("uploads", "UploadController");
                 $router->resource("videos", "VideoController");
+
+                //文件导入模块
+                $router->resource("import_settings", 'Import\ImportSettingController');
+                //导入记录
+                $router->resource("import_records", 'Import\ImportRecordController');
+
+
             });
         });
 

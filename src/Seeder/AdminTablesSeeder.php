@@ -3,6 +3,11 @@
 namespace Malto\Admin\Seeder;
 
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Seeder\BaseTablesSeeder;
+use Mallto\Admin\Seeder\MenuTablesSeeder;
+use Mallto\Admin\Seeder\Permission\DashboardTablesSeeder;
+use Mallto\Admin\Seeder\Permission\ImportPermissionsSeeder;
+use Mallto\Admin\Seeder\VideoMenuSeeder;
 
 class AdminTablesSeeder extends Seeder
 {
@@ -18,8 +23,7 @@ class AdminTablesSeeder extends Seeder
         $this->call(Menu2TablesSeeder::class);
         $this->call(VideoMenuSeeder::class);
 
-        $this->call(PermissionTablesSeeder::class);
-        $this->call(Permission2TablesSeeder::class);
-        $this->call(VideoPermissionSeeder::class);
+        $this->call(ImportPermissionsSeeder::class);
+        $this->call(DashboardTablesSeeder::class);
     }
 }

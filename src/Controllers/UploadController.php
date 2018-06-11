@@ -51,19 +51,21 @@ class UploadController extends AdminCommonController
     protected function formOption(Form $form)
     {
         $form->text("desc", "文件描述");
-        $form->file2("url", "文件")
+
+        $form->qiniuFile("url", "文件")
             ->options([
-                'dropZoneEnabled' => false,
-                'uploadLabel'     => '上传',
-                'dropZoneTitle'   => '拖拽文件到这里 &hellip;',
-                'showUpload'      => true,
-                'uploadUrl'       => 'https://up-z2.qbox.me/',
-                'uploadExtraData' => [
+                'uploadLabel'             => '上传',
+                'dropZoneTitle'          => '拖拽文件到这里 &hellip;',
+                'msgInvalidFileExtension' => '不正确的文件扩展名 "{name}". 只支持 "{extensions}" 的文件扩展名.',
+                'showUpload'              => true,
+                'uploadUrl'              => 'https://up-z2.qbox.me/',
+                'uploadExtraData'        => [
                     'token' => $this->getUploadTokenInter('upload/file/'.$this->currentId),
                 ],
-                'maxFileCount'    => 1,
+                'maxFileCount'           => 1, //同时上传的文件数量
             ])
             ->help("添加文件后请点击上传按钮");
+
         $form->display("show_url", "文件地址")->with(function ($value) {
             return $this->url ? rtrim(config('admin.upload.host'), '/').'/'.trim($this->url, '/') : "";
         });
