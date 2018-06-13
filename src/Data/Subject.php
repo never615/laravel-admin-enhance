@@ -13,7 +13,7 @@ use Mallto\Admin\Traits\ModelTree;
 
 class Subject extends Model
 {
-    use ModelTree, SelectSource;
+    use ModelTree;
 
     protected $tempChildrenSubjectIds;
 
@@ -36,6 +36,17 @@ class Subject extends Model
 
     protected $guarded = [
     ];
+
+
+    public static function selectSourceDate()
+    {
+        if (Admin::user()->isOwner()) {
+            return static::dynamicData()
+                ->select(DB::raw("name||id as name,id"))->pluck("name", "id");
+        } else {
+            return static::dynamicData()->pluck("name", "id");
+        }
+    }
 
 
     public function getLogoAttribute($value)
