@@ -45,21 +45,26 @@ trait AdminFilterData
                 }
             } else {
                 if (method_exists($this->getModel(), "scopeDynamicData")) {
+                    //manager_subject_ids逻辑暂时屏蔽,因为用不到
                     //如果设置了manager_subject_ids,则优先处理该值
-                    $managerSubjectIds = $adminUser->manager_subject_ids;
-                    if (!empty($managerSubjectIds)) {
-                        $tempSubject = new Subject();
-                        $tempSubjectIds = $managerSubjectIds;
+//                    $managerSubjectIds = $adminUser->manager_subject_ids;
+//                    if (!empty($managerSubjectIds)) {
+//                        $tempSubject = new Subject();
+//                        $tempSubjectIds = $managerSubjectIds;
+//
+//                        foreach ($managerSubjectIds as $managerSubjectId) {
+//                            $tempSubjectIds = array_merge($tempSubjectIds,
+//                                $tempSubject->getChildrenSubject($managerSubjectId));
+//                        }
+//                        $tempSubjectIds = array_unique($tempSubjectIds);
+//                    } else {
+//                        $currentSubject = $adminUser->subject;
+//                        $tempSubjectIds = $currentSubject->getChildrenSubject();
+//                    }
 
-                        foreach ($managerSubjectIds as $managerSubjectId) {
-                            $tempSubjectIds = array_merge($tempSubjectIds,
-                                $tempSubject->getChildrenSubject($managerSubjectId));
-                        }
-                        $tempSubjectIds = array_unique($tempSubjectIds);
-                    } else {
-                        $currentSubject = $adminUser->subject;
-                        $tempSubjectIds = $currentSubject->getChildrenSubject();
-                    }
+                    $currentSubject = $adminUser->subject;
+                    $tempSubjectIds = $currentSubject->getChildrenSubject();
+
                 } else {
                     throw new HttpException(500, "系统错误,未配置scopeDynamicData");
                 }
