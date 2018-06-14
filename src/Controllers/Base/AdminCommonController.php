@@ -131,7 +131,9 @@ abstract class AdminCommonController extends Controller
 
         $grid->filter(function ($filter) {
             // 禁用id查询框
-            $filter->disableIdFilter();
+            if (!Admin::user()->isOwner()) {
+                $filter->disableIdFilter();
+            }
         });
 
         $grid->tools(function (Grid\Tools $tools) {
@@ -153,6 +155,7 @@ abstract class AdminCommonController extends Controller
 
     /**
      * 如果form中使用到了tab,需要复写此方法
+     *
      * @param Form $form
      */
     protected function defaultFormOption(Form $form)
@@ -181,7 +184,7 @@ abstract class AdminCommonController extends Controller
      */
     protected function gridOrder($grid)
     {
-        $grid->model()->orderBy('id','desc');
+        $grid->model()->orderBy('id', 'desc');
     }
 
 }
