@@ -93,6 +93,7 @@ class Permission extends Model
      * 获取该权限的所有长辈权限
      *
      * 不包含自身
+     * @return Collection
      */
     public function elderPermissions()
     {

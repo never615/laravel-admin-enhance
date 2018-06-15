@@ -83,18 +83,9 @@ class SubjectController extends AdminCommonController
     protected function defaultFormOption(Form $form)
     {
         $form->tab("基本信息", function ($form) {
-
-//            $form->display('id', 'ID');
             $form->text("name")->rules('required');
-//            $form->image("logo")
-//                ->uniqueName()
-//                ->move('subject/logo/'.$this->currentId);
-
             $this->formSubject($form);
             $this->formAdminUser($form);
-//            $form->display('created_at', trans('admin.created_at'));
-//            $form->display('updated_at', trans('admin.updated_at'));
-
         })->tab("系统必要配置", function ($form) {
 
             //父级主体和已购模块只能父级设置,自己可以看,不能改
@@ -155,12 +146,7 @@ class SubjectController extends AdminCommonController
             }
         });
 
-
-
-
         $form->saving(function ($form) {
-            $this->autoSubjectSaving($form);
-            $this->autoAdminUserSaving($form);
             if (!Admin::user()->isOwner()) {
                 //修改的是自己或者是自己的父级
                 $currentSubject = Admin::user()->subject;
@@ -215,6 +201,17 @@ class SubjectController extends AdminCommonController
                     }
                 }
             }
+
+
+            //添加新创建的subject的path字段,用于加快查询速度
+            $parentId = $form->parent_id ?? $form->model()->parent_id;
+            $parentSubject = Subject::find($parentId);
+            if (!empty($parentSubject->path)) {
+                $form->model()->path = $parentSubject->path.$parentSubject->id.".";
+            }else{
+                $form->model()->path = ".".$parentSubject->id.".";
+            }
+
         });
     }
 

@@ -85,6 +85,7 @@ trait AdminSubjectTrait
      * 而form->saving方法是在调用下面方法之前调用的
      *
      * @param $form
+     * @return
      */
     protected function autoSubjectSaving($form)
     {

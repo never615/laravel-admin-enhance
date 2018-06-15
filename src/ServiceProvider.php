@@ -15,6 +15,7 @@ class ServiceProvider extends BaseServiceProvider
     protected $commands = [
         'Mallto\Admin\Console\InstallCommand',
         'Mallto\Admin\Console\UpdateCommand',
+        'Mallto\Admin\Console\PathGeneratorCommand',
     ];
 
     /**
@@ -24,7 +25,7 @@ class ServiceProvider extends BaseServiceProvider
      */
     protected $routeMiddleware = [
         'adminE.auto_permission' => \Mallto\Admin\Middleware\AutoPermissionMiddleware::class,
-        'adminE.log' => \Mallto\Admin\Middleware\OperationLog::class,
+        'adminE.log'             => \Mallto\Admin\Middleware\OperationLog::class,
     ];
 
     /**
@@ -44,26 +45,26 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../resources/config' => config_path()],
+            $this->publishes([__DIR__.'/../resources/config' => config_path()],
                 'laravel-admin-enhance-config');
-            $this->publishes([__DIR__ . '/../resources/assets' => public_path('vendor/laravel-adminE')],
+            $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-adminE')],
                 'laravel-admin-enhance-assets');
 
 
             //发布view覆盖laravel-admin的view
-            $this->publishes([__DIR__ . '/../resources/admin/views' => resource_path('views/vendor/admin')],
+            $this->publishes([__DIR__.'/../resources/admin/views' => resource_path('views/vendor/admin')],
                 'laravel-admin-enhance-views');
             //发布assets覆盖laravel-admin的assets
-            $this->publishes([__DIR__ . '/../resources/admin/assets' => public_path('vendor/laravel-admin')],
+            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
                 'laravel-admin-enhance-assets');
 
 
         }
 
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'adminE');
-        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
-        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'adminE');
+        $this->loadMigrationsFrom(__DIR__.'/../migrations');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
     }
 
