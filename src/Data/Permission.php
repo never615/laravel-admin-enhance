@@ -69,58 +69,53 @@ class Permission extends Model
     public function subPermissions()
     {
 
-        $temps = \DB::select("with recursive tab as (
-                   select * from admin_permissions where id = $this->id
-                   union all
-                   select s.* from admin_permissions as s inner join tab on tab.id = s.parent_id
-                )
-           select * from tab");
-
-        return \Qiniu\json_decode(\GuzzleHttp\json_encode($temps), true);
+        return Permission::where("path", "ilike", ".".$this->id.".")
+            ->orWhere("id", $this->id)
+            ->get()
+            ->toArray();
 
 
-//        $tempPermissions = new Collection();
-//        $permissions = static::where("parent_id", $this->id)->get();
-//        $tempPermissions = $tempPermissions->merge($permissions);
-//        foreach ($permissions as $permission) {
-//            $tempPermissions = $tempPermissions->merge($permission->subPermissions());
-//        }
+//        $temps = \DB::select("with recursive tab as (
+//                   select * from admin_permissions where id = $this->id
+//                   union all
+//                   select s.* from admin_permissions as s inner join tab on tab.id = s.parent_id
+//                )
+//           select * from tab");
 //
-//        return $tempPermissions;
+//        return json_decode(json_encode($temps), true);
+
     }
 
     /**
      * 获取该权限的所有长辈权限
      *
      * 不包含自身
+     *
      * @return Collection
      */
     public function elderPermissions()
     {
 
-        $temps = \DB::select("with recursive tab as (
-                 select * from admin_permissions where id = $this->parent_id
-                  union all
-                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
-                )
-           select * from tab");
 
-        return new Collection(\Qiniu\json_decode(\GuzzleHttp\json_encode($temps), true));
+        if (!empty($this->path)) {
+            $parentIds = explode(".", trim($this->path, "."));
+            if (!empty($parentIds)) {
+                return Permission::whereIn("id", $parentIds)
+                    ->get();
+            }
+        }
+
+        return new Collection();
 
 
-//        $tempPermissions = new Collection();
+//        $temps = \DB::select("with recursive tab as (
+//                 select * from admin_permissions where id = $this->parent_id
+//                  union all
+//                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
+//                )
+//           select * from tab");
 //
-//        $permission = static::find($this->parent_id);
-//        if ($permission) {
-//            $tempPermissions = $tempPermissions->push($permission);
-//            $temp = $permission->elderPermissions();
-//            if ($temp->count() > 0) {
-//                $tempPermissions = $tempPermissions->merge($temp);
-//            }
-//        }
-//
-//        return $tempPermissions;
-
+//        return new Collection(json_decode(json_encode($temps), true));
     }
 
 

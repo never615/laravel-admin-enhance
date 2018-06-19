@@ -71,18 +71,28 @@ class Menu extends Model
      */
     public function parentMenu()
     {
+        if (!empty($this->path)) {
+            $parentIds = explode(".", trim($this->path, "."));
+            if (!empty($parentIds)) {
+                return Menu::whereIn("id", $parentIds)
+                    ->get()
+                    ->toArray();
+            }
+        }
 
-        $tempMenus = \DB::select("with recursive tab as (
-                   select * from admin_menu where id = $this->parent_id
-                   union all
-                   select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
-                )
-           select * from tab");
+        return [];
 
-
-        $menus = json_decode(json_encode($tempMenus), true);
-
-        return $menus;
+//        $tempMenus = \DB::select("with recursive tab as (
+//                   select * from admin_menu where id = $this->parent_id
+//                   union all
+//                   select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
+//                )
+//           select * from tab");
+//
+//
+//        $menus = json_decode(json_encode($tempMenus), true);
+//
+//        return $menus;
     }
 
 
@@ -135,8 +145,9 @@ class Menu extends Model
                 $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
                     if (!in_array($menu["id"], $uniqueTempArray)) {
                         $uniqueTempArray[] = $menu["id"];
+
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 });

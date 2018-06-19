@@ -18,6 +18,9 @@ trait PermissionHelp
      */
     public function withSubPermissions($permissions)
     {
+
+
+
         $tempPermissions = [];
         foreach ($permissions as $permission) {
             //查询权限的所有子权限

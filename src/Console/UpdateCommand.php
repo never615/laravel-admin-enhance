@@ -7,6 +7,7 @@ namespace Mallto\Admin\Console;
 
 
 use Illuminate\Console\Command;
+use Mallto\Admin\Seeder\LaravelAdminEnhanceMenuSeeder;
 use Mallto\Admin\Seeder\LaravelAdminEnhancePermissionSeeder;
 
 class UpdateCommand extends Command
@@ -40,6 +41,7 @@ class UpdateCommand extends Command
     public function handle()
     {
         $this->call('db:seed', ['--class' => LaravelAdminEnhancePermissionSeeder::class]);
+        $this->call('db:seed', ['--class' => LaravelAdminEnhanceMenuSeeder::class]);
     }
 
 }
