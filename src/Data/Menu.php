@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
@@ -107,32 +108,35 @@ class Menu extends Model
             //菜单不跟角色挂钩,只有一份菜单
             //每个人能看到的菜单,由其拥有的权限决定
             //如果是管理员,返回所有菜单;如果是其他账号,返回相应菜单
-            if (Auth::guard("admin")->user()->isOwner()) {
+            $adminUser = Auth::guard("admin")->user();
+            if ($adminUser->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
+                $result = Cache::get("menu_".$adminUser->id);
+                if ($result) {
+                    return $result;
+                }
+
                 //用来保存用户拥有的所有权限
-
-                $permissions = Auth::guard("admin")->user()->allPermissions();
-
+                $permissions = $adminUser->allPermissions();
                 $userPermissions = $this->withSubPermissions($permissions);
                 $userPermissionSlugs = array_pluck($userPermissions, "slug");
 
-                $tempPermissionSlugs = $userPermissionSlugs;
-
-                foreach ($userPermissionSlugs as $userPermissionSlug) {
-                    if (!str_contains($userPermissionSlug, ".")) {
-                        $tempPermissionSlugs[] = $userPermissionSlug.".index";
-                    }
-                }
-
-                $userPermissionSlugs = $tempPermissionSlugs;
+//                $tempPermissionSlugs = $userPermissionSlugs;
+//
+//                foreach ($userPermissionSlugs as $userPermissionSlug) {
+//                    if (!str_contains($userPermissionSlug, ".")) {
+//                        $tempPermissionSlugs[] = $userPermissionSlug.".index";
+//                    }
+//                }
+//
+//                $userPermissionSlugs = $tempPermissionSlugs;
 
                 $menus = new Collection();
                 //任何人都可以看到控制面板菜单
                 $menus = $menus->merge(static::where("uri", "dashboard")->get());
                 //查询权限对应的菜单
                 $menus = $menus->merge(static::whereIn("uri", $userPermissionSlugs)->get());
-
 
                 $tempMenus = $menus->toArray();
 
@@ -141,6 +145,7 @@ class Menu extends Model
                     $tempMenus = array_merge($tempMenus, $item->parentMenu());
                 }
 
+                //过滤保证唯一
                 $uniqueTempArray = [];
                 $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
                     if (!in_array($menu["id"], $uniqueTempArray)) {
@@ -153,7 +158,10 @@ class Menu extends Model
                 });
 
 
+                //排序
                 $result = array_sort($tempMenus, $this->orderColumn);
+                Cache::put("menu_".$adminUser->id, $result, 30);
+
 
                 return $result;
             }

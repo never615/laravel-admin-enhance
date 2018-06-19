@@ -68,8 +68,7 @@ class Permission extends Model
      */
     public function subPermissions()
     {
-
-        return Permission::where("path", "ilike", ".".$this->id.".")
+        return Permission::where("path", "like", "%.".$this->id.".%")
             ->orWhere("id", $this->id)
             ->get()
             ->toArray();
@@ -95,8 +94,6 @@ class Permission extends Model
      */
     public function elderPermissions()
     {
-
-
         if (!empty($this->path)) {
             $parentIds = explode(".", trim($this->path, "."));
             if (!empty($parentIds)) {

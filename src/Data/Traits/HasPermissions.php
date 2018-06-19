@@ -99,7 +99,6 @@ trait HasPermissions
         //2.用户拥有该权限通过
         if (method_exists($this, 'permissions')) {
             if ($this->permissions()->where('slug', $permissionSlug)->exists()) {
-//            if ($this->permissions->keyBy('slug')->has($permissionSlug)) {
                 return true;
             }
         }
@@ -170,7 +169,6 @@ trait HasPermissions
         return $this->roles()
             ->where('slug', $role)
             ->exists();
-//        return $this->roles->keyBy('slug')->has($role);
     }
 
     /**

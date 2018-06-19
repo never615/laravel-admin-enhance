@@ -191,7 +191,7 @@ class Subject extends Model
 
         $currentSubjectId = $subjectId ?: $this->id;
 
-        return Subject::where("path", "ilike", ".".$currentSubjectId.".")
+        return Subject::where("path", "like", "%.".$this->id.".%")
             ->orWhere("id", $currentSubjectId)
             ->pluck("id")
             ->toArray();
@@ -233,7 +233,7 @@ class Subject extends Model
             }
         }
 
-        return null;
+        return [];
 
 
 //        $currentSubjectId = $this->id;

@@ -6,6 +6,8 @@
 namespace Mallto\Admin\Data\Traits;
 
 
+use Mallto\Admin\Data\Permission;
+
 trait PermissionHelp
 {
 
@@ -18,16 +20,27 @@ trait PermissionHelp
      */
     public function withSubPermissions($permissions)
     {
+        $ids = $permissions->pluck("id")->toArray();
+        $ids = array_map(function ($id) {
+            return "%.".$id.".%";
+        }, $ids);
+        $ids = implode(",", $ids);
+        $ids = "('{".$ids."}')";
 
-
-
-        $tempPermissions = [];
-        foreach ($permissions as $permission) {
-            //查询权限的所有子权限
-            $tempPermissions = array_merge($tempPermissions, $permission->subPermissions());
-        }
+        $tempPermissions = Permission::
+        whereRaw("path like any $ids")
+            ->get()
+            ->toArray();
 
         return array_merge($tempPermissions, $permissions->toArray());
+
+//        $tempPermissions = [];
+//        foreach ($permissions as $permission) {
+//            //查询权限的所有子权限
+//            $tempPermissions = array_merge($tempPermissions, $permission->subPermissions());
+//        }
+//
+//        return array_merge($tempPermissions, $permissions->toArray());
     }
 
 }

@@ -59,7 +59,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Mallto\Admin\Data\Administrator::class,
+                'model'  => Mallto\Mall\Data\AdminUser::class,
             ],
         ],
     ],
@@ -97,7 +97,7 @@ return [
 
         // User tables and model.
         'users_table'            => 'admin_users',
-        'users_model'            => Mallto\Admin\Data\Administrator::class,
+        'users_model'            => Mallto\Mall\Data\AdminUser::class,
 
 
         // Role table and model.
@@ -151,7 +151,7 @@ return [
     |               | sidebar-mini                            |
     |---------------------------------------------------------|
     */
-    'layout'        => ['sidebar-mini', 'sidebar-collapse'],
+    'layout'        => ['sidebar-mini'],
 
 
     /*
