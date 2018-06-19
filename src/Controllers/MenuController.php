@@ -6,7 +6,6 @@
 namespace Mallto\Admin\Controllers;
 
 
-use Encore\Admin\Controllers\ModelForm;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -144,6 +143,20 @@ class MenuController extends AdminCommonController
             $form->multipleSelect('roles', trans('admin.roles'))
                 ->options(Role::all()->pluck('name', 'id'));
         }
+
+        $form->saving(function ($form) {
+            //创建/修改菜单重新生成对应的path
+            $parentId = $form->parent_id ?? $form->model()->parent_id;
+            $parent = Menu::find($parentId);
+            if ($parent) {
+                if (!empty($parent->path)) {
+                    $form->model()->path = $parent->path.$parent->id.".";
+                } else {
+                    $form->model()->path = ".".$parent->id.".";
+                }
+            }
+        });
+
     }
 
 

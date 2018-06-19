@@ -8,10 +8,13 @@ namespace Mallto\Admin\Seeder\Menu;
 
 use Encore\Admin\Auth\Database\Menu;
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Seeder\MenuSeederMaker;
 
 
 class ImportMenusSeeder extends Seeder
 {
+    use MenuSeederMaker;
+
     /**
      * Run the database seeds.
      *
@@ -29,26 +32,10 @@ class ImportMenusSeeder extends Seeder
         $id = $tempMenu->id;
 
 
-        Menu::updateOrCreate([
-            'uri' => 'import_settings.index',
-        ], [
-                'parent_id' => $id,
-                'order'     => $order += 1,
-                'title'     => '导入配置',
-                'icon'      => 'fa-connectdevelop',
-            ]
-        );
+        $this->updateOrCreate("import_settings.index", $id,
+            $order += 1, "导入配置", "fa-connectdevelop");
 
-        Menu::updateOrCreate([
-            'uri' => 'import_records.index',
-        ], [
-                'parent_id' => $id,
-                'order'     => $order += 1,
-                'title'     => '数据导入',
-                'icon'      => 'fa-upload',
-            ]
-        );
-
-
+        $this->updateOrCreate("import_records.index", $id,
+            $order += 1, "数据导入", "fa-upload");
     }
 }

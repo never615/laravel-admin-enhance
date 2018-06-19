@@ -205,11 +205,13 @@ class SubjectController extends AdminCommonController
 
             //添加新创建的subject的path字段,用于加快查询速度
             $parentId = $form->parent_id ?? $form->model()->parent_id;
-            $parentSubject = Subject::find($parentId);
-            if (!empty($parentSubject->path)) {
-                $form->model()->path = $parentSubject->path.$parentSubject->id.".";
-            }else{
-                $form->model()->path = ".".$parentSubject->id.".";
+            $parent = Subject::find($parentId);
+            if ($parent) {
+                if ($parent&&!empty($parent->path)) {
+                    $form->model()->path = $parent->path.$parent->id.".";
+                } else {
+                    $form->model()->path = ".".$parent->id.".";
+                }
             }
 
         });

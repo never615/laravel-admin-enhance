@@ -59,5 +59,20 @@ class PermissionController extends AdminCommonController
         $form->text('name', trans('admin.name'))->rules('required');
         $form->switch("common", "基础功能权限")
             ->help("打开后,任何主体都默认拥有该权限对应的功能.即:在角色管理分配权限的时候可以进行分配");
+
+
+        $form->saving(function ($form) {
+            //创建/修改重新生成对应的path
+            $parentId = $form->parent_id ?? $form->model()->parent_id;
+            $parent = Permission::find($parentId);
+            if ($parent) {
+                if (!empty($parent->path)) {
+                    $form->model()->path = $parent->path.$parent->id.".";
+                } else {
+                    $form->model()->path = ".".$parent->id.".";
+                }
+            }
+        });
+
     }
 }

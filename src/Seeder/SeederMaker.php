@@ -6,6 +6,8 @@ namespace Mallto\Admin\Seeder;
 use Encore\Admin\Auth\Database\Permission;
 
 /**
+ * 生成权限的seeder基础方法
+ *
  * Created by PhpStorm.
  * User: never615
  * Date: 24/04/2017
@@ -38,6 +40,17 @@ trait SeederMaker
         $common = false,
         $closeCreate = false
     ) {
+        $path = "";
+        $parentPermission = Permission::find($parentId);
+        if ($parentPermission) {
+            if (!empty($parentPermission->path)) {
+                $path = $parentPermission->path.$parentPermission->id.".";
+            } else {
+                $path = ".".$parentPermission->id.".";
+            }
+        }
+
+
         $temp = Permission::updateOrCreate(
             [
                 "slug" => $slug,
@@ -47,9 +60,20 @@ trait SeederMaker
                 'order'     => $this->order += 1,
                 "name"      => $name,
                 "common"    => $common,
+                "path"      => $path,
             ]);
 
         $parentId = $temp->id;
+
+        $path = "";
+        $parentPermission = Permission::find($parentId);
+        if ($parentPermission) {
+            if (!empty($parentPermission->path)) {
+                $path = $parentPermission->path.$parentPermission->id.".";
+            } else {
+                $path = ".".$parentPermission->id.".";
+            }
+        }
 
         if ($sub) {
             $routeNames = $this->routeNames;
@@ -68,6 +92,7 @@ trait SeederMaker
                     'parent_id' => $parentId,
                     'order'     => $this->order += 1,
                     "name"      => $name.$permissionName,
+                    "path"      => $path,
 
                 ]);
             }
