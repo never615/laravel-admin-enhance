@@ -53,7 +53,7 @@ class PathGeneratorCommand extends Command
                 if (!empty($subject->parent_id)) {
                     //如果存在父主体,则给path字段赋值
 
-                    $tempParentIds = $subject->getParentSubjectIds();
+                    $tempParentIds = $subject->getParentSubjectIds2();
                     $tempPath = implode(".", $tempParentIds);
                     if (!empty($tempPath)) {
                         $subject->path = ".".$tempPath.".";
@@ -65,13 +65,14 @@ class PathGeneratorCommand extends Command
                 $subject->save();
             }
         });
+
         //permission
         Permission::chunk(500, function ($permissions) {
             foreach ($permissions as $permission) {
                 if (!empty($permission->parent_id)) {
                     //如果存在父主体,则给path字段赋值
 
-                    $temps = $permission->elderPermissions();
+                    $temps = $permission->elderPermissions2();
                     if (!empty($temps)) {
                         $tempParentIds = $temps->pluck("id")->toArray();
                         $tempPath = implode(".", $tempParentIds);
@@ -93,7 +94,7 @@ class PathGeneratorCommand extends Command
                 if (!empty($menu->parent_id)) {
                     //如果存在父主体,则给path字段赋值
 
-                    $tempParentIds = array_pluck($menu->parentMenu(), "id");
+                    $tempParentIds = array_pluck($menu->parentMenu2(), "id");
                     $tempPath = implode(".", $tempParentIds);
                     if (!empty($tempPath)) {
                         $menu->path = ".".$tempPath.".";

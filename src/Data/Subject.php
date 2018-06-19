@@ -234,30 +234,32 @@ class Subject extends Model
         }
 
         return [];
+    }
 
 
-//        $currentSubjectId = $this->id;
-//        if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
-//            return $this->tempParentSubject[$currentSubjectId];
-//        }
-//
-//
-//        $tempSubjects = DB::select("with recursive tab as (
-//                 select * from subjects where id = $currentSubjectId
-//                  union all
-//                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
-//                )
-//           select * from tab where id != $currentSubjectId");
-//
-//        if (empty($tempSubjects)) {
-//            $idResults = [];
-//        } else {
-//            $idResults = array_pluck($tempSubjects, "id");
-//            $this->tempParentSubject[$currentSubjectId] = $idResults;
-//
-//        }
-//
-//        return $idResults;
+    public function getParentSubjectIds2(){
+        $currentSubjectId = $this->id;
+        if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
+            return $this->tempParentSubject[$currentSubjectId];
+        }
+
+
+        $tempSubjects = DB::select("with recursive tab as (
+                 select * from subjects where id = $currentSubjectId
+                  union all
+                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
+                )
+           select * from tab where id != $currentSubjectId");
+
+        if (empty($tempSubjects)) {
+            $idResults = [];
+        } else {
+            $idResults = array_pluck($tempSubjects, "id");
+            $this->tempParentSubject[$currentSubjectId] = $idResults;
+
+        }
+
+        return $idResults;
     }
 
     /**

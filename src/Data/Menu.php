@@ -82,19 +82,23 @@ class Menu extends Model
         }
 
         return [];
-
-//        $tempMenus = \DB::select("with recursive tab as (
-//                   select * from admin_menu where id = $this->parent_id
-//                   union all
-//                   select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
-//                )
-//           select * from tab");
-//
-//
-//        $menus = json_decode(json_encode($tempMenus), true);
-//
-//        return $menus;
     }
+
+
+    public function parentMenu2(){
+        $tempMenus = \DB::select("with recursive tab as (
+                   select * from admin_menu where id = $this->parent_id
+                   union all
+                   select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
+                )
+           select * from tab");
+
+
+        $menus = json_decode(json_encode($tempMenus), true);
+
+        return $menus;
+    }
+
 
 
     /**

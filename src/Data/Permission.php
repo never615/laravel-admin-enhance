@@ -103,17 +103,17 @@ class Permission extends Model
         }
 
         return new Collection();
-
-
-//        $temps = \DB::select("with recursive tab as (
-//                 select * from admin_permissions where id = $this->parent_id
-//                  union all
-//                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
-//                )
-//           select * from tab");
-//
-//        return new Collection(json_decode(json_encode($temps), true));
     }
 
+    public function elderPermissions2(){
+        $temps = \DB::select("with recursive tab as (
+                 select * from admin_permissions where id = $this->parent_id
+                  union all
+                  select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
+                )
+           select * from tab");
+
+        return new Collection(json_decode(json_encode($temps), true));
+    }
 
 }
