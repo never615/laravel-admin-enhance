@@ -99,31 +99,32 @@ class UserController extends AdminCommonController
                 }
             }
 
+            //暂时屏蔽manager_subject_ids逻辑
             //设置数据查看范围的时候,设置了父范围,就不能设置子范围,做检查
-            if ($form->manager_subject_ids &&
-                !$this->equlityManagerSubjectIds($form->manager_subject_ids,
-                    $form->model()->manager_subject_ids)
-            ) {
-                //检查提交来的数据,是否同时包含了父子级
-                $managerSubjectIds = $form->manager_subject_ids;
-
-                foreach ($managerSubjectIds as $managerSubjectId) {
-                    if ($managerSubjectId) {
-                        //获取它的父级们,看看提交的数组中有没有包含的
-                        $tempSubject = Subject::find($managerSubjectId);
-
-                        $tempParentSubjectIds = $tempSubject->getParentSubjectIds();
-
-                        foreach ($managerSubjectIds as $managerSubjectId) {
-                            if (in_array($managerSubjectId, $tempParentSubjectIds)) {
-                                //提交上来的数据,存在某个id的父级id,抛出错误
-                                throw new HttpException(422, "数据查看范围:设置了父级就不能同时设置子级");
-                            }
-                        }
-                    }
-                }
-
-            }
+//            if ($form->manager_subject_ids &&
+//                !$this->equlityManagerSubjectIds($form->manager_subject_ids,
+//                    $form->model()->manager_subject_ids)
+//            ) {
+//                //检查提交来的数据,是否同时包含了父子级
+//                $managerSubjectIds = $form->manager_subject_ids;
+//
+//                foreach ($managerSubjectIds as $managerSubjectId) {
+//                    if ($managerSubjectId) {
+//                        //获取它的父级们,看看提交的数组中有没有包含的
+//                        $tempSubject = Subject::find($managerSubjectId);
+//
+//                        $tempParentSubjectIds = $tempSubject->getParentSubjectIds();
+//
+//                        foreach ($managerSubjectIds as $managerSubjectId) {
+//                            if (in_array($managerSubjectId, $tempParentSubjectIds)) {
+//                                //提交上来的数据,存在某个id的父级id,抛出错误
+//                                throw new HttpException(422, "数据查看范围:设置了父级就不能同时设置子级");
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            }
 
 
             //自己不能修改自己的角色

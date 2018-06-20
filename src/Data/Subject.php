@@ -237,7 +237,8 @@ class Subject extends Model
     }
 
 
-    public function getParentSubjectIds2(){
+    public function getParentSubjectIds2()
+    {
         $currentSubjectId = $this->id;
         if ($this->tempParentSubject && isset($this->tempParentSubject[$currentSubjectId])) {
             return $this->tempParentSubject[$currentSubjectId];
@@ -247,9 +248,10 @@ class Subject extends Model
         $tempSubjects = DB::select("with recursive tab as (
                  select * from subjects where id = $currentSubjectId
                   union all
-                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
+                  select s.* from subjects as s inner join tab on tab.parent_id = s.id
                 )
-           select * from tab where id != $currentSubjectId");
+           select * from tab where id != $currentSubjectId order by id ");
+
 
         if (empty($tempSubjects)) {
             $idResults = [];

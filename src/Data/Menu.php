@@ -91,7 +91,7 @@ class Menu extends Model
                    union all
                    select s.* from admin_menu as s inner join tab on tab.parent_id = s.id
                 )
-           select * from tab");
+           select * from tab order by id");
 
 
         $menus = json_decode(json_encode($tempMenus), true);

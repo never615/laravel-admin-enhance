@@ -45,23 +45,27 @@ trait DynamicData
             //2.获取当前主体的所有子主体
             $ids = $currentSubject->getChildrenSubject();
 
+
+            //查询管理账户是否设置了manager_subject_ids暂时用不到,先屏蔽
+
             //查询管理账户是否设置了manager_subject_ids
-            $managerSubjectIds = $adminUser->manager_subject_ids;
-            if (!empty($managerSubjectIds)) {
-                $tempSubject = new Subject();
-                $tempSubjectIds = $managerSubjectIds;
-
-                foreach ($managerSubjectIds as $managerSubjectId) {
-                    $tempSubjectIds = array_merge($tempSubjectIds,
-                        $tempSubject->getChildrenSubject($managerSubjectId));
-                }
-
-                $tempSubjectIds = array_merge($tempSubjectIds, $ids);
-                $ids = array_unique($tempSubjectIds);
-            }
+//            $managerSubjectIds = $adminUser->manager_subject_ids;
+//            if (!empty($managerSubjectIds)) {
+//                $tempSubject = new Subject();
+//                $tempSubjectIds = $managerSubjectIds;
+//
+//                foreach ($managerSubjectIds as $managerSubjectId) {
+//                    $tempSubjectIds = array_merge($tempSubjectIds,
+//                        $tempSubject->getChildrenSubject($managerSubjectId));
+//                }
+//
+//                $tempSubjectIds = array_merge($tempSubjectIds, $ids);
+//                $ids = array_unique($tempSubjectIds);
+//            }
 
 
             //3.限定查询范围为所有子主体
+
             $query->whereIn('subject_id', $ids)->orderBy('id');
         }
     }

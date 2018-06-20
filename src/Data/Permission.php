@@ -111,7 +111,7 @@ class Permission extends Model
                   union all
                   select s.* from admin_permissions as s inner join tab on tab.parent_id = s.id
                 )
-           select * from tab");
+           select * from tab order by id");
 
         return new Collection(json_decode(json_encode($temps), true));
     }
