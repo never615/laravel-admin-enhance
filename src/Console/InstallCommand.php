@@ -6,6 +6,8 @@ use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Console\Command;
 use Mallto\Admin\Seeder\AdminTablesSeeder;
 use Mallto\Admin\Seeder\BaseTablesSeeder;
+use Mallto\Admin\Seeder\LaravelAdminEnhanceMenuSeeder;
+use Mallto\Admin\Seeder\LaravelAdminEnhancePermissionSeeder;
 use Mallto\Admin\Seeder\MenuSeeder;
 use Mallto\Admin\Seeder\PemissionSeeder;
 
@@ -52,9 +54,7 @@ class InstallCommand extends Command
     public function initDatabase()
     {
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../migrations/']);
-        $this->call('db:seed', ['--class' => BaseTablesSeeder::class]);
-        $this->call('db:seed', ['--class' => MenuSeeder::class]);
-        $this->call('db:seed', ['--class' => PemissionSeeder::class]);
+        $this->call('db:seed', ['--class' => \Malto\Admin\Seeder\AdminTablesSeeder::class]);
     }
 
 

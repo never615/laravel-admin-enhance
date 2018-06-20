@@ -8,7 +8,7 @@ namespace Mallto\Admin\Controllers\Base;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
-use Mallto\Admin\Data\Subject;
+use Mallto\Mall\Data\Subject;
 
 /**
  * 处理subject的显示和自动保存
@@ -46,10 +46,8 @@ trait AdminSubjectTrait
         if (Schema::hasColumn($this->tableName, "subject_id")) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             if (Admin::user()->isOwner()) {
-                $form->select("subject_id", "主体")
+                $form->selectE("subject_id", "主体")
                     ->options(
-//                        Subject::where("base", true)
-//                            ->pluck("name", "id")
                         Subject::pluck("name", "id")
                     )
                     ->rules("required");
@@ -57,18 +55,6 @@ trait AdminSubjectTrait
                 $form->display("subject.name", "主体");
                 $form->hideFieldsByCreate("subject.name");
             }
-//                $form->select("subject_id", "主体")
-//                    ->default(Admin::user()->subject->id)
-//                    ->options(function () {
-//                        $currentSubjectId = $this->subject_id;
-//                        $currentSubject = Subject::find($currentSubjectId);
-//                        $subjects = Subject::dynamicData()->pluck("name", "id");
-//                        if ($currentSubject) {
-//                            $subjects = array_add($subjects, $currentSubject->id, $currentSubject->name);
-//                        }
-//
-//                        return $subjects;
-//                    })->rules("required");
         }
     }
 

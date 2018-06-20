@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MultipleSelect extends Select
 {
+
+    protected $view = 'admin::form.multipleselect';
+
     /**
      * Other key for many-to-many relation.
      *
