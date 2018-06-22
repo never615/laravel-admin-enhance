@@ -59,7 +59,7 @@ class ImportFileJob implements ShouldQueue
     {
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "not_start") {
-            $handler = DynamicInject::getImportHandler($record->module_slug);
+            $handler = resolve($record->module_slug);
             $handler->handle($record);
         }
     }
