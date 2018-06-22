@@ -7,10 +7,7 @@ namespace Mallto\Admin\Data\Traits;
 
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Mallto\Admin\SubjectUtils;
-use Mallto\Mall\Data\AdminUser;
-use Request;
+use Mallto\Admin\Data\Administrator;
 
 /**
  * Created by PhpStorm.
@@ -87,7 +84,7 @@ abstract class BaseModel extends Model
 
     public function admin()
     {
-        return $this->belongsTo(AdminUser::class, "admin_user_id");
+        return $this->belongsTo(Administrator::class, "admin_user_id");
     }
 
 }

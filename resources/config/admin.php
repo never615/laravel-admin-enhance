@@ -59,7 +59,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Mallto\Mall\Data\AdminUser::class,
+                'model'  => Mallto\Admin\Data\Administrator::class,
             ],
         ],
     ],
@@ -97,7 +97,7 @@ return [
 
         // User tables and model.
         'users_table'            => 'admin_users',
-        'users_model'            => Mallto\Mall\Data\AdminUser::class,
+        'users_model'            => Mallto\Admin\Data\Administrator::class,
 
 
         // Role table and model.
