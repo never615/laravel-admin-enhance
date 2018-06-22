@@ -299,6 +299,22 @@ forget方法的第二个参数可以传入关联数据的**模型名**来忽略�
 ```
 
 
+#### Form
+##### choice控件
+示例:
+selects设置选项卡选项,dataUrls设置数据源.数据源返回格式使用paginate()函数生成的格式,data内容为id和text为键.
+选项卡的key需要和dataUrls的key一一对应
+```
+                    $form->choice("choice_users", "范围")
+                        ->selects([
+                            "member_levels" => "会员等级",
+                            "users"         => "会员",
+                        ])->dataUrls([
+                            "users"         => data_source_url("users"),
+                            "member_levels" => data_source_url("member_levels"),
+                        ]);
+```
+
 ### 其他
 #### AdminCommonController
 管理端的实现类继承自`AdminCommonController`,提供了一些共有方法和实现了一些共有逻辑.

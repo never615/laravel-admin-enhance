@@ -239,17 +239,17 @@
     };
 
 
-    /**
-     * 获取指定值的索引
-     * @param val
-     * @returns {number}
-     */
-    Array.prototype.indexOf = function (val) {
-        for (var i = 0; i < this.length; i++) {
-            if (this[i] == val) return i;
-        }
-        return -1;
-    };
+    // /**
+    //  * 获取指定值的索引
+    //  * @param val
+    //  * @returns {number}
+    //  */
+    // Array.prototype.indexOf = function (val) {
+    //     for (var i = 0; i < this.length; i++) {
+    //         if (this[i] == val) return i;
+    //     }
+    //     return -1;
+    // };
     /**
      * 数组删除指定值
      * @param val

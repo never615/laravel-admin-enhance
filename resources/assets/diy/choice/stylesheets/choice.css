@@ -1,0 +1,205 @@
+.apiApp_mod_rowItem_cnt {
+    font-size: 13px
+}
+
+.apiApp_mod_rowItem_cnt {
+    word-break: break-all
+}
+
+.apiApp_mod_rowItem_cnt {
+    overflow: hidden;
+    zoom: 1;
+    font-size: 14px;
+    color: #000
+}
+
+.apiApp_mod_rowItem_cnt_Limit {
+    line-height: 32px;
+    color: #787878
+}
+
+.apiApp_mod_rowItem_cnt_Limit .ww_icon {
+    vertical-align: -2px;
+    margin-left: 10px;
+    margin-right: 5px
+}
+
+.apiApp_mod_rowItem_cnt_Limit .ww_groupSelBtn_item_text {
+    color: #000
+}
+
+.ww_groupSelBtn_item {
+    margin-top: 15px;
+    margin-bottom: 0
+}
+
+.ww_groupSelBtn_item_text {
+    padding-right: 0
+}
+
+.ww_groupSelBtn_add {
+    margin-top: 5px
+}
+
+.ww_groupSelBtn_item_text {
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis
+}
+
+.ww_groupSelBtn:after, .ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item:after{
+    clear: both;
+    content: ".";
+    display: block;
+    line-height: 0;
+    font-size: 0;
+    visibility: hidden
+}
+
+ .ww_groupSelBtn_item_text{
+    white-space: nowrap
+}
+
+.ww_groupSelBtn {
+    display: inline-block;
+    vertical-align: top;
+    min-height: 22px;
+    font-size: 13px
+}
+
+
+.ww_groupSelBtn[disabled] .ww_groupSelBtn_add, .ww_groupSelBtn_WithoutDel .ww_commonImg_GroupDelSel, .ww_groupSelBtn_WithoutEdit .ww_commonImg_GroupDelSel, .ww_groupSelBtn_WithoutEdit .ww_groupSelBtn_add {
+    display: none
+}
+
+.ww_groupSelBtn_item {
+    float: left;
+    max-width: 231px;
+    line-height: 1.5;
+    margin: 3px 10px 3px 0;
+    padding: 3px 11px 3px 7px;
+    background-color: #fff;
+    border: 1px solid #E4E6E9;
+    border-radius: 2px
+}
+
+.ww_groupSelBtn_add, .ww_groupSelBtn_text {
+    float: left;
+    margin-top: 7px
+}
+
+.ww_groupSelBtn_text {
+    margin-right: 10px
+}
+
+.multiPickerDlg_right .ww_groupSelBtn_item .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn_item .icon_folder_circle, .ww_groupSelBtn_item .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn_item .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn_item .ww_commonImg_Man, .ww_groupSelBtn_item .ww_commonImg_TreeMenuThumb, .ww_groupSelBtn_item .ww_commonImg_Woman, .ww_groupSelBtn_item .ww_icon_MemberDefault {
+    float: left;
+    margin: 2px 5px 0 0
+}
+
+.ww_groupSelBtn_item_text {
+    float: left;
+    max-width: 174px;
+    padding-right: 11px;
+    overflow: hidden;
+    line-height: 18px;
+    cursor: default
+}
+
+.ww_groupSelBtn_item .ww_commonImg_GroupDelSel {
+    float: right;
+    margin-top: 5px;
+    cursor: pointer
+}
+
+.ww_groupSelBtn[disabled] {
+    cursor: default
+}
+
+/*.multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_circle, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn[disabled] .ww_commonImg_TreeMenuThumb {*/
+    /*background-image: url("../images/independent/status/TreeMenuThumbDisabled$9af9794d.png");*/
+    /*width: 14px;*/
+    /*height: 14px;*/
+    /*background-size: 100%*/
+/*}*/
+
+/*@media (-webkit-min-device-pixel-ratio: 2),(min--moz-device-pixel-ratio: 2),(min-device-pixel-ratio: 2),(-o-min-device-pixel-ratio: 2/1),(min-resolution: 2dppx),(min-resolution: 192dpi) {*/
+    /*.multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_circle, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn[disabled] .ww_commonImg_TreeMenuThumb {*/
+        /*background-image: url("../images/independent/status/TreeMenuThumbDisabled_2x$2d4b360c.png")*/
+    /*}*/
+/*}*/
+
+.ww_groupSelBtn[disabled] .ww_groupSelBtn_item_text {
+    color: #787878
+}
+
+.ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item {
+    padding: 0 11px 0 0;
+    height: auto
+}
+
+.ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item_text {
+    margin-top: 3px;
+    margin-left: 5px
+}
+
+.ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_icon {
+    float: left;
+    border-radius: 2px
+}
+
+.ww_groupSelBtn_ImageNoPadding img.ww_groupSelBtn_icon {
+    height: 24px
+}
+
+.ww_groupSelBtn_ImageNoPadding .ww_commonImg_GroupDelSel {
+    margin-top: 8px
+}
+
+.ww_groupSelBtn_WithoutEdit .ww_groupSelBtn_item_text {
+    padding-right: 0
+}
+
+.ww_groupSelBtn_WithoutEdit .ww_groupSelBtn_item {
+    padding: 3px 7px
+}
+
+.ww_groupSelBtn_WithoutDel .ww_groupSelBtn_item_text {
+    padding-right: 0
+}
+
+.ww_groupSelBtn_WithoutDel .ww_groupSelBtn_item {
+    padding: 3px 7px
+}
+
+
+.ww_groupSelBtn, .ww_groupSelBtn {
+    border-color: #F05A5A
+}
+
+.ww_groupSelBtn_item_text {
+    max-width: 144px
+}
+
+.ww_groupSelBtn {
+    display: block;
+    overflow: hidden;
+    zoom: 1
+}
+
+.ww_groupSelBtn_item {
+    margin-top: 1px
+}
+
+.ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item {
+    padding-right: 0
+}
+
+.ww_groupSelBtn {
+    vertical-align: top;
+    margin-top: -3px
+}
+
+.ww_groupSelBtn_add {
+    margin-top: 9px
+}
+
