@@ -43,7 +43,7 @@ class MenuController extends AdminCommonController
                     $form->text('title', trans('admin.title'))->rules('required');
                     $form->icon('icon',
                         trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
-                    $form->text('uri', trans('admin.uri'));
+                    $form->text('uri', trans('admin.uri'))->help("路径需要填写路由名,如:shops.index");
                     if (!config("admin.auto_menu")) {
                         $form->multipleSelect('roles', trans('admin.roles'))->options(Role::all()->pluck('name', 'id'));
                     }
