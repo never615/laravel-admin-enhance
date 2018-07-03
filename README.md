@@ -51,6 +51,8 @@ php artisan admin_enhance:install
 \Encore\Admin\Form::extend('selectOrNew', \Mallto\Admin\Form\Field\SelectOrNew::class);
 //表单富文本编辑器控件
 \Encore\Admin\Form::extend('editor2', \Mallto\Admin\Form\Field\WangEditor::class);
+//qrcode,生成二维码
+\Encore\Admin\Form::extend('qrcode', \Mallto\Admin\Form\Field\QRcode::class);
 
 
 //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
