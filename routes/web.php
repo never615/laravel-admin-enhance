@@ -38,6 +38,9 @@ Route::group($attributes, function ($router) {
             //上传图片(富文本编辑器需要使用)
             $router->post('upload', 'FileController@upload');
 
+
+
+
             Route::group(['middleware' => ['adminE.auto_permission']], function ($router) {
                 $router->resource("subjects", "SubjectController");
 

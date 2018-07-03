@@ -8,7 +8,7 @@ namespace Mallto\Admin\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Mallto\Mall\Data\AdminUser;
+use Mallto\Admin\Data\Administrator;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
 use Overtrue\LaravelWeChat\Model\WechatUserInfoRepository;
@@ -25,7 +25,7 @@ class AdminBindWechatController extends Controller
         $openid = $this->decryptOpenid($encryOpenid);
 
 
-        $adminUser = AdminUser::find($request->admin_user_id);
+        $adminUser = Administrator::find($request->admin_user_id);
         if (!$adminUser) {
             throw new ResourceException("无效请求");
         }
