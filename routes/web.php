@@ -24,10 +24,15 @@ $attributes = [
 
 Route::group($attributes, function ($router) {
 
+    //todo 这个权限暂时放在这
+    Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
+
+
 //----------------------------------------  管理端开始  -----------------------------------------------
     Route::group(['prefix' => config('admin.route.prefix'), "middleware" => "adminE_base"],
         function ($router) {
             $router->get('/', 'HomeController@index')->name("dashboard");
+
             //获取七牛upload token
             $router->get('uptoken', 'FileController@getUploadToken');
             //上传图片(富文本编辑器需要使用)

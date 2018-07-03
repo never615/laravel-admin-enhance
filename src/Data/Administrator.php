@@ -36,6 +36,7 @@ class Administrator extends Model implements AuthenticatableContract
     protected $casts = [
         'extra'               => 'array',
         'manager_subject_ids' => "array",
+        'openid'              => 'array',
     ];
 
     /**
