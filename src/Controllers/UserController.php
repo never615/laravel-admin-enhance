@@ -59,6 +59,8 @@ class UserController extends AdminCommonController
             ->rules('required');
         $form->text('name', trans('admin.name'))->rules('required');
         if ($this->currentId) {
+            $form->html("<h3>绑定微信</h3>");
+
             $currentAdminUser = AdminUser::find($this->currentId);
             if ($currentAdminUser) {
                 $qrcodeHelp = "";
@@ -70,7 +72,40 @@ class UserController extends AdminCommonController
                 $form->qrcode("qrcode", "扫码绑定微信")
                     ->qrcodeUrl($this->getBindWechatUrl($this->currentId))
                     ->help($qrcodeHelp);
+
+                $form->buttonE("unbind_wechat","解绑微信")
+                    ->on("click",function() use($currentAdminUser){
+                        $uuid = $currentAdminUser->subject->uuid;
+
+                        return <<<EOT
+        var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+                        
+        $.ajax({
+            type: 'GET',
+            url: '/admin/admin_unbind_wechat',
+            dataType: "json",
+            data: {iddd: Math.random(),id:{$currentAdminUser->id}},
+            headers: {
+                'REQUEST-TYPE': 'WEB',
+                'Accept': 'application/json',
+                'UUID': '{$uuid}'
+            },
+            success: function (data) {
+                layer.close(loadIndex);
+                toastr.success("解绑成功");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.close(loadIndex);
+                errorHandler(XMLHttpRequest);
             }
+        });                        
+EOT;
+                    });
+
+            }
+
+            $form->divider();
+
         }
         $form->image('avatar', trans('admin.avatar'))->removable();
         $form->password('password', trans('admin.password'))->rules('required|confirmed');

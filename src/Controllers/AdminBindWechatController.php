@@ -45,4 +45,16 @@ class AdminBindWechatController extends Controller
 
         echo "<h1>绑定成功</h1>";
     }
+
+
+    public function unbindWechat(Request $request){
+        $adminUser = Administrator::find($request->id);
+
+        $adminUser->openid=null;
+        $adminUser->save();
+
+        return response()->nocontent();
+
+
+    }
 }

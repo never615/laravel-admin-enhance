@@ -26,6 +26,7 @@ Route::group($attributes, function ($router) {
 
     //todo 这个权限暂时放在这
     Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
+    Route::get('admin/admin_unbind_wechat', 'AdminBindWechatController@unbindWechat');
 
 
 //----------------------------------------  管理端开始  -----------------------------------------------
