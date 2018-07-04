@@ -10,7 +10,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Mall\Data\Shop;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
@@ -68,7 +67,9 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
 
-        $request->session()->regenerate();
+
+        $token = $adminUser->createToken("admin_api");
+        $adminUser->token = $token->accessToken;
 
 //        if ($adminUser->adminable_type == "shop") {
 //            $shop = Shop::find($adminUser->adminable_id);
@@ -79,6 +80,7 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
             "id",
             "name",
             "username",
+            "token"
         ]));
 
 

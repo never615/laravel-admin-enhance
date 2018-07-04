@@ -63,6 +63,11 @@ class AutoPermissionMiddleware
         }
 
         $adminUser = Auth::guard("admin")->user();
+        if (!$adminUser) {
+            $adminUser = Auth::guard("admin_api")->user();
+        }
+
+
         //权限管理有该权限,检查用户是否有该权限
         if ($adminUser->can($currentRouteName)) {
             //pass

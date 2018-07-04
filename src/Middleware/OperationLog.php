@@ -8,12 +8,14 @@ namespace Mallto\Admin\Middleware;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Mallto\Tool\Domain\Log\Logger;
 
 /**
  * 记录管理端操作日志
  *
  * Class OperationLog
+ *
  * @package Mallto\Tool\Middleware
  */
 class OperationLog
@@ -27,7 +29,13 @@ class OperationLog
      */
     public function handle(Request $request, \Closure $next)
     {
-        if (config('admin.operation_log.enable') && Admin::user()) {
+
+        $adminUser = Admin::user();
+        if (!$adminUser) {
+            $adminUser = Auth::guard("admin_api")->user();
+        }
+
+        if (config('admin.operation_log.enable') && $adminUser) {
 
             $ip = "";
             $tempIp = $request->header("X-Forwarded-For");
@@ -38,12 +46,12 @@ class OperationLog
             }
 
             $log = [
-                'user_id'    => Admin::user()->id,
+                'user_id'    => $adminUser->id,
                 'path'       => $request->path(),
                 'method'     => $request->method(),
                 'request_ip' => $ip,
                 'input'      => json_encode($request->input()),
-                'subject_id' => Admin::user()->subject->id,
+                'subject_id' => $adminUser->subject->id,
             ];
 
             $logger = resolve(Logger::class);
