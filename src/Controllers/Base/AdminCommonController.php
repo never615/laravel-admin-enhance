@@ -162,7 +162,9 @@ abstract class AdminCommonController extends Controller
      */
     protected function defaultFormOption(Form $form)
     {
-        $form->display('id', 'ID');
+        if (Admin::user()->isOwner()) {
+            $form->display('id', 'ID');
+        }
         $this->formOption($form);
 
         $this->formSubject($form);
