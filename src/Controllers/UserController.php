@@ -67,7 +67,7 @@ class UserController extends AdminCommonController
                 if ($currentAdminUser->openid) {
                     $qrcodeHelp = "已绑定微信,绑定用户微信昵称为:".$currentAdminUser->openid["nickname"].",扫码可重新绑定为其他用户";
                 } else {
-                    $qrcodeHelp = "未绑定微信,扫码可绑定";
+                    $qrcodeHelp = "未绑定微信,扫码可绑定(一个微信只能绑定一个账号,绑定新的账号后,旧的绑定关系会失效)";
                 }
                 $form->qrcode("qrcode", "扫码绑定微信")
                     ->qrcodeUrl($this->getBindWechatUrl($this->currentId))

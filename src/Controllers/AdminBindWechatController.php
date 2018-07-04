@@ -16,7 +16,6 @@ use Overtrue\LaravelWeChat\Model\WechatUserInfoRepository;
 
 class AdminBindWechatController extends Controller
 {
-
     use OpenidCheckTrait;
 
     public function bindWechat(Request $request, WechatUserInfoRepository $wechatUserInfoRepository)
@@ -38,23 +37,28 @@ class AdminBindWechatController extends Controller
             }
         }
 
+        //检查并移除该微信的其他账号绑定关系
+        Administrator::where("subject_id", $adminUser->subject_id)
+            ->where("openid->openid", $openid)
+            ->update([
+                "openid" => null,
+            ]);
 
+        //绑定
         $adminUser->openid = $wechatUserInfo->toArray();
         $adminUser->save();
-
 
         echo "<h1>绑定成功</h1>";
     }
 
 
-    public function unbindWechat(Request $request){
+    public function unbindWechat(Request $request)
+    {
         $adminUser = Administrator::find($request->id);
 
-        $adminUser->openid=null;
+        $adminUser->openid = null;
         $adminUser->save();
 
         return response()->nocontent();
-
-
     }
 }
