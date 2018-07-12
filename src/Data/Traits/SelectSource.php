@@ -7,6 +7,7 @@ namespace Mallto\Admin\Data\Traits;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 
 /**
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\DB;
  */
 trait SelectSource
 {
+    /**
+     * @deprecated
+     * @return mixed
+     */
     public static function selectSourceDate()
     {
         if (Admin::user()->isOwner()) {
@@ -26,5 +31,22 @@ trait SelectSource
             return static::dynamicData()->pluck("name", "id");
         }
     }
+
+
+    public function scopeSelectSourceDatas()
+    {
+        if (Admin::user()->isOwner()) {
+            if (Schema::hasColumn($this->getTable(), 'subject_id')) {
+                return static::dynamicData()
+                    ->select(DB::raw("name||subject_id as name,id"))->pluck("name", "id");
+            } else {
+                return static::dynamicData()
+                    ->select(DB::raw("name as name,id"))->pluck("name", "id");
+            }
+        } else {
+            return static::dynamicData()->pluck("name", "id");
+        }
+    }
+
 
 }
