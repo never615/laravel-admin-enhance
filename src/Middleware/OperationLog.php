@@ -31,7 +31,7 @@ class OperationLog
     {
 
         $adminUser = Admin::user();
-        if (!$adminUser) {
+        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }
 

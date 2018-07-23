@@ -63,12 +63,14 @@ class AutoPermissionMiddleware
         }
 
         $adminUser = Auth::guard("admin")->user();
-        if (!$adminUser) {
+        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }
 
 
+
         //权限管理有该权限,检查用户是否有该权限
+
         if ($adminUser->can($currentRouteName)) {
             //pass
             return $next($request);
@@ -77,8 +79,6 @@ class AutoPermissionMiddleware
             if ($adminUser->can($routenameArr[0])) {
                 //拥有父权限,则通过所有子权限
                 //pass 因为一个模块下面有增删改查子权限,懒得创建,就通过拥有父级的
-
-
                 return $next($request);
             } else {
                 //不拥有或者不存在对应权限的路由不能访问,控制面板除外
@@ -86,5 +86,7 @@ class AutoPermissionMiddleware
                 throw new AccessDeniedHttpException(trans("errors.permission_denied"));
             }
         }
+
+
     }
 }
