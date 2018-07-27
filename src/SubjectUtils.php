@@ -83,6 +83,29 @@ class SubjectUtils
     }
 
     /**
+     * 获取uuid
+     *
+     * @return mixed
+     */
+    public static function getUUIDNoException()
+    {
+        if (self::$subject) {
+            return self::$subject->uuid;
+        }
+
+        $uuid = Request::header("UUID");
+        if (is_null($uuid)) {
+            $uuid = Input::get("uuid");
+        }
+
+        if (empty($uuid) && \Admin::user()) {
+            $uuid = \Admin::user()->subject->uuid;
+        }
+
+        return $uuid;
+    }
+
+    /**
      * 获取主体id
      *
      * @return mixed
