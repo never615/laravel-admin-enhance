@@ -25,6 +25,7 @@ abstract class BaseModel extends Model
     protected $guarded = [];
 
 
+
     public function getLogoAttribute($value)
     {
         if (empty($value)) {

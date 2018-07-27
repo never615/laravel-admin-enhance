@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Exception\SubjectConfigException;
+use Mallto\Admin\Exception\SubjectNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -36,7 +37,7 @@ class SubjectUtils
     public static function getSubectConfig($subject, $key, $default = null)
     {
         if (!$subject) {
-            throw new HttpException(422,"主体未找到");
+            throw new SubjectNotFoundException("主体未找到");
         }
 
         $subjectConfig = $subject->subjectConfigs()
@@ -75,7 +76,7 @@ class SubjectUtils
         }
 
         if (empty($uuid)) {
-            throw new HttpException(422,"uuid参数错误");
+            throw new HttpException(422, "uuid参数错误");
         }
 
         return $uuid;
@@ -114,7 +115,7 @@ class SubjectUtils
             }
         }
 
-        throw new HttpException(422,"uuid参数错误".$uuid);
+        throw new HttpException(422, "uuid参数错误".$uuid);
     }
 
     /**
@@ -160,7 +161,7 @@ class SubjectUtils
             }
         }
 
-        throw new HttpException(422,"uuid参数错误:".$uuid);
+        throw new HttpException(422, "uuid参数错误:".$uuid);
     }
 
     /**
