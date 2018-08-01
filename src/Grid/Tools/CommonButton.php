@@ -8,6 +8,17 @@ namespace Mallto\Admin\Grid\Tools;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid\Tools\AbstractTool;
 
+/**
+ * example:
+ * $grid->tools(function (Grid\Tools $tools) {
+ *      $tools->append(new CommonButton("库存调整", admin_url("customer_service_goods_remains")));
+ * });
+ *
+ *
+ * Class CommonButton
+ *
+ * @package Mallto\Admin\Grid\Tools
+ */
 class CommonButton extends AbstractTool
 {
     private $name;
