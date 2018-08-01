@@ -13,7 +13,12 @@ use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
 use Overtrue\LaravelWeChat\Model\WechatUserInfoRepository;
 
-
+/**
+ * 管理端使用:绑定微信和解绑微信
+ * Class AdminBindWechatController
+ *
+ * @package Mallto\Admin\Controllers
+ */
 class AdminBindWechatController extends Controller
 {
     use OpenidCheckTrait;

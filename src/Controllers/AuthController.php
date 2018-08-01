@@ -11,9 +11,22 @@ use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
+use Mallto\User\Data\User;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
 
+/**
+ * 管理端账户登录
+ *
+ *
+ * 管理端和微信绑定支持两种方式:
+ *  1. 管理端->账户管理->直接扫码绑定需要绑定的微信
+ *  2. 管理端->账户管理->绑定已注册的会员的手机号.(实际上会通过该手机号查询对应的openid,从而和微信进行关联)
+ *
+ * Class AuthController
+ *
+ * @package Mallto\Admin\Controllers
+ */
 class AuthController extends \Encore\Admin\Controllers\AuthController
 {
 
@@ -64,10 +77,26 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
             ->where("openid->openid", $openid)
             ->first();
         if (!$adminUser) {
-            throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
+            //管理端账户不存在
+
+            //查询该openid是否存在对应的会员手机号,已经绑定了管理端账户
+            $user = User::with([
+                'userAuths' => function ($query) use ($openid) {
+                    $query->where("identity_type", "wechat")
+                        ->where("identifier", $openid);
+                },
+            ])->where("subject_id", $subject->id)->first();
+            if ($user && $user->mobile) {
+                $adminUser = Administrator::where("subject_id", $subject->id)
+                    ->where("mobile", $user->mobile)
+                    ->first();
+            }
         }
 
-
+        if (!$adminUser) {
+            throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
+        }
+        
         $token = $adminUser->createToken("admin_api");
         $adminUser->token = $token->accessToken;
 
@@ -80,7 +109,7 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
             "id",
             "name",
             "username",
-            "token"
+            "token",
         ]));
 
 
