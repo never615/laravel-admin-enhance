@@ -27,6 +27,7 @@ class SubjectUtils
 
 
     /**
+     * @deprecated use getSubectConfig2
      * 获取主体的配置信息
      *
      * @param      $subject
@@ -38,6 +39,37 @@ class SubjectUtils
     {
         if (!$subject) {
             throw new SubjectNotFoundException("主体未找到");
+        }
+
+        $subjectConfig = $subject->subjectConfigs()
+            ->where("key", $key)
+            ->first();
+        if (!$subjectConfig) {
+            if ($default) {
+                return $default;
+            } else {
+                throw new SubjectConfigException($key."未配置");
+            }
+        }
+
+        return $subjectConfig->value;
+    }
+
+    /**
+     * 获取主体的配置信息
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return mixed
+     */
+    public static function getSubectConfig2($key, $default = null, $subject = null)
+    {
+        if (!$subject) {
+            $subject = self::getSubject();
+            if (!$subject) {
+                throw new SubjectNotFoundException("主体未找到");
+            }
         }
 
         $subjectConfig = $subject->subjectConfigs()
