@@ -22,16 +22,43 @@ $attributes = [
     'middleware' => ['web'],
 ];
 
+
+Route::group([
+    'prefix'     => "admin/api",
+    "middleware" => ["oauth.providers", "api", "adminE.log"],
+    'namespace'  => 'Mallto\Admin\Controllers',
+], function ($router) {
+
+    $router->post('auth/login', '\Mallto\Admin\Controllers\AuthController@postLogin');
+
+    Route::group([
+        "middleware" => ["auth:admin_api", "adminE.auto_permission"],
+        "namespace"  => "Admin",
+    ],
+        function ($router) {
+
+        });
+
+
+});
+
 Route::group($attributes, function ($router) {
+
+    //todo 这个权限暂时放在这
+    Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
+    Route::get('admin/admin_unbind_wechat', 'AdminBindWechatController@unbindWechat');
+
 
 //----------------------------------------  管理端开始  -----------------------------------------------
     Route::group(['prefix' => config('admin.route.prefix'), "middleware" => "adminE_base"],
         function ($router) {
             $router->get('/', 'HomeController@index')->name("dashboard");
+
             //获取七牛upload token
             $router->get('uptoken', 'FileController@getUploadToken');
             //上传图片(富文本编辑器需要使用)
             $router->post('upload', 'FileController@upload');
+
 
             Route::group(['middleware' => ['adminE.auto_permission']], function ($router) {
                 $router->resource("subjects", "SubjectController");

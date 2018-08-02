@@ -6,13 +6,13 @@
 ;(function ($, window) {
 
     //------------ X-editable初始化-------------
-    // $.fn.editable.defaults.error = function (response, newValue) {
-    //     if (response.responseJSON && response.responseJSON.error) {
-    //         return response.responseJSON.error;
-    //     } else {
-    //         return response.statusText + ":" + response.status
-    //     }
-    // };
+    $.fn.editable.defaults.error = function (response, newValue) {
+        if (response.responseJSON && response.responseJSON.error) {
+            return response.responseJSON.error;
+        } else {
+            return response.statusText + ":" + response.status
+        }
+    };
     $.fn.editable.defaults.emptytext="空";
     //turn to inline mode
 //     $.fn.editable.defaults.mode = 'inline';

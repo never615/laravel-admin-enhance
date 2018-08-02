@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Exception\SubjectConfigException;
+use Mallto\Admin\Exception\SubjectNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -26,6 +27,7 @@ class SubjectUtils
 
 
     /**
+     * @deprecated use getSubectConfig2
      * 获取主体的配置信息
      *
      * @param      $subject
@@ -36,7 +38,38 @@ class SubjectUtils
     public static function getSubectConfig($subject, $key, $default = null)
     {
         if (!$subject) {
-            throw new HttpException(422,"主体未找到");
+            throw new SubjectNotFoundException("主体未找到");
+        }
+
+        $subjectConfig = $subject->subjectConfigs()
+            ->where("key", $key)
+            ->first();
+        if (!$subjectConfig) {
+            if ($default) {
+                return $default;
+            } else {
+                throw new SubjectConfigException($key."未配置");
+            }
+        }
+
+        return $subjectConfig->value;
+    }
+
+    /**
+     * 获取主体的配置信息
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return mixed
+     */
+    public static function getSubectConfig2($key, $default = null, $subject = null)
+    {
+        if (!$subject) {
+            $subject = self::getSubject();
+            if (!$subject) {
+                throw new SubjectNotFoundException("主体未找到");
+            }
         }
 
         $subjectConfig = $subject->subjectConfigs()
@@ -75,7 +108,30 @@ class SubjectUtils
         }
 
         if (empty($uuid)) {
-            throw new HttpException(422,"uuid参数错误");
+            throw new HttpException(422, "uuid参数错误");
+        }
+
+        return $uuid;
+    }
+
+    /**
+     * 获取uuid
+     *
+     * @return mixed
+     */
+    public static function getUUIDNoException()
+    {
+        if (self::$subject) {
+            return self::$subject->uuid;
+        }
+
+        $uuid = Request::header("UUID");
+        if (is_null($uuid)) {
+            $uuid = Input::get("uuid");
+        }
+
+        if (empty($uuid) && \Admin::user()) {
+            $uuid = \Admin::user()->subject->uuid;
         }
 
         return $uuid;
@@ -114,7 +170,7 @@ class SubjectUtils
             }
         }
 
-        throw new HttpException(422,"uuid参数错误".$uuid);
+        throw new HttpException(422, "uuid参数错误".$uuid);
     }
 
     /**
@@ -160,7 +216,7 @@ class SubjectUtils
             }
         }
 
-        throw new HttpException(422,"uuid参数错误:".$uuid);
+        throw new HttpException(422, "uuid参数错误:".$uuid);
     }
 
     /**

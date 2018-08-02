@@ -8,7 +8,8 @@ namespace Mallto\Admin\Controllers\Base;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
-use Mallto\Mall\Data\Subject;
+use Mallto\Admin\Data\Subject;
+
 
 /**
  * 处理subject的显示和自动保存
@@ -52,8 +53,8 @@ trait AdminSubjectTrait
                     )
                     ->rules("required");
             } else {
-                $form->display("subject.name", "主体");
-                $form->hideFieldsByCreate("subject.name");
+//                $form->display("subject.name", "主体");
+//                $form->hideFieldsByCreate("subject.name");
             }
         }
     }

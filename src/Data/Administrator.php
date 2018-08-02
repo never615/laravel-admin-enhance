@@ -10,6 +10,7 @@ use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Passport\HasApiTokens;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions;
 
@@ -20,7 +21,7 @@ use Mallto\Admin\Data\Traits\HasPermissions;
  */
 class Administrator extends Model implements AuthenticatableContract
 {
-    use Authenticatable, AdminBuilder, HasPermissions, DynamicData;
+    use Authenticatable, AdminBuilder, HasPermissions, DynamicData,HasApiTokens;
 
     protected $fillable = [
         'username',
@@ -36,6 +37,7 @@ class Administrator extends Model implements AuthenticatableContract
     protected $casts = [
         'extra'               => 'array',
         'manager_subject_ids' => "array",
+        'openid'              => 'array', //用户微信信息
     ];
 
     /**

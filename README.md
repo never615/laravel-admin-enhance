@@ -51,6 +51,8 @@ php artisan admin_enhance:install
 \Encore\Admin\Form::extend('selectOrNew', \Mallto\Admin\Form\Field\SelectOrNew::class);
 //表单富文本编辑器控件
 \Encore\Admin\Form::extend('editor2', \Mallto\Admin\Form\Field\WangEditor::class);
+//qrcode,生成二维码
+\Encore\Admin\Form::extend('qrcode', \Mallto\Admin\Form\Field\QRcode::class);
 
 
 //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
@@ -444,3 +446,9 @@ trait SeederMaker
 #### 管理端数据查看
 根据管理端账户所属的主体,可以查看该主体和所有子主体的数据.
 此外,还可以单独设置某个账户的数据查看范围:如海上世界主体的账号,可以给他设置查看范围到招商地产.
+
+
+## 升级
+### subject/permission/menu表增加了path字段
+这些对象在查询父子数据的时候,会使用该字段,加快查询速度.新创建修改这些对象的时候,会生成该字段的数据.
+如果以前的旧数据可以使用命令`php artisan admin_enhance:path_generator`,生成path

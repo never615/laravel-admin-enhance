@@ -42,7 +42,7 @@ if (!function_exists('array_dot2')) {
     }
 }
 
-if (!function_exists('admin_url')) {
+if (!function_exists('admin_e_url')) {
     /**
      * Get admin url.
      *
@@ -53,11 +53,6 @@ if (!function_exists('admin_url')) {
      */
     function admin_e_url($path = '', $security = true)
     {
-        if (config("app.http_protocol") == "https") {
-            $security = true;
-        } else {
-            $security = false;
-        }
         $prefix = trim(config('admin.route.prefix'), '/');
 
         return url($prefix ? "/$prefix" : '', [], $security).'/'.trim($path, '/');
