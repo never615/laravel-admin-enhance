@@ -2,8 +2,8 @@
 
 namespace Mallto\Admin\Seeder;
 
+use Mallto\Admin\Data\Permission;
 
-use Encore\Admin\Auth\Database\Permission;
 
 /**
  * 生成权限的seeder基础方法
@@ -15,6 +15,9 @@ use Encore\Admin\Auth\Database\Permission;
  */
 trait SeederMaker
 {
+
+    protected $order=10000;
+
     protected $routeNames = [
         "index"   => "查看",  //列表页/详情页/show
         "create"  => "创建/修改", //创建页/保存/修改
