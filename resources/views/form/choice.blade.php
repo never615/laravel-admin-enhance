@@ -118,20 +118,7 @@
         }
 
 
-        /**
-         * 已选择条目的移除事件
-         */
-        $(".select-item .remove-btn").on("click", function () {
-            // console.log("remove");
-            var parent = $(this).parent();
 
-            var dataId = parent.attr("data-id");
-            var dataType = parent.attr("data-type");
-
-            removeCurrentValues(dataId, dataType);
-
-            parent.remove();
-        });
 
 
         /**
@@ -190,6 +177,23 @@
                 }
 
                 $(".ww_groupSelBtn").prepend(tempform);
+
+                //添加按钮的点击事件
+                /**
+                 * 表单页面移除
+                 */
+                $(".removeItem").on("click", function () {
+                    var itemId = $(this).attr("item-id");
+                    var itemType = $(this).attr("item-type");
+                    console.log(itemId);
+                    console.log(itemType);
+
+                    removeCurrentValues(itemId, itemType);
+                    $(this).parent().remove();
+                    console.log("remove");
+
+                });
+
             }
         }
 
@@ -321,7 +325,7 @@
 
 
                 /**
-                 * 带选择内容的点击事件
+                 * 选项卡上顶部内容,带选择内容的点击事件
                  */
                 $(".choice-check-item").on("click", function () {
                     // console.log("checkbox click");
@@ -364,6 +368,22 @@
 
                         addCurrentValues(dataId, dataType, dataText)
 
+                        //添加按钮的点击事件
+                        /**
+                         * 选项卡中 已选择条目的移除事件
+                         */
+                        $(".select-item .remove-btn").on("click", function () {
+                            console.log("remove");
+                            var parent = $(this).parent();
+
+                            var dataId = parent.attr("data-id");
+                            var dataType = parent.attr("data-type");
+
+                            removeCurrentValues(dataId, dataType);
+
+                            parent.remove();
+                        });
+
                     }
                 });
             });
@@ -400,7 +420,7 @@
         });
 
         /**
-         * 添加
+         * 表单页面 添加
          */
         $("#editVisible").on("click", function () {
             // console.log("add");
@@ -410,16 +430,34 @@
         });
 
         /**
-         * 移除
+         * 选项卡中 已选择条目的移除事件
+         */
+        $(".select-item .remove-btn").on("click", function () {
+            console.log("remove");
+            var parent = $(this).parent();
+
+            var dataId = parent.attr("data-id");
+            var dataType = parent.attr("data-type");
+
+            removeCurrentValues(dataId, dataType);
+
+            parent.remove();
+        });
+
+
+        /**
+         * 表单页面移除
          */
         $(".removeItem").on("click", function () {
             var itemId = $(this).attr("item-id");
             var itemType = $(this).attr("item-type");
-            // console.log(itemId);
-            // console.log(itemType);
+            console.log(itemId);
+            console.log(itemType);
 
             removeCurrentValues(itemId, itemType);
             $(this).parent().remove();
+            console.log("remove");
+
         });
 
 

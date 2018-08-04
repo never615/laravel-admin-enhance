@@ -1,4 +1,23 @@
+i.icon-close-large:before {
+    content: "\e679"
+}
 
+i.icon-search:before {
+    content: "\e622"
+}
+
+.x-iconfont, i[class*=icon-] {
+    font-family: finex;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+@font-face {
+    font-family: finex;
+    src: url(https://assets.jiandaoyun.com/v1713/resources/font/iconfont.eot);
+    src: url(https://assets.jiandaoyun.com/v1713/resources/font/iconfont.eot?#iefix) format('embedded-opentype'), url(https://assets.jiandaoyun.com/v1713/resources/font/iconfont.woff) format('woff'), url(https://assets.jiandaoyun.com/v1713/resources/font/iconfont.ttf) format('truetype'), url(https://assets.jiandaoyun.com/v1713/resources/font/iconfont.svg#svgFontName) format('svg')
+}
 
 .x-btn {
     -webkit-border-radius: 2px;

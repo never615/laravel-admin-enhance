@@ -11,7 +11,7 @@ use Mallto\Admin\Traits\ModelTree;
 class Permission extends Model
 {
     use ModelTree, AdminBuilder;
-    protected $fillable = [];
+//    protected $fillable = [];
 
     protected $guarded = [];
 
