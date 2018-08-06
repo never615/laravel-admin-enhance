@@ -3,15 +3,10 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Malto\Admin\Grid;
+namespace Mallto\Admin\Grid;
 
-use Closure;
 use Encore\Admin\Grid;
-use Encore\Admin\Grid\Displayers\AbstractDisplayer;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use Mallto\Tool\Utils\AppUtils;
 
 class Column extends Grid\Column
@@ -61,7 +56,7 @@ class Column extends Grid\Column
             [$this->grid->model()->getSortName() => ['column' => $this->name, 'type' => $type]]);
 
         $url = URL::current().'?'.http_build_query($query);
-        $url=AppUtils::checkHttpProtocol($url);
+        $url = AppUtils::checkHttpProtocol($url);
 
         return "<a class=\"fa fa-fw $icon\" href=\"$url\"></a>";
     }

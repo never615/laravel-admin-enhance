@@ -7,7 +7,7 @@ use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\SeederMaker;
 
-class DashboardTablesSeeder extends Seeder
+class AdminmanagerSeeder extends Seeder
 {
 
     use SeederMaker;

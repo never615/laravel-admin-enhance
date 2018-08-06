@@ -8,7 +8,7 @@ use Encore\Admin\Auth\Database\Role;
 use Mallto\Admin\Data\Subject;
 use Illuminate\Database\Seeder;
 
-class BaseTablesSeeder extends Seeder
+class InitDataSeeder extends Seeder
 {
     /**
      * Run the database seeds.

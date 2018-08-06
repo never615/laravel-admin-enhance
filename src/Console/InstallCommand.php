@@ -2,14 +2,8 @@
 
 namespace Mallto\Admin\Console;
 
-use Encore\Admin\Auth\Database\Administrator;
 use Illuminate\Console\Command;
-use Mallto\Admin\Seeder\AdminTablesSeeder;
-use Mallto\Admin\Seeder\BaseTablesSeeder;
-use Mallto\Admin\Seeder\LaravelAdminEnhanceMenuSeeder;
-use Mallto\Admin\Seeder\LaravelAdminEnhancePermissionSeeder;
-use Mallto\Admin\Seeder\MenuSeeder;
-use Mallto\Admin\Seeder\PemissionSeeder;
+use Mallto\Admin\Seeder\TablesSeeder;
 
 class InstallCommand extends Command
 {
@@ -54,7 +48,7 @@ class InstallCommand extends Command
     public function initDatabase()
     {
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../migrations/']);
-        $this->call('db:seed', ['--class' => \Malto\Admin\Seeder\AdminTablesSeeder::class]);
+        $this->call('db:seed', ['--class' => TablesSeeder::class]);
     }
 
 
@@ -73,7 +67,7 @@ class InstallCommand extends Command
             //不存在
             //创建Admin目录
             $this->makeDir('/');
-            $this->line('<info>Admin directory was created:</info> ' . str_replace(base_path(), '', $this->directory));
+            $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
         }
 
         //创建或者替换bootstrap文件和route文件
@@ -89,12 +83,12 @@ class InstallCommand extends Command
      */
     protected function createBootstrapFile()
     {
-        $file = $this->directory . '/bootstrap.php';
+        $file = $this->directory.'/bootstrap.php';
 
         $contents = $this->getStub('bootstrap');
 //        $this->laravel['files']->put($file, $contents);
         $this->laravel['files']->append($file, $contents);
-        $this->line('<info>Bootstrap file was created:</info> ' . str_replace(base_path(), '', $file));
+        $this->line('<info>Bootstrap file was created:</info> '.str_replace(base_path(), '', $file));
     }
 
     /**
@@ -104,11 +98,11 @@ class InstallCommand extends Command
      */
     protected function createRoutesFile()
     {
-        $file = $this->directory . '/routes.php';
+        $file = $this->directory.'/routes.php';
 
         $contents = $this->getStub('routes');
         $this->laravel['files']->put($file, str_replace('DummyNamespace', config('admin.route.namespace'), $contents));
-        $this->line('<info>Routes file was created:</info> ' . str_replace(base_path(), '', $file));
+        $this->line('<info>Routes file was created:</info> '.str_replace(base_path(), '', $file));
     }
 
     /**
@@ -120,7 +114,7 @@ class InstallCommand extends Command
      */
     protected function getStub($name)
     {
-        return $this->laravel['files']->get(__DIR__ . "/stubs/$name.stub");
+        return $this->laravel['files']->get(__DIR__."/stubs/$name.stub");
     }
 
     /**

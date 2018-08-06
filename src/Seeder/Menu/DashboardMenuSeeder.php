@@ -5,9 +5,12 @@ namespace Mallto\Admin\Seeder\Menu;
 
 use Encore\Admin\Auth\Database\Menu;
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Seeder\MenuSeederMaker;
 
-class DashboardSeeder extends Seeder
+class DashboardMenuSeeder extends Seeder
 {
+    use MenuSeederMaker;
+
     /**
      * Run the database seeds.
      *
@@ -15,16 +18,14 @@ class DashboardSeeder extends Seeder
      */
     public function run()
     {
+
+        $order = 1;
+
+        $this->updateOrCreate(
+            "dashboard", 0, $order++, "控制面板", "fa-bar-chart");
+
+
         $order = 100;
-
-        //2000+ 是管理
-
-        //10000+ 是辅助功能
-
-        $menu = Menu::whereIn("title", ["控制面板", "Dashboard"])->first();
-        if ($menu) {
-            return;
-        }
 
 
         /**

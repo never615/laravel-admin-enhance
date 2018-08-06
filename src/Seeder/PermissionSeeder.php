@@ -7,10 +7,10 @@ namespace Mallto\Admin\Seeder;
 
 
 use Illuminate\Database\Seeder;
-use Mallto\Admin\Seeder\Permission\DashboardTablesSeeder;
+use Mallto\Admin\Seeder\Permission\AdminmanagerSeeder;
 use Mallto\Admin\Seeder\Permission\ImportPermissionsSeeder;
 
-class LaravelAdminEnhancePermissionSeeder extends Seeder
+class PermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,7 +20,7 @@ class LaravelAdminEnhancePermissionSeeder extends Seeder
     public function run()
     {
         $this->call(ImportPermissionsSeeder::class);
-        $this->call(DashboardTablesSeeder::class);
+        $this->call(AdminmanagerSeeder::class);
 
     }
 }
