@@ -55,6 +55,8 @@ php artisan admin_enhance:install
 \Encore\Admin\Form::extend('qrcode', \Mallto\Admin\Form\Field\QRcode::class);
 //choice
 \Encore\Admin\Form::extend('choice', \Mallto\Admin\Form\Field\Choice::class);
+//embeds2,在原库空间的基础上,view页面使用了addElementClass设置了class
+\Encore\Admin\Form::extend('embeds2', \Mallto\Admin\Form\Field\Embeds::class);
 
 
 //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格

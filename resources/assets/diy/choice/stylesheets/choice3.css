@@ -113,11 +113,11 @@ textarea {
 }
 
 .ww_txtBigSize {
-    font-size: 13px
+    /*font-size: 13px*/
 }
 
 .ww_txtLargeSize {
-    font-size: 14px
+    /*font-size: 14px*/
 }
 
 .ww_layoutHidden {
@@ -1485,7 +1485,7 @@ textarea {
     outline: 0;
     cursor: pointer;
     text-align: center;
-    font-size: 12px;
+    /*font-size: 12px;*/
     color: #222;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -1519,7 +1519,7 @@ a.qui_btn, a.qui_btn:hover {
 .qui_dialog_title {
     height: 40px;
     line-height: 40px;
-    font-size: 13px;
+    /*font-size: 13px;*/
     font-weight: 400;
     color: #E6E6E6
 }
@@ -1855,7 +1855,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     min-width: 48px;
     padding-top: 2px;
     padding-bottom: 2px;
-    font-size: 14px
+    /*font-size: 14px*/
 }
 
 @media \0screen {
@@ -1872,7 +1872,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     width: 264px;
     padding-top: 4px;
     padding-bottom: 4px;
-    font-size: 14px
+    /*font-size: 14px*/
 }
 
 .ww_btn_Dropdown {
@@ -1967,7 +1967,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     -webkit-filter: none;
     filter: none;
     color: #3E6D9E;
-    font-size: 12px;
+    /*font-size: 12px;*/
     line-height: 20px;
     height: 20px;
     padding: 0
@@ -2077,7 +2077,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     color: #000;
     border: 1px solid #B4BEC8;
     border-radius: 2px;
-    font-size: 14px;
+    /*font-size: 14px;*/
     line-height: 20px
 }
 
@@ -2112,7 +2112,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     line-height: 26px;
     margin-right: 12px;
     color: #787878;
-    font-size: 13px
+    /*font-size: 13px*/
 }
 
 .ww_dialog_body_inputWrap {
@@ -2122,7 +2122,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 
 .ww_dialog .ww_inputText {
     width: 220px;
-    font-size: 14px
+    /*font-size: 14px*/
 }
 
 .ww_dialog .ww_passwordInput_text {
@@ -2227,11 +2227,11 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 
 .ww_dialog_NoFoot .ww_dialog_body_title {
     margin-top: 4px;
-    font-size: 20px
+    /*font-size: 20px*/
 }
 
 .ww_dialog_NoFoot .ww_dialog_body_desc, .ww_dialog_NoFoot .ww_dialog_body_detail {
-    font-size: 12px;
+    /*font-size: 12px;*/
     margin-top: 2px;
     color: #787878
 }
@@ -2289,12 +2289,12 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 .ww_dialog_WhiteList_head_des {
     overflow: hidden;
     zoom: 1;
-    font-size: 12px;
+    /*font-size: 12px;*/
     color: #787878
 }
 
 .ww_dialog_WhiteList_list {
-    font-size: 13px;
+    /*font-size: 13px;*/
     padding: 0 10px;
     color: #555557
 }
@@ -2327,7 +2327,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 
 .ww_dialog_SpecialDate .ww_dialog_body {
     padding: 25px 15px 0;
-    font-size: 13px;
+    /*font-size: 13px;*/
     overflow: visible
 }
 
@@ -2500,7 +2500,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 .ww_dialog .inviteActive_tableFooter {
     padding-top: 5px;
     color: #333;
-    font-size: 14px;
+    /*font-size: 14px;*/
     margin-bottom: -14px
 }
 
@@ -2514,7 +2514,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 
 .ww_dialog .inviteActive_table_td_Checkbox, .ww_dialog .inviteActive_table_td_Mail, .ww_dialog .inviteActive_table_td_Name, .ww_dialog .inviteActive_table_td_Tel {
     display: inline-block;
-    font-size: 13px;
+    /*font-size: 13px;*/
     line-height: 19px;
     height: 19px;
     padding: 10px 0 10px 10px;
@@ -2589,7 +2589,7 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
 }
 
 .ww_dialog_NoFoot .quickImportDlg_left_box_bottom_title {
-    font-size: 16px;
+    /*font-size: 16px;*/
     color: #555557
 }
 
@@ -2603,15 +2603,15 @@ input:focus:-ms-input-placeholder, textarea:focus:-ms-input-placeholder {
     color: #555557;
     border-bottom: 1px solid #E4E6E9;
     padding-bottom: 17px;
-    font-size: 14px
+    /*font-size: 14px*/
 }
 
 .ww_dialog_NoFoot .quickImportDlg_right_listTitle {
-    font-size: 13px
+    /*font-size: 13px*/
 }
 
 .ww_dialog_NoFoot .quickImportDlg_right_listTitle_icon {
-    font-size: 13px;
+    /*font-size: 13px;*/
     vertical-align: 1px;
     margin-left: 3px;
     color: #0C4C7F
@@ -61453,7 +61453,7 @@ span.notice_mainPanel_item_cnt_labelTips {
 
 @charset "UTF-8";
 .wxplugin_setting_panel_list {
-    font-size: 14px;
+    /*font-size: 14px;*/
     margin-left: 40px
 }
 

@@ -6,7 +6,7 @@ i.icon-search:before {
     content: "\e622"
 }
 
-.x-iconfont, i[class*=icon-] {
+.x-iconfont, i[class*=' icon-'], i[class^=icon-] {
     font-family: finex;
     font-style: normal;
     -webkit-font-smoothing: antialiased;
@@ -201,7 +201,7 @@ i.icon-search:before {
     white-space: nowrap;
     padding: 0 20px;
     border-bottom: 1px solid #e9e9e9;
-    font-size: 16px;
+    /*font-size: 16px;*/
     color: #1f2d3d
 }
 
@@ -212,7 +212,7 @@ i.icon-search:before {
     right: 0;
     bottom: 0;
     width: 55px;
-    font-size: 16px;
+    /*font-size: 16px;*/
     cursor: pointer;
     text-align: center
 }
@@ -238,7 +238,7 @@ i.icon-search:before {
 }
 
 .x-dialog .dialog-header.has-subtitle .subtitle {
-    font-size: 12px;
+    /*font-size: 12px;*/
     color: #91A1B7
 }
 
@@ -414,26 +414,26 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     -webkit-appearance: none
 }
 
-input, textarea {
-    font-size: 14px;
-    padding: 3px;
-    background-color: #fff;
-    background-image: none;
-    vertical-align: middle;
-    border-color: #e0e0e0;
-    font-family: "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-    font-weight: 400;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-    border-radius: 2px;
-    width: 100%;
-    height: 100%;
-    -webkit-appearance: none;
-    -webkit-transition: border-color 218ms;
-    -moz-transition: border-color 218ms;
-    -o-transition: border-color 218ms;
-    transition: border-color 218ms
-}
+/*input, textarea {*/
+/*font-size: 14px;*/
+/*padding: 3px;*/
+/*background-color: #fff;*/
+/*background-image: none;*/
+/*vertical-align: middle;*/
+/*border-color: #e0e0e0;*/
+/*font-family: "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;*/
+/*font-weight: 400;*/
+/*-webkit-box-shadow: none;*/
+/*box-shadow: none;*/
+/*border-radius: 2px;*/
+/*width: 100%;*/
+/*height: 100%;*/
+/*-webkit-appearance: none;*/
+/*-webkit-transition: border-color 218ms;*/
+/*-moz-transition: border-color 218ms;*/
+/*-o-transition: border-color 218ms;*/
+/*transition: border-color 218ms*/
+/*}*/
 
 
 textarea {
@@ -466,7 +466,7 @@ textarea {
     position: absolute;
     top: 0;
     right: 0;
-    font-size: 12px;
+    /*font-size: 12px;*/
     display: none;
     padding: 2px;
     border: 1px solid #f0ad4e;
@@ -582,7 +582,7 @@ textarea {
 }
 
 .x-msg-toast .content i.icon-toast-type {
-    font-size: 14px;
+    /*font-size: 14px;*/
     text-align: center
 }
 
@@ -661,7 +661,7 @@ textarea {
 
 .x-msg-alert .title {
     color: #1F2D3D;
-    font-size: 16px;
+    /*font-size: 16px;*/
     line-height: 24px;
     font-weight: 700;
     margin-bottom: 5px;
@@ -675,7 +675,7 @@ textarea {
 
 .x-msg-alert .text.warning {
     color: #d9534f;
-    font-size: 20px;
+    /*font-size: 20px;*/
     font-weight: 500;
     padding: 0 5px
 }
@@ -692,7 +692,7 @@ textarea {
 }
 
 .x-msg-alert .icon i.icon-toast-type {
-    font-size: 30px;
+    /*font-size: 30px;*/
     text-align: center
 }
 
@@ -758,7 +758,7 @@ textarea {
 .x-msg-alert .alert-footer .alert-tip {
     text-decoration: underline;
     line-height: 30px;
-    font-size: 12px;
+    /*font-size: 12px;*/
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap
@@ -773,7 +773,7 @@ textarea {
     display: inline-block;
     margin-left: 15px;
     max-width: 375px;
-    font-size: 12px
+    /*font-size: 12px*/
 }
 
 .x-msg-alert .alert-body .input-widget {
@@ -863,7 +863,7 @@ textarea {
 }
 
 .x-msg-prompt .prompt-title {
-    font-size: 16px;
+    /*font-size: 16px;*/
     color: #1f2d3d;
     margin-bottom: 10px
 }
@@ -946,7 +946,7 @@ textarea {
 }
 
 .x-msg-broadcast .broadcast-content {
-    font-size: 16px;
+    /*font-size: 16px;*/
     color: #FFFBB0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -976,7 +976,7 @@ textarea {
     float: right;
     right: 20px;
     color: #fff;
-    font-size: 22px;
+    /*font-size: 22px;*/
     cursor: pointer
 }
 
@@ -984,7 +984,7 @@ textarea {
     -webkit-transition: padding 218ms;
     -moz-transition: padding 218ms;
     -o-transition: padding 218ms;
-    transition: padding 218ms
+    transix-layout-table-itemtion: padding 218ms
 }
 
 .broadcast-html.translate-in {
@@ -11631,7 +11631,7 @@ i.icon-ui-checkoff:before {
 }
 
 .fx_base_select .select-list .select-item .select-icon {
-    font-size: 16px;
+    /*font-size: 16px;*/
     padding-right: 5px
 }
 
@@ -11684,7 +11684,7 @@ i.icon-ui-checkoff:before {
     line-height: 38px;
     color: #989898;
     cursor: pointer;
-    font-size: 16px;
+    /*font-size: 16px;*/
     position: absolute;
     top: 0;
     right: 10px
