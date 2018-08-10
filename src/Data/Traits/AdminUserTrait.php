@@ -16,6 +16,12 @@ namespace Mallto\Admin\Data\Traits;
 
 use Mallto\Admin\Data\Administrator;
 
+/**
+ * Trait AdminUserTrait
+ *
+ * @deprecated
+ * @package Mallto\Admin\Data\Traits
+ */
 trait AdminUserTrait
 {
     public function adminUser()

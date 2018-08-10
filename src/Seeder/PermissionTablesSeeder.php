@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\Permission\AdminmanagerSeeder;
 use Mallto\Admin\Seeder\Permission\ImportPermissionsSeeder;
 
-class PermissionSeeder extends Seeder
+class PermissionTablesSeeder extends Seeder
 {
     /**
      * Run the database seeds.

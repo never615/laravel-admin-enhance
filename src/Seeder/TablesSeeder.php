@@ -15,14 +15,12 @@ class TablesSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(MenuTablesSeeder $menuTablesSeeder,PermissionTablesSeeder $permissionTablesSeeder)
     {
         $this->call(InitDataSeeder::class);
 
-        $this->call(AdminManagerMenuSeeder::class);
-        $this->call(DashboardMenuSeeder::class);
+        $menuTablesSeeder->run();
+        $permissionTablesSeeder->run();
 
-        $this->call(ImportPermissionsSeeder::class);
-        $this->call(AdminmanagerSeeder::class);
     }
 }

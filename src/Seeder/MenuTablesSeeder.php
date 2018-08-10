@@ -11,7 +11,7 @@ use Mallto\Admin\Seeder\Menu\AdminManagerMenuSeeder;
 use Mallto\Admin\Seeder\Menu\DashboardMenuSeeder;
 use Mallto\Admin\Seeder\Menu\ImportMenusSeeder;
 
-class MenuSeeder extends Seeder
+class MenuTablesSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -22,15 +22,6 @@ trait SeederMaker
         "destroy" => "删除", //删除权限
     ];
 
-    /**
-     * SeederMaker constructor.
-     */
-    public function __construct()
-    {
-        if (!$this->order) {
-            $this->order = 10000;
-        }
-    }
 
     /**
      * @param      $name        ,权限名
@@ -111,4 +102,19 @@ trait SeederMaker
 
         return $parentId;
     }
+
+    public function __get($name)
+    {
+        if($name=="order"){
+            if(isset($this->order)){
+                return $this->order;
+            }else{
+                return 10000;
+            }
+        }
+    }
+
+
+
+
 }

@@ -48,5 +48,20 @@ trait SelectSource
         }
     }
 
+    public function scopeSelectSourceDatas2()
+    {
+        if (Admin::user()->isOwner()) {
+            if (Schema::hasColumn($this->getTable(), 'subject_id')) {
+                return static::dynamicData()
+                    ->select(DB::raw("name||subject_id as name,id"));
+            } else {
+                return static::dynamicData()
+                    ->select(DB::raw("name as name,id"));
+            }
+        } else {
+            return static::dynamicData();
+        }
+    }
+
 
 }
