@@ -61,21 +61,23 @@ class RoleController extends AdminCommonController
         $form->text('slug', trans('admin.slug'))->rules('required');
         $form->text('name', trans('admin.name'))->rules('required');
 
-        $that=$this;
-        $form->multipleSelect('permissions', trans('admin.permissions'))->options(function () use($that){
-            $subjectId = Admin::user()->subject_id;
-            if ($subjectId == 1) {
-                $permissions = Permission::all()->toArray();
-            } else {
-                //主体拥有的权限需要加上那几个公共功能模块的权限
+        $that = $this;
+        $form->multipleSelect('permissions', trans('admin.permissions'))
+            ->options(function () use ($that) {
+                $subjectId = Admin::user()->subject_id;
+                if ($subjectId == 1) {
+                    $permissions = Permission::all()->toArray();
+                } else {
+                    //主体拥有的权限需要加上那几个公共功能模块的权限
 
-                $permissionsTemp = Subject::find($subjectId)->permissions;
-                $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
-                $permissions = $that->withSubPermissions($permissionsTemp);
-            }
+                    $permissionsTemp = Subject::find($subjectId)->permissions;
+                    $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
+                    $permissions = $that->withSubPermissions($permissionsTemp);
+                }
 
-            return Permission::selectOptions($permissions, false, false);
-        });
+                return Permission::selectOptions($permissions, false, false);
+            })
+            ->help("权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限");
 
 
         $form->saving(function (Form $form) {
