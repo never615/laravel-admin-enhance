@@ -42,9 +42,9 @@ class CommonBatchAction extends BatchAction
     /**
      * CommonBatchAction constructor.
      *
-     * @param        $url
-     * @param string $action
-     * @param string $column
+     * @param string $url    请求地址
+     * @param string $action 动作标识,用来区分不同的提交
+     * @param string $column 要修改的字段
      */
     public function __construct($url, $action = "", $column = "")
     {

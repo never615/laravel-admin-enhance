@@ -36,7 +36,7 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
     }
 
     public function getImageAttribute($value)
@@ -49,7 +49,7 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
     }
 
     public function setImagesAttribute($values)
@@ -73,7 +73,7 @@ abstract class BaseModel extends Model
                 if (starts_with($value, "http")) {
                     $values[$key] = $value;
                 } else {
-                    $values[$key] = config("app.file_url_prefix").$value;
+                    $values[$key] = config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
                 }
             }
         } else {
