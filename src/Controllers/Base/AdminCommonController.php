@@ -144,6 +144,10 @@ abstract class AdminCommonController extends Controller
             });
         });
 
+        $grid->actions(function(Grid\Displayers\Actions $actions){
+           $actions->disableView();
+        });
+
     }
 
 
@@ -152,6 +156,9 @@ abstract class AdminCommonController extends Controller
         return Admin::form($this->getModel(), function (Form $form) {
             $this->tableName = $form->model()->getTable();;
             $this->defaultFormOption($form);
+            $form->tools(function(Form\Tools $tools){
+                $tools->disableView();
+            });
         });
     }
 
@@ -165,6 +172,8 @@ abstract class AdminCommonController extends Controller
         if (Admin::user()->isOwner()) {
             $form->display('id', 'ID');
         }
+
+
         $this->formOption($form);
 
         $this->formSubject($form);
@@ -177,6 +186,9 @@ abstract class AdminCommonController extends Controller
             $this->autoSubjectSaving($form);
             $this->autoAdminUserSaving($form);
         });
+
+
+
     }
 
 

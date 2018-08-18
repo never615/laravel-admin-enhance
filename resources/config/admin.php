@@ -6,22 +6,48 @@
 return [
 
     /*
-     * Laravel-admin name.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of laravel-admin, This setting is displayed on the
+    | login page.
+    |
+    */
     'name'          => env('APP_NAME', '深圳墨兔'),
 
     /*
-     * Logo in admin panel header.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin logo
+    |--------------------------------------------------------------------------
+    |
+    | The logo of all admin pages. You can also set it as an image by using a
+    | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
+    |
+    */
     'logo'          => '深圳<b>墨兔</b>',
 
     /*
-     * Mini-logo in admin panel header.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin mini logo
+    |--------------------------------------------------------------------------
+    |
+    | The logo of all admin pages when the sidebar menu is collapsed. You can
+    | also set it as an image by using a `img` tag, eg
+    | '<img src="http://logo-url" alt="Admin logo">'.
+    |
+    */
     'logo-mini'     => '<b>墨</b>',
 
     /*
-     * Route configuration.
+     |--------------------------------------------------------------------------
+     | Laravel-admin route settings
+     |--------------------------------------------------------------------------
+     |
+     | The routing configuration of the admin page, including the path prefix,
+     | the controller namespace, and the default middleware. If you want to
+     | access through the root path, just set the prefix to empty string.
+     |
      */
     'route'         => [
         'prefix'     => 'admin',
@@ -30,21 +56,43 @@ return [
     ],
 
     /*
-     * Laravel-admin install directory.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin install directory
+    |--------------------------------------------------------------------------
+    |
+    | The installation directory of the controller and routing configuration
+    | files of the administration page. The default is `app/Admin`, which must
+    | be set before running `artisan admin::install` to take effect.
+    |
+    */
     'directory'     => app_path('Admin'),
 
 
     /*
-     * Laravel-admin html title.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin html title
+    |--------------------------------------------------------------------------
+    |
+    | Html title for all pages.
+    |
+    */
     'title'         => env('APP_NAME', '深圳墨兔'),
 
 
     /*
-    * Use `https`.
+    |--------------------------------------------------------------------------
+    | Access via `https`
+    |--------------------------------------------------------------------------
+    |
+    | If your page is going to be accessed via https, set it to `true`.
+    |
     */
     'secure'        => env('SECURE',true),
+
+    /*
+    * set default Exporter
+    */
+    'exporter'=> Mallto\Admin\Grid\Exporters\CsvExporter::class,
 
     /*
      * Laravel-admin auth setting.
@@ -64,10 +112,6 @@ return [
         ],
     ],
 
-    /*
-     * set default Exporter
-     */
-    'exporter'      => Mallto\Admin\Grid\Exporters\CsvExporter::class,
 
     /*
      * Laravel-admin upload setting.
@@ -88,8 +132,14 @@ return [
     ],
 
     /*
-     * Laravel-admin database setting.
-     */
+    |--------------------------------------------------------------------------
+    | Laravel-admin auth setting
+    |--------------------------------------------------------------------------
+    |
+    | Authentication settings for all admin pages. Include an authentication
+    | guard and a user provider setting of authentication driver.
+    |
+    */
     'database'      => [
 
         // Database connection for following tables.
@@ -153,10 +203,24 @@ return [
     */
     'layout'        => ['sidebar-mini'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Login page background image
+    |--------------------------------------------------------------------------
+    |
+    | This value is used to set the background image of login page.
+    |
+    */
+    'login_background_image' => '',
 
     /*
-     * Version displayed in footer.
-     */
+    |--------------------------------------------------------------------------
+    | Version
+    |--------------------------------------------------------------------------
+    |
+    | This version number set will appear in the page footer.
+    |
+    */
     'version'       => env('APP_VERSION'),
 
 
@@ -172,7 +236,13 @@ return [
 
 
     /*
-    * Settings for extensions.
+    |--------------------------------------------------------------------------
+    | Settings for extensions.
+    |--------------------------------------------------------------------------
+    |
+    | You can find all available extensions here
+    | https://github.com/laravel-admin-extensions.
+    |
     */
     'extensions'  => [
     ],

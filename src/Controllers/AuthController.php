@@ -79,7 +79,9 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
         if (!$adminUser) {
             //管理端账户不存在
 
-            //查询该openid是否存在对应的会员手机号,已经绑定了管理端账户
+            //查询该openid对应会员的手机号,是否已经绑定了管理端账户
+            //这个是兼容旧的管理端账户绑定,直接输入会员的手机号
+
             $user = User::with([
                 'userAuths' => function ($query) use ($openid) {
                     $query->where("identity_type", "wechat")
