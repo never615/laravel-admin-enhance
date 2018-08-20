@@ -63,9 +63,8 @@
      * @param type
      * @param data1
      * @param successCallBack
-     * @param async
      */
-    window.doAjax2 = function (url, type, data1, successCallBack) {
+    window.doAjaxForForm = function (url, type, data1, successCallBack) {
         // NProgress.start();
         var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 
@@ -74,7 +73,7 @@
             url: url,
             processData: false,
             contentType: false,
-            data: Object.assign({}, {iddd: Math.random()}, data1),
+            data: data1,
             headers: {
                 'X-CSRF-TOKEN': LA.token,
                 'REQUEST-TYPE': 'WEB'
