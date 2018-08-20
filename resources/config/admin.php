@@ -52,7 +52,7 @@ return [
     'route'         => [
         'prefix'     => 'admin',
         'namespace'  => 'App\\Admin\\Controllers',
-        'middleware' => ['web', 'admin'],
+        'middleware' => ['web', 'adminE_base'],
     ],
 
     /*

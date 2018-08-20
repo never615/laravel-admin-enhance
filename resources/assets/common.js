@@ -58,6 +58,42 @@
 
 
     /**
+     * 封装ajax请求
+     * @param url
+     * @param type
+     * @param data1
+     * @param successCallBack
+     * @param async
+     */
+    window.doAjax2 = function (url, type, data1, successCallBack) {
+        // NProgress.start();
+        var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+
+        $.ajax({
+            type: type || 'POST',
+            url: url,
+            processData: false,
+            contentType: false,
+            data: Object.assign({}, {iddd: Math.random()}, data1),
+            headers: {
+                'X-CSRF-TOKEN': LA.token,
+                'REQUEST-TYPE': 'WEB'
+            },
+            success: function (data) {
+                // NProgress.done();
+                layer.close(loadIndex);
+                successHandler(data, successCallBack);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                // NProgress.done();
+                layer.close(loadIndex);
+                errorHandler(XMLHttpRequest);
+            }
+        });
+    };
+
+
+    /**
      * ajax请求成功处理者
      * @param data
      * @param successCallBack

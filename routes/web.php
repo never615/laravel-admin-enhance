@@ -22,7 +22,7 @@ $attributes = [
     'middleware' => ['web'],
 ];
 
-
+//token 授权的管理端接口
 Route::group([
     'prefix'     => "admin/api",
     "middleware" => ["oauth.providers", "api", "adminE.log"],
@@ -41,6 +41,10 @@ Route::group([
 
 
 });
+
+
+
+
 
 Route::group($attributes, function ($router) {
 
