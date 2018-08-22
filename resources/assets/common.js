@@ -32,7 +32,7 @@
         // NProgress.start();
         var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 
-        $.ajax({
+        return $.ajax({
             type: type || 'POST',
             url: url,
             async: async || true,
@@ -68,7 +68,7 @@
         // NProgress.start();
         var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 
-        $.ajax({
+        return $.ajax({
             type: type || 'POST',
             url: url,
             processData: false,
