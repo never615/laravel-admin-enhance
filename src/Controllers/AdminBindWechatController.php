@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
-use Overtrue\LaravelWeChat\Model\WechatUserInfoRepository;
+use Mallto\User\Domain\WechatUsecase;
 
 /**
  * 管理端使用:绑定微信和解绑微信
@@ -23,7 +23,7 @@ class AdminBindWechatController extends Controller
 {
     use OpenidCheckTrait;
 
-    public function bindWechat(Request $request, WechatUserInfoRepository $wechatUserInfoRepository)
+    public function bindWechat(Request $request, WechatUsecase $wechatUsecase)
     {
         $encryOpenid = $request->openid;
         $openid = $this->decryptOpenid($encryOpenid);
@@ -34,12 +34,10 @@ class AdminBindWechatController extends Controller
             throw new ResourceException("无效请求");
         }
 
+        $wechatUserInfo = $wechatUsecase->getUserInfo($adminUser->subject->uuid, $openid);
 
-        $wechatUserInfo = $wechatUserInfoRepository->getWechatUserInfo($adminUser->subject->uuid, $openid);
-        if ($wechatUserInfo) {
-            if (!$adminUser) {
-                throw new ResourceException("未找到响应微信用户");
-            }
+        if (!$wechatUserInfo) {
+            throw new ResourceException("未找到相应微信用户");
         }
 
         //检查并移除该微信的其他账号绑定关系
