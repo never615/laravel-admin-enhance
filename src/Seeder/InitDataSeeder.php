@@ -17,27 +17,26 @@ class InitDataSeeder extends Seeder
      */
     public function run()
     {
-        $subject = Subject::whereIn("name", ["项目管理", "墨兔科技", "深圳墨兔"])
-            ->first();
-        if ($subject) {
+
+        if (Subject::count() > 0) {
             return;
         }
 
         /**
          * --------------------   Subject create  -------------------------
          */
-        Subject::create([
-            'name' => "项目管理",
+        $项目管理Subject=Subject::create([
+            'name' => "项目管理方",
         ]);
 
-        Subject::create([
+        $招商Subject=Subject::create([
             'name'      => "招商集团",
-            "parent_id" => 1,
+            "parent_id" => $项目管理Subject->id,
         ]);
 
-        Subject::create([
+        $蛇口Subject=Subject::create([
             'name'      => "蛇口花园城",
-            "parent_id" => 2,
+            "parent_id" => $招商Subject->id,
         ]);
 
         /**
@@ -46,19 +45,19 @@ class InitDataSeeder extends Seeder
         $ownerRole = Role::create([
             "name"       => "项目拥有者",
             "slug"       => "owner",
-            "subject_id" => 1,
+            "subject_id" => $项目管理Subject->id,
         ]);
 
         $bigAdminRole = Role::create([
             "name"       => "招商管理员",
             "slug"       => "admin",
-            "subject_id" => 2,
+            "subject_id" => $招商Subject->id,
         ]);
 
         $commonAdminRole = Role::create([
             "name"       => "蛇口花园城管理员",
             "slug"       => "admin",
-            "subject_id" => 3,
+            "subject_id" => $蛇口Subject->id,
         ]);
 
         /**
@@ -68,8 +67,8 @@ class InitDataSeeder extends Seeder
             'username'       => 'mallto',
             'password'       => bcrypt('mallto'),
             'name'           => '深圳墨兔管理',
-            "subject_id"     => 1,
-            "adminable_id"   => 1,
+            "subject_id"     => $项目管理Subject->id,
+            "adminable_id"   => $项目管理Subject->id,
             "adminable_type" => "subject",
         ]);
 
@@ -77,17 +76,17 @@ class InitDataSeeder extends Seeder
             'username'       => 'zhaoshang',
             'password'       => bcrypt('zhaoshang'),
             'name'           => '招商地产管理',
-            "subject_id"     => 2,
-            "adminable_id"   => 2,
+            "subject_id"     => $招商Subject->id,
+            "adminable_id"   => $招商Subject->id,
             "adminable_type" => "subject",
         ]);
 
-        $seaworld = Administrator::create([
+        $gardencity = Administrator::create([
             'username'       => 'gardencity',
             'password'       => bcrypt('gardencity'),
             'name'           => '花园城管理',
-            "subject_id"     => 3,
-            "adminable_id"   => 3,
+            "subject_id"     => $蛇口Subject->id,
+            "adminable_id"   => $蛇口Subject->id,
             "adminable_type" => "subject",
         ]);
 
@@ -95,7 +94,7 @@ class InitDataSeeder extends Seeder
         // add role to user.
         $mallto->roles()->save($ownerRole);
         $招商->roles()->save($bigAdminRole);
-        $seaworld->roles()->save($commonAdminRole);
+        $gardencity->roles()->save($commonAdminRole);
 
 
     }
