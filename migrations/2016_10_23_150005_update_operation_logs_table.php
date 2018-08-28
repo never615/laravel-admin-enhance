@@ -14,7 +14,7 @@ class UpdateOperationLogsTable extends Migration
     {
         Schema::table(config('admin.database.operation_log_table'), function ($table) {
             $table->unsignedInteger('subject_id');
-            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('CASCADE');
+//            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('CASCADE');
 
 
             //索引
