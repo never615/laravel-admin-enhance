@@ -58,10 +58,9 @@ class AdminmanagerSeeder extends Seeder
         /**
          * ------------------------  操作日志  ---------------------------
          */
-        $this->createPermissions("操作日志", "logs");
+//        $this->createPermissions("操作日志", "logs");
 
-
-        $this->createPermissions("文件", "uploads");
+//        $this->createPermissions("文件", "uploads");
 
         $this->createPermissions("视频", "videos");
 
