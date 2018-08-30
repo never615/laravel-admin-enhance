@@ -173,6 +173,10 @@ abstract class AdminCommonController extends Controller
             $form->display('id', 'ID');
         }
 
+        $form->saving(function ($form) {
+            $this->autoSubjectSaving($form);
+            $this->autoAdminUserSaving($form);
+        });
 
         $this->formOption($form);
 
@@ -180,15 +184,6 @@ abstract class AdminCommonController extends Controller
         $this->formAdminUser($form);
         $form->display('created_at', trans('admin.created_at'));
         $form->display('updated_at', trans('admin.updated_at'));
-
-
-        $form->saving(function ($form) {
-            $this->autoSubjectSaving($form);
-            $this->autoAdminUserSaving($form);
-        });
-
-
-
     }
 
 
