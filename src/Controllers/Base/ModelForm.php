@@ -63,7 +63,7 @@ trait ModelForm
 
             return response()->json([
                 'status'  => false,
-                'message' => "为了数据安全,暂时无法删除存在关联数据的数据",
+                'message' => "删除失败,已经删除或存在关联数据",
 
             ]);
         }
