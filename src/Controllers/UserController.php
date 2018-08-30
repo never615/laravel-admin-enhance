@@ -56,7 +56,8 @@ class UserController extends AdminCommonController
     {
         $form->text('username', trans('admin.username'))
             ->help("登录名")
-            ->rules('required');
+            ->rules('required|unique:admin_users');
+
         $form->text('name', trans('admin.name'))->rules('required');
         if ($this->currentId) {
             $form->html("<h3>绑定微信</h3>");
