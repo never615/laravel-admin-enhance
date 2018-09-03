@@ -10,6 +10,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -84,6 +85,13 @@ trait AdminFilterData
      */
     protected function editFilterData()
     {
+        $model = resolve($this->getModel());
+        //检查记录是否已经删除
+        $obj = $model::find($this->currentId);
+        if (!$obj) {
+            throw new ResourceException("记录不存在或已经删除");
+        }
+
         $adminUser = Admin::user();
 
         //过滤数据:只能查看自己主体或者子主体的数据;项目拥有者可以查看全部
@@ -120,7 +128,6 @@ trait AdminFilterData
                 }
             }
 
-            $model = resolve($this->getModel());
             $tableName = $model->getTable();
             if ($tableName == "subjects") {
                 //如果访问的subject的id属于$subjectIds可以访问
