@@ -10,6 +10,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Tool\Domain\Log\Logger;
+use Mallto\Tool\Jobs\LogJob;
 
 /**
  * 记录管理端操作日志
@@ -54,8 +55,7 @@ class OperationLog
                 'subject_id' => $adminUser->subject->id,
             ];
 
-            $logger = resolve(Logger::class);
-            $logger->logAdminOperation($log);
+            dispatch(new LogJob("logAdminOperation",$log));
         }
 
         return $next($request);
