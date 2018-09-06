@@ -9,6 +9,7 @@ namespace Mallto\Admin\Middleware;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Domain\Log\Logger;
 use Mallto\Tool\Jobs\LogJob;
 
@@ -47,6 +48,7 @@ class OperationLog
             }
 
             $log = [
+                'uuid'        => SubjectUtils::getUUIDNoException() ?: 0,
                 'user_id'    => $adminUser->id,
                 'path'       => $request->path(),
                 'method'     => $request->method(),
