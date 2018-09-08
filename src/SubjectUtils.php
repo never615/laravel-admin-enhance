@@ -27,36 +27,34 @@ class SubjectUtils
 
 
     /**
-     * @deprecated use getSubectConfig2
-     * 获取主体的配置信息
      *
-     * @param      $subject
+     * 获取主体系统设置
+     * 如:是否需要完成自选标签才算注册完成
+     *
      * @param      $key
      * @param null $default
+     * @param null $subject
      * @return mixed
      */
-    public static function getSubectConfig($subject, $key, $default = null)
+    public static function getSubjectExtraConfig($key, $default = null, $subject = null)
     {
         if (!$subject) {
-            throw new SubjectNotFoundException("主体未找到");
-        }
-
-        $subjectConfig = $subject->subjectConfigs()
-            ->where("key", $key)
-            ->first();
-        if (!$subjectConfig) {
-            if ($default) {
-                return $default;
-            } else {
-                throw new SubjectConfigException($key."未配置");
+            $subject = self::getSubject();
+            if (!$subject) {
+                throw new SubjectNotFoundException("主体未找到");
             }
         }
 
-        return $subjectConfig->value;
+        $extraConfig = $subject->extra_config ?: [];
+
+        return array_get($extraConfig, $key) ?: $default;
     }
+
 
     /**
      * 获取主体的配置信息
+     *
+     * 主要是第三方接口地址和签名配置
      *
      * @param      $key
      * @param null $default
@@ -260,5 +258,36 @@ class SubjectUtils
             return false;
         }
     }
+
+
+    /**
+     * @deprecated use getSubectConfig2
+     * 获取主体的配置信息
+     *
+     * @param      $subject
+     * @param      $key
+     * @param null $default
+     * @return mixed
+     */
+    public static function getSubectConfig($subject, $key, $default = null)
+    {
+        if (!$subject) {
+            throw new SubjectNotFoundException("主体未找到");
+        }
+
+        $subjectConfig = $subject->subjectConfigs()
+            ->where("key", $key)
+            ->first();
+        if (!$subjectConfig) {
+            if ($default) {
+                return $default;
+            } else {
+                throw new SubjectConfigException($key."未配置");
+            }
+        }
+
+        return $subjectConfig->value;
+    }
+
 
 }

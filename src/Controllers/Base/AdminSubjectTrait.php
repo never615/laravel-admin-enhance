@@ -76,16 +76,17 @@ trait AdminSubjectTrait
      */
     protected function autoSubjectSaving($form)
     {
-
         if (Schema::hasColumn($this->tableName, "subject_id") && !Admin::user()->isOwner()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
             $subject = Admin::user()->subject;
             $baseSubject = $subject->baseSubject();
             if ($baseSubject && $baseSubject->base) {
+                $form->subject_id=$baseSubject->id;
                 $form->model()->subject_id = $baseSubject->id;
             } else {
-                return $subject->id;
+                $form->subject_id=$subject->id;
+                $form->model()->subject_id = $subject->id;
             }
         }
 
