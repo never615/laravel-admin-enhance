@@ -130,13 +130,12 @@ abstract class AdminCommonController extends Controller
             $grid->created_at(trans('admin.created_at'))->sortable();
             //$grid->updated_at(trans('admin.updated_at'))->sortable();
         }
+        $filter = $grid->getFilter();
 
-        $grid->filter(function ($filter) {
-            // 禁用id查询框
-            if (!Admin::user()->isOwner()) {
-                $filter->disableIdFilter();
-            }
-        });
+        if (!Admin::user()->isOwner()) {
+            $filter->disableIdFilter();
+        }
+
 
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
@@ -144,8 +143,8 @@ abstract class AdminCommonController extends Controller
             });
         });
 
-        $grid->actions(function(Grid\Displayers\Actions $actions){
-           $actions->disableView();
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableView();
         });
 
     }
@@ -156,7 +155,7 @@ abstract class AdminCommonController extends Controller
         return Admin::form($this->getModel(), function (Form $form) {
             $this->tableName = $form->model()->getTable();;
             $this->defaultFormOption($form);
-            $form->tools(function(Form\Tools $tools){
+            $form->tools(function (Form\Tools $tools) {
                 $tools->disableView();
             });
         });
