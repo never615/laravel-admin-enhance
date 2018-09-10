@@ -30,13 +30,19 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
     use ExporterTrait;
 
     //只支持设置为json
-    protected $ignore2Array=[];
+    protected $ignore2Array = [];
 
     /**
      * {@inheritdoc}
      */
     public function export()
     {
+
+        if (!ini_get('safe_mode')) {
+            set_time_limit(3600);
+        }
+
+
         $tableName = $this->getTable();
 
         $fileName = $this->getFileName(".csv");
@@ -59,7 +65,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 
 
                     $records = $records->map(function (Model $record) {
-                        return array_dot2($record->toArray(),$this->ignore2Array);
+                        return array_dot2($record->toArray(), $this->ignore2Array);
                     });
                     $records = $records->toArray();
 
