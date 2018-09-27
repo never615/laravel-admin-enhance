@@ -14,6 +14,8 @@ use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\Traits\PermissionHelp;
+use Mallto\Tool\Exception\ResourceException;
+use Mallto\Tool\Utils\AppUtils;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends AdminCommonController
@@ -43,7 +45,7 @@ class RoleController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
-        $grid->slug(trans('admin.slug'));
+//        $grid->slug(trans('admin.slug'));
         $grid->name(trans('admin.name'));
         $grid->actions(function (Grid\Displayers\Actions $actions) {
 //                if ($actions->row->slug == 'administrator') {
@@ -58,7 +60,10 @@ class RoleController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        $form->text('slug', trans('admin.slug'))->rules('required');
+        if (Admin::user()->isOwner()) {
+            $form->display('slug', trans('admin.slug'));
+        }
+
         $form->text('name', trans('admin.name'))->rules('required');
 
         $that = $this;
@@ -85,13 +90,52 @@ class RoleController extends AdminCommonController
                 throw new HttpException(403, "没有权限创建标识为owner的角色");
             }
 
-            //已经存在的slug标识不能创建
-            if ($form->slug && $form->slug != $form->model()->slug) {
-                $tempSubjectId = $form->subject_id ?: $form->model()->subject_id;
-                if (Role::where('slug', $form->slug)->where("subject_id", $tempSubjectId)->exists()) {
-                    throw new HttpException(422, "标识:".$form->slug."已经存在,无法创建");
+
+            //自动生成slug
+            if ($form->name && $form->name != $form->model()->name) {
+                //检查name,一个subject下不能重复
+                if (Role::where("subject_id", $form->subject_id)
+                    ->where("name", $form->name)
+                    ->exists()) {
+                    throw new ResourceException($form->name."已存在");
                 }
+
+
+                //处理slug
+                //自动生成slug,同一个主体下不能重复
+                $slug = pinyin_permalink($form->name);
+                $slug = $this->generatorSlug($slug, $form->subject_id);
+                $form->model()->slug = $slug;
             }
+
+//            //已经存在的slug标识不能创建
+//            if ($form->slug && $form->slug != $form->model()->slug) {
+//                $tempSubjectId = $form->subject_id ?: $form->model()->subject_id;
+//                if (Role::where('slug', $form->slug)->where("subject_id", $tempSubjectId)->exists()) {
+//                    throw new HttpException(422, "标识:".$form->slug."已经存在,无法创建");
+//                }
+//            }
         });
+    }
+
+
+    /**
+     * 检查是否有重复的slug
+     *
+     * @param $slug
+     * @param $subjectId
+     * @return string
+     */
+    private function generatorSlug($slug, $subjectId)
+    {
+        if (Role::where("subject_id", $subjectId)
+            ->where("slug", $slug)
+            ->exists()) {
+            $slug = $slug."_".AppUtils::getRandomString(3);
+
+            return $this->generatorSlug($slug, $subjectId);
+        } else {
+            return $slug;
+        }
     }
 }

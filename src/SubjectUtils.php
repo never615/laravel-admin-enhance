@@ -39,9 +39,15 @@ class SubjectUtils
     public static function getSubjectExtraConfig($key, $default = null, $subject = null)
     {
         if (!$subject) {
-            $subject = self::getSubject();
-            if (!$subject) {
-                throw new SubjectNotFoundException("主体未找到");
+            try {
+                $subject = self::getSubject();
+            } catch (\Exception $exception) {
+                if ($default) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到");
+
+                }
             }
         }
 
@@ -64,9 +70,15 @@ class SubjectUtils
     public static function getSubectConfig2($key, $default = null, $subject = null)
     {
         if (!$subject) {
-            $subject = self::getSubject();
-            if (!$subject) {
-                throw new SubjectNotFoundException("主体未找到");
+            try {
+                $subject = self::getSubject();
+            } catch (\Exception $exception) {
+                if ($default) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到");
+
+                }
             }
         }
 
