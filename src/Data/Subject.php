@@ -32,6 +32,11 @@ class Subject extends Model
     }
 
 
+    protected $casts = [
+        'extra_config' => 'array',
+    ];
+
+
     protected $guarded = [
     ];
 

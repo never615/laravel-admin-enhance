@@ -43,6 +43,7 @@ class AdminBindWechatController extends Controller
         //检查并移除该微信的其他账号绑定关系
         Administrator::where("subject_id", $adminUser->subject_id)
             ->where("openid->openid", $openid)
+            ->where("id", "!=", $adminUser->id)
             ->update([
                 "openid" => null,
             ]);

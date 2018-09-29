@@ -9,11 +9,9 @@ use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
-use Mallto\Admin\Data\Subject;
 use Mallto\Mall\Data\AdminUser;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserController extends AdminCommonController
 {
@@ -74,8 +72,8 @@ class UserController extends AdminCommonController
                     ->qrcodeUrl($this->getBindWechatUrl($this->currentId))
                     ->help($qrcodeHelp);
 
-                $form->buttonE("unbind_wechat","解绑微信")
-                    ->on("click",function() use($currentAdminUser){
+                $form->buttonE("unbind_wechat", "解绑微信")
+                    ->on("click", function () use ($currentAdminUser) {
                         $uuid = $currentAdminUser->subject->uuid;
 
                         return <<<EOT
@@ -115,7 +113,7 @@ EOT;
                 return $form->model()->password;
             });
 
-        
+
         //绑定微信,一个链接,包含时间戳,要绑定的管理端账号的id,加密签名
 
 
@@ -228,6 +226,9 @@ EOT;
 
     /**
      * 生成绑定微信的url
+     *
+     * @param $adminUserId
+     * @return string
      */
     protected function getBindWechatUrl($adminUserId)
     {
@@ -246,8 +247,8 @@ EOT;
         } else {
             $wechatOAuthUrl .= "https://test-wechat.mall-to.com/wechat/oauth";
             $redirectUrl .= "https://".config("app.env")."-easy.mall-to.com/admin/admin_bind_wechat";
-
         }
+
 
         $redirectUrl .= "?admin_user_id=".$adminUser->id;
 
