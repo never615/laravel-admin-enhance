@@ -14,7 +14,7 @@ return [
     | login page.
     |
     */
-    'name'          => env('APP_NAME', '深圳墨兔'),
+    'name'                   => env('APP_NAME', '深圳墨兔'),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo'          => '深圳<b>墨兔</b>',
+    'logo'                   => '深圳<b>墨兔</b>',
 
     /*
     |--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini'     => '<b>墨</b>',
+    'logo-mini'              => '<b>墨</b>',
 
     /*
      |--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ return [
      | access through the root path, just set the prefix to empty string.
      |
      */
-    'route'         => [
+    'route'                  => [
         'prefix'     => 'admin',
         'namespace'  => 'App\\Admin\\Controllers',
         'middleware' => ['web', 'adminE_base'],
@@ -65,7 +65,7 @@ return [
     | be set before running `artisan admin::install` to take effect.
     |
     */
-    'directory'     => app_path('Admin'),
+    'directory'              => app_path('Admin'),
 
 
     /*
@@ -76,7 +76,7 @@ return [
     | Html title for all pages.
     |
     */
-    'title'         => env('APP_NAME', '深圳墨兔'),
+    'title'                  => env('APP_NAME', '深圳墨兔'),
 
 
     /*
@@ -87,17 +87,18 @@ return [
     | If your page is going to be accessed via https, set it to `true`.
     |
     */
-    'secure'        => env('SECURE',true),
+    'secure'                 => env('SECURE', true),
+    'https'                  => env('SECURE', true),
 
     /*
     * set default Exporter
     */
-    'exporter'=> Mallto\Admin\Grid\Exporters\CsvExporter::class,
+    'exporter'               => Mallto\Admin\Grid\Exporters\CsvExporter::class,
 
     /*
      * Laravel-admin auth setting.
      */
-    'auth'          => [
+    'auth'                   => [
         'guards'    => [
             'admin' => [
                 'driver'   => 'session',
@@ -116,7 +117,7 @@ return [
     /*
      * Laravel-admin upload setting.
      */
-    'upload'        => [
+    'upload'                 => [
 
         'disk' => 'qiniu',
 
@@ -140,7 +141,7 @@ return [
     | guard and a user provider setting of authentication driver.
     |
     */
-    'database'      => [
+    'database'               => [
 
         // Database connection for following tables.
         'connection'             => 'pgsql',
@@ -174,8 +175,15 @@ return [
     /*
      * By setting this option to open or close operation log in laravel-admin.
      */
-    'operation_log' => [
+    'operation_log'          => [
         'enable' => true,
+
+
+        /*
+         * Only logging allowed methods in the list
+         */
+        'allowed_methods' => ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'],
+
         /*
          * Routes that will not log to database.
          *
@@ -188,20 +196,44 @@ return [
     ],
 
     /*
-     * @see https://adminlte.io/docs/2.4/layout
-     */
-    'skin'          => 'skin-blue-light',
+    |--------------------------------------------------------------------------
+    | Admin map field provider
+    |--------------------------------------------------------------------------
+    |
+    | Supported: "tencent", "google", "yandex".
+    |
+    */
+    'map_provider' => 'google',
 
     /*
-    |---------------------------------------------------------|
-    |LAYOUT OPTIONS | fixed                                   |
-    |               | layout-boxed                            |
-    |               | layout-top-nav                          |
-    |               | sidebar-collapse                        |
-    |               | sidebar-mini                            |
-    |---------------------------------------------------------|
+    |--------------------------------------------------------------------------
+    | Application Skin
+    |--------------------------------------------------------------------------
+    |
+    | This value is the skin of admin pages.
+    | @see https://adminlte.io/docs/2.4/layout
+    |
+    | Supported:
+    |    "skin-blue", "skin-blue-light", "skin-yellow", "skin-yellow-light",
+    |    "skin-green", "skin-green-light", "skin-purple", "skin-purple-light",
+    |    "skin-red", "skin-red-light", "skin-black", "skin-black-light".
+    |
     */
-    'layout'                 => ['sidebar-mini', 'sidebar-collapse'],
+    'skin' => 'skin-blue-light',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application layout
+    |--------------------------------------------------------------------------
+    |
+    | This value is the layout of admin pages.
+    | @see https://adminlte.io/docs/2.4/layout
+    |
+    | Supported: "fixed", "layout-boxed", "layout-top-nav", "sidebar-collapse",
+    | "sidebar-mini".
+    |
+    */
+    'layout' => ['sidebar-mini', 'sidebar-collapse'],
 
     /*
     |--------------------------------------------------------------------------
@@ -221,19 +253,57 @@ return [
     | This version number set will appear in the page footer.
     |
     */
-    'version'       => env('APP_VERSION'),
+    'version'                => env('APP_VERSION'),
 
 
     /*
-     * Automatically generate a menu based on user-owned permissions.
-     *
-     * 在这种模式下,不需要根据用户角色创建菜单.只会有一份菜单,然后不同权限的人会根据自己的权限显示相应的菜单.
-     *
-     */
-    'auto_menu'     => true,
+   |--------------------------------------------------------------------------
+   | Show version at footer
+   |--------------------------------------------------------------------------
+   |
+   | Whether to display the version number of laravel-admim at the footer of
+   | each page
+   |
+   */
+    'show_version' => true,
 
-    'admin_login' => '/admin/auth/login',
+    /*
+    |--------------------------------------------------------------------------
+    | Show environment at footer
+    |--------------------------------------------------------------------------
+    |
+    | Whether to display the environment at the footer of each page
+    |
+    */
+    'show_environment' => true,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Menu bind to permission
+    |--------------------------------------------------------------------------
+    |
+    | whether enable menu bind to a permission
+    */
+    'menu_bind_permission' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable default breadcrumb
+    |--------------------------------------------------------------------------
+    |
+    | Whether enable default breadcrumb for every page content.
+    */
+    'enable_default_breadcrumb' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Extension Directory
+    |--------------------------------------------------------------------------
+    |
+    | When you use command `php artisan admin:extend` to generate extensions,
+    | the extension files will be generated in this directory.
+    */
+    'extension_dir' => app_path('Admin/Extensions'),
 
     /*
     |--------------------------------------------------------------------------
@@ -244,8 +314,22 @@ return [
     | https://github.com/laravel-admin-extensions.
     |
     */
-    'extensions'  => [
+    'extensions' => [
+
     ],
+
+
+    /*
+     * Automatically generate a menu based on user-owned permissions.
+     *
+     * 在这种模式下,不需要根据用户角色创建菜单.只会有一份菜单,然后不同权限的人会根据自己的权限显示相应的菜单.
+     *
+     */
+    'auto_menu'              => true,
+
+    'admin_login' => '/admin/auth/login',
+
+
 
     /*
      * WangEditor
