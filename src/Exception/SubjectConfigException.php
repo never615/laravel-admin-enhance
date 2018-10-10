@@ -20,6 +20,6 @@ class SubjectConfigException extends HttpException
 
     public function __construct($message = null, Exception $previous = null, $headers = [], $code = 0)
     {
-        parent::__construct(403, "有参数未配置", $previous, $headers, $code);
+        parent::__construct(403, $message?:"有参数未配置", $previous, $headers, $code);
     }
 }
