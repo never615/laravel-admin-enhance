@@ -9,7 +9,6 @@ use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
-use Mallto\Mall\Data\AdminUser;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -60,7 +59,7 @@ class UserController extends AdminCommonController
         if ($this->currentId) {
             $form->html("<h3>绑定微信</h3>");
 
-            $currentAdminUser = AdminUser::find($this->currentId);
+            $currentAdminUser = Administrator::find($this->currentId);
             if ($currentAdminUser) {
                 $qrcodeHelp = "";
                 if ($currentAdminUser->openid) {
@@ -232,7 +231,7 @@ EOT;
      */
     protected function getBindWechatUrl($adminUserId)
     {
-        $adminUser = AdminUser::find($adminUserId);
+        $adminUser = Administrator::find($adminUserId);
 
         $subject = $adminUser->subject;
         $uuid = $subject->uuid;
