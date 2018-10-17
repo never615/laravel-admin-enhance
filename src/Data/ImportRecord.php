@@ -21,9 +21,6 @@ class ImportRecord extends BaseModel
     ];
 
 
-    const MODULE = [
-        "member_cards" => "会员卡模块",
-    ];
 
 
     public function setting()

@@ -79,7 +79,7 @@ class ImportRecordController extends AdminCommonController
             }
         } else {
             $form->select("module_slug", "模块")
-                ->options(ImportRecord::MODULE);
+                ->options(ImportSetting::selectSourceDatas());
         }
 
 
