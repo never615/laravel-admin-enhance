@@ -235,6 +235,128 @@ forget方法的第二个参数可以传入关联数据的**模型名**来忽略�
 
 导入文件的时候,需要选择对应的模块及上传文件,选择对应的模块的备选项就是导入配置设置的`模块说明`.
 
+##### 导入处理者示例代码:
+```
+class MemberCardImport
+{
+    public function handle($importRecord)
+    {
+        if (!$importRecord) {
+            return;
+        }
+
+        $qiniuPrivate = Storage::disk(config("admin.upload.private_disk"));
+        $url = $qiniuPrivate->privateDownloadUrl($importRecord->file_url);
+        $contents = file_get_contents($url);
+
+
+//        $tempFileName = 'test.xls';
+        $tempFileName = $importRecord->subject_id."_".$importRecord->module_slug."_".$importRecord->created_at.".xls";
+
+        Storage::disk("private")->put($tempFileName, $contents);
+        $path = storage_path("private/".$tempFileName);
+
+        $memberLevelNameIds = MemberLevel::where("subject_id", $importRecord->subject_id)
+            ->pluck("id", "name");
+
+
+        //执行两遍,第一遍检查数据是否有错误
+
+        //第二遍,执行导入
+
+
+        Excel::load($path,
+            function (LaravelExcelReader $reader) use ($importRecord, $memberLevelNameIds) {
+
+                $importRecord->status = "processing";
+                $importRecord->save();
+
+                $reader->chunk("500", function ($results) use ($importRecord, $memberLevelNameIds) {
+                    $importKeys = array_keys($results->first()->toArray());
+                    $exceptKeys = ["卡号", "会员等级"];
+
+                    //检查列名是否正确
+                    if (array_diff($exceptKeys, $importKeys) || array_diff($importKeys, $exceptKeys)) {
+                        $importRecord->status = "failure";
+                        $importRecord->failure_reason = "列名错误,请对照导入模板检查";
+                        $importRecord->finish_at = TimeUtils::getNowTime();
+
+                        $importRecord->save();
+
+                        return true;
+                    } else {
+                        foreach ($results as $result) {
+                            $result = $result->toArray();
+                            $result["subject_id"] = $importRecord->subject_id;
+                            $result["member_level_id"] = $memberLevelNameIds[$result["会员等级"]];
+                            unset($result["会员等级"]);
+                            $result["number"] = $result["卡号"];
+                            unset($result["卡号"]);
+                            $result['type'] = "physical_card";
+
+                            //检查卡号是否满足规则
+                            if (strlen($result["number"]) < 11) {
+                                $importRecord->status = "failure";
+                                $importRecord->failure_reason = "卡号无效:".$result["number"];
+                                $importRecord->finish_at = TimeUtils::getNowTime();
+                                $importRecord->save();
+
+                                return false;
+                            }
+
+
+                            //检查是否已经存在该卡号
+                            $tempMemberCard = MemberCard::where("subject_id", $importRecord->subject_id)
+                                ->where("number", $result["number"])
+                                ->first();
+                            if ($tempMemberCard) {
+                                $importRecord->status = "failure";
+                                $importRecord->failure_reason = "卡号已经存在:".$tempMemberCard->number;
+
+                                $importRecord->finish_at = TimeUtils::getNowTime();
+                                $importRecord->save();
+
+                                return false;
+                            }
+
+
+                        }
+                    }
+                });
+            });
+
+
+        $importRecord = ImportRecord::find($importRecord->id);
+
+
+        if ($importRecord->status == "processing") {
+            Excel::load($path,
+                function (LaravelExcelReader $reader) use ($importRecord, $memberLevelNameIds) {
+                    $reader->chunk("500", function ($results) use ($importRecord, $memberLevelNameIds) {
+                        foreach ($results as $result) {
+                            $result = $result->toArray();
+                            $result["subject_id"] = $importRecord->subject_id;
+                            $result["member_level_id"] = $memberLevelNameIds[$result["会员等级"]];
+                            unset($result["会员等级"]);
+                            $result["number"] = $result["卡号"];
+                            unset($result["卡号"]);
+                            $result['type'] = "physical_card";
+
+                            MemberCard::create($result);
+                        }
+
+                    });
+
+                    $importRecord->status = "success";
+                    $importRecord->save();
+                });
+        }
+    }
+}
+```
+
+
+
 
 ### 新增扩展说明
 
