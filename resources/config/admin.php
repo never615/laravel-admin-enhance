@@ -99,6 +99,8 @@ return [
      * Laravel-admin auth setting.
      */
     'auth'                   => [
+        'controller' => App\Admin\Controllers\AuthController::class,
+
         'guards'    => [
             'admin' => [
                 'driver'   => 'session',
