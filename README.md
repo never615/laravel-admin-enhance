@@ -227,6 +227,8 @@ forget方法的第二个参数可以传入关联数据的**模型名**来忽略�
 
 ### 数据导入
 #### 整体流程说明
+导入的是excel文件,依赖`maatwebsite/excel`库.
+
 在`admin/import_records`模块可以创建任务和查看任务记录,导入任务会创建到import_records表中.
 
 每一个任务都要有处理的导入文件和对应的导入处理者,导入处理者通过依赖注入的方式关联到具体的导入任务,
@@ -263,21 +265,20 @@ class MemberCardImport
         //执行两遍,第一遍检查数据是否有错误
 
         //第二遍,执行导入
-
-
         Excel::load($path,
             function (LaravelExcelReader $reader) use ($importRecord, $memberLevelNameIds) {
-
-                $importRecord->status = "processing";
+                $status = "processing";
+                $importRecord->status = $status;
                 $importRecord->save();
 
-                $reader->chunk("500", function ($results) use ($importRecord, $memberLevelNameIds) {
+                $reader->chunk("500", function ($results) use ($importRecord, $memberLevelNameIds, &$status) {
                     $importKeys = array_keys($results->first()->toArray());
                     $exceptKeys = ["卡号", "会员等级"];
 
                     //检查列名是否正确
                     if (array_diff($exceptKeys, $importKeys) || array_diff($importKeys, $exceptKeys)) {
-                        $importRecord->status = "failure";
+                        $status = "failure";
+                        $importRecord->status = $status;
                         $importRecord->failure_reason = "列名错误,请对照导入模板检查";
                         $importRecord->finish_at = TimeUtils::getNowTime();
 
@@ -301,7 +302,7 @@ class MemberCardImport
                                 $importRecord->finish_at = TimeUtils::getNowTime();
                                 $importRecord->save();
 
-                                return false;
+                                return true;
                             }
 
 
@@ -310,31 +311,24 @@ class MemberCardImport
                                 ->where("number", $result["number"])
                                 ->first();
                             if ($tempMemberCard) {
-                                $importRecord->status = "failure";
+                                $status = "failure";
+                                $importRecord->status = $status;
                                 $importRecord->failure_reason = "卡号已经存在:".$tempMemberCard->number;
 
                                 $importRecord->finish_at = TimeUtils::getNowTime();
                                 $importRecord->save();
 
-                                return false;
+                                return true;
                             }
-
-
                         }
                     }
-                });
-            });
+                }, false); //false 表示导入读数据不使用队列任务,因为这个导入任务本身已经在队列任务中了
 
-
-        $importRecord = ImportRecord::find($importRecord->id);
-
-
-        if ($importRecord->status == "processing") {
-            Excel::load($path,
-                function (LaravelExcelReader $reader) use ($importRecord, $memberLevelNameIds) {
+                if ($status == "processing") {
                     $reader->chunk("500", function ($results) use ($importRecord, $memberLevelNameIds) {
+                        $results = $results->toArray();
+
                         foreach ($results as $result) {
-                            $result = $result->toArray();
                             $result["subject_id"] = $importRecord->subject_id;
                             $result["member_level_id"] = $memberLevelNameIds[$result["会员等级"]];
                             unset($result["会员等级"]);
@@ -342,15 +336,17 @@ class MemberCardImport
                             unset($result["卡号"]);
                             $result['type'] = "physical_card";
 
-                            MemberCard::create($result);
                         }
 
-                    });
+                        MemberCard::insert($results);
+
+                    }, false);
 
                     $importRecord->status = "success";
                     $importRecord->save();
-                });
-        }
+                }
+
+            });
     }
 }
 ```

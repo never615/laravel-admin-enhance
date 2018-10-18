@@ -10,7 +10,6 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -89,7 +88,7 @@ trait AdminFilterData
         //检查记录是否已经删除
         $obj = $model::find($this->currentId);
         if (!$obj) {
-            throw new ResourceException("记录不存在或已经删除");
+            throw new HttpException(422, "记录不存在或已经删除");
         }
 
         $adminUser = Admin::user();
