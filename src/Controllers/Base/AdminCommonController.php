@@ -121,15 +121,7 @@ abstract class AdminCommonController extends Controller
             }
         }
 
-        $this->gridFilterData($grid);
-        $this->gridOrder($grid);
-        $this->gridOption($grid);
-        $this->gridSubject($grid);
 
-        if (!$this->closeIdAndTime) {
-            $grid->created_at(trans('admin.created_at'))->sortable();
-            //$grid->updated_at(trans('admin.updated_at'))->sortable();
-        }
         $filter = $grid->getFilter();
 
         if (!Admin::user()->isOwner()) {
@@ -143,9 +135,21 @@ abstract class AdminCommonController extends Controller
             });
         });
 
+
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
         });
+
+        $this->gridFilterData($grid);
+        $this->gridOrder($grid);
+        $this->gridOption($grid);
+        $this->gridSubject($grid);
+
+        if (!$this->closeIdAndTime) {
+            $grid->created_at(trans('admin.created_at'))->sortable();
+            //$grid->updated_at(trans('admin.updated_at'))->sortable();
+        }
+
 
     }
 

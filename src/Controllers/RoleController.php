@@ -48,13 +48,11 @@ class RoleController extends AdminCommonController
 //        $grid->slug(trans('admin.slug'));
         $grid->name(trans('admin.name'));
         $grid->actions(function (Grid\Displayers\Actions $actions) {
-//                if ($actions->row->slug == 'administrator') {
-//                    $actions->disableDelete();
-//                }
             //不能删除自己的角色
             if (Admin::user()->isRole($actions->row->slug) && Admin::user()->subject_id == $actions->row->subject_id) {
                 $actions->disableDelete();
             }
+            $actions->disableView();
         });
     }
 

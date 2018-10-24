@@ -55,6 +55,7 @@ class ImportRecordController extends AdminCommonController
 
         $grid->actions(function(Grid\Displayers\Actions $actions){
             $actions->disableEdit();
+            $actions->disableView();
         });
 //        $grid->disableActions();
 //        $grid->disableCreateButton();

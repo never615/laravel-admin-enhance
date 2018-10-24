@@ -45,6 +45,7 @@ class UserController extends AdminCommonController
             if (Admin::user()->id == $actions->row->id) {
                 $actions->disableDelete();
             }
+            $actions->disableView();
         });
     }
 

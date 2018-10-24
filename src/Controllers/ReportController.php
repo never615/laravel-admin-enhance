@@ -73,6 +73,7 @@ EOT;
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableEdit();
+            $actions->disableView();
         });
 
 

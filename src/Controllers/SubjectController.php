@@ -70,6 +70,8 @@ class SubjectController extends AdminCommonController
             if (Admin::user()->subject->id == $actions->row->id) {
                 $actions->disableDelete();
             }
+            $actions->disableView();
+
 
         });
 
