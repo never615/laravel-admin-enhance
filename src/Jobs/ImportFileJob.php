@@ -67,9 +67,9 @@ class ImportFileJob implements ShouldQueue
     public function fail($exception = null)
     {
         $record = ImportRecord::find($this->id);
-        if ($record && $record->status == "not_start") {
+        if ($record && $record->status == "processing") {
             $handler = resolve($record->module_slug);
-            $handler->fail($record,$exception);
+            $handler->fail($record, $exception);
         }
     }
 
