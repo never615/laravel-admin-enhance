@@ -12,7 +12,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mallto\Admin\Data\ImportRecord;
-use Mallto\Mall\Domain\DynamicInject;
 
 class ImportFileJob implements ShouldQueue
 {
@@ -61,6 +60,16 @@ class ImportFileJob implements ShouldQueue
         if ($record && $record->status == "not_start") {
             $handler = resolve($record->module_slug);
             $handler->handle($record);
+        }
+    }
+
+
+    public function fail($exception = null)
+    {
+        $record = ImportRecord::find($this->id);
+        if ($record && $record->status == "not_start") {
+            $handler = resolve($record->module_slug);
+            $handler->fail($record,$exception);
         }
     }
 
