@@ -55,7 +55,7 @@ class QiniuMultipleFile extends Field\MultipleFile
             $config[] = [
                 'caption'  => basename($file),
                 'key'      => $index,
-                'filetype' => isset($this->options['filetype']) ? $this->options['filetype'] : "",
+                'filetype' => $this->options['filetype'] ?? "",
             ];
         }
 
