@@ -85,7 +85,12 @@ abstract class AdminCommonController extends Controller
         return Admin::content(function (Content $content) use ($id) {
             $content->header($this->getHeaderTitle());
             $content->description(trans('admin.edit'));
-            $content->body($this->form()->edit($id));
+            $content->body(
+                Admin::form($this->getModel(), function (Form $form) {
+                    $this->tableName = $form->model()->getTable();;
+                    $this->defaultFormOptionEdit($form);
+                })->edit($id)
+            );
         });
     }
 
@@ -100,9 +105,43 @@ abstract class AdminCommonController extends Controller
         return Admin::content(function (Content $content) {
             $content->header($this->getHeaderTitle());
             $content->description(trans('admin.create'));
-            $content->body($this->form());
+            $content->body(
+                Admin::form($this->getModel(), function (Form $form) {
+                    $this->tableName = $form->model()->getTable();;
+                    $this->defaultFormOptionCreate($form);
+                })
+            );
         });
     }
+
+
+    /**
+     * 创建页面表单页面
+     *
+     * @param $form
+     */
+    protected function defaultFormOptionCreate(Form $form)
+    {
+        $this->defaultFormOption($form);
+    }
+
+    /**
+     * 编辑查看页面表单页面
+     *
+     * @param $form
+     */
+    protected function defaultFormOptionEdit(Form $form)
+    {
+        $this->defaultFormOption($form);
+    }
+
+//    protected function form()
+//    {
+//        return Admin::form($this->getModel(), function (Form $form) {
+//            $this->tableName = $form->model()->getTable();;
+//            $this->defaultFormOption($form);
+//        });
+//    }
 
 
     protected function grid()
@@ -121,20 +160,17 @@ abstract class AdminCommonController extends Controller
             }
         }
 
-
         $filter = $grid->getFilter();
 
         if (!Admin::user()->isOwner()) {
             $filter->disableIdFilter();
         }
 
-
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
                 $actions->disableDelete();
             });
         });
-
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
@@ -149,23 +185,17 @@ abstract class AdminCommonController extends Controller
             $grid->created_at(trans('admin.created_at'))->sortable();
             //$grid->updated_at(trans('admin.updated_at'))->sortable();
         }
-
-
     }
 
-
-    protected function form()
-    {
-        return Admin::form($this->getModel(), function (Form $form) {
-            $this->tableName = $form->model()->getTable();;
-            $this->defaultFormOption($form);
-            $form->tools(function (Form\Tools $tools) {
-                $tools->disableView();
-            });
-        });
-    }
 
     /**
+     * 默认的form实现,create的表单页面和edit的表单页面同时会调用到这里
+     *
+     * 如果需要分开实现create和edit可以分别重写defaultFormOptionCreate()和defaultFormOptionEdit()
+     *
+     * 一般来说created和edit没有区别,有区别也不大,只用实现一套defaultFormOption()即可.
+     * 需要判断当前环境是edit还是create可以通过$this->currentId是否存在来判断,$this->currentId存在即edit时期.
+     *
      * 如果form中使用到了tab,需要复写此方法
      *
      * @param Form $form
@@ -187,6 +217,10 @@ abstract class AdminCommonController extends Controller
         $this->formAdminUser($form);
         $form->display('created_at', trans('admin.created_at'));
         $form->display('updated_at', trans('admin.updated_at'));
+
+        $form->tools(function (Form\Tools $tools) {
+            $tools->disableView();
+        });
     }
 
 
