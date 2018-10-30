@@ -46,15 +46,10 @@ trait AdminOption
      * 需要实现的form设置
      *
      * 如果需要使用tab,则需要复写defaultFormOption()方法,
-     * 然后formOption留空即可
      *
-     *
-     * 默认的form实现,create的表单页面和edit的表单页面同时会调用到这里
-     *
-     * 如果需要分开实现create和edit可以分别重写defaultFormOptionCreate()和defaultFormOptionEdit()
-     *
-     * 一般来说created和edit没有区别,有区别也不大,只用实现一套defaultFormOption()即可.
      * 需要判断当前环境是edit还是create可以通过$this->currentId是否存在来判断,$this->currentId存在即edit时期.
+     *
+     * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
      * @param Form $form
      * @return mixed

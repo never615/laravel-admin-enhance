@@ -85,12 +85,7 @@ abstract class AdminCommonController extends Controller
         return Admin::content(function (Content $content) use ($id) {
             $content->header($this->getHeaderTitle());
             $content->description(trans('admin.edit'));
-            $content->body(
-                Admin::form($this->getModel(), function (Form $form) {
-                    $this->tableName = $form->model()->getTable();;
-                    $this->defaultFormOptionEdit($form);
-                })->edit($id)
-            );
+            $content->body($this->form()->edit($id));
         });
     }
 
@@ -105,43 +100,19 @@ abstract class AdminCommonController extends Controller
         return Admin::content(function (Content $content) {
             $content->header($this->getHeaderTitle());
             $content->description(trans('admin.create'));
-            $content->body(
-                Admin::form($this->getModel(), function (Form $form) {
-                    $this->tableName = $form->model()->getTable();;
-                    $this->defaultFormOptionCreate($form);
-                })
-            );
+            $content->body($this->form());
         });
     }
 
 
-    /**
-     * 创建页面表单页面
-     *
-     * @param $form
-     */
-    protected function defaultFormOptionCreate(Form $form)
+    protected function form()
     {
-        $this->defaultFormOption($form);
+        return Admin::form($this->getModel(), function (Form $form) {
+            $this->tableName = $form->model()->getTable();;
+            $this->defaultFormOption($form);
+        });
     }
 
-    /**
-     * 编辑查看页面表单页面
-     *
-     * @param $form
-     */
-    protected function defaultFormOptionEdit(Form $form)
-    {
-        $this->defaultFormOption($form);
-    }
-
-//    protected function form()
-//    {
-//        return Admin::form($this->getModel(), function (Form $form) {
-//            $this->tableName = $form->model()->getTable();;
-//            $this->defaultFormOption($form);
-//        });
-//    }
 
 
     protected function grid()
@@ -191,10 +162,9 @@ abstract class AdminCommonController extends Controller
     /**
      * 默认的form实现,create的表单页面和edit的表单页面同时会调用到这里
      *
-     * 如果需要分开实现create和edit可以分别重写defaultFormOptionCreate()和defaultFormOptionEdit()
-     *
-     * 一般来说created和edit没有区别,有区别也不大,只用实现一套defaultFormOption()即可.
      * 需要判断当前环境是edit还是create可以通过$this->currentId是否存在来判断,$this->currentId存在即edit时期.
+     *
+     * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
      * 如果form中使用到了tab,需要复写此方法
      *
