@@ -17,16 +17,14 @@ class ImportButton extends AbstractTool
      */
     protected function setUpScripts()
     {
-
         $script = <<<'SCRIPT'
-
 $('.table-import').click(function (e) {
     e.preventDefault();
     
     var path = window.location.pathname;
     var paths=path.split("/");
     var lastPath=paths.pop();
-    window.location.href="/admin/import_records/create?module_slug="+lastPath;
+    window.location.href="/admin/import_records/create?module_slug="+lastPath+"import_handler";
 });
 
 SCRIPT;

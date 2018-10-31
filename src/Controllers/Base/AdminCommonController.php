@@ -110,6 +110,9 @@ abstract class AdminCommonController extends Controller
         return Admin::form($this->getModel(), function (Form $form) {
             $this->tableName = $form->model()->getTable();;
             $this->defaultFormOption($form);
+            $form->tools(function (Form\Tools $tools) {
+                $tools->disableView();
+            });
         });
     }
 
@@ -188,9 +191,7 @@ abstract class AdminCommonController extends Controller
         $form->display('created_at', trans('admin.created_at'));
         $form->display('updated_at', trans('admin.updated_at'));
 
-        $form->tools(function (Form\Tools $tools) {
-            $tools->disableView();
-        });
+
     }
 
 
