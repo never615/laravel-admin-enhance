@@ -54,7 +54,7 @@ class ImportSettingController extends AdminCommonController
 
         $form->text("module_slug", "模块标识")
             ->rules("required")
-            ->help("该标识会用来做依赖注入");
+            ->help("该标识会用来做依赖注入,命名规则:模块路径的最后一段+[_import_handler],如:goods_import_handler");
 
         $form->file("template_with_annotation_url","带说明的模板");
         $form->file("template_url", "模板");

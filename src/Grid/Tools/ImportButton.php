@@ -24,7 +24,7 @@ $('.table-import').click(function (e) {
     var path = window.location.pathname;
     var paths=path.split("/");
     var lastPath=paths.pop();
-    window.location.href="/admin/import_records/create?module_slug="+lastPath+"import_handler";
+    window.location.href="/admin/import_records/create?module_slug="+lastPath+"_import_handler";
 });
 
 SCRIPT;
