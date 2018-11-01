@@ -448,7 +448,7 @@ selects设置选项卡选项,dataUrls设置数据源.数据源返回格式使用
 ### 其他
 #### AdminCommonController
 管理端的实现类继承自`AdminCommonController`,提供了一些共有方法和实现了一些共有逻辑.
-* 自动设置及显示创建主体,需要关联的model有subject_id.
+* 自动设置及显示创建主体,需要关联的model有subject_id.如果在saving方法中想要获取当前表单的subject_id,直接使用`$form->subject_id`即可
 * 自动设置及显示创建者,需要关联的model有admin_user_id.
 * 自动根据登录用户过滤表格和表单的数据
 
