@@ -41,12 +41,13 @@ EOT;
     }
 
 
-
     public function display()
     {
         Admin::script($this->script());
 
-        $qrcode = "<img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={$this->value}' style='height: 150px;width: 150px;'/>";
+//        $qrcode = "<img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={$this->value}' style='height: 150px;width: 150px;'/>";
+        $baseUrl = config("app.url");
+        $qrcode = "<img src='$baseUrl/api/qr_image?size=150x150&data={$this->value}' style='height: 150px;width: 150px;'/>";
 
 
 //        return <<<EOT
