@@ -1,4 +1,4 @@
-//表单文件上传控件:支持直传文件到七牛,目前只支持单文件
+//表单文件上传控件:支持直传文件到七牛,目前支持单文件
 \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
 //表单文件上传控件:支持直传文件到七牛,目前支持多文件
 \Encore\Admin\Form::extend('qiniuMultipleFile', \Mallto\Admin\Form\Field\QiniuMultipleFile::class);
@@ -14,6 +14,12 @@
 \Encore\Admin\Form::extend('selectOrNew', \Mallto\Admin\Form\Field\SelectOrNew::class);
 //表单富文本编辑器控件
 \Encore\Admin\Form::extend('editor2', \Mallto\Admin\Form\Field\WangEditor::class);
+//qrcode
+\Encore\Admin\Form::extend('qrcode', \Mallto\Admin\Form\Field\QRcode::class);
+//choice
+\Encore\Admin\Form::extend('choice', \Mallto\Admin\Form\Field\Choice::class);
+//embeds2,在原库空间的基础上,view页面元素设置了addElementClass添加的class
+\Encore\Admin\Form::extend('embeds2', \Mallto\Admin\Form\Field\Embeds::class);
 
 
 //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
@@ -35,3 +41,6 @@
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/notify/notify.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/chartjs/Chart.min.js');
+//表格引入的两个库
+\Encore\Admin\Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
+\Encore\Admin\Admin::js('https://file.easy.mall-to.com/js/walden.js');

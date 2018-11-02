@@ -129,9 +129,9 @@ abstract class AdminCommonController extends Controller
     protected function defaultGridOption(Grid $grid)
     {
         if (!$this->closeIdAndTime) {
-            if (Admin::user()->isOwner()) {
+//            if (Admin::user()->isOwner()) {
                 $grid->id('ID')->sortable();
-            }
+//            }
         }
 
         $filter = $grid->getFilter();

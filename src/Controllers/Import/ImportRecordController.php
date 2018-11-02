@@ -53,12 +53,12 @@ class ImportRecordController extends AdminCommonController
 
         $grid->failure_reason();
 
-        $grid->actions(function(Grid\Displayers\Actions $actions){
+        $grid->finish_at("完成时间");
+
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableEdit();
             $actions->disableView();
         });
-//        $grid->disableActions();
-//        $grid->disableCreateButton();
     }
 
     protected function formOption(Form $form)
@@ -90,11 +90,6 @@ class ImportRecordController extends AdminCommonController
             ->move(Admin::user()->id.'/import_file')
             ->help("导入的数据一次不建议超过三万,否则可能失败");
 
-
-        $form->saving(function ($form) {
-
-
-        });
 
         $form->saved(function ($form) {
             dispatch(new ImportFileJob($form->model()->id));

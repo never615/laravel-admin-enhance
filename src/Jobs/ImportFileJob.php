@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mallto\Admin\Data\ImportRecord;
+use Mallto\Admin\Data\ImportSetting;
 
 class ImportFileJob implements ShouldQueue
 {
@@ -58,8 +59,12 @@ class ImportFileJob implements ShouldQueue
     {
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "not_start") {
-            $handler = resolve($record->module_slug);
-            $handler->handle($record);
+            $setting = ImportSetting::where("module_slug", $record->module_slug)
+                ->first();
+            if ($setting) {
+                $handler = resolve($setting->module_handler);
+                $handler->handle($record);
+            }
         }
     }
 
@@ -68,8 +73,12 @@ class ImportFileJob implements ShouldQueue
     {
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "processing") {
-            $handler = resolve($record->module_slug);
-            $handler->fail($record, $exception);
+            $setting = ImportSetting::where("module_slug", $record->module_slug)
+                ->first();
+            if ($setting) {
+                $handler = resolve($setting->module_handler);
+                $handler->fail($record, $exception);
+            }
         }
     }
 

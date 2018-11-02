@@ -45,6 +45,7 @@ class ImportSettingController extends AdminCommonController
     {
         $grid->name("模块说明");
         $grid->module_slug("模块标识");
+        $grid->module_handler("模块处理类");
 
     }
 
@@ -56,7 +57,11 @@ class ImportSettingController extends AdminCommonController
             ->rules("required")
             ->help("该标识会用来做依赖注入,命名规则:模块路径的最后一段+[_import_handler],如:goods_import_handler");
 
-        $form->file("template_with_annotation_url","带说明的模板");
-        $form->file("template_url", "模板");
+        $form->text("module_handler", "模块处理类")
+            ->rules("required")
+            ->help('如:\Mallto\Tool\Utils\AppUtils,会通过resolve(\"\Mallto\Tool\Utils\AppUtils\");获取对象');
+
+        $form->file("template_with_annotation_url", "带说明的模板");
+//        $form->file("template_url", "模板");
     }
 }

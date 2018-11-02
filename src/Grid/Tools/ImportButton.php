@@ -11,23 +11,39 @@ use Encore\Admin\Grid\Tools\AbstractTool;
 
 class ImportButton extends AbstractTool
 {
+    /**
+     * @var null|string
+     */
+    private $moduleSlug;
+
+    /**
+     * ImportButton constructor.
+     *
+     * @param string $moduleSlug 导入任务处理者标识,默认使用引入按钮的的页面的url最后一段
+     *                           如 `http://xxxx.com/admin/member_cards`中的member_cards
+     */
+    public function __construct($moduleSlug=null)
+    {
+        $this->moduleSlug = $moduleSlug;
+    }
+
 
     /**
      * Set up script for export button.
      */
     protected function setUpScripts()
     {
-        $script = <<<'SCRIPT'
+        $script = <<<EOF
 $('.table-import').click(function (e) {
     e.preventDefault();
-    
+    var moduleSlug="$this->moduleSlug";
     var path = window.location.pathname;
     var paths=path.split("/");
     var lastPath=paths.pop();
-    window.location.href="/admin/import_records/create?module_slug="+lastPath+"_import_handler";
+    window.open("/admin/import_records/create?module_slug="+(moduleSlug?moduleSlug:lastPath));
 });
 
-SCRIPT;
+EOF;
 
         Admin::script($script);
     }
