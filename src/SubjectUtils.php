@@ -28,8 +28,7 @@ class SubjectUtils
 
     /**
      *
-     * 获取主体系统设置
-     * 如:是否需要完成自选标签才算注册完成
+     * 获取主体系统设置,只有mallto才可以编辑
      *
      * @param      $key
      * @param null $default
@@ -58,7 +57,36 @@ class SubjectUtils
 
 
     /**
-     * 获取主体的配置信息
+     * 获取主体开放编辑的配置项
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return null
+     */
+    public static function getSubjectOpenExtraConfig($key, $default = null, $subject = null)
+    {
+        if (!$subject) {
+            try {
+                $subject = self::getSubject();
+            } catch (\Exception $exception) {
+                if ($default) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到");
+
+                }
+            }
+        }
+
+        $extraConfig = $subject->open_extra_config ?: [];
+
+        return array_get($extraConfig, $key) ?: $default;
+    }
+
+
+    /**
+     * 获取主体的系统参数配置
      *
      * 主要是第三方接口地址和签名配置
      *

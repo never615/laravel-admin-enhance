@@ -71,8 +71,6 @@ class SubjectController extends AdminCommonController
                 $actions->disableDelete();
             }
             $actions->disableView();
-
-
         });
 
     }
@@ -209,7 +207,7 @@ class SubjectController extends AdminCommonController
             $parentId = $form->parent_id ?? $form->model()->parent_id;
             $parent = Subject::find($parentId);
             if ($parent) {
-                if ($parent&&!empty($parent->path)) {
+                if ($parent && !empty($parent->path)) {
                     $form->model()->path = $parent->path.$parent->id.".";
                 } else {
                     $form->model()->path = ".".$parent->id.".";

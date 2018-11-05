@@ -34,6 +34,7 @@ class Subject extends Model
 
     protected $casts = [
         'extra_config' => 'array',
+        'open_extra_config' => 'array',
     ];
 
 

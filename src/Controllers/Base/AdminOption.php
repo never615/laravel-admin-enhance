@@ -16,12 +16,12 @@ use Encore\Admin\Grid;
  */
 trait AdminOption
 {
-    /**
-     * 获取这个模块的标题
-     *
-     * @return mixed
-     */
-    protected abstract function getHeaderTitle();
+//    /**
+//     * 获取这个模块的标题
+//     *
+//     * @return mixed
+//     */
+//    protected abstract function getHeaderTitle();
 
     /**
      * 获取模块的副标题

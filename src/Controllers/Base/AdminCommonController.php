@@ -68,6 +68,19 @@ abstract class AdminCommonController extends Controller
         });
     }
 
+    /**
+     * 获取这个模块的标题
+     *
+     * @return mixed
+     */
+    protected function getHeaderTitle()
+    {
+        $model = resolve($this->getModel());
+        $tableName = $model->getTable();
+
+        return admin_translate($tableName,$tableName);
+    }
+
 
     /**
      * Edit interface.
@@ -117,7 +130,6 @@ abstract class AdminCommonController extends Controller
     }
 
 
-
     protected function grid()
     {
         return Admin::grid($this->getModel(), function (Grid $grid) {
@@ -130,7 +142,7 @@ abstract class AdminCommonController extends Controller
     {
         if (!$this->closeIdAndTime) {
 //            if (Admin::user()->isOwner()) {
-                $grid->id('ID')->sortable();
+            $grid->id('ID')->sortable();
 //            }
         }
 
