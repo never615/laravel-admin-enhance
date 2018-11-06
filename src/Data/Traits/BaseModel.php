@@ -26,6 +26,19 @@ abstract class BaseModel extends Model
 
 
 
+    public function getIconAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+    }
+
     public function getLogoAttribute($value)
     {
         if (empty($value)) {
