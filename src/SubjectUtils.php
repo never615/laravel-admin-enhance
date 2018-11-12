@@ -30,6 +30,8 @@ class SubjectUtils
      *
      * 获取主体系统设置,只有mallto才可以编辑
      *
+     * 对应对题管理第四个tab
+     *
      * @param      $key
      * @param null $default
      * @param null $subject
@@ -58,6 +60,8 @@ class SubjectUtils
 
     /**
      * 获取主体开放编辑的配置项
+     * 
+     * 对应主体设置第二个tab
      *
      * @param      $key
      * @param null $default
@@ -89,6 +93,8 @@ class SubjectUtils
      * 获取主体的系统参数配置
      *
      * 主要是第三方接口地址和签名配置
+     *
+     * 对应主体管理第五个tab
      *
      * @param      $key
      * @param null $default

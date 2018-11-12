@@ -85,7 +85,8 @@ class Menu extends Model
     }
 
 
-    public function parentMenu2(){
+    public function parentMenu2()
+    {
         $tempMenus = \DB::select("with recursive tab as (
                    select * from admin_menu where id = $this->parent_id
                    union all
@@ -98,7 +99,6 @@ class Menu extends Model
 
         return $menus;
     }
-
 
 
     /**
@@ -164,8 +164,14 @@ class Menu extends Model
 
                 //排序
                 $result = array_sort($tempMenus, $this->orderColumn);
-                Cache::put("menu_".$adminUser->id, $result, 30);
 
+
+                $cacheMenuKey = "menu_".$adminUser->id;
+                Cache::put($cacheMenuKey, $result, 30);
+                $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+                $cacheMenuKeys[] = $cacheMenuKey;
+
+                Cache::forever("cache_menu_keys", $cacheMenuKeys);
 
                 return $result;
             }

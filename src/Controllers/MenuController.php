@@ -14,6 +14,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Layout\Row;
 use Encore\Admin\Tree;
 use Encore\Admin\Widgets\Box;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Menu;
@@ -157,6 +158,15 @@ class MenuController extends AdminCommonController
             }
         });
 
+
+        $form->saved(function ($form) {
+            $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+
+            foreach ($cacheMenuKeys as $cacheMenuKey) {
+                Cache::forget($cacheMenuKey);
+            }
+
+        });
     }
 
 

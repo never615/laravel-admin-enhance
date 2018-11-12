@@ -9,6 +9,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Tree;
+use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 
@@ -72,6 +73,16 @@ class PermissionController extends AdminCommonController
                     $form->model()->path = ".".$parent->id.".";
                 }
             }
+        });
+
+
+        $form->saved(function ($form) {
+            $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+
+            foreach ($cacheMenuKeys as $cacheMenuKey) {
+                Cache::forget($cacheMenuKey);
+            }
+
         });
 
     }
