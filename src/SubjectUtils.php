@@ -7,8 +7,6 @@ namespace Mallto\Admin;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Schema;
-use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
@@ -27,17 +25,14 @@ class SubjectUtils
 
 
     /**
-     *
-     * 获取主体系统设置,只有mallto才可以编辑
-     *
-     * 对应对题管理第四个tab
+     * 获取只有项目拥有者才能编辑的配置项
      *
      * @param      $key
      * @param null $default
      * @param null $subject
-     * @return mixed
+     * @return null
      */
-    public static function getSubjectExtraConfig($key, $default = null, $subject = null)
+    public static function getConfigByOwner($key, $default = null, $subject = null)
     {
         if (!$subject) {
             try {
@@ -59,16 +54,14 @@ class SubjectUtils
 
 
     /**
-     * 获取主体开放编辑的配置项
-     * 
-     * 对应主体设置第二个tab
+     * 获取只有主体拥有者才能编辑的配置项
      *
      * @param      $key
      * @param null $default
      * @param null $subject
      * @return null
      */
-    public static function getSubjectOpenExtraConfig($key, $default = null, $subject = null)
+    public static function getConfigBySubjectOwner($key, $default = null, $subject = null)
     {
         if (!$subject) {
             try {
@@ -90,18 +83,16 @@ class SubjectUtils
 
 
     /**
-     * 获取主体的系统参数配置
+     * 获取可以动态设置key的配置项
      *
-     * 主要是第三方接口地址和签名配置
-     *
-     * 对应主体管理第五个tab
+     * 只有owner可以编辑
      *
      * @param      $key
      * @param null $default
      * @param null $subject
-     * @return mixed
+     * @return mixed|null
      */
-    public static function getSubectConfig2($key, $default = null, $subject = null)
+    public static function getDynamicKeyConfigByOwner($key, $default = null, $subject = null)
     {
         if (!$subject) {
             try {
@@ -263,52 +254,68 @@ class SubjectUtils
         throw new HttpException(422, "uuid参数错误:".$uuid);
     }
 
+
     /**
      *
-     * @param                    $tableName
-     * @param                    $subjectId
-     * @param Administrator|null $adminUser
-     * @return array|bool
+     * 获取主体系统设置,只有mallto才可以编辑
+     *
+     * 对应对题管理第四个tab
+     *
+     * @deprecated use getConfigByOwner()
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return mixed
      */
-    public static function dynamicSubjectIds($tableName, $subjectId, Administrator $adminUser = null)
+    public static function getSubjectExtraConfig($key, $default = null, $subject = null)
     {
-        if (Schema::hasColumn($tableName, 'subject_id')) {
-            if (!empty($adminUserId)) {
-                //如果设置了manager_subject_ids,则优先处理该值
-
-                $managerSubjectIds = $adminUser->manager_subject_ids;
-
-                if (!empty($managerSubjectIds)) {
-                    $tempSubject = new Subject();
-                    $tempSubjectIds = $managerSubjectIds;
-
-                    foreach ($managerSubjectIds as $managerSubjectId) {
-                        $tempSubjectIds = array_merge($tempSubjectIds,
-                            $tempSubject->getChildrenSubject($managerSubjectId));
-                    }
-                    $tempSubjectIds = array_unique($tempSubjectIds);
-                } else {
-                    $currentSubject = $adminUser->subject;
-                    $tempSubjectIds = $currentSubject->getChildrenSubject();
-                }
-            } else {
-                //1.获取当前登录账户属于哪一个主体
-                $currentSubject = Subject::find($subjectId);
-                //2.获取当前主体的所有子主体
-                $ids = $currentSubject->getChildrenSubject($currentSubject->id);
-                $tempSubjectIds = $ids;
-            }
-
-            return $tempSubjectIds;
-        } else {
-            return false;
-        }
+        return self::getConfigByOwner($key, $default, $subject);
     }
 
 
     /**
-     * @deprecated use getSubectConfig2
+     * 获取主体开放编辑的配置项
+     *
+     * 对应主体设置第二个tab
+     *
+     * @deprecated use getConfigBySubjectOwner()
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return null
+     */
+    public static function getSubjectOpenExtraConfig($key, $default = null, $subject = null)
+    {
+        return self::getConfigBySubjectOwner($key, $default, $subject);
+    }
+
+
+    /**
+     * 获取主体的系统参数配置
+     *
+     * 主要是第三方接口地址和签名配置
+     *
+     * 对应主体管理第五个tab
+     *
+     * @deprecated use getDynamicKeyConfigByOwner()
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return mixed
+     */
+    public static function getSubectConfig2($key, $default = null, $subject = null)
+    {
+        return self::getDynamicKeyConfigByOwner($key, $default, $subject);
+    }
+
+
+    /**
      * 获取主体的配置信息
+     *
+     * @deprecated use getSubectConfig2
      *
      * @param      $subject
      * @param      $key
@@ -317,22 +324,7 @@ class SubjectUtils
      */
     public static function getSubectConfig($subject, $key, $default = null)
     {
-        if (!$subject) {
-            throw new SubjectNotFoundException("主体未找到");
-        }
-
-        $subjectConfig = $subject->subjectConfigs()
-            ->where("key", $key)
-            ->first();
-        if (!$subjectConfig) {
-            if ($default) {
-                return $default;
-            } else {
-                throw new SubjectConfigException($key."未配置");
-            }
-        }
-
-        return $subjectConfig->value;
+        return self::getDynamicKeyConfigByOwner($key, $default, $subject);
     }
 
 

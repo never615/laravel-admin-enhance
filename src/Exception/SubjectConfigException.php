@@ -7,6 +7,7 @@ namespace Mallto\Admin\Exception;
 
 
 use Exception;
+use Mallto\Tool\Utils\LogUtils;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -20,6 +21,8 @@ class SubjectConfigException extends HttpException
 
     public function __construct($message = null, Exception $previous = null, $headers = [], $code = 0)
     {
-        parent::__construct(403, $message?:"有参数未配置", $previous, $headers, $code);
+        LogUtils::notConfigLogByOwner($message ?: "有参数未配置");
+
+        parent::__construct(403, $message ?: "有参数未配置", $previous, $headers, $code);
     }
 }
