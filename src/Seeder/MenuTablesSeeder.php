@@ -10,6 +10,7 @@ use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\Menu\AdminManagerMenuSeeder;
 use Mallto\Admin\Seeder\Menu\DashboardMenuSeeder;
 use Mallto\Admin\Seeder\Menu\ImportMenusSeeder;
+use Mallto\Admin\Seeder\Menu\SystemManagerMenuSeeder;
 
 class MenuTablesSeeder extends Seeder
 {
@@ -22,5 +23,7 @@ class MenuTablesSeeder extends Seeder
     {
         $this->call(AdminManagerMenuSeeder::class);
         $this->call(DashboardMenuSeeder::class);
+        $this->call(SystemManagerMenuSeeder::class);
+
     }
 }

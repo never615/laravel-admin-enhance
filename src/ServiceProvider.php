@@ -16,6 +16,7 @@ class ServiceProvider extends BaseServiceProvider
         'Mallto\Admin\Console\InstallCommand',
         'Mallto\Admin\Console\UpdateCommand',
         'Mallto\Admin\Console\PathGeneratorCommand',
+        'Mallto\Admin\Console\MenuCommand',
     ];
 
     /**

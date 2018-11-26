@@ -53,9 +53,7 @@ class AdminManagerMenuSeeder extends Seeder
             "reports.index", $adminManagerMenu->id,
             $order++, "报表管理", "fa-table");
 
-        $this->updateOrCreate(
-            "logs.index", $adminManagerMenu->id,
-            $order++, "操作日志", "fa-history");
+
 
         $this->updateOrCreate(
             "uploads.index", $adminManagerMenu->id,
@@ -65,9 +63,6 @@ class AdminManagerMenuSeeder extends Seeder
             "videos.index", $adminManagerMenu->id,
             $order++, "视频管理", "fa-file-video-o");
 
-        $this->updateOrCreate(
-            "import_settings.index", $adminManagerMenu->id,
-            $order++, "导入配置", "fa-connectdevelop");
 
 
         $this->updateOrCreate(

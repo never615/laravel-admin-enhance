@@ -43,6 +43,10 @@ trait SelectSource
         }
     }
 
+    /**
+     * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
+     * @return mixed
+     */
     public function scopeSelectSourceDatas2()
     {
         if (Admin::user()->isOwner()) {
