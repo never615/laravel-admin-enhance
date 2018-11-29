@@ -11,6 +11,8 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\Data\Subject;
 
 abstract class AdminCommonController extends Controller
 {
@@ -78,7 +80,7 @@ abstract class AdminCommonController extends Controller
         $model = resolve($this->getModel());
         $tableName = $model->getTable();
 
-        return admin_translate($tableName,$tableName);
+        return admin_translate($tableName, $tableName);
     }
 
 
@@ -141,16 +143,19 @@ abstract class AdminCommonController extends Controller
     protected function defaultGridOption(Grid $grid)
     {
         if (!$this->closeIdAndTime) {
-//            if (Admin::user()->isOwner()) {
             $grid->id('ID')->sortable();
-//            }
         }
 
         $filter = $grid->getFilter();
 
         if (!Admin::user()->isOwner()) {
             $filter->disableIdFilter();
+        } else {
+            if (Schema::hasColumn($this->tableName, "subject_id")) {
+                $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
+            }
         }
+
 
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
