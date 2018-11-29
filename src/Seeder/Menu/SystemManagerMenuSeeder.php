@@ -33,6 +33,13 @@ class SystemManagerMenuSeeder extends Seeder
 
         $order = $systemManagerMenu->order;
 
+        $this->updateOrCreate(
+            "permissions.index", $systemManagerMenu->id,
+            $order++, "权限", "fa-user");
+
+        $this->updateOrCreate(
+            "menus.index", $systemManagerMenu->id,
+            $order++, "菜单", "fa-bars");
 
 
         $this->updateOrCreate(

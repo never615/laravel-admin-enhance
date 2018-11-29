@@ -17,10 +17,7 @@ class TablesSeeder extends Seeder
      */
     public function run(MenuTablesSeeder $menuTablesSeeder,PermissionTablesSeeder $permissionTablesSeeder)
     {
-        $this->call(InitDataSeeder::class);
-
         $menuTablesSeeder->run();
         $permissionTablesSeeder->run();
-
     }
 }

@@ -156,6 +156,12 @@ class MenuController extends AdminCommonController
                     $form->model()->path = ".".$parent->id.".";
                 }
             }
+
+
+            if ($form->uri && !ends_with($form->uri, ".index")) {
+                $form->uri = $form->uri.".index";
+            }
+
         });
 
 

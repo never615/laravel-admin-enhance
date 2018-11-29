@@ -41,13 +41,7 @@ class AdminManagerMenuSeeder extends Seeder
             "roles.index", $adminManagerMenu->id,
             $order++, "角色", "fa-user");
 
-        $this->updateOrCreate(
-            "permissions.index", $adminManagerMenu->id,
-            $order++, "权限", "fa-user");
 
-        $this->updateOrCreate(
-            "menus.index", $adminManagerMenu->id,
-            $order++, "菜单", "fa-bars");
 
         $this->updateOrCreate(
             "reports.index", $adminManagerMenu->id,

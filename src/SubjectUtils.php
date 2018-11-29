@@ -114,7 +114,7 @@ class SubjectUtils
             if ($default) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key."未配置");
+                throw new SubjectConfigException($key."未配置,".$subject->id);
             }
         }
 

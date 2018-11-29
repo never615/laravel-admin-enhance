@@ -3,6 +3,7 @@
 namespace Mallto\Admin\Console;
 
 use Illuminate\Console\Command;
+use Mallto\Admin\Seeder\InitDataSeeder;
 use Mallto\Admin\Seeder\TablesSeeder;
 
 class InstallCommand extends Command
@@ -47,6 +48,7 @@ class InstallCommand extends Command
      */
     public function initDatabase()
     {
+        $this->call(InitDataSeeder::class);
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../migrations/']);
         $this->call('db:seed', ['--class' => TablesSeeder::class]);
     }
