@@ -54,7 +54,7 @@ class UserController extends AdminCommonController
     {
         $form->text('username', trans('admin.username'))
             ->help("登录名")
-            ->rules('required|unique:admin_users');
+            ->rules('required');
 
         $form->text('name', trans('admin.name'))->rules('required');
         if ($this->currentId) {
@@ -131,7 +131,7 @@ EOT;
 //            });
 
 
-        $form->ignore(['password_confirmation']);
+        $form->ignore(['password_confirmation', 'qrcode', 'unbind_wechat']);
 
 
         $form->multipleSelect('roles', trans('admin.roles'))
@@ -140,7 +140,7 @@ EOT;
         $form->saving(function (Form $form) {
 
             //检查账户名称是否已经存在
-            if ($form->username && $form->username != $form->model()->username) {
+            if ($form->username && ($form->username != $form->model()->username)) {
 
                 $subjectId = $form->subject_id ?: $form->model()->subject_id;
                 $adminUser = Administrator::where("subject_id", $subjectId)
