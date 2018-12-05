@@ -31,7 +31,9 @@ trait AdminSubjectTrait
             //拥有子主体的主体,在table中显示条目的所属主体
             if (Admin::user()->subject->hasChildrenSubject()) {
                 $grid->subject_id()->sortable()->display(function ($value) {
-                    return $this->getModel()->subject()->first()->name;
+                    $subject = Subject::find($value);
+
+                    return $subject->name;
                 });
             }
         }
@@ -82,10 +84,10 @@ trait AdminSubjectTrait
             $subject = Admin::user()->subject;
             $baseSubject = $subject->baseSubject();
             if ($baseSubject && $baseSubject->base) {
-                $form->subject_id=$baseSubject->id;
+                $form->subject_id = $baseSubject->id;
                 $form->model()->subject_id = $baseSubject->id;
             } else {
-                $form->subject_id=$subject->id;
+                $form->subject_id = $subject->id;
                 $form->model()->subject_id = $subject->id;
             }
         }
