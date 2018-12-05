@@ -17,6 +17,7 @@ namespace Mallto\Admin\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mallto\Admin\Data\Permission;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -43,16 +44,18 @@ class AutoPermissionMiddleware
         $currentRouteName = $request->route()->getName();
         $routenameArr = explode(".", $currentRouteName);
 
-
         if (count($routenameArr) == 2) {
             $subRouteName = $routenameArr[1];
 
-            if ($subRouteName == "edit" || $subRouteName == "show") {
-                $currentRouteName = $routenameArr[0].".index";
-            }
+            if (!Permission::where("slug", $currentRouteName)
+                ->exists()) {
+                if ($subRouteName == "edit" || $subRouteName == "show") {
+                    $currentRouteName = $routenameArr[0].".index";
+                }
 
-            if ($subRouteName == "store" || $subRouteName == "update") {
-                $currentRouteName = $routenameArr[0].".create";
+                if ($subRouteName == "store" || $subRouteName == "update") {
+                    $currentRouteName = $routenameArr[0].".create";
+                }
             }
         }
 
@@ -66,7 +69,6 @@ class AutoPermissionMiddleware
         if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }
-
 
 
         //权限管理有该权限,检查用户是否有该权限

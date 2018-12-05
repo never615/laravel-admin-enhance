@@ -3,7 +3,6 @@
 namespace Mallto\Admin\Seeder\Permission;
 
 
-use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\SeederMaker;
 
@@ -22,10 +21,17 @@ class AdminmanagerSeeder extends Seeder
      */
     public function run()
     {
+
         /**
          * ------------------------  主体  ---------------------------
          */
-        $this->createPermissions("主体", "subjects", true, 0, false, true);
+        $this->createPermissions("主体", "subjects", true, 0,
+            false, true, false, [
+                "index"   => "查看",  //列表页/详情页/show
+                "create"  => "创建", //创建页/保存
+                "update"  => "修改", //修改
+                "destroy" => "删除", //删除权限
+            ]);
 
         /**
          * ------------------------  账户  ---------------------------
@@ -53,7 +59,7 @@ class AdminmanagerSeeder extends Seeder
         /**
          * ------------------------  报表  ---------------------------
          */
-        $this->createPermissions("报表", "reports", true, 0, false, true);
+        $this->createPermissions("报表", "reports", true, 0, false, false);
 
         /**
          * ------------------------  操作日志  ---------------------------

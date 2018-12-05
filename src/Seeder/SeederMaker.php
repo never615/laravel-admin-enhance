@@ -31,6 +31,7 @@ trait SeederMaker
      * @param bool $closeDelete ,是否关闭创建子权限之`删除`权限
      * @param bool $common      ,是否是所有主体都默认有的公共权限
      * @param bool $closeCreate ,是否关闭创建子权限之`创建/修改`权限
+     * @param null $routeNames
      * @return int
      */
     public function createPermissions(
@@ -40,7 +41,8 @@ trait SeederMaker
         $parentId = 0,
         $closeDelete = false,
         $common = false,
-        $closeCreate = false
+        $closeCreate = false,
+        $routeNames = null
     ) {
         $path = "";
         $parentPermission = Permission::find($parentId);
@@ -77,8 +79,12 @@ trait SeederMaker
             }
         }
 
+
         if ($sub) {
-            $routeNames = $this->routeNames;
+            if (!$routeNames) {
+                $routeNames = $this->routeNames;
+            }
+
             if ($closeDelete) {
                 unset($routeNames["destroy"]);
             }
@@ -105,16 +111,14 @@ trait SeederMaker
 
     public function __get($name)
     {
-        if($name=="order"){
-            if(isset($this->order)){
+        if ($name == "order") {
+            if (isset($this->order)) {
                 return $this->order;
-            }else{
+            } else {
                 return 10000;
             }
         }
     }
-
-
 
 
 }
