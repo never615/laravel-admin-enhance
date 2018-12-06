@@ -27,12 +27,14 @@ class SubjectUtils
     /**
      * 获取只有项目拥有者才能编辑的配置项
      *
+     * 对应主体管理的"配置项"tab
+     *
      * @param      $key
      * @param null $default
      * @param null $subject
      * @return null
      */
-    public static function getConfigByOwner($key, $default = null, $subject = null)
+    public static function getConfigByOwner($key, $subject = null, $default = null)
     {
         if (!$subject) {
             try {
@@ -55,6 +57,8 @@ class SubjectUtils
 
     /**
      * 获取只有主体拥有者才能编辑的配置项
+     *
+     * 对应主体管理的系统配置(owner)tab
      *
      * @param      $key
      * @param null $default
@@ -87,12 +91,14 @@ class SubjectUtils
      *
      * 只有owner可以编辑
      *
+     * 对应主体管理的最后一个tab,即:系统参数(owner)
+     *
      * @param      $key
      * @param null $default
      * @param null $subject
      * @return mixed|null
      */
-    public static function getDynamicKeyConfigByOwner($key, $default = null, $subject = null)
+    public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
     {
         if (!$subject) {
             try {
@@ -252,79 +258,6 @@ class SubjectUtils
         }
 
         throw new HttpException(422, "uuid参数错误:".$uuid);
-    }
-
-
-    /**
-     *
-     * 获取主体系统设置,只有mallto才可以编辑
-     *
-     * 对应对题管理第四个tab
-     *
-     * @deprecated use getConfigByOwner()
-     *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
-     * @return mixed
-     */
-    public static function getSubjectExtraConfig($key, $default = null, $subject = null)
-    {
-        return self::getConfigByOwner($key, $default, $subject);
-    }
-
-
-    /**
-     * 获取主体开放编辑的配置项
-     *
-     * 对应主体设置第二个tab
-     *
-     * @deprecated use getConfigBySubjectOwner()
-     *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
-     * @return null
-     */
-    public static function getSubjectOpenExtraConfig($key, $default = null, $subject = null)
-    {
-        return self::getConfigBySubjectOwner($key, $default, $subject);
-    }
-
-
-    /**
-     * 获取主体的系统参数配置
-     *
-     * 主要是第三方接口地址和签名配置
-     *
-     * 对应主体管理第五个tab
-     *
-     * @deprecated use getDynamicKeyConfigByOwner()
-     *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
-     * @return mixed
-     */
-    public static function getSubectConfig2($key, $default = null, $subject = null)
-    {
-        return self::getDynamicKeyConfigByOwner($key, $default, $subject);
-    }
-
-
-    /**
-     * 获取主体的配置信息
-     *
-     * @deprecated use getSubectConfig2
-     *
-     * @param      $subject
-     * @param      $key
-     * @param null $default
-     * @return mixed
-     */
-    public static function getSubectConfig($subject, $key, $default = null)
-    {
-        return self::getDynamicKeyConfigByOwner($key, $default, $subject);
     }
 
 
