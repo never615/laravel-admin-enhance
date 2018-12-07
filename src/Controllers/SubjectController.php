@@ -82,11 +82,14 @@ class SubjectController extends AdminCommonController
      */
     protected function defaultFormOption(Form $form)
     {
-        $form->tab("基本信息", function ($form) {
+        $form = $form->tab("基本信息", function ($form) {
             $form->text("name")->rules('required');
             $this->formSubject($form);
             $this->formAdminUser($form);
-        })->tab("系统必要配置", function ($form) {
+        });
+
+
+        $form = $form->tab("系统必要配置", function ($form) {
 
             //父级主体和已购模块只能父级设置,自己可以看,不能改
             $current = Subject::find($this->currentId);
