@@ -76,6 +76,10 @@ Route::group($attributes, function ($router) {
                 //导入记录
                 $router->resource("import_records", 'Import\ImportRecordController');
 
+                //账户分组
+                Route::resource('admin_user_groups', 'AdminUserGroupController');
+
+
 
             });
         });

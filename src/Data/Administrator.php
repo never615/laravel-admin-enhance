@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Passport\HasApiTokens;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions;
+use Mallto\Admin\Data\Traits\SelectSource;
 
 /**
  * Class Administrator.
@@ -21,7 +22,7 @@ use Mallto\Admin\Data\Traits\HasPermissions;
  */
 class Administrator extends Model implements AuthenticatableContract
 {
-    use Authenticatable, AdminBuilder, HasPermissions, DynamicData,HasApiTokens;
+    use Authenticatable, AdminBuilder, HasPermissions, DynamicData, HasApiTokens, SelectSource;
 
     protected $fillable = [
         'username',
@@ -64,6 +65,12 @@ class Administrator extends Model implements AuthenticatableContract
     public function adminable()
     {
         return $this->morphTo();
+    }
+
+    public function groups()
+    {
+        return $this->belongsToMany(AdminUserGroup::class, "admin_user_group_users",
+            'user_id', 'group_id');
     }
 
 }

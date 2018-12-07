@@ -8,6 +8,7 @@ namespace Mallto\Admin\Seeder;
 
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\Permission\AdminmanagerSeeder;
+use Mallto\Admin\Seeder\Permission\AdminUserGroupPermissionSeeder;
 use Mallto\Admin\Seeder\Permission\ImportPermissionsSeeder;
 
 class PermissionTablesSeeder extends Seeder
@@ -21,6 +22,7 @@ class PermissionTablesSeeder extends Seeder
     {
         $this->call(ImportPermissionsSeeder::class);
         $this->call(AdminmanagerSeeder::class);
+        $this->call(AdminUserGroupPermissionSeeder::class);
 
     }
 }
