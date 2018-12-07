@@ -31,16 +31,14 @@ class SubjectConfigController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
-        $grid->remark()->editable();
-//        $grid->type()->select(SubjectConfig::TYPE);
-        $grid->key()->editable();
+        $grid->key()->display(function ($value) {
+            return config("app.subject_config_key")[$value] ?? $value;
+        });
         $grid->value()->editable();
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike("key");
         });
-
-
     }
 
     /**
@@ -57,13 +55,11 @@ class SubjectConfigController extends AdminCommonController
      */
     protected function formOption(Form $form)
     {
-        $form->textarea("remark");
         $form->select("type")
             ->options(SubjectConfig::TYPE)
             ->default("private");
-        $form->text("key");
+        $form->select("key")->options(config("app.subject_config_key"));
         $form->text("value");
-
-
+        $form->textarea("remark");
     }
 }
