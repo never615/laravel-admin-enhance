@@ -24,21 +24,14 @@ class QRcode extends Field
     {
 
         if ($this->qrcodeUrl instanceof \Closure) {
-//            $this->qrcodeUrl = call_user_func($this->qrcodeUrl, $this->form);
             $this->qrcodeUrl = $this->qrcodeUrl->call($this->form->model(), $this->value);
         }
+
+        $this->qrcodeUrl = urlencode($this->qrcodeUrl);
 
         $baseUrl = config("app.url");
 
         return "<img src='$baseUrl/api/qr_image?size=150x150&data={$this->qrcodeUrl}' style='height: 150px;width: 150px;'/>";
-    }
-
-    /**
-     * @param mixed $qrcodeUrl
-     */
-    public function setQrcodeUrl($qrcodeUrl): void
-    {
-        $this->qrcodeUrl = $qrcodeUrl;
     }
 
     public function qrcodeUrl($url)
