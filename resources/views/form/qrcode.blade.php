@@ -9,7 +9,7 @@
         <input type="hidden" name="{{$name}}"/>
 
         <a class="btn btn-default btn-sm grid-qrcode" data-content="{{$qrcodeUrl}}" data-toggle='popover' tabindex='0'>
-            <i class="fa fa-qrcode"></i>
+            <i class="fa fa-qrcode"></i> 点击显示/关闭
         </a>
 
         @include('admin::form.help-block')
@@ -21,9 +21,9 @@
 <script>
     $(document).ready(function () {
         $('.grid-qrcode').popover({
-            title: "扫描二维码",
+            title: "临时二维码",
             html: true,
-            trigger: 'focus'
+            // trigger: 'focus'
         });
 
     });
