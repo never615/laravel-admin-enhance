@@ -33,7 +33,7 @@ class Subject extends Model
 
 
     protected $casts = [
-        'extra_config' => 'array',
+        'extra_config'      => 'array',
         'open_extra_config' => 'array',
     ];
 
@@ -162,27 +162,6 @@ class Subject extends Model
             }
 
             return $baseSubject ?: $this;
-
-//            if ($this->tempBaseSubject && isset($this->tempBaseSubject[$this->id])) {
-//                return $this->tempBaseSubject[$this->id];
-//            }
-//
-//            $currentId = $this->id;
-//            $tempSubjects = DB::select("with recursive tab as (
-//                 select * from subjects where id = $currentId
-//                  union all
-//                  select s.* from subjects as s inner join tab on tab.parent_id = s.id where s.parent_id != 0
-//                )
-//           select * from tab where base = true");
-//
-//            if (empty($tempSubjects)) {
-//                return $this;
-//            } else {
-//                $baseSubject = Subject::find($tempSubjects[0]->id);
-//                $this->tempBaseSubject[$this->id] = $baseSubject;
-//
-//                return $baseSubject;
-//            }
         }
     }
 
