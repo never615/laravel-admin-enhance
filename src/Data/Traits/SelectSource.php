@@ -45,20 +45,17 @@ trait SelectSource
 
     /**
      * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
+     *
      * @return mixed
      */
     public function scopeSelectSourceDatas2()
     {
-        if (Admin::user()->isOwner()) {
-            if (Schema::hasColumn($this->getTable(), 'subject_id')) {
-                return static::dynamicData()
-                    ->select(DB::raw("name||'-'||subject_id as name,id"));
-            } else {
-                return static::dynamicData()
-                    ->select(DB::raw("name as name,id"));
-            }
+        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
+            return static::dynamicData()
+                ->select(DB::raw("name||'-'||subject_id as name,id"));
         } else {
-            return static::dynamicData();
+            return static::dynamicData()
+                ->select(DB::raw("name as name,id"));
         }
     }
 
