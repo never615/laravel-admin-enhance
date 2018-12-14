@@ -16,14 +16,12 @@ use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Tool\Domain\Traits\SlugAutoSave;
-use Mallto\Tool\Exception\ResourceException;
-use Mallto\Tool\Utils\AppUtils;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends AdminCommonController
 {
 
-    use PermissionHelp,SlugAutoSave;
+    use PermissionHelp, SlugAutoSave;
 
     /**
      * 获取这个模块的标题
@@ -62,7 +60,7 @@ class RoleController extends AdminCommonController
     {
         if (Admin::user()->isOwner()) {
             $form->text('slug', trans('admin.slug'))
-            ->help("不填写会自动生成,建议不填写");
+                ->help("不填写会自动生成,建议不填写");
         }
 
         $form->text('name', trans('admin.name'))->rules('required');
@@ -103,7 +101,6 @@ class RoleController extends AdminCommonController
 
         });
     }
-
 
 
 }

@@ -167,6 +167,7 @@ abstract class AdminCommonController extends Controller
             $actions->disableView();
         });
 
+        $this->gridModelFilter($grid);
         $this->gridFilterData($grid);
         $this->gridOrder($grid);
         $this->gridOption($grid);
@@ -221,6 +222,12 @@ abstract class AdminCommonController extends Controller
     protected function gridOrder($grid)
     {
         $grid->model()->orderBy('id', 'desc');
+    }
+
+
+    protected function gridModelFilter($grid)
+    {
+        //$grid->model()->where("type", "park");
     }
 
 }
