@@ -142,15 +142,14 @@ abstract class AdminCommonController extends Controller
 
     protected function defaultGridOption(Grid $grid)
     {
-        if (!$this->closeIdAndTime) {
-            $grid->id('ID')->sortable();
-        }
+        $adminUser=Admin::user();
 
         $filter = $grid->getFilter();
 
-        if (!Admin::user()->isOwner()) {
+        if (!$adminUser->isOwner()) {
             $filter->disableIdFilter();
         } else {
+            $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
                 $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
             }
