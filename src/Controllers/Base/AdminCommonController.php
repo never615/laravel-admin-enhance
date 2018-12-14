@@ -142,6 +142,9 @@ abstract class AdminCommonController extends Controller
 
     protected function defaultGridOption(Grid $grid)
     {
+
+        $grid->expandFilter();
+
         $adminUser=Admin::user();
 
         $filter = $grid->getFilter();
