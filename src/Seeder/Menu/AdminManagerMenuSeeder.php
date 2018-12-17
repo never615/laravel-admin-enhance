@@ -21,7 +21,7 @@ class AdminManagerMenuSeeder extends Seeder
     public function run()
     {
 
-        $order = 100;
+        $order = 2;
 
         $adminManagerMenu = $this->updateOrCreate(
             "admin_manager", 0, $order++, "管理", "fa-tasks");

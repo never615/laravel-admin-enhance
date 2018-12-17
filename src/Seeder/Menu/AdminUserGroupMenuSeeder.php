@@ -3,12 +3,15 @@
 namespace Mallto\Admin\Seeder\Menu;
 
 
-use Mallto\Admin\Data\Menu;
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Data\Menu;
+use Mallto\Admin\Seeder\MenuSeederMaker;
 
 
 class AdminUserGroupMenuSeeder extends Seeder
 {
+    use MenuSeederMaker;
+
     /**
      * Run the database seeds.
      *
@@ -16,24 +19,17 @@ class AdminUserGroupMenuSeeder extends Seeder
      */
     public function run()
     {
+        $order = Menu::max('order');
+        $parentId = 0;
+
         $menu = Menu::where("uri", "admin_manager")->first();
 
-        $order=10000;
-        $parentId=0;
-        if($menu){
-            $order=$menu->order;
-            $parentId=$menu->id;
+        if ($menu) {
+            $order = $menu->order;
+            $parentId = $menu->id;
         }
 
-        Menu::updateOrCreate([
-            'uri' => 'admin_user_groups.index',
-        ], [
-                'parent_id' => $parentId,
-                'order'     => $order += 1,
-                'title'     => '管理账户分组',
-                'icon'      => 'fa-group',
-            ]
-        );
-
+        $this->updateOrCreate(
+            "admin_user_groups.index", $parentId, $order++, "管理账户分组", "fa-group");
     }
 }
