@@ -222,6 +222,11 @@ class Subject extends Model
     }
 
 
+    /**
+     * 试试递归计算获取所有父ids
+     *
+     * @return array
+     */
     public function getParentSubjectIds2()
     {
         $currentSubjectId = $this->id;
