@@ -38,9 +38,9 @@ Route::group([
         function ($router) {
 
         });
-
-
 });
+
+\Mallto\Admin\Facades\AdminE::registerAuthRoutes();
 
 
 Route::group($attributes, function ($router) {
@@ -78,7 +78,6 @@ Route::group($attributes, function ($router) {
 
                 //账户分组
                 Route::resource('admin_user_groups', 'AdminUserGroupController');
-
 
 
             });
