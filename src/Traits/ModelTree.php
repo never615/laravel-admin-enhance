@@ -245,7 +245,7 @@ trait ModelTree
         $options = (new static())->buildSelectOptions($nodes, 0, "", $defaultBlack);
 
         if ($root) {
-            return collect($options)->prepend('Root', 0)->all();
+            return collect($options)->prepend('根节点', 0)->all();
         } else {
             return collect($options)->all();
         }
