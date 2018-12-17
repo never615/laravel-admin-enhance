@@ -237,18 +237,13 @@ EOT;
         $subject = $adminUser->subject;
         $uuid = $subject->uuid;
 
-        $wechatOAuthUrl = "";
-        $redirectUrl = "";
-
-        if (config("app.env") == "production") {
-            $wechatOAuthUrl .= "https://wechat.mall-to.com/wechat/oauth";
-            $redirectUrl .= "https://easy.mall-to.com/admin/admin_bind_wechat";
-
+        if (config("app.env") == "production" || config("app.env") == "staging") {
+            $wechatOAuthUrl = "https://wechat.mall-to.com/wechat/oauth";
+            $redirectUrl = config("app.url")."/admin/admin_bind_wechat";
         } else {
-            $wechatOAuthUrl .= "https://test-wechat.mall-to.com/wechat/oauth";
-            $redirectUrl .= "https://".config("app.env")."-easy.mall-to.com/admin/admin_bind_wechat";
+            $wechatOAuthUrl = "https://test-wechat.mall-to.com/wechat/oauth";
+            $redirectUrl = config("app.url")."/admin/admin_bind_wechat";
         }
-
 
         $redirectUrl .= "?admin_user_id=".$adminUser->id;
 
@@ -259,8 +254,7 @@ EOT;
 
         $wechatOAuthUrl .= "?".$queryDataStr;
 
-
-        return urlencode($wechatOAuthUrl);
+        return $wechatOAuthUrl;
     }
 
 }

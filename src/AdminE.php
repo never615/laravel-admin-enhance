@@ -35,10 +35,13 @@ class AdminE
      */
     public function registerAuthRoutes()
     {
+
         $attributes = [
             'prefix'     => config('admin.route.prefix'),
             'middleware' => ['adminE_base'],
         ];
+
+
         Route::group($attributes, function ($router) {
             $attributes = ['middleware' => ['adminE.auto_permission']];
             /* @var \Illuminate\Routing\Router $router */
