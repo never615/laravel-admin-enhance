@@ -62,6 +62,14 @@ class ImportSettingController extends AdminCommonController
             ->help('如:\Mallto\Tool\Utils\AppUtils,会通过resolve(\"\Mallto\Tool\Utils\AppUtils\");获取对象');
 
         $form->file("template_with_annotation_url", "带说明的模板");
+        if ($this->currentId) {
+            $form->display("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
+                $value=$this->template_with_annotation_url;
+                $url = config("app.file_url_prefix").$value;
+
+                return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
+            });
+        }
 //        $form->file("template_url", "模板");
     }
 }
