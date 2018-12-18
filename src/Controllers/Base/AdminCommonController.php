@@ -145,7 +145,7 @@ abstract class AdminCommonController extends Controller
 
         $grid->expandFilter();
 
-        $adminUser=Admin::user();
+        $adminUser = Admin::user();
 
         $filter = $grid->getFilter();
 
@@ -169,11 +169,18 @@ abstract class AdminCommonController extends Controller
             $actions->disableView();
         });
 
+
+
+
         $this->gridModelFilter($grid);
         $this->gridFilterData($grid);
         $this->gridOrder($grid);
         $this->gridOption($grid);
         $this->gridSubject($grid);
+
+        $grid->filter(function (Grid\Filter $filter) {
+            $filter->between("created_at")->date();
+        });
 
         if (!$this->closeIdAndTime) {
             $grid->created_at(trans('admin.created_at'))->sortable();
