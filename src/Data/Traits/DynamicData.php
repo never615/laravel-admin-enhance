@@ -12,9 +12,9 @@ namespace Mallto\Admin\Data\Traits;
  * Date: 24/03/2017
  * Time: 7:51 PM
  */
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\SubjectUtils;
 
 /**
  * 在这里处理查询作用域
@@ -40,11 +40,9 @@ trait DynamicData
     {
         if (Schema::hasColumn($this->getTable(), 'subject_id')) {
             //1.获取当前登录账户属于哪一个主体
-            $adminUser = Auth::guard("admin")->user();
-            $currentSubject = $adminUser->subject;
+            $currentSubject = SubjectUtils::getSubject();
             //2.获取当前主体的所有子主体
             $ids = $currentSubject->getChildrenSubject();
-
 
             //查询管理账户是否设置了manager_subject_ids暂时用不到,先屏蔽
 
