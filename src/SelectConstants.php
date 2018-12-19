@@ -17,10 +17,12 @@ namespace Mallto\Admin;
 
 class SelectConstants
 {
+    //开关的数据源
     const SWITCH_STATES = [
         'on'  => ['value' => 1, 'text' => '打开', 'color' => 'primary'],
         'off' => ['value' => 2, 'text' => '关闭', 'color' => 'default'],
     ];
+
 
     //是否
     const YES_OR_NO = [
