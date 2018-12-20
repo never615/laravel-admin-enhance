@@ -57,39 +57,49 @@ class ImportRecordController extends AdminCommonController
         $grid->finish_at("完成时间");
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
-            $actions->disableEdit();
             $actions->disableView();
         });
     }
 
     protected function formOption(Form $form)
     {
-        $moduleSlug = request("module_slug");
+        if ($this->currentId) {
+            $form->display("setting.name", "模块");
 
-        if ($moduleSlug) {
-            $form->hidden("module_slug")
-                ->default($moduleSlug);
+            $form->display("status")->with(function ($value) {
+                return ImportRecord::STATUS[$value] ?? "";
+            });
+            $form->display("failure_reason");
+            $form->display("finish_at", "完成时间");
 
-            $importSetting = ImportSetting::where("module_slug", $moduleSlug)
-                ->first();
-            if ($importSetting) {
-                $form->display("template_url", "导入模板示例")->with(function () use ($importSetting) {
-                    $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
-
-                    return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
-                });
-            }
         } else {
-            $form->select("module_slug", "模块")
+            $moduleSlug = request("module_slug");
+
+            if ($moduleSlug) {
+                $form->hidden("module_slug")
+                    ->default($moduleSlug);
+
+                $importSetting = ImportSetting::where("module_slug", $moduleSlug)
+                    ->first();
+                if ($importSetting && $importSetting->template_with_annotation_url) {
+                    $form->display("template_url", "导入模板示例")->with(function () use ($importSetting) {
+                        $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
+
+                        return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
+                    });
+                }
+            } else {
+                $form->select("module_slug", "模块")
+                    ->rules("required")
+                    ->options(ImportSetting::selectSourceDatas());
+            }
+
+
+            $form->filePrivate("file_url", "文件")
                 ->rules("required")
-                ->options(ImportSetting::selectSourceDatas());
+                ->move(Admin::user()->id.'/import_file')
+                ->help("导入的数据一次不建议超过三万,否则可能失败");
         }
-
-
-        $form->filePrivate("file_url", "文件")
-            ->rules("required")
-            ->move(Admin::user()->id.'/import_file')
-            ->help("导入的数据一次不建议超过三万,否则可能失败");
 
 
         $form->saving(function ($form) {
