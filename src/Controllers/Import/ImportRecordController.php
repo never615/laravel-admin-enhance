@@ -13,6 +13,7 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Admin\Data\ImportSetting;
 use Mallto\Admin\Jobs\ImportFileJob;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 
 /**
@@ -91,9 +92,15 @@ class ImportRecordController extends AdminCommonController
             ->help("导入的数据一次不建议超过三万,否则可能失败");
 
 
+        $form->saving(function ($form) {
+            if ($this->currentId) {
+                throw new PermissionDeniedException("非法提交");
+            }
+        });
+
+
         $form->saved(function ($form) {
             dispatch(new ImportFileJob($form->model()->id));
-
         });
     }
 }

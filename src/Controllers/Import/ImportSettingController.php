@@ -55,16 +55,19 @@ class ImportSettingController extends AdminCommonController
 
         $form->text("module_slug", "模块标识")
             ->rules("required")
-            ->help("该标识会用来做依赖注入,命名规则:模块路径的最后一段+[_import_handler],如:goods_import_handler");
+            ->help("配置导入按钮ImportButton的管理模块页面路径的最后一段path,
+<br>如:https://xx.com/admin/member_cards.会员卡模块下,该标识就填写member_cards");
 
         $form->text("module_handler", "模块处理类")
             ->rules("required")
-            ->help('如:\Mallto\Tool\Utils\AppUtils,会通过resolve(\"\Mallto\Tool\Utils\AppUtils\");获取对象');
+            ->help('如:\Mallto\Mall\Domain\Import\MemberCardImport,
+<br>会通过resolve("\Mallto\Mall\Domain\Import\MemberCardImport");获取对象,处理导入操作.
+<br>该对象需要继承BaseImportHandler');
 
         $form->file("template_with_annotation_url", "带说明的模板");
         if ($this->currentId) {
             $form->display("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
-                $value=$this->template_with_annotation_url;
+                $value = $this->template_with_annotation_url;
                 $url = config("app.file_url_prefix").$value;
 
                 return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';

@@ -72,7 +72,8 @@ abstract class BaseImportHandler
      * @param null         $finishAt
      * @param null         $failureReason
      */
-    protected function updateRecordStatus($importRecord, $status, $finishAt = null, $failureReason = null)
+    protected function updateRecordStatus($importRecord, $status,
+        $finishAt = null, $failureReason = null)
     {
         $importRecord->status = $status;
         $importRecord->failure_reason = $failureReason ?: null;

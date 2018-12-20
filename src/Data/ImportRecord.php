@@ -18,9 +18,8 @@ class ImportRecord extends BaseModel
         "processing"        => "进行中",
         "failure"           => "导入失败",
         "partially_failure" => "部分成功",
+        "finish"            => "导入结束",
     ];
-
-
 
 
     public function setting()
