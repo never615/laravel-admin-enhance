@@ -144,7 +144,6 @@ trait ExporterTrait
                 "logo",
                 "deleted_at",
                 "top_subject_id",
-                "admin_user_id",
                 "subject_id",
             ], (array) $keys);
         }
