@@ -13,7 +13,7 @@
             return response.statusText + ":" + response.status
         }
     };
-    $.fn.editable.defaults.emptytext="空";
+    $.fn.editable.defaults.emptytext = "空";
     //turn to inline mode
 //     $.fn.editable.defaults.mode = 'inline';
 //     $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
@@ -207,7 +207,6 @@
     }
 
 
-
     /**
      * Js获取Url参数
      * @returns {{}}
@@ -325,6 +324,41 @@
             result = result.replace(/\s/g, "");
         }
         return result;
+    };
+
+
+    /**
+     * 解析url
+     * @param url
+     * @returns {HTMLAnchorElement}
+     */
+    window.parserUrl = function (url) {
+        var parser = document.createElement('a');
+        parser.href = url;
+        return parser;
+
+        // parser.protocol; // => "http:"
+        // parser.hostname; // => "example.com"
+        // parser.port;     // => "3000"
+        // parser.pathname; // => "/pathname/"
+        // parser.search;   // => "?search=test"
+        // parser.hash;     // => "#hash"
+        // parser.host;     // => "example.com:3000"
+
+    };
+
+    /**
+     * 获取url search,返回一个{key: value, ..}的对象，方便进一步处理这些参数。
+     * @param search
+     * @returns {{}}
+     */
+    window.getSearchParams = function (search) {
+        var paramPart = search.substr(1).split('&');
+        return paramPart.reduce(function (res, item) {
+            parts = item.split('=');
+            res[parts[0]] = parts[1];
+            return res;
+        }, {});
     }
 
 

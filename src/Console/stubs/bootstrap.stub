@@ -41,6 +41,7 @@
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/notify/notify.js');
 \Encore\Admin\Admin::js('/vendor/laravel-adminE/chartjs/Chart.min.js');
+\Encore\Admin\Admin::js('/vendor/laravel-adminE/jsQR/jsQR.js');
 //表格引入的两个库
 \Encore\Admin\Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
 \Encore\Admin\Admin::js('https://file.easy.mall-to.com/js/walden.js');
