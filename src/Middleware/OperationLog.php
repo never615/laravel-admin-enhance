@@ -10,7 +10,6 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Domain\Log\Logger;
 use Mallto\Tool\Jobs\LogJob;
 
 /**
@@ -39,7 +38,7 @@ class OperationLog
 
         if (config('admin.operation_log.enable') && $adminUser) {
 
-            $ip = "";
+            $ip = 0;
             $tempIp = $request->header("X-Forwarded-For");
             if ($tempIp) {
                 $ip = $tempIp;
@@ -48,18 +47,56 @@ class OperationLog
             }
 
             $log = [
-                'uuid'        => SubjectUtils::getUUIDNoException() ?: 0,
+                'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
                 'user_id'    => $adminUser->id,
                 'path'       => $request->path(),
                 'method'     => $request->method(),
                 'request_ip' => $ip,
                 'input'      => json_encode($request->input()),
                 'subject_id' => $adminUser->subject->id,
+                "action"     => "request",
             ];
 
-            dispatch(new LogJob("logAdminOperation",$log));
+            dispatch(new LogJob("logAdminOperation", $log));
         }
 
-        return $next($request);
+        $response = $next($request);
+        if (config('admin.operation_log.enable') && $adminUser) {
+            if (is_array($response->getContent())) {
+                $input = json_encode($response->getContent());
+            } else {
+                if (is_string($response->getContent())) {
+                    try {
+                        $input = json_decode($response->getContent());
+                        if (is_null($input)) {
+                            $input = "非json数据";
+                        } else {
+                            $input = $response->getContent();
+                        }
+                    } catch (\Exception $exception) {
+                        $input = "异常数据";
+                    }
+                } else {
+                    $input = "其他数据";
+                }
+            }
+
+            $log = [
+                'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
+                'user_id'    => $adminUser->id,
+                'path'       => $request->path(),
+                'method'     => $request->method(),
+                'request_ip' => $ip,
+                'input'      => $input,
+                'subject_id' => $adminUser->subject->id,
+                'action'     => "response",
+                'status'     => $response->getStatusCode(),
+            ];
+
+            dispatch(new LogJob("logAdminOperation", $log));
+        }
+
+
+        return $response;
     }
 }
