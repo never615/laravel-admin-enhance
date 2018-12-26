@@ -61,39 +61,40 @@ class OperationLog
         }
 
         $response = $next($request);
-        if (is_array($response->getContent())) {
-            $input = json_encode($response->getContent());
-        } else {
-            if (is_string($response->getContent())) {
-                try {
-                    $input = json_decode($response->getContent());
-                    if (is_null($input)) {
-                        $input = "非json数据";
-                    } else {
-                        $input = $response->getContent();
-                    }
-                } catch (\Exception $exception) {
-                    $input = "异常数据";
-                }
+        if (config('admin.operation_log.enable') && $adminUser) {
+            if (is_array($response->getContent())) {
+                $input = json_encode($response->getContent());
             } else {
-                $input = "其他数据";
+                if (is_string($response->getContent())) {
+                    try {
+                        $input = json_decode($response->getContent());
+                        if (is_null($input)) {
+                            $input = "非json数据";
+                        } else {
+                            $input = $response->getContent();
+                        }
+                    } catch (\Exception $exception) {
+                        $input = "异常数据";
+                    }
+                } else {
+                    $input = "其他数据";
+                }
             }
+
+            $log = [
+                'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
+                'user_id'    => $adminUser->id,
+                'path'       => $request->path(),
+                'method'     => $request->method(),
+                'request_ip' => $ip,
+                'input'      => $input,
+                'subject_id' => $adminUser->subject->id,
+                'action'     => "response",
+                'status'     => $response->getStatusCode(),
+            ];
+
+            dispatch(new LogJob("logAdminOperation", $log));
         }
-
-        $log = [
-            'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
-            'user_id'    => $adminUser->id,
-            'path'       => $request->path(),
-            'method'     => $request->method(),
-            'request_ip' => $ip,
-            'input'      => $input,
-            'subject_id' => $adminUser->subject->id,
-            'action'     => "response",
-            'status'     => $response->getStatusCode(),
-        ];
-
-
-        dispatch(new LogJob("logAdminOperation", $log));
 
 
         return $response;
