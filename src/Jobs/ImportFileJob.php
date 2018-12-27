@@ -69,7 +69,7 @@ class ImportFileJob implements ShouldQueue
     }
 
 
-    public function fail($exception)
+    public function failed($exception)
     {
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "processing") {
