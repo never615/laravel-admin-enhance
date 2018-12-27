@@ -31,7 +31,7 @@ class ImportFileJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 1;
     /**
      * @var
      */
