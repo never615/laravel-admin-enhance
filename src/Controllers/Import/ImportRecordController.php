@@ -98,7 +98,7 @@ class ImportRecordController extends AdminCommonController
             $form->filePrivate("file_url", "文件")
                 ->rules("required")
                 ->move(Admin::user()->id.'/import_file')
-                ->help("导入的数据一次不建议超过三万,否则可能失败");
+                ;
         }
 
 
