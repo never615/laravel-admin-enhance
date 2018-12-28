@@ -52,7 +52,9 @@ class ImportRecordController extends AdminCommonController
             return $value ? ImportRecord::STATUS[$value] : "";
         });
 
-        $grid->failure_reason();
+        $grid->failure_reason()->display(function ($value) {
+            return str_limit($value, 30);
+        });
 
         $grid->finish_at("完成时间");
 
@@ -143,7 +145,7 @@ class ImportRecordController extends AdminCommonController
      */
     protected function formExtraConfig($form)
     {
-//        $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
+//        $form->embeds("extra", "其他配置", function (EmbeddedForm $form) {
 //
 //        });
     }
