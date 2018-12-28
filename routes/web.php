@@ -17,6 +17,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+//----------------------------------------  管理端接口开始  -----------------------------------------------
 
 //token 授权的管理端接口
 Route::group([
@@ -35,6 +36,9 @@ Route::group([
 
     });
 });
+
+//----------------------------------------  管理端接口结束  -----------------------------------------------
+
 
 Route::group([
     'namespace'  => 'Mallto\Admin\Controllers',
@@ -63,12 +67,14 @@ Route::group([
             $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
             $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');
 
+            Route::get("select_data/{key}", 'SelectSourceController@dataSource');
 
             Route::group(['middleware' => ['adminE.auto_permission']], function ($router) {
                 $router->resource('auth/admins', '\Mallto\Admin\Controllers\UserController');
                 $router->resource('auth/roles', '\Mallto\Admin\Controllers\RoleController');
                 $router->resource('auth/permissions', '\Mallto\Admin\Controllers\PermissionController');
-                $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController', ['except' => ['create']]);
+                $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController',
+                    ['except' => ['create']]);
                 $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
                     ['only' => ['index', 'destroy']]);
 

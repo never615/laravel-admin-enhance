@@ -13,6 +13,7 @@ use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Subject;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 abstract class AdminCommonController extends Controller
 {
@@ -143,6 +144,8 @@ abstract class AdminCommonController extends Controller
     protected function defaultGridOption(Grid $grid)
     {
 
+        $this->gridShopFilter($grid);
+
         $grid->expandFilter();
 
         $adminUser = Admin::user();
@@ -168,8 +171,6 @@ abstract class AdminCommonController extends Controller
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
         });
-
-
 
 
         $this->gridModelFilter($grid);
@@ -202,9 +203,9 @@ abstract class AdminCommonController extends Controller
      */
     protected function defaultFormOption(Form $form)
     {
-//        if (Admin::user()->isOwner()) {
-            $form->display('id', 'ID');
-//        }
+        $this->formShopFilter($form);
+
+        $form->display('id', 'ID');
 
         $form->saving(function ($form) {
             $this->autoSubjectSaving($form);
@@ -217,8 +218,6 @@ abstract class AdminCommonController extends Controller
         $this->formAdminUser($form);
         $form->display('created_at', trans('admin.created_at'));
         $form->display('updated_at', trans('admin.updated_at'));
-
-
     }
 
 
@@ -234,9 +233,55 @@ abstract class AdminCommonController extends Controller
     }
 
 
+    /**
+     * 自定义的列表过滤数据
+     *
+     * @param $grid
+     */
     protected function gridModelFilter($grid)
     {
         //$grid->model()->where("type", "park");
+    }
+
+
+    /**
+     * 列表店铺权限检查/数据过滤
+     *
+     * @param $grid
+     */
+    protected function gridShopFilter($grid)
+    {
+        $this->shopFilter();
+    }
+
+    /**
+     * 表单页面店铺权限检查/数据过滤
+     *
+     * @param $form
+     */
+    protected function formShopFilter($form)
+    {
+        $this->shopFilter();
+    }
+
+    private function shopFilter()
+    {
+        //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
+        $adminUser = Admin::user();
+        $adminiableType = $adminUser->adminable_type;
+        if ($adminiableType) {
+            switch ($adminiableType) {
+                case "subject":
+                    //pass
+                    break;
+                default:
+                    throw new PermissionDeniedException("非主体账号无权限查看");
+                    break;
+            }
+
+        } else {
+            throw new PermissionDeniedException("非主体账号无权限查看");
+        }
     }
 
 }
