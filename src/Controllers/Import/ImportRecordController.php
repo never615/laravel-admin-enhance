@@ -117,7 +117,8 @@ class ImportRecordController extends AdminCommonController
                     'allowedFileExtensions' => ['xls', 'xlsx'],
                 ])
                 ->rules("required")
-                ->move(Admin::user()->id.'/import_file');
+                ->move(Admin::user()->id.'/import_file')
+                ->help("导入文件只能保留一个工作表");
 
 
             $this->formExtraConfig($form);
