@@ -82,7 +82,11 @@ class ImportRecordController extends AdminCommonController
             $moduleSlug = request("module_slug");
 
             if ($moduleSlug) {
-                $form->display("module_slug", "模块")
+
+                $form->hidden("module_slug")
+                    ->default($moduleSlug);
+
+                $form->display("module_slug_display", "模块")
                     ->default($moduleSlug)
                     ->with(function ($value) use ($moduleSlug) {
                         return ImportSetting::where("module_slug", $moduleSlug)
