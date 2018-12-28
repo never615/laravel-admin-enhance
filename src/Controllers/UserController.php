@@ -11,7 +11,6 @@ use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SelectConstants;
-use Mallto\Mall\Constants;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 

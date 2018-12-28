@@ -6,7 +6,9 @@
 namespace Mallto\Admin;
 
 use Encore\Admin\Facades\Admin;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Mallto\Admin\Data\Subject;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -66,6 +68,55 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
+        $this->customMorphMap();
+
+        $this->adminBootstrap();
+
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->registerRouteMiddleware();
+
+        $this->commands($this->commands);
+    }
+
+
+    /**
+     * Register the route middleware.
+     *
+     * @return void
+     */
+    protected function registerRouteMiddleware()
+    {
+        // register route middleware.
+        foreach ($this->routeMiddleware as $key => $middleware) {
+            app('router')->aliasMiddleware($key, $middleware);
+        }
+
+        // register middleware group.
+        foreach ($this->middlewareGroups as $key => $middleware) {
+            app('router')->middlewareGroup($key, $middleware);
+        }
+    }
+
+
+
+    protected function customMorphMap()
+    {
+        Relation::morphMap([
+            'subject'         => Subject::class,
+        ]);
+    }
+
+
+    protected function adminBootstrap()
+    {
         Admin::booting(function () {
             //表单文件上传控件:支持直传文件到七牛,目前支持单文件
             \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
@@ -113,39 +164,8 @@ class ServiceProvider extends BaseServiceProvider
             Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
             Admin::js('https://file.easy.mall-to.com/js/walden.js');
         });
-
     }
 
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->registerRouteMiddleware();
-
-        $this->commands($this->commands);
-    }
-
-
-    /**
-     * Register the route middleware.
-     *
-     * @return void
-     */
-    protected function registerRouteMiddleware()
-    {
-        // register route middleware.
-        foreach ($this->routeMiddleware as $key => $middleware) {
-            app('router')->aliasMiddleware($key, $middleware);
-        }
-
-        // register middleware group.
-        foreach ($this->middlewareGroups as $key => $middleware) {
-            app('router')->middlewareGroup($key, $middleware);
-        }
-    }
 
 
 }
