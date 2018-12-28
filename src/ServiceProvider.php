@@ -9,6 +9,8 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Domain\User\AdminUserUsecase;
+use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -84,6 +86,11 @@ class ServiceProvider extends BaseServiceProvider
         $this->registerRouteMiddleware();
 
         $this->commands($this->commands);
+
+        $this->app->bind(
+            AdminUserUsecase::class,
+            AdminUserUsecaseImpl::class
+        );
     }
 
 
@@ -106,11 +113,10 @@ class ServiceProvider extends BaseServiceProvider
     }
 
 
-
     protected function customMorphMap()
     {
         Relation::morphMap([
-            'subject'         => Subject::class,
+            'subject' => Subject::class,
         ]);
     }
 
@@ -165,7 +171,6 @@ class ServiceProvider extends BaseServiceProvider
             Admin::js('https://file.easy.mall-to.com/js/walden.js');
         });
     }
-
 
 
 }

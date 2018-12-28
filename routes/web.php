@@ -26,14 +26,13 @@ Route::group([
     'namespace'  => 'Mallto\Admin\Controllers',
 ], function ($router) {
 
-    $router->post('auth/login', '\Mallto\Admin\Controllers\AuthController@postLogin');
+    $router->post('auth/login', 'AuthController@postLogin');
 
     Route::group([
         "middleware" => ["auth:admin_api", "adminE.auto_permission"],
-        "namespace"  => "Admin",
+        "namespace"  => "Api",
     ], function ($router) {
-
-
+        $router->get("admin_user", 'AdminUserController@index');
     });
 });
 

@@ -25,7 +25,7 @@ class ImportButton extends AbstractTool
      *
      * @param string $moduleSlug 导入任务处理者标识,默认使用引入按钮的的页面的url最后一段
      *                           如 `http://xxxx.com/admin/member_cards`中的member_cards
-     * @param null   $url
+     * @param null   $url        点击导入按钮跳转到的页面
      */
     public function __construct($moduleSlug = null, $url = "/admin/import_records/create")
     {

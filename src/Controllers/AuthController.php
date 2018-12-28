@@ -9,6 +9,7 @@ namespace Mallto\Admin\Controllers;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
@@ -73,7 +74,8 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
 
         $openid = $this->decryptOpenid($request->identifier);
 
-        $adminUser = Administrator::where("subject_id", $subject->id)
+        $adminUser = Administrator::with(["adminable"])
+            ->where("subject_id", $subject->id)
             ->where("openid->openid", $openid)
             ->first();
         if (!$adminUser) {
@@ -88,8 +90,10 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
                         ->where("identifier", $openid);
                 },
             ])->where("subject_id", $subject->id)->first();
+
             if ($user && $user->mobile) {
-                $adminUser = Administrator::where("subject_id", $subject->id)
+                $adminUser = Administrator::with(["adminable"])
+                    ->where("subject_id", $subject->id)
                     ->where("mobile", $user->mobile)
                     ->first();
             }
@@ -98,23 +102,11 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
         if (!$adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
-        
-        $token = $adminUser->createToken("admin_api");
-        $adminUser->token = $token->accessToken;
-
-//        if ($adminUser->adminable_type == "shop") {
-//            $shop = Shop::find($adminUser->adminable_id);
-//        }
 
 
-        return response()->json($adminUser->only([
-            "id",
-            "name",
-            "username",
-            "token",
-        ]));
+        $adminUserUsecase = app(AdminUserUsecase::class);
 
-
+        return $adminUserUsecase->getReturnUserInfo($adminUser, true);
     }
 
 }
