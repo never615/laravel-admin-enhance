@@ -114,22 +114,12 @@ class SubjectController extends AdminCommonController
                 return $arr;
             })->rules("required");
 
+            $form->divider();
             if (Admin::user()->isOwner()) {
                 $permissions = Permission::where("parent_id", 0)->where("common", false)->get();
-            } else {
-                $permissions = Admin::user()->subject->baseSubject()->permissions()
-                    ->where("common", false)
-                    ->where("parent_id", 0)
-                    ->get();
-            }
-
-            $form->divider();
-
-            if (Admin::user()->isOwner()) {
-                $form->multipleSelect('permissions', "已购模块")
+                $form->checkbox('permissions', "已购模块")
                     ->options(Permission::selectOptions($permissions->toArray(),
-                        false,
-                        false));
+                        false, false));
                 $form->display('sms_count', "消费短信数");
                 $form->text("uuid", "主体唯一标识");
                 $form->switch("base", "总部");
