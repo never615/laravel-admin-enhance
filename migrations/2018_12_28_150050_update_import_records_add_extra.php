@@ -21,6 +21,7 @@ class UpdateImportRecordsAddExtra extends Migration
     {
         Schema::table("import_records", function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->json("extra")->nullable();
+            $table->text("remark")->nullable();
         });
     }
 
@@ -33,6 +34,7 @@ class UpdateImportRecordsAddExtra extends Migration
     {
         Schema::table("import_records", function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->dropColumn("extra");
+            $table->dropColumn("remark");
         });
     }
 }

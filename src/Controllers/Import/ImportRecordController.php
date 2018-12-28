@@ -72,12 +72,22 @@ class ImportRecordController extends AdminCommonController
             $form->display("failure_reason");
             $form->display("finish_at", "完成时间");
 
+            $form->display("remark");
+
+            $form->footer(function (Form\Footer $footer) {
+                $footer->disableSubmit();
+                $footer->disableReset();
+            });
         } else {
             $moduleSlug = request("module_slug");
 
             if ($moduleSlug) {
-                $form->hidden("module_slug")
-                    ->default($moduleSlug);
+                $form->display("module_slug", "模块")
+                    ->default($moduleSlug)
+                    ->with(function ($value) use ($moduleSlug) {
+                        return ImportSetting::where("module_slug", $moduleSlug)
+                                ->first()->name ?? $value;
+                    });
 
                 $importSetting = ImportSetting::where("module_slug", $moduleSlug)
                     ->first();
@@ -102,6 +112,11 @@ class ImportRecordController extends AdminCommonController
                 ])
                 ->rules("required")
                 ->move(Admin::user()->id.'/import_file');
+
+
+            $this->formExtraConfig($form);
+
+            $form->textarea("remark");
         }
 
 
@@ -116,4 +131,17 @@ class ImportRecordController extends AdminCommonController
             dispatch(new ImportFileJob($form->model()->id));
         });
     }
+
+    /**
+     * 额外的导入配置
+     *
+     * @param $form
+     */
+    protected function formExtraConfig($form)
+    {
+//        $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
+//
+//        });
+    }
+
 }
