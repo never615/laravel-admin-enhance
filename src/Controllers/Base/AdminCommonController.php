@@ -264,7 +264,7 @@ abstract class AdminCommonController extends Controller
         $this->shopFilter();
     }
 
-    private function shopFilter()
+    protected function shopFilter()
     {
         //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
         $adminUser = Admin::user();
