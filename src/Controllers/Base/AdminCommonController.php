@@ -213,7 +213,7 @@ abstract class AdminCommonController extends Controller
         });
 
         $this->formOption($form);
-
+        
         $this->formSubject($form);
         $this->formAdminUser($form);
         $form->display('created_at', trans('admin.created_at'));

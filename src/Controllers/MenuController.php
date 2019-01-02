@@ -196,7 +196,8 @@ class MenuController extends AdminCommonController
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error($e);
+            \Log::error("删除菜单失败");
+            \Log::warning($e);
 
             return response()->json([
                 'status'  => false,

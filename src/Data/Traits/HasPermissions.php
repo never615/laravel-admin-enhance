@@ -81,6 +81,8 @@ trait HasPermissions
             ->merge($this->permissions);
     }
 
+
+
     /**
      * Check if user has permission.
      *

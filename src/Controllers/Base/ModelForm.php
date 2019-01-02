@@ -17,7 +17,8 @@ trait ModelForm
      */
     public function show($id)
     {
-        $this->currentId=$id;
+        $this->currentId = $id;
+
         return $this->edit($id);
     }
 
@@ -30,7 +31,7 @@ trait ModelForm
      */
     public function update($id)
     {
-        $this->currentId=$id;
+        $this->currentId = $id;
 
         return $this->form()->update($id);
     }
@@ -44,7 +45,7 @@ trait ModelForm
      */
     public function destroy($id)
     {
-        $this->currentId=$id;
+        $this->currentId = $id;
 
         try {
             if ($this->form()->destroy($id)) {
@@ -59,7 +60,9 @@ trait ModelForm
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error($e);
+
+            \Log::error("删除model失败");
+            \Log::warning($e);
 
             return response()->json([
                 'status'  => false,

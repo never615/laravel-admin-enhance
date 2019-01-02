@@ -29,9 +29,19 @@ Route::group([
     $router->post('auth/login', 'AuthController@postLogin');
 
     Route::group([
-        "middleware" => ["auth:admin_api", "adminE.auto_permission"],
+        "middleware" => ["auth:admin_api"],
         "namespace"  => "Api",
     ], function ($router) {
+
+
+        Route::group([
+            "middleware" => ["adminE.auto_permission"],
+            "namespace"  => "Api",
+        ], function ($router) {
+
+        });
+
+
         $router->get("admin_user", 'AdminUserController@index');
     });
 });
