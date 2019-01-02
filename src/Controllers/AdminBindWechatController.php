@@ -9,6 +9,8 @@ namespace Mallto\Admin\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\SubjectUtils;
+use Mallto\Mall\SubjectConfigConstants;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\OpenidCheckTrait;
 use Mallto\User\Domain\WechatUsecase;
@@ -34,12 +36,13 @@ class AdminBindWechatController extends Controller
             throw new ResourceException("无效请求");
         }
 
-        $wechatUserInfo = $wechatUsecase->getUserInfo($adminUser->subject->uuid, $openid);
+        $subjecct = $adminUser->subject;
+        $wechatUserInfo = $wechatUsecase->getUserInfo(SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+            $subjecct, $subjecct->uuid), $openid);
 
         if (!$wechatUserInfo) {
             throw new ResourceException("未找到相应微信用户");
         }
-
 
 
         //检查并移除该微信的其他账号绑定关系
