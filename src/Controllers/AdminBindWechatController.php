@@ -40,6 +40,8 @@ class AdminBindWechatController extends Controller
             throw new ResourceException("未找到相应微信用户");
         }
 
+
+
         //检查并移除该微信的其他账号绑定关系
         Administrator::where("subject_id", $adminUser->subject_id)
             ->where("openid->openid", $openid)

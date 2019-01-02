@@ -11,6 +11,8 @@ use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SelectConstants;
+use Mallto\Admin\SubjectUtils;
+use Mallto\Mall\SubjectConfigConstants;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -93,7 +95,6 @@ class UserController extends AdminCommonController
 
 
         $form->ignore(['password_confirmation', 'qrcode', 'unbind_wechat']);
-
 
         $form->select("adminable_type", "账号类型")
             ->options(SelectConstants::ADMINABLE_TYPE)
@@ -230,7 +231,8 @@ class UserController extends AdminCommonController
         $redirectUrl .= "?admin_user_id=".$adminUser->id;
 
         $queryDataStr = http_build_query([
-            "uuid"         => $uuid,
+            "uuid"         => SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject, $uuid),
             "redirect_url" => $redirectUrl,
         ]);
 
