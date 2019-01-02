@@ -32,7 +32,9 @@ trait SeederMaker
      * @param bool $common      ,是否是所有主体都默认有的公共权限
      * @param bool $closeCreate ,是否关闭创建子权限之`创建/修改`权限
      * @param null $routeNames
+     * @param bool $force       ,存在同名权限,则删除
      * @return int
+     * @throws \Exception
      */
     public function createPermissions(
         $name,
@@ -42,7 +44,8 @@ trait SeederMaker
         $closeDelete = false,
         $common = false,
         $closeCreate = false,
-        $routeNames = null
+        $routeNames = null,
+        $force = false
     ) {
         $path = "";
         $parentPermission = Permission::find($parentId);
@@ -54,18 +57,38 @@ trait SeederMaker
             }
         }
 
+        try {
+            $temp = Permission::updateOrCreate(
+                [
+                    "slug" => $slug,
+                ],
+                [
+                    "parent_id" => $parentId,
+                    'order'     => $this->order += 1,
+                    "name"      => $name,
+                    "common"    => $common,
+                    "path"      => $path,
+                ]);
+        } catch (\Exception $exception) {
+            if ($force) {
 
-        $temp = Permission::updateOrCreate(
-            [
-                "slug" => $slug,
-            ],
-            [
-                "parent_id" => $parentId,
-                'order'     => $this->order += 1,
-                "name"      => $name,
-                "common"    => $common,
-                "path"      => $path,
-            ]);
+                Permission::where("name", $name)->delete();
+
+                $temp = Permission::updateOrCreate(
+                    [
+                        "slug" => $slug,
+                    ],
+                    [
+                        "parent_id" => $parentId,
+                        'order'     => $this->order += 1,
+                        "name"      => $name,
+                        "common"    => $common,
+                        "path"      => $path,
+                    ]);
+            } else {
+                throw  $exception;
+            }
+        }
 
         $parentId = $temp->id;
 
