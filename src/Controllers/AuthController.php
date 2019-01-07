@@ -8,7 +8,6 @@ namespace Mallto\Admin\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
@@ -74,30 +73,8 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
 
         $openid = $this->decryptOpenid($request->identifier);
 
-        $adminUser = Administrator::with(["adminable"])
-            ->where("subject_id", $subject->id)
-            ->where("openid->openid", $openid)
-            ->first();
-        if (!$adminUser) {
-            //管理端账户不存在
-
-            //查询该openid对应会员的手机号,是否已经绑定了管理端账户
-            //这个是兼容旧的管理端账户绑定,直接输入会员的手机号
-
-            $user = User::with([
-                'userAuths' => function ($query) use ($openid) {
-                    $query->where("identity_type", "wechat")
-                        ->where("identifier", $openid);
-                },
-            ])->where("subject_id", $subject->id)->first();
-
-            if ($user && $user->mobile) {
-                $adminUser = Administrator::with(["adminable"])
-                    ->where("subject_id", $subject->id)
-                    ->where("mobile", $user->mobile)
-                    ->first();
-            }
-        }
+        $adminUserUsecase = app(AdminUserUsecase::class);
+        $adminUser = $adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
         if (!$adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
