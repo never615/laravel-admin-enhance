@@ -14,6 +14,7 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\SubjectConfigConstants;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -125,7 +126,7 @@ class SubjectController extends AdminCommonController
                 $form->text("uuid", "主体唯一标识");
                 $form->switch("base", "总部");
                 $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
-                    $form->text("admin_wechat_uuid", "管理端微信服务uuid")
+                    $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, "管理端微信服务uuid")
                         ->help("用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid");
                 });
 //                $form->textarea("extra_config", "其他配置")

@@ -232,9 +232,6 @@ class SubjectUtils
      */
     public static function getSubject()
     {
-        if (self::$subject) {
-            return self::$subject;
-        }
 
         try {
             $uuid = self::getUUID();
@@ -246,6 +243,13 @@ class SubjectUtils
             $subject = Subject::where("uuid", $uuid)->first();
             if ($subject) {
                 return $subject;
+            } else {
+                $subject = Subject::where('extra_config->'.SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                    $uuid)
+                    ->first();
+                if($subject){
+                    return $subject;
+                }
             }
         }
 

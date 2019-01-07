@@ -32,15 +32,12 @@ Route::group([
         "middleware" => ["auth:admin_api"],
         "namespace"  => "Api",
     ], function ($router) {
-
-
         Route::group([
             "middleware" => ["adminE.auto_permission"],
             "namespace"  => "Api",
         ], function ($router) {
 
         });
-
 
         $router->get("admin_user", 'AdminUserController@index');
     });
