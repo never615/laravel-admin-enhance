@@ -280,6 +280,7 @@ abstract class AdminCommonController extends Controller
                     //pass
                     break;
                 default:
+                    \Log::warning($adminUser->id);
                     throw new PermissionDeniedException("非主体账号无权限查看");
                     break;
             }
