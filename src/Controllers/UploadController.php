@@ -67,7 +67,7 @@ class UploadController extends AdminCommonController
             ->help("添加文件后请点击上传按钮");
 
         $form->display("show_url", "文件地址")->with(function ($value) {
-            return $this->url ? rtrim(config('admin.upload.host'), '/').'/'.trim($this->url, '/') : "";
+            return $this->url ? rtrim(config('app.file_url_prefix'), '/').'/'.trim($this->url, '/') : "";
         });
 
     }
