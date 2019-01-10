@@ -5,6 +5,9 @@
 
 namespace Mallto\Admin;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\Type;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -91,6 +94,15 @@ class ServiceProvider extends BaseServiceProvider
             AdminUserUsecase::class,
             AdminUserUsecaseImpl::class
         );
+
+        if (!Type::hasType('double')) {
+            try {
+                Type::addType('double', FloatType::class);
+            } catch (DBALException $e) {
+            }
+        }
+
+
     }
 
 
