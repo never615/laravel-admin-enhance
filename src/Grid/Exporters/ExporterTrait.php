@@ -71,7 +71,7 @@ trait ExporterTrait
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
-     * @param  $records ,orm查询结果经过array_dot后得到$records数组
+     * @param  array $records ,orm查询结果经过array_dot后得到$records数组
      * @return array
      */
     public function customData($records)
@@ -128,7 +128,7 @@ trait ExporterTrait
     /**
      * Remove an item from the collection/array by key.
      *
-     * @param              $records
+     * @param array       $records
      * @param array|string $keys       ,需要移除的字段,
      * @param              $remainKeys ,设置此字段,会忽略keys的设置
      * @param bool         $default    true,是否默认移除一些字段
