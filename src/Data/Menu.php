@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Data;
 
 
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +50,24 @@ class Menu extends Model
 
         parent::__construct($attributes);
     }
+
+
+    public function getTitleAttribute($value)
+    {
+        $admin = Admin::user();
+        if ($admin && $admin->isOwner() && $this->sub_title) {
+            return $value."-".$this->sub_title;
+        } else {
+            return $value;
+        }
+    }
+
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, "admin_menu_subjects", "admin_menu_id", "subject_id");
+    }
+
 
     /**
      * A Menu belongs to many roles.
@@ -139,8 +158,22 @@ class Menu extends Model
                 $menus = new Collection();
                 //任何人都可以看到控制面板菜单
                 $menus = $menus->merge(static::where("uri", "dashboard")->get());
-                //查询权限对应的菜单
-                $menus = $menus->merge(static::whereIn("uri", $userPermissionSlugs)->get());
+
+
+                $menusQuery = static::whereIn("uri", $userPermissionSlugs);
+
+                if (!$adminUser->isOwner()) {
+                    $menusQuery = $menusQuery->where(function ($query) use ($adminUser) {
+                        $query->orWhereDoesntHave("subjects", function ($query) {
+
+                        })->orWhereHas("subjects", function ($query) use ($adminUser) {
+                            $query->where("id", $adminUser->subject_id);
+                        });
+                    });
+                }
+
+                //查询主体的菜单和通用菜单且在该账号权限内的
+                $menus = $menus->merge($menusQuery->get());
 
                 $tempMenus = $menus->toArray();
 

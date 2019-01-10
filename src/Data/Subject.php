@@ -42,6 +42,12 @@ class Subject extends Model
     ];
 
 
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, "admin_menu_subjects", "subject_id", "admin_menu_id");
+    }
+
+
     public static function selectSourceDate()
     {
         if (Admin::user()->isOwner()) {
