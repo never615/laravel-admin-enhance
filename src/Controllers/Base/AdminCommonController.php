@@ -12,8 +12,8 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
-use Mallto\Mall\Data\AdminUser;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
 abstract class AdminCommonController extends Controller
@@ -182,7 +182,7 @@ abstract class AdminCommonController extends Controller
 
         $grid->filter(function (Grid\Filter $filter) {
             if (Schema::hasColumn($this->tableName, "admin_user_id")) {
-                $filter->equal("admin_user_id", "操作人")->select(AdminUser::selectSourceDatas());
+                $filter->equal("admin_user_id", "操作人")->select(Administrator::selectSourceDatas());
             }
 
             $filter->between("created_at")->date();
