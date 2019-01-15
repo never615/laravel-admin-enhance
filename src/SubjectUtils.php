@@ -185,33 +185,33 @@ class SubjectUtils
      */
     public static function getSubjectId()
     {
-
-        if (self::$subject) {
-            return self::$subject->id;
-        }
-
-        try {
-            $uuid = self::getUUID();
-        } catch (HttpException $e) {
-            $uuid = null;
-        }
-
-        if (!is_null($uuid)) {
-            $subject = Subject::where("uuid", $uuid)->first();
-            if ($subject) {
-                return $subject->id;
-            }
-        }
-
-        $user = \Admin::user();
-        if ($user) {
-            $subject = $user->subject;
-            if ($subject) {
-                return $subject->id;
-            }
-        }
-
-        throw new HttpException(422, "uuid参数错误".$uuid);
+        return self::getSubject()->id;
+//        if (self::$subject) {
+//            return self::$subject->id;
+//        }
+//
+//        try {
+//            $uuid = self::getUUID();
+//        } catch (HttpException $e) {
+//            $uuid = null;
+//        }
+//
+//        if (!is_null($uuid)) {
+//            $subject = Subject::where("uuid", $uuid)->first();
+//            if ($subject) {
+//                return $subject->id;
+//            }
+//        }
+//
+//        $user = \Admin::user();
+//        if ($user) {
+//            $subject = $user->subject;
+//            if ($subject) {
+//                return $subject->id;
+//            }
+//        }
+//
+//        throw new HttpException(422, "uuid参数错误".$uuid);
     }
 
     /**
