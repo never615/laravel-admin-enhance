@@ -15,5 +15,8 @@ class SubjectConfigConstants
     //短信验证模板code
     const OWNER_CONFIG_SMS_TEMPLATE_CODE = "sms_template_code";
 
+    //短信签名
+    const OWNER_CONFIG_SMS_SIGN="sms_sign";
+
 
 }

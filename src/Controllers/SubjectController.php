@@ -132,6 +132,8 @@ class SubjectController extends AdminCommonController
                         ->help("用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid");
 
                     $form->text("短信验证码模板号", SubjectConfigConstants::OWNER_CONFIG_SMS_TEMPLATE_CODE);
+
+                    $form->text("短信签名", SubjectConfigConstants::OWNER_CONFIG_SMS_SIGN);
                 });
 //                $form->textarea("extra_config", "其他配置")
 //                    ->help("以文本的形式配置,方便动态修改.格式:json");
