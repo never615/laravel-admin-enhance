@@ -10,17 +10,18 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Grid;
+use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\SubjectConfigConstants;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 class SubjectController extends AdminCommonController
 {
+    use SubjectSaveTrait;
+
     /**
      * 获取这个模块的标题
      *
@@ -152,73 +153,13 @@ class SubjectController extends AdminCommonController
         });
 
         $form->saving(function ($form) {
-            if (!Admin::user()->isOwner()) {
-                //修改的是自己或者是自己的父级
-                $currentSubject = Admin::user()->subject;
+            $adminUser = Admin::user();
 
-                $parentSubjectIds = $currentSubject->getParentSubjectIds();
+            $this->saving($adminUser, $form);
+        });
 
-                if (Admin::user()->subject_id == $form->model()->id || in_array($form->model()->id,
-                        $parentSubjectIds)
-                ) {
-                    if ($form->permissions) {
-                        $tempPermissions = $form->permissions;
-
-                        $tempPermissions = array_filter($tempPermissions, function ($value) {
-                            if (!is_null($value)) {
-                                return $value;
-                            }
-                        });
-
-                        $oldPermissions = $form->model()->permissions->pluck("id")->toArray();
-
-                        if (($form->permissions &&
-                                (!empty(array_diff($tempPermissions,
-                                        $oldPermissions)) || !empty(array_diff($oldPermissions,
-                                        $tempPermissions))))
-                            ||
-                            ($form->parent_id && $form->model()->parent_id != $form->parent_id)
-                        ) {
-                            throw new AccessDeniedHttpException("无权修改主体拥有的功能或父级主体,请联系上级管理.");
-                        }
-                    }
-                }
-            }
-
-            //父主体为顶级,即项目拥有者的主体,不能被修改
-            if ($form->model()->parent_id === 0) {
-                $form->parent_id = 0;
-            }
-
-            //父主体修改检查,不能设置为本身,不能设置为孩子
-            if ($form->parent_id && $form->parent_id != $form->model()->parent_id) {
-                $currentSubject = Subject::find($this->currentId);
-
-                if ($currentSubject) {
-                    if ($form->parent_id == $currentSubject->id) {
-                        throw new HttpException(422, "不能设置自己为自己的父主体");
-                    }
-
-                    $childIds = $currentSubject->getChildrenSubject();
-
-                    if (in_array($form->parent_id, $childIds)) {
-                        throw new HttpException(422, "不能设置子级主体为自己的父主体");
-                    }
-                }
-            }
-
-
-            //添加新创建的subject的path字段,用于加快查询速度
-            $parentId = $form->parent_id ?? $form->model()->parent_id;
-            $parent = Subject::find($parentId);
-            if ($parent) {
-                if ($parent && !empty($parent->path)) {
-                    $form->model()->path = $parent->path.$parent->id.".";
-                } else {
-                    $form->model()->path = ".".$parent->id.".";
-                }
-            }
-
+        $form->saved(function ($form) {
+            $this->createOrUpdateAdminRole($form);
         });
     }
 
