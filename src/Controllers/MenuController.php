@@ -177,7 +177,13 @@ class MenuController extends AdminCommonController
             }
 
             if ($form->uri && !ends_with($form->uri, ".index")) {
-                $form->uri = $form->uri.".index";
+                try {
+                    if (route($form->uri.".index")) {
+                        $form->uri = $form->uri.".index";
+                    }
+                } catch (\Exception $exception) {
+
+                }
             }
         });
 
