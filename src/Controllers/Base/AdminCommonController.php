@@ -82,7 +82,7 @@ abstract class AdminCommonController extends Controller
         $model = resolve($this->getModel());
         $tableName = $model->getTable();
 
-        return admin_translate($tableName, $tableName);
+        return admin_translate($tableName, "table");
     }
 
 

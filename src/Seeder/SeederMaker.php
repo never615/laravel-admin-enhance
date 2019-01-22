@@ -47,6 +47,10 @@ trait SeederMaker
         $routeNames = null,
         $force = false
     ) {
+
+
+        $this->order = $this->order ?? Permission::max("order");
+
         $path = "";
         $parentPermission = Permission::find($parentId);
         if ($parentPermission) {

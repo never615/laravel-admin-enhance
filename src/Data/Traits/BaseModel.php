@@ -24,6 +24,9 @@ abstract class BaseModel extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'images'  => 'array',
+    ];
 
 
     public function getIconAttribute($value)

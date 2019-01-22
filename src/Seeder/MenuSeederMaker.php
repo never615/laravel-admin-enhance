@@ -18,7 +18,7 @@ use Mallto\Admin\Data\Menu;
  */
 trait MenuSeederMaker
 {
-    protected function updateOrCreate($uri, $parentId, $order, $title, $icon)
+    protected function updateOrCreate($uri, $parentId, $order, $title, $icon, $subTitle = null)
     {
         $path = "";
         $parentMenu = Menu::find($parentId);
@@ -38,6 +38,7 @@ trait MenuSeederMaker
                 'title'     => $title,
                 'icon'      => $icon,
                 "path"      => $path,
+                "sub_title" => $subTitle,
             ]
         );
     }
