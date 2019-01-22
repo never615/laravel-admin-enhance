@@ -3,7 +3,7 @@
  * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Mallto\Admin\Controller\Admin;
+namespace Mallto\Admin\Controller;
 
 
 use Encore\Admin\Facades\Admin;
