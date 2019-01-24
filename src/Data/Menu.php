@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\CacheConstants;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -54,8 +55,17 @@ class Menu extends Model
 
     public function getTitleAttribute($value)
     {
-        $admin = Admin::user();
-        if ($admin && $admin->isOwner() && $this->sub_title) {
+        $isOwner = Cache::get(CacheConstants::IS_OWNER);
+        if ($isOwner === null) {
+            $admin = Admin::user();
+            if ($admin) {
+                $isOwner = $admin->isOwner();
+                Cache::put(CacheConstants::IS_OWNER, $isOwner, 60 * 10);
+            }
+        }
+
+
+        if ($isOwner && $this->sub_title) {
             return $value."-".$this->sub_title;
         } else {
             return $value;
