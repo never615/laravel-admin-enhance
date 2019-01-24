@@ -16,7 +16,10 @@ class SubjectConfigConstants
     const OWNER_CONFIG_SMS_TEMPLATE_CODE = "sms_template_code";
 
     //短信签名
-    const OWNER_CONFIG_SMS_SIGN="sms_sign";
+    const OWNER_CONFIG_SMS_SIGN = "sms_sign";
 
+
+    //可配置标签种类
+    const OWNER_CONFIG_TAG_TYPES = "tag_types";
 
 }

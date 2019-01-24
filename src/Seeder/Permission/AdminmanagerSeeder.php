@@ -27,7 +27,7 @@ class AdminmanagerSeeder extends Seeder
          * ------------------------  主体  ---------------------------
          */
         $this->createPermissions("主体", "subjects", true, 0,
-            false, true, false, [
+            false, false, false, [
                 "index"   => "查看",  //列表页/详情页/show
                 "create"  => "创建", //创建页/保存
                 "update"  => "修改", //修改
@@ -72,6 +72,6 @@ class AdminmanagerSeeder extends Seeder
         $this->createPermissions("视频", "videos");
 
 
-        $this->createPermissions("Dashboard", "dashboard",false,0,true,true);
+        $this->createPermissions("Dashboard", "dashboard", false, 0, true, true);
     }
 }
