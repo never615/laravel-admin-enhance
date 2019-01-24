@@ -49,8 +49,6 @@ class SubjectUtils
             }
         }
 
-        \Log::debug($subject);
-
         $extraConfig = $subject->extra_config ?: [];
 
         return array_get($extraConfig, $key) ?: $default;
