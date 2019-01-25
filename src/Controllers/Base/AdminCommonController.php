@@ -14,11 +14,12 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Traits\AdminBaseHelp;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
 abstract class AdminCommonController extends Controller
 {
-    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData;
+    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData,AdminBaseHelp;
 
 
     /**
