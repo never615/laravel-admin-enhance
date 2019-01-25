@@ -8,8 +8,6 @@ namespace Mallto\Admin\Controllers;
 
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Mallto\Admin\CacheConstants;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
@@ -57,18 +55,6 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
                 break;
 
         }
-    }
-
-    /**
-     * User logout.
-     *
-     * @return Redirect
-     */
-    public function getLogout(Request $request)
-    {
-        Cache::forget(CacheConstants::IS_OWNER);
-
-        parent::getLogout($request);
     }
 
     public function loginByWechat(Request $request)
