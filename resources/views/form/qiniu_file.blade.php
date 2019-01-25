@@ -24,7 +24,8 @@
 
         var setValue = function () {
             var temp = $(selectorClazz).closest('.fields-group').find('input[name="{{$name}}"]');
-//            console.log('set value');
+            // console.log('set value');
+            // console.log(temp);
             if (files.length > 0) {
                 console.log(files[0]);
                 temp.val(files[0]);
@@ -32,13 +33,13 @@
                 temp.val("");
             }
 
-//            console.log(temp.val());
-
+            // console.log(temp.val());
         };
 
         var files = [];
 
-        var file = $(selectorClazz).closest('.fields-group').find('input[name="file"]');
+        // var file = $(selectorClazz).closest('.fields-group').find('input[name="file"]');
+        var file = $(selectorClazz).closest('.fields-group').find('input[class="{{$class}}"]');
 
 
         file.on('fileremoved', function (event, id, index) {

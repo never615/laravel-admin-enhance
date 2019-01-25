@@ -20,7 +20,8 @@
         var clazz = "{{$class}}";
         var selectorClazz = '.' + clazz.replace(/ /g, ".");
 
-        var temp = $(selectorClazz).closest('.fields-group').find('input[name="{{$name}}"]');
+        var file = $(selectorClazz).closest('.fields-group').find('input[class="{{$class}}"]');
+
 
         var setValue = function () {
 //            console.log('set value');

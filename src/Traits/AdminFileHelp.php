@@ -17,9 +17,9 @@ trait  AdminFileHelp
 {
     use QiniuToken;
 
-    protected function formMultipleImage($form, $columnName, $tableName = "easy")
+    protected function formMultipleImage($form, $columnName, $tableName = "easy", $displayName = null)
     {
-        $form->multipleImage($columnName)
+        $form->multipleImage($columnName, $displayName)
             ->help("图片最大不能超过2M")
             ->options([
                 'maxFileSize'     => '2048',
@@ -31,9 +31,9 @@ trait  AdminFileHelp
     }
 
 
-    protected function formImage($form, $columnName, $tableName = "easy")
+    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null)
     {
-        $form->image($columnName)
+        $form->image($columnName, $displayName)
             ->help("图片最大不能超过2M")
             ->options([
                 'maxFileSize'     => '2048',
@@ -45,9 +45,9 @@ trait  AdminFileHelp
     }
 
 
-    protected function formVideo($form, $columnName, $tableName = "easy")
+    protected function formVideo($form, $columnName, $tableName = "easy", $displayName = "视频")
     {
-        $form->qiniuFile($columnName, "视频")
+        $form->qiniuFile($columnName, $displayName)
             ->options([
                 'initialPreviewConfig'    => [
                     ['key' => 0, 'filetype' => 'video/mp4'],
@@ -70,9 +70,9 @@ trait  AdminFileHelp
     }
 
 
-    protected function formAudio($form, $columnName, $tableName = "easy")
+    protected function formAudio($form, $columnName, $tableName = "easy", $displayName = "语音")
     {
-        $form->qiniuFile("voice_en", "英文语音导览")
+        $form->qiniuFile($columnName, $displayName)
             ->options([
                 'initialPreviewConfig'    => [
                     ['key' => 0, 'filetype' => 'audio/mp3'],
