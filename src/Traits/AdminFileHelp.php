@@ -17,10 +17,15 @@ trait  AdminFileHelp
 {
     use QiniuToken;
 
-    protected function formMultipleImage($form, $columnName, $tableName = "easy", $displayName = null)
-    {
+    protected function formMultipleImage(
+        $form,
+        $columnName,
+        $tableName = "easy",
+        $displayName = null,
+        $help = "建议尺寸750x500"
+    ) {
         $form->multipleImage($columnName, $displayName)
-            ->help("图片最大不能超过2M")
+            ->help("图片最大不能超过2M<br>".$help)
             ->options([
                 'maxFileSize'     => '2048',
                 "msgSizeTooLarge" => '文件 "{name}" ({size} KB) 超过了允许上传的最大限制: {maxSize} KB!',
@@ -31,10 +36,10 @@ trait  AdminFileHelp
     }
 
 
-    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null)
+    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null, $help)
     {
         $form->image($columnName, $displayName)
-            ->help("图片最大不能超过2M")
+            ->help("图片最大不能超过2M<br>".$help)
             ->options([
                 'maxFileSize'     => '2048',
                 "msgSizeTooLarge" => '文件 "{name}" ({size} KB) 超过了允许上传的最大限制: {maxSize} KB!',
