@@ -36,7 +36,7 @@ trait  AdminFileHelp
     }
 
 
-    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null, $help)
+    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null, $help = "")
     {
         $form->image($columnName, $displayName)
             ->help("图片最大不能超过2M<br>".$help)
