@@ -33,7 +33,7 @@ class Authenticate
         $adminUser = Admin::user();
 
         //检查账号是否被禁用
-        if ($adminUser->status == "forbidden") {
+        if ($adminUser && $adminUser->status == "forbidden") {
             return redirect('/error/4031');
         }
 
