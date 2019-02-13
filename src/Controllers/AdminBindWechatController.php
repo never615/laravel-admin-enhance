@@ -31,12 +31,12 @@ class AdminBindWechatController extends Controller
         $openid = $this->decryptOpenid($encryOpenid);
 
 
-        $adminUser = Administrator::find($request->admin_user_id);
-        if (!$adminUser) {
+        $waiteBindAdminUser = Administrator::find($request->admin_user_id);
+        if (!$waiteBindAdminUser) {
             throw new ResourceException("无效请求");
         }
 
-        $subjecct = $adminUser->subject;
+        $subjecct = $waiteBindAdminUser->subject;
         $wechatUserInfo = $wechatUsecase->getUserInfo(SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
             $subjecct, $subjecct->uuid), $openid);
 
@@ -44,18 +44,25 @@ class AdminBindWechatController extends Controller
             throw new ResourceException("未找到相应微信用户");
         }
 
+        if ($waiteBindAdminUser->openid) {
+            throw new ResourceException("当前账号已经绑定其他微信,如果想重新绑定,需要先解绑微信");
+        }
+
+
+
+
 
         //检查并移除该微信的其他账号绑定关系
-        Administrator::where("subject_id", $adminUser->subject_id)
+        Administrator::where("subject_id", $waiteBindAdminUser->subject_id)
             ->where("openid->openid", $openid)
-            ->where("id", "!=", $adminUser->id)
+            ->where("id", "!=", $waiteBindAdminUser->id)
             ->update([
                 "openid" => null,
             ]);
 
         //绑定
-        $adminUser->openid = $wechatUserInfo->toArray();
-        $adminUser->save();
+        $waiteBindAdminUser->openid = $wechatUserInfo->toArray();
+        $waiteBindAdminUser->save();
 
         echo "<h1>绑定成功</h1>";
     }
