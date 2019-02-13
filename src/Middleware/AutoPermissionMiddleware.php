@@ -41,6 +41,11 @@ class AutoPermissionMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        $adminUser = Auth::guard("admin")->user();
+        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+            $adminUser = Auth::guard("admin_api")->user();
+        }
+
         $currentRouteName = $request->route()->getName();
         $routenameArr = explode(".", $currentRouteName);
 
@@ -63,11 +68,6 @@ class AutoPermissionMiddleware
         if (is_null($currentRouteName)) {
             //没有设置route name,使用uri来判断 todo
             return $next($request);
-        }
-
-        $adminUser = Auth::guard("admin")->user();
-        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
-            $adminUser = Auth::guard("admin_api")->user();
         }
 
 

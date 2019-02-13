@@ -10,6 +10,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
@@ -80,6 +81,10 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
 
+        //检查账号是否被禁用
+        if ($adminUser->status == "forbidden") {
+            throw new PermissionDeniedException("当前账号已被禁用");
+        }
 
         $adminUserUsecase = app(AdminUserUsecase::class);
 

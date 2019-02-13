@@ -33,6 +33,7 @@ class ServiceProvider extends BaseServiceProvider
      * @var array
      */
     protected $routeMiddleware = [
+        'admin.auth'             => \Mallto\Admin\Middleware\Authenticate::class,
         'adminE.auto_permission' => \Mallto\Admin\Middleware\AutoPermissionMiddleware::class,
         'adminE.log'             => \Mallto\Admin\Middleware\OperationLog::class,
     ];

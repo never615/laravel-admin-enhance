@@ -24,6 +24,17 @@ class Administrator extends Model implements AuthenticatableContract
 {
     use Authenticatable, AdminBuilder, HasPermissions, DynamicData, HasMultiAuthApiTokens, SelectSource;
 
+
+    const STATUS = [
+        "normal"    => "正常",
+        "forbidden" => "禁用",
+    ];
+
+    //管理端用来选择账号类型的select
+    const ADMINABLE_TYPE = [
+        'subject' => '主体',
+    ];
+
     protected $fillable = [
         'username',
         'password',

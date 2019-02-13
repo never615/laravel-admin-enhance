@@ -8,6 +8,7 @@ namespace Mallto\Admin\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 /**
  * Created by PhpStorm.
@@ -20,6 +21,12 @@ class AdminUserController extends Controller
     public function index()
     {
         $adminUser = Auth::guard("admin_api")->user();
+
+        //检查账号是否被禁用
+        if ($adminUser->status == "forbidden") {
+            throw new PermissionDeniedException("当前账号已被禁用");
+        }
+
         $adminUserUsecase = app(AdminUserUsecase::class);
 
         return $adminUserUsecase->getReturnUserInfo($adminUser, true);

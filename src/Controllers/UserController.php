@@ -42,6 +42,11 @@ class UserController extends AdminCommonController
     {
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
+        $grid->status("账号状态")
+            ->display(function ($value) {
+                return Administrator::STATUS[$value] ?? "";
+            });
+
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
 
         $grid->filter(function (Grid\Filter $filter) {
@@ -68,6 +73,21 @@ class UserController extends AdminCommonController
             ->rules('required');
 
         $form->text('name', trans('admin.name'))->rules('required');
+
+
+        if ($this->currentId) {
+            $adminUser = Admin::user();
+            //只有有权限的人才能修改此配置
+            if ($adminUser->can("admin_users_subject_forbidden")) {
+                $form->select("status", "账号状态")
+                    ->options(Administrator::STATUS);
+            } else {
+                $form->display("status", "账号状态")
+                    ->with(function ($value) {
+                        return Administrator::STATUS[$value] ?? "";
+                    });
+            }
+        }
 
         $this->formWechatBind($form);
         $form->image('avatar', trans('admin.avatar'))->removable();
@@ -97,7 +117,7 @@ class UserController extends AdminCommonController
         $form->ignore(['password_confirmation', 'qrcode', 'unbind_wechat']);
 
         $form->select("adminable_type", "账号类型")
-            ->options(SelectConstants::ADMINABLE_TYPE)
+            ->options(Administrator::ADMINABLE_TYPE)
             ->rules("required");
 
         $form->selectE("adminable_id", "账号所属")
