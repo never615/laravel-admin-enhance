@@ -183,9 +183,7 @@ abstract class AdminCommonController extends Controller
         $this->gridSubject($grid);
 
         $grid->filter(function (Grid\Filter $filter) {
-            if (Schema::hasColumn($this->tableName, "admin_user_id")) {
-                $filter->equal("admin_user_id", "操作人")->select(Administrator::selectSourceDatas());
-            }
+            $this->gridAdminUserFilter($filter);
 
             $filter->between("created_at")->date();
         });
@@ -227,6 +225,13 @@ abstract class AdminCommonController extends Controller
         $form->display('updated_at', trans('admin.updated_at'));
     }
 
+
+    protected function gridAdminUserFilter($filter)
+    {
+        if (Schema::hasColumn($this->tableName, "admin_user_id")) {
+            $filter->equal("admin_user_id", "操作人")->select(Administrator::selectSourceDatas());
+        }
+    }
 
     /**
      * 默认的排序,重写此方法覆盖
@@ -299,9 +304,11 @@ abstract class AdminCommonController extends Controller
                         }
                     } elseif ($this->tableName == "shops") {
                         //特别处理shops表的数据过滤
-                        $grid->model()->whereHas("groups", function ($query) use ($managerShopGroups) {
-                            $query->whereIn("shop_groups.id", $managerShopGroups);
-                        });
+                        if (!empty($managerShopGroups)) {
+                            $grid->model()->whereHas("groups", function ($query) use ($managerShopGroups) {
+                                $query->whereIn("id", $managerShopGroups);
+                            });
+                        }
                     }
 
 
