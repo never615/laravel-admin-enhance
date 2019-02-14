@@ -20,7 +20,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
 
 abstract class AdminCommonController extends Controller
 {
-    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData,AdminFileHelp;
+    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData, AdminFileHelp;
 
 
     /**
@@ -258,7 +258,7 @@ abstract class AdminCommonController extends Controller
      */
     protected function gridShopFilter($grid)
     {
-        $this->shopFilter();
+        $this->shopFilter($grid);
     }
 
     /**
@@ -268,10 +268,10 @@ abstract class AdminCommonController extends Controller
      */
     protected function formShopFilter($form)
     {
-        $this->shopFilter();
+        $this->shopFilter($form);
     }
 
-    protected function shopFilter()
+    protected function shopFilter($grid)
     {
         //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
         $adminUser = Admin::user();
@@ -279,10 +279,34 @@ abstract class AdminCommonController extends Controller
         if ($adminiableType) {
             switch ($adminiableType) {
                 case "subject":
-                    //pass
+                    $managerShopGroups = $adminUser->shop_groups;
+                    //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
+                    if (Schema::hasColumn($this->tableName, "shop_id")) {
+                        if (!empty($managerShopGroups)) {
+                            //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
+                            if ($grid instanceof Grid) {
+
+                                //判断model是否有shop()方法
+                                if (method_exists($this->getModel(), 'shop')) {
+                                    $grid->model()->whereHas("shop", function ($query) use ($managerShopGroups) {
+                                        $query->whereHas("groups", function ($query) use ($managerShopGroups) {
+                                            $query->whereIn("shop_groups.id", $managerShopGroups);
+                                        });
+                                    });
+                                }
+
+                            }
+                        }
+                    } elseif ($this->tableName == "shops") {
+                        //特别处理shops表的数据过滤
+                        $grid->model()->whereHas("groups", function ($query) use ($managerShopGroups) {
+                            $query->whereIn("shop_groups.id", $managerShopGroups);
+                        });
+                    }
+
+
                     break;
                 default:
-                    \Log::warning($adminUser->id);
                     throw new PermissionDeniedException("非主体账号无权限查看");
                     break;
             }
