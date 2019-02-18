@@ -39,7 +39,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
     {
 
         if (!ini_get('safe_mode')) {
-            set_time_limit(3600);
+            set_time_limit(60*60*5);
         }
 
 

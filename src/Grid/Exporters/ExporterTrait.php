@@ -25,15 +25,17 @@ trait ExporterTrait
     {
         $titles = collect(array_first($records))->keys()->map(
             function ($key) use ($tableName) {
-                $tempKeys = explode(".", $key);
-                $tempKeysCount = count($tempKeys);
-                if ($tempKeysCount > 1) {
-                    $tableName = $tempKeys[$tempKeysCount - 2];
-                }
+                return admin_translate($key, $tableName);
 
-                $tableName = str_plural($tableName);
-
-                return admin_translate($tempKeys[$tempKeysCount - 1], $tableName);
+//                $tempKeys = explode(".", $key);
+//                $tempKeysCount = count($tempKeys);
+//                if ($tempKeysCount > 1) {
+//                    $tableName = $tempKeys[$tempKeysCount - 2];
+//                }
+//
+//                $tableName = str_plural($tableName);
+//
+//                return admin_translate($tempKeys[$tempKeysCount - 1], $tableName);
             }
         );
 
@@ -128,7 +130,7 @@ trait ExporterTrait
     /**
      * Remove an item from the collection/array by key.
      *
-     * @param array       $records
+     * @param array        $records
      * @param array|string $keys       ,需要移除的字段,
      * @param              $remainKeys ,设置此字段,会忽略keys的设置
      * @param bool         $default    true,是否默认移除一些字段
