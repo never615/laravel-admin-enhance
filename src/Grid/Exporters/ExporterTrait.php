@@ -64,30 +64,16 @@ trait ExporterTrait
         $tableName = $this->getTable();
         $now = date('Y-m-d H:i:s');
 
-        return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
-    }
-
-
-    /**
-     * 自定义数据处理
-     *
-     * 这一步就是对即将到放入表格中的数据最后的加工
-     *
-     * @param  array $records ,orm查询结果经过array_dot后得到$records数组
-     * @return array
-     */
-    public function customData($records)
-    {
-        //此方法必须调用
-        return $this->forget($records, [
-        ]);
+//        return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
+        return admin_translate("table.".$tableName)."_".$now.$extension;
     }
 
 
     /**
      * 一般用来处理关联对象的属性
-     * 使用类似 array_map
+     * 使用 array_map
      *
+     * @deprecated
      * @param $records
      * @param $callback
      * @return array
@@ -129,6 +115,9 @@ trait ExporterTrait
 
     /**
      * Remove an item from the collection/array by key.
+     *
+     * 有的数据导出是要保留的字段多,有的是要移除的字段多,所有有两种设置方法.
+     * 一种设置要移除的字段,一种只用设置要保留的字段
      *
      * @param array        $records
      * @param array|string $keys       ,需要移除的字段,
