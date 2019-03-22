@@ -180,7 +180,9 @@ class ServiceProvider extends BaseServiceProvider
             Admin::js('vendor/laravel-adminE/notify/notify.js');
             Admin::js('vendor/laravel-adminE/chartjs/Chart.min.js');
             //表格引入的两个库
-            Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
+//            Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
+//            Admin::js('https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js');
+            Admin::js('vendor/laravel-adminE/echarts/echarts.min.js');
             Admin::js('https://file.easy.mall-to.com/js/walden.js');
         });
     }

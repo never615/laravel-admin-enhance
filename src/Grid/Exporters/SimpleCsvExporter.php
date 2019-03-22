@@ -29,11 +29,7 @@ abstract class SimpleCsvExporter extends CsvExporter
 
 
     /**
-     * 一般,当数据库字段保存的是json数据时,需要再次设置该字段,避免json数据被错误转换
-     *
-     * 部分数据以json形式保存在数据库的一个字段下,默认会转成数组,数组的key会当做列名做导出处理
-     *
-     * 只支持数据库字段是json类型的在此设置
+     * 一般,当数据库字段保存的是json数据时,需要在此设置该字段忽略,避免json数据被错误转换(被array_dot()转成一维数组)
      *
      * @var array
      */
@@ -73,6 +69,9 @@ abstract class SimpleCsvExporter extends CsvExporter
 
     /**
      * 返回要移除的key
+     *
+     * 参数可以传入关联数据的**模型名**来忽略该模型下的全部数据,
+     * 如导出user数据的时候,传入member会忽略user关联的member对象下的所有字段.
      *
      * @return array
      */
