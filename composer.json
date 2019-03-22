@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": ">=7.0",
-        "laravel/framework": "5.6.*"
+        "laravel/framework": "5.6.*",
+        "smartins/passport-multiauth": "^2.0"
     },
     "autoload": {
         "psr-4": {
