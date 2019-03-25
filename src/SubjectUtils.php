@@ -40,7 +40,7 @@ class SubjectUtils
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
@@ -71,7 +71,7 @@ class SubjectUtils
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
@@ -104,7 +104,7 @@ class SubjectUtils
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
