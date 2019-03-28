@@ -23,14 +23,13 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix'     => "admin/api",
     "middleware" => ["oauth.providers", "api", "adminE.log"],
-    'namespace'  => 'Mallto\Admin\Controllers',
+    'namespace'  => 'Mallto\Admin\Controllers\Api',
 ], function ($router) {
 
     $router->post('auth/login', 'AuthController@postLogin');
 
     Route::group([
         "middleware" => ["auth:admin_api"],
-        "namespace"  => "Api",
     ], function ($router) {
         Route::group([
             "middleware" => ["adminE.auto_permission"],
@@ -68,7 +67,8 @@ Route::group([
 
 
             $router->get('auth/login', '\Encore\Admin\Controllers\AuthController@getLogin');
-            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
+//            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
+            $router->post('auth/login', 'Admin\AuthController@postLogin');
             $router->get('auth/logout', '\Encore\Admin\Controllers\AuthController@getLogout');
             $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
             $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');

@@ -13,5 +13,7 @@ namespace Mallto\Admin;
  */
 class CacheConstants
 {
-    const IS_OWNER = "is_owner";
+    const SESSION_ADMIN_USER = 'admin_user';
+    const SESSION_IS_OWNER = 'is_owner';
+    const SESSION_CURRENT_SUBJECT = "current_subject";
 }

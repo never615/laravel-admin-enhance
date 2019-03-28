@@ -55,13 +55,13 @@ class Menu extends Model
 
     public function getTitleAttribute($value)
     {
-        $isOwner = session(CacheConstants::IS_OWNER, null);
+        $isOwner = session(CacheConstants::SESSION_IS_OWNER, null);
 
         if ($isOwner === null) {
             $admin = Admin::user();
             if ($admin) {
                 $isOwner = $admin->isOwner();
-                session(CacheConstants::IS_OWNER, $isOwner);
+                session(CacheConstants::SESSION_IS_OWNER, $isOwner);
             }
         }
 

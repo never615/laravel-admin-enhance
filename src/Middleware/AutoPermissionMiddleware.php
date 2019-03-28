@@ -17,6 +17,7 @@ namespace Mallto\Admin\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Permission;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -41,7 +42,8 @@ class AutoPermissionMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $adminUser = Auth::guard("admin")->user();
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+//        $adminUser = Auth::guard("admin")->user();
         if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }

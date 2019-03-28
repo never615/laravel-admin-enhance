@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Controllers;
 
 
+use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
@@ -28,7 +29,7 @@ use Mallto\User\Domain\Traits\OpenidCheckTrait;
  *
  * @package Mallto\Admin\Controllers
  */
-class AuthController extends \Encore\Admin\Controllers\AuthController
+class AuthController extends Controller
 {
 
     use AuthValidateTrait, OpenidCheckTrait, ValidatesRequests;
@@ -43,7 +44,6 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
      */
     public function postLogin(Request $request)
     {
-
         switch ($request->header("REQUEST-TYPE")) {
             case "WECHAT":
                 //校验identifier(实际就是加密过得openid),确保只使用了一次
@@ -52,12 +52,20 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
                 return $this->loginByWechat($request);
                 break;
             default:
-                return parent::postLogin($request);
+                throw new ResourceException("不支持的登录方式:".$request->header("REQUEST-TYPE"));
                 break;
 
         }
     }
 
+
+    /**
+     * 微信端授权登录管理端
+     *
+     * @param Request $request
+     * @return mixed
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function loginByWechat(Request $request)
     {
         //请求字段验证

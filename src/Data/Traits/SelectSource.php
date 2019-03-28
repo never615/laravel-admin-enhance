@@ -5,9 +5,9 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 
 
 /**
@@ -24,7 +24,9 @@ trait SelectSource
      */
     public static function selectSourceDate()
     {
-        if (Admin::user()->isOwner()) {
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+
+        if ($isOwner) {
             return static::dynamicData()
                 ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
         } else {
@@ -35,7 +37,9 @@ trait SelectSource
 
     public function scopeSelectSourceDatas()
     {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+
+        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return static::dynamicData()
                 ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
         } else {
@@ -50,7 +54,9 @@ trait SelectSource
      */
     public function scopeSelectSourceDatas2()
     {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+
+        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return static::dynamicData()
                 ->select(DB::raw("name||'-'||subject_id as name,id"));
         } else {

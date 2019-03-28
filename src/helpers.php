@@ -2,6 +2,9 @@
 /**
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
+
+use Illuminate\Support\Facades\Lang;
+
 if (!function_exists('array_dot2')) {
 
     /**

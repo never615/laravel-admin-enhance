@@ -8,6 +8,7 @@ namespace Mallto\Admin\Controllers\Base;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Subject;
 
 
@@ -31,7 +32,10 @@ trait AdminSubjectTrait
             //拥有子主体的主体,在table中显示条目的所属主体
             if (Admin::user()->subject->hasChildrenSubject()) {
                 $grid->subject_id()->sortable()->display(function ($value) {
-                    $subject = Subject::find($value);
+
+                    $subject = AdminUtils::getSubject($value);
+
+//                    $subject = Subject::find($value);
 
                     return $subject->name;
                 });
