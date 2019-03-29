@@ -6,6 +6,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
 
 
@@ -50,7 +51,9 @@ class Subject extends Model
 
     public static function selectSourceDate()
     {
-        if (Admin::user()->isOwner()) {
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+
+        if ($isOwner) {
             return static::dynamicData()
                 ->select(DB::raw("name||id as name,id"))->pluck("name", "id");
         } else {

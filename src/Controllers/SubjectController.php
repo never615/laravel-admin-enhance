@@ -61,7 +61,7 @@ class SubjectController extends AdminCommonController
             }
         })->sortable();
 
-        if (Admin::user()->isOwner()) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $grid->uuid()->editable();
         }
 
@@ -120,7 +120,7 @@ class SubjectController extends AdminCommonController
 
             $form->divider();
 
-            if (Admin::user()->isOwner()) {
+            if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $permissions = Permission::where("parent_id", 0)->where("common", false)->get();
                 $form->checkbox('permissions', "已购模块")
                     ->options(Permission::selectOptions($permissions->toArray(),
@@ -144,7 +144,7 @@ class SubjectController extends AdminCommonController
             }
 
         })->tab("其他配置", function ($form) {
-            if (Admin::user()->isOwner()) {
+            if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $form->hasMany("subjectconfigs", "", function (Form\NestedForm $form) {
                     $form->select("type")
                         ->options(SubjectConfig::TYPE);

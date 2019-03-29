@@ -67,8 +67,7 @@ Route::group([
 
 
             $router->get('auth/login', '\Encore\Admin\Controllers\AuthController@getLogin');
-//            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
-            $router->post('auth/login', 'Admin\AuthController@postLogin');
+            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
             $router->get('auth/logout', '\Encore\Admin\Controllers\AuthController@getLogout');
             $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
             $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');

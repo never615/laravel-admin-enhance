@@ -42,8 +42,7 @@ class AutoPermissionMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
-//        $adminUser = Auth::guard("admin")->user();
+        $adminUser = Auth::guard("admin")->user();
         if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }

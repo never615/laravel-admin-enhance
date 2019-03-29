@@ -58,7 +58,7 @@ class RoleController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        if (Admin::user()->isOwner()) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $form->text('slug', trans('admin.slug'))
                 ->help("不填写会自动生成,建议不填写");
         }

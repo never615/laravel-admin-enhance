@@ -52,7 +52,7 @@ trait AdminSubjectTrait
     {
         if (Schema::hasColumn($this->tableName, "subject_id")) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
-            if (Admin::user()->isOwner()) {
+            if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $form->selectE("subject_id", "主体")
                     ->options(
                         Subject::pluck("name", "id")
@@ -82,7 +82,7 @@ trait AdminSubjectTrait
      */
     protected function autoSubjectSaving($form)
     {
-        if (Schema::hasColumn($this->tableName, "subject_id") && !Admin::user()->isOwner()) {
+        if (Schema::hasColumn($this->tableName, "subject_id") && !\Mallto\Admin\AdminUtils::isOwner()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
             $subject = Admin::user()->subject;

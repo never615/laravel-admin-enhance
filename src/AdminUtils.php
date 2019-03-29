@@ -24,25 +24,41 @@ class AdminUtils
      */
     public static function getLoginUserData()
     {
-        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
+//        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
 
-        if (!$adminUser || $isOwner === null || !$currentSubject) {
-
+        if ($isOwner === null || !$currentSubject) {
             $adminUser = Admin::user();
             $isOwner = $adminUser->isOwner();
             $currentSubject = $adminUser->subject;
 
             session([
-                CacheConstants::SESSION_ADMIN_USER      => $adminUser,
+//                CacheConstants::SESSION_ADMIN_USER      => $adminUser,
                 CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
-                CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject,
+                CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject->toArray(),
             ]);
         }
 
 
-        return [$adminUser, $isOwner, $currentSubject];
+        return [null, $isOwner, (object) $currentSubject];
+    }
+
+
+    /**
+     * 判断当前登录用户是否是owner
+     *
+     * @return \Illuminate\Session\SessionManager|\Illuminate\Session\Store|mixed
+     */
+    public static function isOwner()
+    {
+        $isOwner = session(CacheConstants::SESSION_IS_OWNER);
+
+        if ($isOwner === null) {
+            [$adminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+        }
+
+        return $isOwner;
     }
 
 

@@ -12,6 +12,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Traits\AdminBaseHelp;
@@ -151,11 +152,12 @@ abstract class AdminCommonController extends Controller
 
         $grid->expandFilter();
 
-        $adminUser = Admin::user();
-
         $filter = $grid->getFilter();
 
-        if (!$adminUser->isOwner()) {
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+
+
+        if (!$isOwner) {
             $filter->disableIdFilter();
         } else {
             $grid->id('ID')->sortable();

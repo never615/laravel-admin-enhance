@@ -36,7 +36,7 @@ class ImportSetting extends BaseModel
 
     public function scopeSelectSourceDatas()
     {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
+        if (\Mallto\Admin\AdminUtils::isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return static::dynamicData()
                 ->select(\DB::raw("name||subject_id as name,module_slug"))->pluck("name", "module_slug");
         } else {
