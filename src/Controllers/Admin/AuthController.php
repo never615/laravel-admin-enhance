@@ -10,7 +10,6 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Mallto\Admin\CacheConstants;
-use Mallto\Admin\CacheKeyConstants;
 
 class AuthController extends \Encore\Admin\Controllers\AuthController
 {
