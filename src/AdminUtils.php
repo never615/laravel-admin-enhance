@@ -25,24 +25,33 @@ class AdminUtils
     public static function getLoginUserData()
     {
         $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
-        if (!$adminUser) {
-            $adminUser = Admin::user();
-        }
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
-
-        if ($isOwner === null) {
-            $isOwner = $adminUser->isOwner();
-        }
-
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
-        if (!$currentSubject) {
+
+        if (!$adminUser || $isOwner === null || !$currentSubject) {
+
+            $adminUser = Admin::user();
+            $isOwner = $adminUser->isOwner();
             $currentSubject = $adminUser->subject;
+
+            session([
+                CacheConstants::SESSION_ADMIN_USER      => $adminUser,
+                CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
+                CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject,
+            ]);
         }
+
 
         return [$adminUser, $isOwner, $currentSubject];
     }
 
 
+    /**
+     * 根据主体id 查询 subject
+     *
+     * @param $id
+     * @return mixed
+     */
     public static function getSubject($id)
     {
         $subject = Cache::get("subject_".$id);
@@ -56,11 +65,21 @@ class AdminUtils
     }
 
 
+    /**
+     * 缓存主体数据
+     *
+     * @param $subject
+     */
     public static function cacheSubject($subject)
     {
         Cache::forever("subject_".$subject->id, $subject);
     }
 
+    /**
+     * 删除缓存的主体数据
+     *
+     * @param $id
+     */
     public static function forgetSubject($id)
     {
         Cache::forget("subject_".$id);
