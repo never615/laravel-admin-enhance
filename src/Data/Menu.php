@@ -58,7 +58,7 @@ class Menu extends Model
 
         if ($isOwner && $this->sub_title) {
             return $value."-".$this->sub_title;
-        } else {s
+        } else {
             return $value;
         }
     }
