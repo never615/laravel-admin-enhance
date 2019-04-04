@@ -6,7 +6,6 @@
 namespace Mallto\Admin\Data;
 
 
-use Encore\Admin\Facades\Admin;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Mallto\Admin\CacheConstants;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -55,20 +54,11 @@ class Menu extends Model
 
     public function getTitleAttribute($value)
     {
-        $isOwner = session(CacheConstants::SESSION_IS_OWNER, null);
-
-        if ($isOwner === null) {
-            $admin = Admin::user();
-            if ($admin) {
-                $isOwner = $admin->isOwner();
-                session(CacheConstants::SESSION_IS_OWNER, $isOwner);
-            }
-        }
-
+        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
 
         if ($isOwner && $this->sub_title) {
             return $value."-".$this->sub_title;
-        } else {
+        } else {s
             return $value;
         }
     }

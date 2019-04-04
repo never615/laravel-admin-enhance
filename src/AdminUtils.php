@@ -24,6 +24,7 @@ class AdminUtils
      */
     public static function getLoginUserData()
     {
+        $adminUser=null;
 //        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
@@ -41,7 +42,7 @@ class AdminUtils
         }
 
 
-        return [null, $isOwner, (object) $currentSubject];
+        return [$adminUser, $isOwner, (object) $currentSubject];
     }
 
 
