@@ -46,9 +46,10 @@ class WangEditor extends Field
     public function render()
     {
 
+        $name=$this->elementName ?: $this->formatName($this->column);
         $this->script = <<<EOT
         
-    var editor = new wangEditor('{$this->id}');
+    var editor = new wangEditor(document.getElementsByName('{$name}'));
 
     {$this->getMenuScript()}
     {$this->getUploadScript()}
