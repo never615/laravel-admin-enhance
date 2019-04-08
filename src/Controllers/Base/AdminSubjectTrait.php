@@ -35,9 +35,7 @@ trait AdminSubjectTrait
 
                     $subject = AdminUtils::getSubject($value);
 
-//                    $subject = Subject::find($value);
-
-                    return $subject->name;
+                    return $subject->name ?? "已删除";
                 });
             }
         }
