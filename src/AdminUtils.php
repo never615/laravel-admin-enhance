@@ -24,7 +24,7 @@ class AdminUtils
      */
     public static function getLoginUserData()
     {
-        $adminUser=null;
+        $adminUser = null;
 //        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
@@ -89,7 +89,9 @@ class AdminUtils
      */
     public static function cacheSubject($subject)
     {
-        Cache::forever("subject_".$subject->id, $subject);
+        if ($subject) {
+            Cache::forever("subject_".$subject->id, $subject);
+        }
     }
 
     /**
