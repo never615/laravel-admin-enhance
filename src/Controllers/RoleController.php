@@ -70,12 +70,17 @@ class RoleController extends AdminCommonController
             ->options(function () use ($that) {
                 $subjectId = Admin::user()->subject_id;
                 if ($subjectId == 1) {
-                    $permissions = Permission::all()->toArray();
+                    $permissions = Permission::orderBy("order")->get()->toArray();
                 } else {
                     //主体拥有的权限需要加上那几个公共功能模块的权限
 
-                    $permissionsTemp = Subject::find($subjectId)->permissions;
-                    $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
+                    $permissionsTemp = Subject::find($subjectId)
+                        ->permissions()
+                        ->orderBy("order")
+                        ->get();
+                    $permissionsTemp = $permissionsTemp->merge(
+                        Permission::where("common", true)->get()
+                    );
                     $permissions = $that->withSubPermissions($permissionsTemp);
                 }
 

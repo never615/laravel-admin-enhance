@@ -13,7 +13,22 @@ namespace Mallto\Admin;
  */
 class CacheConstants
 {
+    /**
+     * session 中缓存用户数据
+     */
     const SESSION_ADMIN_USER = 'admin_user';
+    /**
+     * session中缓存是否是项目拥有者
+     */
     const SESSION_IS_OWNER = 'is_owner';
+    /**
+     * session中缓存当前登录用户所属主体
+     */
     const SESSION_CURRENT_SUBJECT = "current_subject";
+
+
+    /**
+     * 缓存中保存 所有菜单缓存的对应key的值
+     */
+    const CACHE_MENU_KEYS = "cache_menu_keys";
 }
