@@ -24,7 +24,7 @@ trait SelectSource
      */
     public static function selectSourceDate()
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+        $isOwner = AdminUtils::isOwner();
 
         if ($isOwner) {
             return static::dynamicData()
@@ -37,7 +37,8 @@ trait SelectSource
 
     public function scopeSelectSourceDatas()
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+        $isOwner = AdminUtils::isOwner();
+
 
         if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return static::dynamicData()
@@ -54,7 +55,7 @@ trait SelectSource
      */
     public function scopeSelectSourceDatas2()
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+        $isOwner = AdminUtils::isOwner();
 
         if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return static::dynamicData()

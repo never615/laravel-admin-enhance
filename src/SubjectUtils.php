@@ -186,32 +186,6 @@ class SubjectUtils
     public static function getSubjectId()
     {
         return self::getSubject()->id;
-//        if (self::$subject) {
-//            return self::$subject->id;
-//        }
-//
-//        try {
-//            $uuid = self::getUUID();
-//        } catch (HttpException $e) {
-//            $uuid = null;
-//        }
-//
-//        if (!is_null($uuid)) {
-//            $subject = Subject::where("uuid", $uuid)->first();
-//            if ($subject) {
-//                return $subject->id;
-//            }
-//        }
-//
-//        $user = \Admin::user();
-//        if ($user) {
-//            $subject = $user->subject;
-//            if ($subject) {
-//                return $subject->id;
-//            }
-//        }
-//
-//        throw new HttpException(422, "uuid参数错误".$uuid);
     }
 
     /**
@@ -226,13 +200,13 @@ class SubjectUtils
 
 
     /**
-     * 获取主体
+     * 获取当前主体
      *
      * @return Subject|null|static
      */
     public static function getSubject()
     {
-
+        //按照接口请求的方式,尝试获取subject
         try {
             $uuid = self::getUUID();
         } catch (HttpException $e) {
@@ -247,12 +221,13 @@ class SubjectUtils
                 $subject = Subject::where('extra_config->'.SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
                     $uuid)
                     ->first();
-                if($subject){
+                if ($subject) {
                     return $subject;
                 }
             }
         }
 
+        //按照管理端请求的方式,尝试获取subject
         $user = \Admin::user();
         if ($user) {
             $subject = $user->subject;

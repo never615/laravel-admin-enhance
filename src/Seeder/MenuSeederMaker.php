@@ -18,6 +18,15 @@ use Mallto\Admin\Data\Menu;
  */
 trait MenuSeederMaker
 {
+    /**
+     * @param      $uri
+     * @param      $parentId
+     * @param      $order
+     * @param      $title
+     * @param      $icon
+     * @param null $subTitle
+     * @return mixed
+     */
     protected function updateOrCreate($uri, $parentId, $order, $title, $icon, $subTitle = null)
     {
         $path = "";

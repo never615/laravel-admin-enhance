@@ -24,25 +24,31 @@ class AdminUtils
      */
     public static function getLoginUserData()
     {
-        $adminUser = null;
-//        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
+        $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
 
-        if ($isOwner === null || !$currentSubject) {
+        if ($isOwner === null || !$currentSubject || !$adminUser) {
             $adminUser = Admin::user();
-            $isOwner = $adminUser->isOwner();
-            $currentSubject = $adminUser->subject;
+            if ($adminUser) {
+                $isOwner = $adminUser->isOwner();
+                $currentSubject = $adminUser->subject;
 
-            session([
-//                CacheConstants::SESSION_ADMIN_USER      => $adminUser,
-                CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
-                CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject->toArray(),
-            ]);
+                session([
+                    CacheConstants::SESSION_ADMIN_USER      => array_except($adminUser->toArray(),
+                        ["roles", "subject"]),
+                    CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
+                    CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject->toArray(),
+                ]);
+            }
         }
 
 
-        return [$adminUser, $isOwner, (object) $currentSubject];
+//        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
+//        \Log::debug(session(CacheConstants::SESSION_CURRENT_SUBJECT));
+
+
+        return [(object) $adminUser, $isOwner, (object) $currentSubject];
     }
 
 
@@ -60,6 +66,55 @@ class AdminUtils
         }
 
         return $isOwner;
+    }
+
+
+    /**
+     * 获取当前管理端登录管理用户
+     */
+    public static function getCurrentAdminUser()
+    {
+        $currentAdminUser = session(CacheConstants::SESSION_ADMIN_USER);
+        if (!$currentAdminUser) {
+            [$currentAdminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+        } else {
+            $currentAdminUser = (object) $currentAdminUser;
+        }
+
+//        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
+//        \Log::debug(\GuzzleHttp\json_encode($currentAdminUser));
+
+
+        return $currentAdminUser;
+    }
+
+
+    /**
+     * 获取当前管理端登录用户所属主体
+     */
+    public static function getCurrentSubject()
+    {
+        $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
+        if (!$currentSubject) {
+            [$currentAdminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+        } else {
+            $currentSubject = (object) $currentSubject;
+        }
+
+        return $currentSubject;
+    }
+
+    /**
+     * 获取当前管理端登录用户所属主体id
+     */
+    public static function getCurrentSubjectId()
+    {
+        return self::getCurrentSubject()->id;
+    }
+
+    public static function getCurrentAdminUserId()
+    {
+        return self::getCurrentAdminUser()->id;
     }
 
 

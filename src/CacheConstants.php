@@ -26,6 +26,16 @@ class CacheConstants
      */
     const SESSION_CURRENT_SUBJECT = "current_subject";
 
+//    /**
+//     * session中缓存当前登录用户的id
+//     */
+//    const SESSION_CURRENT_ADMIN_USER_ID = "current_admin_user_id";
+//
+//    /**
+//     *  session中缓存当前登录用户所属主体的id
+//     */
+//    const SESSION_CURRENT_SUBJECT_ID = "current_subject_id";
+
 
     /**
      * 缓存中保存 所有菜单缓存的对应key的值

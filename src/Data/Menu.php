@@ -55,7 +55,7 @@ class Menu extends Model
 
     public function getTitleAttribute($value)
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+        $isOwner=AdminUtils::isOwner();
 
         if ($isOwner && $this->sub_title) {
             return $value."-".$this->sub_title;

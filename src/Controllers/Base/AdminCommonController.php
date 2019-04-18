@@ -154,8 +154,7 @@ abstract class AdminCommonController extends Controller
 
         $filter = $grid->getFilter();
 
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
-
+        $isOwner=AdminUtils::isOwner();
 
         if (!$isOwner) {
             $filter->disableIdFilter();

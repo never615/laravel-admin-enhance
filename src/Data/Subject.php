@@ -51,7 +51,7 @@ class Subject extends Model
 
     public static function selectSourceDate()
     {
-        [$adminUser, $isOwner, $currentSubject] = AdminUtils::getLoginUserData();
+        $isOwner = AdminUtils::isOwner();
 
         if ($isOwner) {
             return static::dynamicData()
