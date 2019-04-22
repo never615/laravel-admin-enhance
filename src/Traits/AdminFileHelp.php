@@ -17,6 +17,38 @@ trait  AdminFileHelp
 {
     use QiniuToken;
 
+
+    protected function formMultipleImage2(
+        $form,
+        $columnName,
+        $tableName = "easy",
+        $displayName = null,
+        $help = "建议尺寸750x500"
+    ) {
+
+        $form->qiniuMultipleFile($columnName, $displayName)
+            ->help("单张图片最大不能超过2M<br>添加图片后需要点击上传按钮".$help)
+            ->options([
+                'maxFileSize'             => '2048',
+                "msgSizeTooLarge"         => '文件 "{name}" ({size} KB) 超过了允许上传的最大限制: {maxSize} KB!',
+                'allowedFileTypes'        => ['image'],
+//                'dropZoneEnabled' temp.val(files);        => false,
+                'uploadLabel'             => '上传',
+                'dropZoneTitle'           => '拖拽文件到这里 &hellip;',
+                'msgInvalidFileExtension' => '不正确的文件扩展名 "{name}". 只支持 "{extensions}" 的文件扩展名.',
+                'showUpload'              => true,
+                'uploadUrl'               => 'https://up-z2.qbox.me/',
+                'uploadExtraData'         => [
+                    'token' => $this->getUploadTokenInter("$tableName/$columnName/".$this->currentId),
+                ],
+                'allowedFileExtensions'   => ['mp4'],
+            ])
+            ->removable()
+            ->uniqueName()
+            ->move("$tableName/$columnName/".$this->currentId);
+    }
+
+
     protected function formMultipleImage(
         $form,
         $columnName,
