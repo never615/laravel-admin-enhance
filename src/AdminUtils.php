@@ -145,7 +145,7 @@ class AdminUtils
     public static function cacheSubject($subject)
     {
         if ($subject) {
-            Cache::forever("subject_".$subject->id, $subject);
+            Cache::put("subject_".$subject->id, $subject,60*24);
         }
     }
 

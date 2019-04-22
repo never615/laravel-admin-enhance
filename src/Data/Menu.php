@@ -207,7 +207,7 @@ class Menu extends Model
                 $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
                 $cacheMenuKeys[] = $cacheMenuKey;
 
-                Cache::forever(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys);
+                Cache::put(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys,60*24);
 
                 return $result;
             }
