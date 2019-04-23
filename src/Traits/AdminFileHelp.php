@@ -18,6 +18,15 @@ trait  AdminFileHelp
     use QiniuToken;
 
 
+    /**
+     * 直传对象存储的多图控件
+     *
+     * @param        $form
+     * @param        $columnName
+     * @param string $tableName
+     * @param null   $displayName
+     * @param string $help
+     */
     protected function formMultipleImage2(
         $form,
         $columnName,
