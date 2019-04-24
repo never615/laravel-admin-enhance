@@ -64,6 +64,11 @@ class ImportFileJob implements ShouldQueue
             if ($setting) {
                 $handler = resolve($setting->module_handler);
                 $handler->handle($record);
+            } else {
+                $handler = resolve($record->module_slug);
+                if ($handler) {
+                    $handler->handle($record);
+                }
             }
         }
     }
@@ -78,6 +83,11 @@ class ImportFileJob implements ShouldQueue
             if ($setting) {
                 $handler = resolve($setting->module_handler);
                 $handler->fail($record, $exception);
+            } else {
+                $handler = resolve($record->module_slug);
+                if ($handler) {
+                    $handler->handle($record);
+                }
             }
         }
     }
