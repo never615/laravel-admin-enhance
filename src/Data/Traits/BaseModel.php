@@ -25,7 +25,7 @@ abstract class BaseModel extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'images'  => 'array',
+        'images' => 'array',
     ];
 
 
@@ -39,7 +39,12 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        $url = config("app.file_url_prefix").$value;
+        if (str_contains($url, "?")) {
+            return config("app.file_url_prefix").$value;
+        } else {
+            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
 
     public function getLogoAttribute($value)
@@ -52,7 +57,13 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        $url = config("app.file_url_prefix").$value;
+        if (str_contains($url, "?")) {
+            return config("app.file_url_prefix").$value;
+        } else {
+            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
+
     }
 
     public function getImageAttribute($value)
@@ -65,14 +76,24 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
+        $url = config("app.file_url_prefix").$value;
+        if (str_contains($url, "?")) {
+            return config("app.file_url_prefix").$value;
+        } else {
+            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
 
     public function setImagesAttribute($values)
     {
         foreach ($values as $key => $value) {
             if (starts_with($value, config("app.file_url_prefix"))) {
-                $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
+                $url = str_replace(config("app.file_url_prefix"), "", $value);
+                if (str_contains($url, "?")) {
+                    $tmpUrls = explode("?", $url);
+                    $url = $tmpUrls[0];
+                }
+                $values[$key] = $url;
             }
         }
 
@@ -89,7 +110,13 @@ abstract class BaseModel extends Model
                 if (starts_with($value, "http")) {
                     $values[$key] = $value;
                 } else {
-                    $values[$key] = config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
+
+                    $url = config("app.file_url_prefix").$value;
+                    if (str_contains($url, "?")) {
+                        $values[$key] = config("app.file_url_prefix").$value;
+                    } else {
+                        $values[$key] = config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+                    }
                 }
             }
         } else {
