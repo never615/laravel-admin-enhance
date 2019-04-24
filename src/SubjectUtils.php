@@ -129,6 +129,52 @@ class SubjectUtils
 
 
     /**
+     * 获取可以动态设置key的配置项
+     *
+     * 公开配置
+     *
+     * 只有owner可以编辑
+     *
+     * 对应主体管理的最后一个tab,即:系统参数(owner)
+     *
+     * @param      $key
+     * @param null $default
+     * @param null $subject
+     * @return mixed|null
+     */
+    public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
+    {
+        if (!$subject) {
+            try {
+                $subject = self::getSubject();
+            } catch (\Exception $exception) {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到");
+
+                }
+            }
+        }
+
+        $subjectConfig = $subject->subjectConfigs()
+            ->where("key", $key)
+            ->where("type","public")
+            ->first();
+
+        if (!$subjectConfig) {
+            if ($default) {
+                return $default;
+            } else {
+                throw new SubjectConfigException($key."未配置,".$subject->id);
+            }
+        }
+
+        return $subjectConfig->value;
+    }
+
+
+    /**
      * 获取uuid
      *
      * @return mixed
