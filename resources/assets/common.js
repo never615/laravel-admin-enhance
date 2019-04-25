@@ -13,7 +13,7 @@
             return response.statusText + ":" + response.status
         }
     };
-    $.fn.editable.defaults.emptytext="空";
+    $.fn.editable.defaults.emptytext = "空";
     //turn to inline mode
 //     $.fn.editable.defaults.mode = 'inline';
 //     $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
@@ -207,7 +207,6 @@
     }
 
 
-
     /**
      * Js获取Url参数
      * @returns {{}}
@@ -325,6 +324,19 @@
             result = result.replace(/\s/g, "");
         }
         return result;
+    }
+
+
+    window.etUrlRelativePath = function (url) {
+        var arrUrl = url.split("//");
+
+        var start = arrUrl[1].indexOf("/");
+        var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+        if (relUrl.indexOf("?") != -1) {
+            relUrl = relUrl.split("?")[0];
+        }
+        return relUrl;
     }
 
 
