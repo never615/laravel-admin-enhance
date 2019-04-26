@@ -1,15 +1,10 @@
 <?php
-/**
- * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
- */
 
 namespace Mallto\Admin\Form\Field;
 
-
+use Encore\Admin\Admin;
 use Encore\Admin\Form\Field;
 use Encore\Admin\Form\NestedForm;
-use Illuminate\Database\Eloquent\Relations\HasMany as Relation;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * Class HasMany.
@@ -17,56 +12,82 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class HasMany extends Field\HasMany
 {
     /**
-     * Build Nested form for related data.
+     * Setup tab template script.
      *
-     * @throws \Exception
+     * @param string $templateScript
      *
-     * @return array
+     * @return void
      */
-    protected function buildRelatedForms()
+    protected function setupScriptForTabView($templateScript)
     {
-        if (is_null($this->form)) {
-            return [];
-        }
+        $removeClass = NestedForm::REMOVE_FLAG_CLASS;
+        $defaultKey = NestedForm::DEFAULT_KEY_NAME;
 
-        $model = $this->form->model();
+        $script = <<<EOT
 
-        $relation = call_user_func([$model, $this->relationName]);
+$('#has-many-{$this->column} > .nav').off('click', 'i.close-tab').on('click', 'i.close-tab', function(){
 
-        if (!$relation instanceof Relation && !$relation instanceof MorphMany) {
-            throw new \Exception('hasMany field must be a HasMany or MorphMany relation.');
-        }
+    var that=$(this);
 
-        $forms = [];
+    swal({ 
+      title: '确定删除吗？', 
+      text: '你将无法恢复它！', 
+      type: 'warning',
+      showCancelButton: true, 
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: '取消',
+      confirmButtonText: '确定删除！', 
+    }).then(function(){
+    
+      var \$navTab = that.siblings('a');
+      var \$pane = $(\$navTab.attr('href'));
+      if( \$pane.hasClass('new') ){
+          \$pane.remove();
+      }else{
+          \$pane.removeClass('active').find('.$removeClass').val(1);
+      }
+      if(\$navTab.closest('li').hasClass('active')){
+          \$navTab.closest('li').remove();
+          $('#has-many-{$this->column} > .nav > li:nth-child(1) > a').tab('show');
+      }else{
+          \$navTab.closest('li').remove();
+      }
+    
+      swal(
+        '删除！',
+        '你的文件已经被删除。',
+        'success'
+        );
+    })
 
-        /*
-         * If redirect from `exception` or `validation error` page.
-         *
-         * Then get form data from session flash.
-         *
-         * Else get data from database.
-         */
-        $field_id = 0;
-        if ($values = old($this->column)) {
-            foreach ($values as $key => $data) {
-                if ($data[NestedForm::REMOVE_FLAG_NAME] == 1) {
-                    continue;
-                }
+    
 
-                $forms[$key] = $this->buildNestedForm($this->column, $this->builder, $key)
-                    ->fill($data, $field_id);
-                $field_id++;
-            }
-        } else {
-            foreach ($this->value as $data) {
-                $key = array_get($data, $relation->getRelated()->getKeyName());
 
-                $forms[$key] = $this->buildNestedForm($this->column, $this->builder, $key)
-                    ->fill($data, $field_id);
-                $field_id++;
-            }
-        }
+});
 
-        return $forms;
+var index = 0;
+$('#has-many-{$this->column} > .header').off('click', '.add').on('click', '.add', function(){
+    index++;
+    var navTabHtml = $('#has-many-{$this->column} > template.nav-tab-tpl').html().replace(/{$defaultKey}/g, index);
+    var paneHtml = $('#has-many-{$this->column} > template.pane-tpl').html().replace(/{$defaultKey}/g, index);
+    $('#has-many-{$this->column} > .nav').append(navTabHtml);
+    $('#has-many-{$this->column} > .tab-content').append(paneHtml);
+    $('#has-many-{$this->column} > .nav > li:last-child a').tab('show');
+    {$templateScript}
+});
+
+if ($('.has-error').length) {
+    $('.has-error').parent('.tab-pane').each(function () {
+        var tabId = '#'+$(this).attr('id');
+        $('li a[href="'+tabId+'"] i').removeClass('hide');
+    });
+    
+    var first = $('.has-error:first').parent().attr('id');
+    $('li a[href="#'+first+'"]').tab('show');
+}
+EOT;
+
+        Admin::script($script);
     }
 }
