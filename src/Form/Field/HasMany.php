@@ -38,27 +38,30 @@ $('#has-many-{$this->column} > .nav').off('click', 'i.close-tab').on('click', 'i
       cancelButtonColor: '#d33',
       cancelButtonText: '取消',
       confirmButtonText: '确定删除！', 
-    }).then(function(){
-    
-      var \$navTab = that.siblings('a');
-      var \$pane = $(\$navTab.attr('href'));
-      if( \$pane.hasClass('new') ){
-          \$pane.remove();
-      }else{
-          \$pane.removeClass('active').find('.$removeClass').val(1);
-      }
-      if(\$navTab.closest('li').hasClass('active')){
-          \$navTab.closest('li').remove();
-          $('#has-many-{$this->column} > .nav > li:nth-child(1) > a').tab('show');
-      }else{
-          \$navTab.closest('li').remove();
-      }
-    
-      swal(
-        '删除！',
-        '你的文件已经被删除。',
-        'success'
-        );
+    }).then(function(result){
+      console.log(result);
+      if (result.value) {
+           var \$navTab = that.siblings('a');
+           var \$pane = $(\$navTab.attr('href'));
+           if( \$pane.hasClass('new') ){
+               \$pane.remove();
+           }else{
+               \$pane.removeClass('active').find('.$removeClass').val(1);
+           }
+           if(\$navTab.closest('li').hasClass('active')){
+               \$navTab.closest('li').remove();
+               $('#has-many-{$this->column} > .nav > li:nth-child(1) > a').tab('show');
+           }else{
+               \$navTab.closest('li').remove();
+           }
+           
+           swal(
+             '删除！',
+             '你的文件已经被删除。',
+             'success'
+             );
+       }else if(result.dismiss === Swal.DismissReason.cancel){
+       }
     })
 
     
