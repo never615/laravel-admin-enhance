@@ -14,7 +14,7 @@ return [
     | login page.
     |
     */
-    'name'                   => env('APP_NAME', '深圳墨兔'),
+    'name'                      => env('APP_NAME', 'MallTo'),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +25,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo'                   => '深圳<b>墨兔</b>',
+    'logo'                      => '<b>M</b>all<b>T</b>o',
 
     /*
     |--------------------------------------------------------------------------
@@ -37,22 +37,36 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini'              => '<b>墨</b>',
+    'logo-mini'                 => '<b>MT</b>',
+
 
     /*
-     |--------------------------------------------------------------------------
-     | Laravel-admin route settings
-     |--------------------------------------------------------------------------
-     |
-     | The routing configuration of the admin page, including the path prefix,
-     | the controller namespace, and the default middleware. If you want to
-     | access through the root path, just set the prefix to empty string.
-     |
-     */
-    'route'                  => [
-        'prefix'     => 'admin',
-        'namespace'  => 'App\\Admin\\Controllers',
-        'middleware' => ['web', 'adminE_base'],
+    |--------------------------------------------------------------------------
+    | Laravel-admin bootstrap setting
+    |--------------------------------------------------------------------------
+    |
+    | This value is the path of laravel-admin bootstrap file.
+    |
+    */
+    'bootstrap' => app_path('Admin/bootstrap.php'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel-admin route settings
+    |--------------------------------------------------------------------------
+    |
+    | The routing configuration of the admin page, including the path prefix,
+    | the controller namespace, and the default middleware. If you want to
+    | access through the root path, just set the prefix to empty string.
+    |
+    */
+    'route' => [
+
+        'prefix' => env('ADMIN_ROUTE_PREFIX', 'admin'),
+
+        'namespace' => 'App\\Admin\\Controllers',
+
+        'middleware' => ['web', 'admin'],
     ],
 
     /*
@@ -115,6 +129,17 @@ return [
         ],
     ],
 
+    // Add "remember me" to login form
+    'remember' => true,
+
+    // Redirect to the specified URI when user is not authorized.
+    'redirect_to' => 'auth/login',
+
+    // The URIs that should be excluded from authorization.
+    'excepts' => [
+        'auth/login',
+        'auth/logout',
+    ],
 
     /*
      * Laravel-admin upload setting.
@@ -199,6 +224,16 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | User default avatar
+    |--------------------------------------------------------------------------
+    |
+    | Set a default avatar for newly created users.
+    |
+    */
+    'default_avatar' => '/vendor/laravel-admin/AdminLTE/dist/img/user2-160x160.jpg',
+
+    /*
+    |--------------------------------------------------------------------------
     | Admin map field provider
     |--------------------------------------------------------------------------
     |
@@ -249,6 +284,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Show version at footer
+    |--------------------------------------------------------------------------
+    |
+    | Whether to display the version number of laravel-admin at the footer of
+    | each page
+    |
+    */
+    'show_version' => true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Version
     |--------------------------------------------------------------------------
     |
@@ -257,17 +303,6 @@ return [
     */
     'version'                => env('APP_VERSION'),
 
-
-    /*
-   |--------------------------------------------------------------------------
-   | Show version at footer
-   |--------------------------------------------------------------------------
-   |
-   | Whether to display the version number of laravel-admim at the footer of
-   | each page
-   |
-   */
-    'show_version' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -296,6 +331,13 @@ return [
     | Whether enable default breadcrumb for every page content.
     */
     'enable_default_breadcrumb' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable/Disable assets minify
+    |--------------------------------------------------------------------------
+    */
+    'minify_assets' => true,
 
     /*
     |--------------------------------------------------------------------------
