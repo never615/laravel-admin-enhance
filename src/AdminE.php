@@ -27,7 +27,7 @@ class AdminE
                 $speedy = [];
 
                 //读取对应主体中的快捷访问菜单配置
-                $menuIds = SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_QUICK_ACCESS_MENU);
+                $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
 
                 if (!$menuIds) {
                     return;

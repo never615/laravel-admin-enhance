@@ -93,6 +93,13 @@ class SubjectController extends AdminCommonController
             $this->formAdminUser($form);
         });
 
+
+        $form = $form->tab("配置项", function ($form) {
+            $form->embeds("open_extra_config", "", function ($form) {
+                $this->openConfigBasic($form);
+            });
+        });
+
         $form = $form->tab("系统配置(owner)", function ($form) {
             $this->systemConfigBasic($form);
 
@@ -126,6 +133,13 @@ class SubjectController extends AdminCommonController
         });
     }
 
+
+    protected function openConfigBasic(EmbeddedForm $form)
+    {
+        $form->multipleSelect(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU, "快捷访问菜单")
+            ->help("顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单")
+            ->options(Menu::selectOptions());
+    }
 
     protected function systemConfigBasic($form)
     {
@@ -177,11 +191,6 @@ class SubjectController extends AdminCommonController
      */
     protected function systemConfigExtraConfigBasic(EmbeddedForm $form)
     {
-
-        $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_QUICK_ACCESS_MENU, "快捷访问菜单")
-            ->help("顶部菜单栏上的快捷访问菜单,再次配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单")
-            ->options(Menu::selectOptions());
-
         $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, "管理端微信服务uuid")
             ->help("用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid");
 

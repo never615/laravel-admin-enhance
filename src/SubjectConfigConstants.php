@@ -15,11 +15,9 @@ namespace Mallto\Admin;
 class SubjectConfigConstants
 {
 
-
     /**
-     * 快捷访问菜单
+     * 系统拥有者配置项
      */
-    const OWNER_CONFIG_QUICK_ACCESS_MENU = "quick_access_menu";
 
     //管理端微信服务uuid
     const OWNER_CONFIG_ADMIN_WECHAT_UUID = "admin_wechat_uuid";
@@ -30,8 +28,13 @@ class SubjectConfigConstants
     //短信签名
     const OWNER_CONFIG_SMS_SIGN = "sms_sign";
 
-
     //可配置标签种类
     const OWNER_CONFIG_TAG_TYPES = "tag_types";
+
+    /**
+     * 主体拥有者配置项
+     */
+    //快捷访问菜单
+    const SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU = "quick_access_menu";
 
 }
