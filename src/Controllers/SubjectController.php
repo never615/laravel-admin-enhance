@@ -12,6 +12,7 @@ use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
+use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
@@ -94,6 +95,13 @@ class SubjectController extends AdminCommonController
 
         $form = $form->tab("系统配置(owner)", function ($form) {
             $this->systemConfigBasic($form);
+
+            if (\Mallto\Admin\AdminUtils::isOwner()) {
+                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
+                    $this->systemConfigExtraConfigBasic($form);
+                });
+            }
+
         })->tab("系统参数(owner)", function ($form) {
             if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $form->hasMany("subjectconfigs", "", function (Form\NestedForm $form) {
@@ -144,7 +152,6 @@ class SubjectController extends AdminCommonController
             return $arr;
         })->rules("required");
 
-        $form->divider();
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             $permissions = Permission::where("parent_id", 0)
@@ -160,10 +167,6 @@ class SubjectController extends AdminCommonController
             }
             $form->text("uuid", "主体唯一标识");
             $form->switch("base", "总部");
-
-            $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
-                $this->systemConfigExtraConfigBasic($form);
-            });
         }
     }
 
@@ -172,8 +175,13 @@ class SubjectController extends AdminCommonController
      *
      * @param $form
      */
-    protected function systemConfigExtraConfigBasic($form)
+    protected function systemConfigExtraConfigBasic(EmbeddedForm $form)
     {
+
+        $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_QUICK_ACCESS_MENU, "快捷访问菜单")
+            ->help("顶部菜单栏上的快捷访问菜单,再次配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单")
+            ->options(Menu::selectOptions());
+
         $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, "管理端微信服务uuid")
             ->help("用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid");
 

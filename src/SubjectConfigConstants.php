@@ -6,9 +6,21 @@
 
 namespace Mallto\Admin;
 
-
+/**
+ * 主体配置中的extra(json)配置项
+ * Class SubjectConfigConstants
+ *
+ * @package Mallto\Admin
+ */
 class SubjectConfigConstants
 {
+
+
+    /**
+     * 快捷访问菜单
+     */
+    const OWNER_CONFIG_QUICK_ACCESS_MENU = "quick_access_menu";
+
     //管理端微信服务uuid
     const OWNER_CONFIG_ADMIN_WECHAT_UUID = "admin_wechat_uuid";
 

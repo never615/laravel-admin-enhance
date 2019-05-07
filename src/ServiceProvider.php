@@ -91,6 +91,7 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->commands($this->commands);
 
+
         $this->app->bind(
             AdminUserUsecase::class,
             AdminUserUsecaseImpl::class
@@ -103,7 +104,9 @@ class ServiceProvider extends BaseServiceProvider
             }
         }
 
-
+        Admin::booted(function () {
+            \Mallto\Admin\Facades\AdminE::quickAccess();
+        });
     }
 
 

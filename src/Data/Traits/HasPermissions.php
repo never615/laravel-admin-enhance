@@ -104,6 +104,7 @@ trait HasPermissions
                 return true;
             }
         }
+
         //3.用户拥有该权限的父权限,通过
         //先查询该权限的父权限,因为权限支持多级,所以要查询出该权限的所有长辈权限
         $permission = Permission::where('slug', $permissionSlug)->first();
