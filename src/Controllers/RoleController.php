@@ -59,15 +59,17 @@ class RoleController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        if (\Mallto\Admin\AdminUtils::isOwner()) {
-            $form->text('slug', trans('admin.slug'))
-                ->help("不填写会自动生成,建议不填写");
-        }
+//        if (\Mallto\Admin\AdminUtils::isOwner()) {
+//            $form->text('slug', trans('admin.slug'))
+//                ->help("不填写会自动生成,建议不填写");
+//        }
 
         $form->text('name', trans('admin.name'))->rules('required');
 
         $that = $this;
-        $form->multipleSelect('permissions', trans('admin.permissions'))
+//        $form->multipleSelect('permissions', trans('admin.permissions'))
+//        $form->listbox('permissions', trans('admin.permissions'))
+        $form->checkbox('permissions', trans('admin.permissions'))
             ->options(function () use ($that) {
                 $subjectId = Admin::user()->subject_id;
                 if ($subjectId == 1) {
@@ -87,6 +89,11 @@ class RoleController extends AdminCommonController
 
                 return Permission::selectOptions($permissions, false, false);
             })
+//            ->settings([
+//                "selectorMinimalHeight"   => 500,
+//                "preserveSelectionOnMove" => false,
+//            ])
+            ->stacked()
             ->help("权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限");
 
 

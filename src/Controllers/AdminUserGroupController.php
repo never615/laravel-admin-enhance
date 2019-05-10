@@ -59,7 +59,7 @@ class AdminUserGroupController extends AdminCommonController
 //        $form->text("slug");
 //        $form->text("remark");
 
-        $form->multipleSelect("users", "管理账户")
+        $form->multipleSelect("users", "组内账户")
             ->options(Administrator::selectSourceDatas());
 
 
