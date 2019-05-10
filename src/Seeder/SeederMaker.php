@@ -49,7 +49,8 @@ trait SeederMaker
     ) {
 
 
-        $this->order = $this->order ?? Permission::max("order");
+//        $this->order = $this->order ?? Permission::max("order");
+        $this->order = Permission::max("order");
 
         $path = "";
         $parentPermission = Permission::find($parentId);

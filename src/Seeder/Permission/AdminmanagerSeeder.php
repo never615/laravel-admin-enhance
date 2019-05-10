@@ -11,9 +11,6 @@ class AdminmanagerSeeder extends Seeder
 
     use SeederMaker;
 
-    protected $order = 0;
-
-
     /**
      * Run the database seeds.
      *

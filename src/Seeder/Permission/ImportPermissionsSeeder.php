@@ -15,12 +15,12 @@ class ImportPermissionsSeeder extends Seeder
 
     use SeederMaker;
 
-    protected $order = 1100;
 
     /**
      * Run the database seeds.
      *
      * @return void
+     * @throws \Exception
      */
     public function run()
     {
