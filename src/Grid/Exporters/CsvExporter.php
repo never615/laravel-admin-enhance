@@ -95,7 +95,9 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
                     }
 
                     foreach ($records as $record) {
-                        fputcsv($handle, $this->getFormattedRecord($record));
+                        if ($record) {
+                            fputcsv($handle, $this->getFormattedRecord($record));
+                        }
                     }
                 }
             });

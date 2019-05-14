@@ -25,17 +25,17 @@ trait ExporterTrait
     {
         $titles = collect(array_first($records))->keys()->map(
             function ($key) use ($tableName) {
-                return admin_translate($key, $tableName);
+                if (str_contains($key, ".")) {
+                    try {
+                        $tempKeys = explode(".", $key);
 
-//                $tempKeys = explode(".", $key);
-//                $tempKeysCount = count($tempKeys);
-//                if ($tempKeysCount > 1) {
-//                    $tableName = $tempKeys[$tempKeysCount - 2];
-//                }
-//
-//                $tableName = str_plural($tableName);
-//
-//                return admin_translate($tempKeys[$tempKeysCount - 1], $tableName);
+                        return admin_translate($tempKeys[1], $tempKeys[0]);
+                    } catch (\Exception $exception) {
+                        return admin_translate($key, $tableName);
+                    }
+                } else {
+                    return admin_translate($key, $tableName);
+                }
             }
         );
 
@@ -141,25 +141,30 @@ trait ExporterTrait
 
         if ($remainKeys && count($remainKeys) > 0) {
             $records = array_map(function ($record) use ($remainKeys) {
-                foreach ($record as $recordKey => $recordValue) {
-                    //只要不是$remainKeys中的就unset
-                    if (!in_array($recordKey, $remainKeys)) {
-                        unset($record[$recordKey]);
+                if ($record) {
+                    foreach ($record as $recordKey => $recordValue) {
+                        //只要不是$remainKeys中的就unset
+                        if (!in_array($recordKey, $remainKeys)) {
+                            unset($record[$recordKey]);
+                        }
                     }
                 }
 
                 return $record;
             }, $records);
         } else {
+
             $records = array_map(function ($record) use ($keys) {
-                foreach ((array) $keys as $key) {
-                    foreach ($record as $recordKey => $recordValue) {
-                        //特别处理xxx.yyy形式的key的数据
-                        if (starts_with($recordKey, trim($key, '.').".")) {
-                            unset($record[$recordKey]);
+                if ($record) {
+                    foreach ((array) $keys as $key) {
+                        foreach ($record as $recordKey => $recordValue) {
+                            //特别处理xxx.yyy形式的key的数据
+                            if (starts_with($recordKey, trim($key, '.').".")) {
+                                unset($record[$recordKey]);
+                            }
                         }
+                        unset($record[$key]);
                     }
-                    unset($record[$key]);
                 }
 
                 return $record;

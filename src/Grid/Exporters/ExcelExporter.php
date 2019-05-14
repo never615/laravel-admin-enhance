@@ -48,7 +48,9 @@ abstract class ExcelExporter extends \Encore\Admin\Grid\Exporters\AbstractExport
                     }
 
                     foreach ($records as $record) {
-                        $sheet->appendRow($this->getFormattedRecord($record));
+                        if ($record) {
+                            $sheet->appendRow($this->getFormattedRecord($record));
+                        }
                     }
                 });
             });
