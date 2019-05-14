@@ -52,7 +52,11 @@ class WangEditor extends Field
         $this->script = <<<EOT
         
     var tempName='{$name}';
-    tempName=tempName.replace(/{$defaultKey}/g, index);
+    try{
+        tempName=tempName.replace(/{$defaultKey}/g, index);
+    }catch(e){
+        
+    }
     var editor = new wangEditor(document.getElementsByName(tempName));
 
     {$this->getMenuScript()}
