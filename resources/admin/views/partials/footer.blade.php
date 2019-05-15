@@ -3,7 +3,7 @@
     <!-- To the right -->
     <div class="pull-right hidden-xs">
         @if(config('app.wiki'))
-            <a target="_blank" href="{!! \Mallto\Admin\SubjectUtils::getDynamicKeyConfigByOwner("wiki", null, config("app.wiki"))!!}">帮助文档1</a>@endif
+            <a target="_blank" href="{!! \Mallto\Admin\SubjectUtils::getDynamicKeyConfigByOwner("wiki", null, config("app.wiki"))!!}">帮助文档</a>@endif
         @if(config('app.change_log_url'))| <a target="_blank" href="{!! config('app.change_log_url') !!}"><strong>Changelog</strong></a>@endif
         | <strong>v {{config('app.version')}}</strong>
     </div>

@@ -65,8 +65,8 @@ class ServiceProvider extends BaseServiceProvider
             $this->publishes([__DIR__.'/../resources/admin/views' => resource_path('views/vendor/admin')],
                 'laravel-admin-enhance-views');
             //发布assets覆盖laravel-admin的assets
-            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
-                'laravel-admin-enhance-assets');
+//            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
+//                'laravel-admin-enhance-assets');
         }
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'adminE');
