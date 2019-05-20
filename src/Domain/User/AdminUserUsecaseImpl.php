@@ -56,7 +56,9 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      */
     public function getUserByOpenid($openid, $subjectId)
     {
-        $adminUser = Administrator::with(["adminable"])
+        $class = config('auth.providers.admin_users.model');
+
+        $adminUser = $class::with(["adminable"])
             ->where("subject_id", $subjectId)
             ->where("openid->openid", $openid)
             ->first();
@@ -73,8 +75,9 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
                 },
             ])->where("subject_id", $subjectId)->first();
 
+
             if ($user && $user->mobile) {
-                $adminUser = Administrator::with(["adminable"])
+                $adminUser = $class::with(["adminable"])
                     ->where("subject_id", $subjectId)
                     ->where("mobile", $user->mobile)
                     ->first();
