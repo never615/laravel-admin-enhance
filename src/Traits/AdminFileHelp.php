@@ -95,10 +95,10 @@ trait  AdminFileHelp
     {
         $form->qiniuFile($columnName, $displayName)
             ->options([
+                'initialPreviewFileType'  => 'video',  // video is the default and can be overridden in config below
                 'initialPreviewConfig'    => [
                     ['key' => 0, 'filetype' => 'video/mp4'],
                 ],
-                'initialPreviewFileType'  => 'video',
                 'allowedFileTypes'        => ['video'],
 //                'dropZoneEnabled'         => false,
                 'uploadLabel'             => '上传',

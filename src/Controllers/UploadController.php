@@ -46,6 +46,7 @@ class UploadController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->desc("文件描述");
+        $grid->column('url', "文件地址")->urlWrapper();
     }
 
     protected function formOption(Form $form)
@@ -66,8 +67,8 @@ class UploadController extends AdminCommonController
             ])
             ->help("添加文件后请点击上传按钮");
 
-        $form->display("show_url", "文件地址")->with(function ($value) {
-            return $this->url ? rtrim(config('app.file_url_prefix'), '/').'/'.trim($this->url, '/') : "";
+        $form->display("show_url", "文件地址")->with(function () {
+            return $this->url;
         });
 
     }

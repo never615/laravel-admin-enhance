@@ -20,5 +20,17 @@ class Upload extends Model
 
     ];
 
+    public function getUrlAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix").$value;
+    }
 
 }
