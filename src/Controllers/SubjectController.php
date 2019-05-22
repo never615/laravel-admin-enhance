@@ -168,13 +168,16 @@ class SubjectController extends AdminCommonController
 
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
-            $permissions = Permission::where("parent_id", 0)
-                ->where("common", false)
+            $permissions = Permission::
+//            where("parent_id", 0)
+                where("common", false)
                 ->orderby("order")
                 ->get();
+
             $form->checkbox('permissions', "已购模块")
                 ->options(Permission::selectOptions($permissions->toArray(),
-                    false, false));
+                    false, false))
+            ->stacked();
 
             if ($this->currentId) {
                 $form->display('sms_count', "消费短信数");

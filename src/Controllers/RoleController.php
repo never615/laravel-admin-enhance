@@ -75,19 +75,21 @@ class RoleController extends AdminCommonController
                 if ($subjectId == 1) {
                     $permissions = Permission::orderBy("order")->get()->toArray();
                 } else {
-                    //主体拥有的权限需要加上那几个公共功能模块的权限
-
                     $permissionsTemp = Subject::find($subjectId)
                         ->permissions()
                         ->orderBy("order")
                         ->get();
+
+                    //主体拥有的权限需要加上那几个公共功能模块的权限
                     $permissionsTemp = $permissionsTemp->merge(
                         Permission::where("common", true)->get()
                     );
                     $permissions = $that->withSubPermissions($permissionsTemp);
                 }
 
-                return Permission::selectOptions($permissions, false, false);
+                //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
+                return Permission::selectOptions($permissions, false, false,
+                    array_unique($permissionsTemp->pluck("parent_id")->toArray()));
             })
 //            ->settings([
 //                "selectorMinimalHeight"   => 500,

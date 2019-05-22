@@ -230,22 +230,21 @@ trait ModelTree
     }
 
 
-
-
     /**
      * Get options for Select field in form.
      *
-     * @param array $nodes
-     * @param bool  $root         ,是否返回root节点
-     * @param bool  $defaultBlack ,是否使用默认的空格大小
+     * @param array     $nodes
+     * @param bool      $root         ,是否返回root节点
+     * @param bool      $defaultBlack ,是否使用默认的空格大小
+     * @param int|array $parentId     ,进来的nodes默认只有parent_id是0的才能进行下一步,此配置支持接收数组,可以配置多个parentId
      * @return \Illuminate\Support\Collection
      */
-    public static function selectOptions(array $nodes = null, $root = true, $defaultBlack = true)
+    public static function selectOptions(array $nodes = null, $root = true, $defaultBlack = true, $parentId = 0)
     {
-        $options = (new static())->buildSelectOptions($nodes, 0, "", $defaultBlack);
+        $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {
-            return collect($options)->prepend('根节点', 0)->all();
+            return collect($options)->prepend('根节点', $parentId)->all();
         } else {
             return collect($options)->all();
         }
@@ -280,11 +279,17 @@ trait ModelTree
             $nodes = $this->allNodes();
         }
 
+
+        $parentId = (array) $parentId;
+
         foreach ($nodes as $node) {
             if ($defaultBlack) {
                 $node[$this->titleColumn] = $prefix.'&nbsp;'.$node[$this->titleColumn];
             }
-            if ($node[$this->parentColumn] == $parentId) {
+
+
+//            if ($node[$this->parentColumn] == $parentId) {
+            if (in_array($node[$this->parentColumn], $parentId)) {
                 $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix.$prefix);
 
                 $options[$node[$this->getKeyName()]] = $node[$this->titleColumn];
