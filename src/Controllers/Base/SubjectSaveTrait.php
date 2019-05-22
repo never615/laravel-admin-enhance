@@ -5,10 +5,10 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
+use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
-use Mallto\Mall\Data\AdminUser;
-use Mallto\Mall\Data\Subject;
+use Mallto\Admin\Data\Subject;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -147,9 +147,9 @@ trait SubjectSaveTrait
         }
 
 
-        if (!AdminUser::where("subject_id", $subjectId)
+        if (!Administrator::where("subject_id", $subjectId)
             ->exists()) {
-            $adminUser = AdminUser::firstOrCreate([
+            $adminUser = Administrator::firstOrCreate([
                 "subject_id"     => $subjectId,
                 "adminable_id"   => $subjectId,
                 "adminable_type" => "subject",
