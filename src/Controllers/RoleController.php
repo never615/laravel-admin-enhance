@@ -89,7 +89,7 @@ class RoleController extends AdminCommonController
 
                 //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
                 return Permission::selectOptions($permissions, false, false,
-                    array_unique($permissionsTemp->pluck("parent_id")->toArray()));
+                    ($permissionsTemp ? array_unique($permissionsTemp->pluck("parent_id")->toArray()) : 0));
             })
 //            ->settings([
 //                "selectorMinimalHeight"   => 500,
