@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SubjectUtils
 {
-    private static $subject;
+    public static $subject;
 
 
     /**
@@ -159,7 +159,7 @@ class SubjectUtils
 
         $subjectConfig = $subject->subjectConfigs()
             ->where("key", $key)
-            ->where("type","public")
+            ->where("type", "public")
             ->first();
 
         if (!$subjectConfig) {
@@ -252,6 +252,10 @@ class SubjectUtils
      */
     public static function getSubject()
     {
+        if (self::$subject) {
+            return self::$subject;
+        }
+
         //按照接口请求的方式,尝试获取subject
         try {
             $uuid = self::getUUID();
