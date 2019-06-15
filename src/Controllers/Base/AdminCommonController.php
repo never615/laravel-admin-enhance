@@ -9,6 +9,7 @@ namespace Mallto\Admin\Controllers\Base;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Exporter;
 use Encore\Admin\Layout\Content;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
@@ -68,10 +69,15 @@ abstract class AdminCommonController extends Controller
      */
     public function index()
     {
-        return Admin::content(function (Content $content) {
+        $grid = $this->grid();
+        if (config('admin.swoole') && request(Exporter::$queryName)) {
+            return $grid->handleExportRequest();
+        }
+
+        return Admin::content(function (Content $content) use ($grid) {
             $content->header($this->getHeaderTitle());
             $content->description($this->getIndexDesc());
-            $content->body($this->grid()->render());
+            $content->body($grid->render());
         });
     }
 
@@ -147,14 +153,13 @@ abstract class AdminCommonController extends Controller
 
     protected function defaultGridOption(Grid $grid)
     {
-
         $this->gridShopFilter($grid);
 
         $grid->expandFilter();
 
         $filter = $grid->getFilter();
 
-        $isOwner=AdminUtils::isOwner();
+        $isOwner = AdminUtils::isOwner();
 
         if (!$isOwner) {
             $filter->disableIdFilter();

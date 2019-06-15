@@ -46,7 +46,6 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
      */
     public function export()
     {
-
         if (!ini_get('safe_mode')) {
             set_time_limit(60 * 60 * 5);
         }
@@ -56,14 +55,13 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 
         $fileName = $this->getFileName(".csv");
 
-
         $headers = [
             'Content-Encoding'    => 'UTF-8',
             'Content-Type'        => 'text/csv;charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"$fileName\"",
         ];
 
-        response()->stream(function () use ($tableName) {
+        return response()->streamDownload(function () use ($tableName) {
             $handle = fopen('php://output', 'w');
 
             $titles = [];
@@ -104,9 +102,8 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 
             // Close the output stream
             fclose($handle);
-        }, 200, $headers)->send();
+        }, $fileName, $headers)->send();
 
-        exit;
     }
 
     /**
