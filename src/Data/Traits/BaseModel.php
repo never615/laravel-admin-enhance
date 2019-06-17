@@ -7,6 +7,7 @@ namespace Mallto\Admin\Data\Traits;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 
 /**
@@ -40,10 +41,10 @@ abstract class BaseModel extends Model
         }
 
         $url = config("app.file_url_prefix").$value;
-        if (str_contains($url, "?")) {
-            return config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
         } else {
-            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
         }
     }
 
@@ -58,10 +59,10 @@ abstract class BaseModel extends Model
         }
 
         $url = config("app.file_url_prefix").$value;
-        if (str_contains($url, "?")) {
-            return config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
         } else {
-            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
         }
 
     }
@@ -77,10 +78,10 @@ abstract class BaseModel extends Model
         }
 
         $url = config("app.file_url_prefix").$value;
-        if (str_contains($url, "?")) {
-            return config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
         } else {
-            return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
         }
     }
 
@@ -112,10 +113,10 @@ abstract class BaseModel extends Model
                 } else {
 
                     $url = config("app.file_url_prefix").$value;
-                    if (str_contains($url, "?")) {
-                        $values[$key] = config("app.file_url_prefix").$value;
+                    if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+                        $values[$key] = $url;
                     } else {
-                        $values[$key] = config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+                        $values[$key] = $url.'?imageView2/0/interlace/1/q/75|imageslim';
                     }
                 }
             }

@@ -145,7 +145,7 @@ class AdminUtils
     public static function cacheSubject($subject)
     {
         if ($subject) {
-            Cache::put("subject_".$subject->id, $subject,60*24);
+            Cache::put("subject_".$subject->id, $subject, 60 * 24);
         }
     }
 
@@ -158,4 +158,16 @@ class AdminUtils
     {
         Cache::forget("subject_".$id);
     }
+
+    /**
+     * 是否是管理端请求
+     *
+     * @return bool
+     */
+    public static function isAdminRequest()
+    {
+        return starts_with(request()->getPathInfo(), "/admin");
+    }
+
+
 }
