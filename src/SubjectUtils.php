@@ -177,17 +177,25 @@ class SubjectUtils
     /**
      * 获取uuid
      *
+     * @param null $app
      * @return mixed
      */
-    public static function getUUID()
+    public static function getUUID($app = null)
     {
         if (self::$subject) {
             return self::$subject->uuid;
         }
 
-        $uuid = Request::header("UUID");
-        if (is_null($uuid)) {
-            $uuid = Input::get("uuid");
+        if ($app) {
+            $uuid = $app['request']->header("UUID");
+            if (is_null($uuid)) {
+                $uuid = $app['request']->get("uuid");
+            }
+        } else {
+            $uuid = Request::header("UUID");
+            if (is_null($uuid)) {
+                $uuid = Input::get("uuid");
+            }
         }
 
         if (empty($uuid) && \Admin::user()) {
@@ -197,6 +205,8 @@ class SubjectUtils
         if (empty($uuid)) {
             throw new HttpException(422, "uuid参数错误");
         }
+
+
 
         return $uuid;
     }
@@ -248,9 +258,10 @@ class SubjectUtils
     /**
      * 获取当前主体
      *
+     * @param null $app
      * @return Subject|null|static
      */
-    public static function getSubject()
+    public static function getSubject($app = null)
     {
         if (self::$subject) {
             return self::$subject;
@@ -258,7 +269,7 @@ class SubjectUtils
 
         //按照接口请求的方式,尝试获取subject
         try {
-            $uuid = self::getUUID();
+            $uuid = self::getUUID($app);
         } catch (HttpException $e) {
             $uuid = null;
         }

@@ -52,6 +52,7 @@ trait  AdminFileHelp
                 ],
                 'allowedFileExtensions'   => ['mp4'],
             ])
+            ->sortable()
             ->removable()
             ->uniqueName()
             ->move("$tableName/$columnName/".$this->currentId);
@@ -60,17 +61,19 @@ trait  AdminFileHelp
 
     protected function formMultipleImage(
         $form,
-        $columnName,
+        $columnName = "images",
         $tableName = "easy",
         $displayName = null,
         $help = "建议尺寸750x500"
     ) {
+
         $form->multipleImage($columnName, $displayName)
-            ->help("图片最大不能超过2M<br>".$help)
+            ->help("上传完成,点击提交数据后,可以拖动图片修改顺序<br>图片最大不能超过2M<br>".$help)
             ->options([
                 'maxFileSize'     => '2048',
                 "msgSizeTooLarge" => '文件 "{name}" ({size} KB) 超过了允许上传的最大限制: {maxSize} KB!',
             ])
+            ->sortable()
             ->removable()
             ->uniqueName()
             ->move("$tableName/$columnName/".$this->currentId);
