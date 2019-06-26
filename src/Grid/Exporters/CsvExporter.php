@@ -61,7 +61,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
             'Content-Disposition' => "attachment; filename=\"$fileName\"",
         ];
 
-        return response()->streamDownload(function () use ($tableName) {
+        $response= response()->streamDownload(function () use ($tableName) {
             $handle = fopen('php://output', 'w');
 
             $titles = [];
@@ -105,6 +105,10 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
             fclose($handle);
         }, $fileName, $headers);
 
+        if(!config("admin.swoole")){
+            $response->send();
+        }
+        return $response;
     }
 
     /**
