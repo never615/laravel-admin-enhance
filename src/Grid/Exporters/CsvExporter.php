@@ -67,6 +67,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
             $titles = [];
 
             $this->chunk(function (Collection $records) use (&$titles, $handle, $tableName) {
+
                 if ($records && count($records) > 0) {
                     fwrite($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
 
@@ -102,7 +103,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 
             // Close the output stream
             fclose($handle);
-        }, $fileName, $headers)->send();
+        }, $fileName, $headers);
 
     }
 
