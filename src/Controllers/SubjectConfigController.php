@@ -34,7 +34,7 @@ class SubjectConfigController extends AdminCommonController
         $grid->key()->display(function ($value) {
             return config("app.subject_config_key")[$value] ?? $value;
         });
-        $grid->value()->editable();
+        $grid->value()->limit(100);
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike("key");
@@ -58,8 +58,21 @@ class SubjectConfigController extends AdminCommonController
         $form->select("type")
             ->options(SubjectConfig::TYPE)
             ->default("private");
-        $form->select("key")->options(config("app.subject_config_key"));
-        $form->text("value");
+
+        $form->display("show_default_key","预设的一些key")
+            ->with(function($values){
+                $html='<table border="1"><tr><th>说明</th><th>key</th></tr>';
+               foreach (config("app.subject_config_key") as $key=>$value){
+                   $html.="<tr><th>$value</th><th>$key</th></tr>";
+//                   $html.=' <tr>'.$value.":".$key."</tr>";
+               }
+
+               return $html."</table>";
+            });
+
+        $form->text("key");
+
+        $form->textarea("value")->rows(15);
         $form->textarea("remark");
     }
 }

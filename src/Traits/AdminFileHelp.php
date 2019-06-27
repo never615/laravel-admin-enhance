@@ -59,6 +59,15 @@ trait  AdminFileHelp
     }
 
 
+    /**
+     * 多图控件
+     *
+     * @param        $form
+     * @param string $columnName
+     * @param string $tableName
+     * @param null   $displayName
+     * @param string $help
+     */
     protected function formMultipleImage(
         $form,
         $columnName = "images",
@@ -80,7 +89,16 @@ trait  AdminFileHelp
     }
 
 
-    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null, $help = "")
+    /**
+     * 单图
+     *
+     * @param        $form
+     * @param        $columnName
+     * @param string $tableName
+     * @param null   $displayName
+     * @param string $help
+     */
+    protected function formImage($form, $columnName, $tableName = "easy", $displayName = null, $help = "建议尺寸500x500")
     {
         $form->image($columnName, $displayName)
             ->help("图片最大不能超过2M<br>".$help)
