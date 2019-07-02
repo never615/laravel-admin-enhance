@@ -180,7 +180,7 @@ class SubjectController extends AdminCommonController
             ->stacked();
 
             if ($this->currentId) {
-                $form->display('sms_count', "消费短信数");
+                $form->displayE('sms_count', "消费短信数");
             }
             $form->text("uuid", "主体唯一标识");
             $form->switch("base", "总部");

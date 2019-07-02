@@ -56,7 +56,7 @@ class VideoController extends AdminCommonController
 
         $this->formVideo($form, "url", "video");
 
-        $form->display("show_url", "视频地址")->with(function () {
+        $form->displayE("show_url", "视频地址")->with(function () {
             return $this->url;
         });
 

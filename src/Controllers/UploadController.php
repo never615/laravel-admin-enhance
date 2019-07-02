@@ -67,7 +67,7 @@ class UploadController extends AdminCommonController
             ])
             ->help("添加文件后请点击上传按钮");
 
-        $form->display("show_url", "文件地址")->with(function () {
+        $form->displayE("show_url", "文件地址")->with(function () {
             return $this->url;
         });
 

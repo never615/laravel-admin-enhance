@@ -59,7 +59,7 @@ class SubjectConfigController extends AdminCommonController
             ->options(SubjectConfig::TYPE)
             ->default("private");
 
-        $form->display("show_default_key","预设的一些key")
+        $form->displayE("show_default_key","预设的一些key")
             ->with(function($values){
                 $html='<table border="1"><tr><th>说明</th><th>key</th></tr>';
                foreach (config("app.subject_config_key") as $key=>$value){

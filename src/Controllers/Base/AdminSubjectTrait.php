@@ -57,7 +57,7 @@ trait AdminSubjectTrait
                     )
                     ->rules("required");
             } else {
-//                $form->display("subject.name", "主体");
+//                $form->displayE("subject.name", "主体");
 //                $form->hideFieldsByCreate("subject.name");
             }
         }

@@ -66,15 +66,15 @@ class ImportRecordController extends AdminCommonController
     protected function formOption(Form $form)
     {
         if ($this->currentId) {
-            $form->display("setting.name", "模块");
+            $form->displayE("setting.name", "模块");
 
-            $form->display("status")->with(function ($value) {
+            $form->displayE("status")->with(function ($value) {
                 return ImportRecord::STATUS[$value] ?? "";
             });
-            $form->display("failure_reason");
-            $form->display("finish_at", "完成时间");
+            $form->displayE("failure_reason");
+            $form->displayE("finish_at", "完成时间");
 
-            $form->display("remark");
+            $form->displayE("remark");
 
             $form->footer(function (Form\Footer $footer) {
                 $footer->disableSubmit();
@@ -88,7 +88,7 @@ class ImportRecordController extends AdminCommonController
                 $form->hidden("module_slug")
                     ->default($moduleSlug);
 
-                $form->display("module_slug_display", "模块")
+                $form->displayE("module_slug_display", "模块")
                     ->default($moduleSlug)
                     ->with(function ($value) use ($moduleSlug) {
                         return ImportSetting::where("module_slug", $moduleSlug)
@@ -98,7 +98,7 @@ class ImportRecordController extends AdminCommonController
                 $importSetting = ImportSetting::where("module_slug", $moduleSlug)
                     ->first();
                 if ($importSetting && $importSetting->template_with_annotation_url) {
-                    $form->display("template_url", "导入模板示例")->with(function () use ($importSetting) {
+                    $form->displayE("template_url", "导入模板示例")->with(function () use ($importSetting) {
                         $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
 
                         return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';

@@ -82,7 +82,7 @@ class UserController extends AdminCommonController
                 $form->select("status", "账号状态")
                     ->options(Administrator::STATUS);
             } else {
-                $form->display("status", "账号状态")
+                $form->displayE("status", "账号状态")
                     ->with(function ($value) {
                         return Administrator::STATUS[$value] ?? "";
                     });

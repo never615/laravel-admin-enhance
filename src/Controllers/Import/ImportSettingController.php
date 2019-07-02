@@ -70,7 +70,7 @@ class ImportSettingController extends AdminCommonController
                 'allowedFileExtensions' => ['xls', 'xlsx'],
             ]);
         if ($this->currentId) {
-            $form->display("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
+            $form->displayE("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
                 $value = $this->template_with_annotation_url;
                 if ($value) {
 

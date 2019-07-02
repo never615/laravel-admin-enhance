@@ -27,7 +27,7 @@ trait AdminUserTrait
     protected function formAdminUser($form)
     {
         if (Schema::hasColumn($this->tableName, "admin_user_id") && $this->currentId) {
-            $form->display('admin_user_id', "操作人")
+            $form->displayE('admin_user_id', "操作人")
                 ->with(function ($value) {
                     $adminUser = Administrator::find($value);
 
