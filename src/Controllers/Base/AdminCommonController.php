@@ -134,7 +134,10 @@ abstract class AdminCommonController extends Controller
     protected function form()
     {
         return Admin::form($this->getModel(), function (Form $form) {
-            $this->tableName = $form->model()->getTable();;
+            $this->tableName = $form->model()->getTable();
+
+            $this->formShopFilter($form);
+
             $this->defaultFormOption($form);
             $form->tools(function (Form\Tools $tools) {
                 $tools->disableView();
@@ -214,9 +217,7 @@ abstract class AdminCommonController extends Controller
      */
     protected function defaultFormOption(Form $form)
     {
-        $this->formShopFilter($form);
-
-        $form->display('id', 'ID');
+        $form->displayE('id', 'ID');
 
         $form->saving(function ($form) {
             $this->autoSubjectSaving($form);
@@ -227,8 +228,8 @@ abstract class AdminCommonController extends Controller
 
         $this->formSubject($form);
         $this->formAdminUser($form);
-        $form->display('created_at', trans('admin.created_at'));
-        $form->display('updated_at', trans('admin.updated_at'));
+        $form->displayE('created_at', trans('admin.created_at'));
+        $form->displayE('updated_at', trans('admin.updated_at'));
     }
 
 

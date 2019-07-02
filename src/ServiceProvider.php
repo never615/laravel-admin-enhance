@@ -165,6 +165,8 @@ class ServiceProvider extends BaseServiceProvider
 
             \Encore\Admin\Form::extend('hasMany2', \Mallto\Admin\Form\Field\HasMany::class);
 
+            \Encore\Admin\Form::extend('displayE', \Mallto\Admin\Form\Field\Display::class);
+
             //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
             \Encore\Admin\Grid\Column::extend("expand", \Mallto\Admin\Grid\Displayers\ExpandRow::class);
             //表格url控件:支持显示url二维码,和一键复制url
