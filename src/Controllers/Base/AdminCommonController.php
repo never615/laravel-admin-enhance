@@ -6,23 +6,22 @@
 namespace Mallto\Admin\Controllers\Base;
 
 
+use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Exporter;
 use Encore\Admin\Layout\Content;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
-use Mallto\Admin\Traits\AdminBaseHelp;
 use Mallto\Admin\Traits\AdminFileHelp;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
-abstract class AdminCommonController extends Controller
+abstract class AdminCommonController extends AdminController
 {
-    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData, AdminFileHelp;
+    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData, AdminFileHelp;
 
 
     /**
@@ -62,23 +61,35 @@ abstract class AdminCommonController extends Controller
      */
     protected $dataViewMode = 'dynamic';
 
+
     /**
      * Index interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function index()
+    public function index(Content $content)
     {
         $grid = $this->grid();
         if (config('admin.swoole') && request(Exporter::$queryName)) {
             return $grid->handleExportRequest();
         }
 
-        return Admin::content(function (Content $content) use ($grid) {
-            $content->header($this->getHeaderTitle());
-            $content->description($this->getIndexDesc());
-            $content->body($grid->render());
-        });
+        return $content
+            ->title($this->title())
+            ->description($this->description['index'] ?? trans('admin.list'))
+            ->body($this->grid());
+    }
+
+    protected function getTableName()
+    {
+        if (!$this->tableName) {
+            $model = resolve($this->getModel());
+            $this->tableName = $model->getTable();
+        }
+
+
+        return $this->tableName;
     }
 
     /**
@@ -88,53 +99,76 @@ abstract class AdminCommonController extends Controller
      */
     protected function getHeaderTitle()
     {
-        $model = resolve($this->getModel());
-        $tableName = $model->getTable();
+        $this->title = admin_translate($this->getTableName(), "table");
 
-        return admin_translate($tableName, "table");
+        return $this->title;
+    }
+
+    /**
+     * Get content title.
+     *
+     * @return string
+     */
+    protected function title()
+    {
+        return $this->getHeaderTitle();
     }
 
 
     /**
      * Edit interface.
      *
-     * @param $id
+     * @param         $id
      *
+     * @param Content $content
      * @return Content
      */
-    public function edit($id)
+    public function edit($id, Content $content)
     {
         $this->currentId = $id;
 
         $this->editFilterData();
 
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header($this->getHeaderTitle());
-            $content->description(trans('admin.edit'));
-            $content->body($this->form()->edit($id));
-        });
+
+        return $content
+            ->title($this->title())
+            ->description($this->description['edit'] ?? trans('admin.edit'))
+            ->body($this->form()->edit($id));
     }
 
 
     /**
      * Create interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function create()
+    public function create(Content $content)
     {
-        return Admin::content(function (Content $content) {
-            $content->header($this->getHeaderTitle());
-            $content->description(trans('admin.create'));
-            $content->body($this->form());
-        });
+        return $content
+            ->title($this->title())
+            ->description($this->description['create'] ?? trans('admin.create'))
+            ->body($this->form());
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        return $this->form()->destroy($id);
     }
 
 
     protected function form()
     {
         return Admin::form($this->getModel(), function (Form $form) {
-            $this->tableName = $form->model()->getTable();
+            $this->tableName = $this->getTableName();
 
             $this->formShopFilter($form);
 
