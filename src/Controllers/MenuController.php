@@ -26,9 +26,10 @@ class MenuController extends AdminCommonController
     /**
      * Index interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function index()
+    public function index(Content $content)
     {
         return Admin::content(function (Content $content) {
             $content->header(trans('admin.menu'));
@@ -70,7 +71,7 @@ class MenuController extends AdminCommonController
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function show($id)
+    public function show($id, Content $content)
     {
         return redirect()->route('menu.edit', ['id' => $id]);
     }
