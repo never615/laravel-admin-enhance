@@ -110,9 +110,12 @@ class SubjectController extends AdminCommonController
             $this->systemConfigBasic($form);
 
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
-                    $this->systemConfigExtraConfigBasic($form);
-                });
+                if (\Mallto\Admin\AdminUtils::isOwner()) {
+                    $form->keyValue("extra_config");
+//                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
+//                    $this->systemConfigExtraConfigBasic($form);
+//                });
+                }
             }
 
         })->tab("系统参数(owner)", function ($form) {
@@ -194,6 +197,7 @@ class SubjectController extends AdminCommonController
     }
 
     /**
+     * //todo 优化配置逻辑
      * 系统配置中的json格式保存的配置项
      *
      * @param $form
