@@ -38,7 +38,7 @@ abstract class AdminCommonController extends AdminController
      *
      * @var bool
      */
-    protected $closeIdAndTime = false;
+    protected $closeUpdated_at = true;
 
 
     /**
@@ -231,9 +231,9 @@ abstract class AdminCommonController extends AdminController
             $filter->between("created_at")->date();
         });
 
-        if (!$this->closeIdAndTime) {
-            $grid->created_at(trans('admin.created_at'))->sortable();
-            //$grid->updated_at(trans('admin.updated_at'))->sortable();
+        $grid->created_at(trans('admin.created_at'))->sortable();
+        if (!$this->closeUpdated_at) {
+            $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
     }
 
