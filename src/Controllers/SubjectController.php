@@ -88,9 +88,15 @@ class SubjectController extends AdminCommonController
     protected function defaultFormOption(Form $form)
     {
         $form = $form->tab("基本信息", function ($form) {
+
+            $form->displayE('id');
+
             $form->text("name")->rules('required');
             $this->formSubject($form);
             $this->formAdminUser($form);
+
+            $form->displayE('created_at', trans('admin.created_at'));
+            $form->displayE('updated_at', trans('admin.updated_at'));
         });
 
 
@@ -170,14 +176,14 @@ class SubjectController extends AdminCommonController
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             $permissions = Permission::
 //            where("parent_id", 0)
-                where("common", false)
+            where("common", false)
                 ->orderby("order")
                 ->get();
 
             $form->checkbox('permissions', "已购模块")
                 ->options(Permission::selectOptions($permissions->toArray(),
                     false, false))
-            ->stacked();
+                ->stacked();
 
             if ($this->currentId) {
                 $form->displayE('sms_count', "消费短信数");
