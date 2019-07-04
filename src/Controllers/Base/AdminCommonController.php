@@ -136,6 +136,35 @@ abstract class AdminCommonController extends AdminController
             ->body($this->form()->edit($id));
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update($id)
+    {
+        $this->currentId = $id;
+
+        return parent::update($id);
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->currentId = $id;
+
+        return parent::destroy($id);
+    }
+
 
     /**
      * Create interface.
@@ -149,19 +178,6 @@ abstract class AdminCommonController extends AdminController
             ->title($this->title())
             ->description($this->description['create'] ?? trans('admin.create'))
             ->body($this->form());
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        return $this->form()->destroy($id);
     }
 
 
