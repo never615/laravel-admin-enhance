@@ -10,10 +10,19 @@
         if (response.responseJSON && response.responseJSON.error) {
             return response.responseJSON.error;
         } else {
-            return response.statusText + ":" + response.status
+            if (response.responseJSON.errors) {
+                var msg = "";
+                $.each(response.responseJSON.errors, function (k, v) {
+                    msg += v + "\n";
+                });
+                return msg;
+            } else {
+                return response.statusText + ":" + response.status
+            }
         }
     };
-    $.fn.editable.defaults.emptytext = "空";
+
+    // $.fn.editable.defaults.emptytext = "空";
     //turn to inline mode
 //     $.fn.editable.defaults.mode = 'inline';
 //     $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
