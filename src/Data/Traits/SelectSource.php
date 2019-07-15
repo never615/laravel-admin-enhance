@@ -18,6 +18,10 @@ use Mallto\Admin\AdminUtils;
  */
 trait SelectSource
 {
+
+    public $selectName = "name";
+    public $selectId = "id";
+
     /**
      * @deprecated
      * @return mixed
@@ -35,17 +39,23 @@ trait SelectSource
     }
 
 
-    public function scopeSelectSourceDatas()
+    public function scopeSelectByOwner($query)
     {
-        $isOwner = AdminUtils::isOwner();
+        return $query->select(\DB::raw("$this->selectName
+        ||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
+    }
 
 
-        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return static::dynamicData()
-                ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
-        } else {
-            return static::dynamicData()->pluck("name", "id");
-        }
+    public function scopeSelectBySubject($query)
+    {
+        return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
+    }
+
+
+    public function scopeSelectSourceDatas($query)
+    {
+        return $query->selectSourceDatas2()
+            ->pluck($this->selectName, $this->selectId);
     }
 
     /**
@@ -53,18 +63,16 @@ trait SelectSource
      *
      * @return mixed
      */
-    public function scopeSelectSourceDatas2()
+    public function scopeSelectSourceDatas2($query)
     {
         $isOwner = AdminUtils::isOwner();
 
         if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return static::dynamicData()
-                ->select(DB::raw("name||'-'||subject_id as name,id"));
+            return $query->dynamicData()
+                ->selectByOwner();
         } else {
-            return static::dynamicData()
-                ->select(DB::raw("name as name,id"));
+            return $query->dynamicData()
+                ->selectBySubject();
         }
     }
-
-
 }
