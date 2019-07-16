@@ -22,9 +22,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SubjectUtils
 {
-    public static $subject;
-
-
     /**
      * 获取只有项目拥有者才能编辑的配置项
      *
@@ -184,10 +181,6 @@ class SubjectUtils
      */
     public static function getUUID($app = null)
     {
-        if (self::$subject) {
-            return self::$subject->uuid;
-        }
-
         if ($app) {
             $uuid = $app['request']->header("UUID");
             if (is_null($uuid)) {
@@ -219,10 +212,6 @@ class SubjectUtils
      */
     public static function getUUIDNoException()
     {
-        if (self::$subject) {
-            return self::$subject->uuid;
-        }
-
         $uuid = Request::header("UUID");
         if (is_null($uuid)) {
             $uuid = Input::get("uuid");
@@ -245,16 +234,6 @@ class SubjectUtils
         return self::getSubject()->id;
     }
 
-    /**
-     * 设置主体,测试用
-     *
-     * @param $subject
-     */
-    public static function setSubject($subject)
-    {
-        self::$subject = $subject;
-    }
-
 
     /**
      * 获取当前主体
@@ -264,10 +243,6 @@ class SubjectUtils
      */
     public static function getSubject($app = null)
     {
-        if (self::$subject) {
-            return self::$subject;
-        }
-
         //按照接口请求的方式,尝试获取subject
         try {
             $uuid = self::getUUID($app);
