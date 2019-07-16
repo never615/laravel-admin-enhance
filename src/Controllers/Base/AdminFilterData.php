@@ -24,6 +24,8 @@ trait AdminFilterData
     /**
      * 过滤grid显示下的数据
      *
+     * 支持subject父子关系查看数据
+     *
      * @param $grid
      */
     protected function gridFilterData($grid)
@@ -45,6 +47,7 @@ trait AdminFilterData
                 }
             } else {
                 if (method_exists($this->getModel(), "scopeDynamicData")) {
+                    //获取登录账号的所有子主体
                     $currentSubject = $adminUser->subject;
                     $tempSubjectIds = $currentSubject->getChildrenSubject();
 

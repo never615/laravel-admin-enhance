@@ -8,6 +8,7 @@ namespace Mallto\Admin;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -94,15 +95,15 @@ class SubjectUtils
      * 对应主体管理的最后一个tab,即:系统参数(owner)
      *
      * @param      $key
+     * @param null $subjectId
      * @param null $default
-     * @param null $subject
      * @return mixed|null
      */
-    public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
+    public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
     {
-        if (!$subject) {
+        if (!$subjectId) {
             try {
-                $subject = self::getSubject();
+                $subjectId = self::getSubjectId();
             } catch (\Exception $exception) {
                 if (isset($default)) {
                     return $default;
@@ -113,18 +114,19 @@ class SubjectUtils
             }
         }
 
-        $subjectConfig = $subject->subjectConfigs()
+        $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
             ->where("key", $key)
             ->first();
+
         if (!$subjectConfig) {
             if ($default) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key."未配置,".$subject->id);
+                throw new SubjectConfigException($key."未配置,".$subjectId);
             }
         }
 
-        return $subjectConfig->value;
+        return $subjectConfig->value ?? $default;
     }
 
 
@@ -205,7 +207,6 @@ class SubjectUtils
         if (empty($uuid)) {
             throw new HttpException(422, "uuid参数错误");
         }
-
 
 
         return $uuid;
