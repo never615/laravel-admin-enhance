@@ -45,11 +45,8 @@ class AdminBindWechatController extends Controller
         }
 
         if ($waiteBindAdminUser->openid) {
-            throw new ResourceException("当前账号已经绑定其他微信,如果想重新绑定,需要先解绑微信");
+            throw new ResourceException("当前账号(".$waiteBindAdminUser->username.")已经绑定其他微信,如果想重新绑定,需要先解绑微信");
         }
-
-
-
 
 
         //检查并移除该微信的其他账号绑定关系
