@@ -43,7 +43,7 @@
             }, function () {
                 doAjax("{{$url}}", "POST", {
                     _token: LA.token,
-                    ids: selectedRows(),
+                    ids: $.admin.grid.selected(),
                     tag_id: tagId
                 }, function (data) {
                     $.pjax.reload('#pjax-container');

@@ -25,15 +25,17 @@ trait ExporterTrait
     {
         $titles = collect(array_first($records))->keys()->map(
             function ($key) use ($tableName) {
-                $tempKeys = explode(".", $key);
-                $tempKeysCount = count($tempKeys);
-                if ($tempKeysCount > 1) {
-                    $tableName = $tempKeys[$tempKeysCount - 2];
+                if (str_contains($key, ".")) {
+                    try {
+                        $tempKeys = explode(".", $key);
+
+                        return admin_translate($tempKeys[1], $tempKeys[0]);
+                    } catch (\Exception $exception) {
+                        return admin_translate($key, $tableName);
+                    }
+                } else {
+                    return admin_translate($key, $tableName);
                 }
-
-                $tableName = str_plural($tableName);
-
-                return admin_translate($tempKeys[$tempKeysCount - 1], $tableName);
             }
         );
 
@@ -62,30 +64,16 @@ trait ExporterTrait
         $tableName = $this->getTable();
         $now = date('Y-m-d H:i:s');
 
-        return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
-    }
-
-
-    /**
-     * 自定义数据处理
-     *
-     * 这一步就是对即将到放入表格中的数据最后的加工
-     *
-     * @param  $records ,orm查询结果经过array_dot后得到$records数组
-     * @return array
-     */
-    public function customData($records)
-    {
-        //此方法必须调用
-        return $this->forget($records, [
-        ]);
+//        return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
+        return admin_translate("table.".$tableName)."_".$now.$extension;
     }
 
 
     /**
      * 一般用来处理关联对象的属性
-     * 使用类似 array_map
+     * 使用 array_map
      *
+     * @deprecated
      * @param $records
      * @param $callback
      * @return array
@@ -128,7 +116,10 @@ trait ExporterTrait
     /**
      * Remove an item from the collection/array by key.
      *
-     * @param              $records
+     * 有的数据导出是要保留的字段多,有的是要移除的字段多,所有有两种设置方法.
+     * 一种设置要移除的字段,一种只用设置要保留的字段
+     *
+     * @param array        $records
      * @param array|string $keys       ,需要移除的字段,
      * @param              $remainKeys ,设置此字段,会忽略keys的设置
      * @param bool         $default    true,是否默认移除一些字段
@@ -150,25 +141,30 @@ trait ExporterTrait
 
         if ($remainKeys && count($remainKeys) > 0) {
             $records = array_map(function ($record) use ($remainKeys) {
-                foreach ($record as $recordKey => $recordValue) {
-                    //只要不是$remainKeys中的就unset
-                    if (!in_array($recordKey, $remainKeys)) {
-                        unset($record[$recordKey]);
+                if ($record) {
+                    foreach ($record as $recordKey => $recordValue) {
+                        //只要不是$remainKeys中的就unset
+                        if (!in_array($recordKey, $remainKeys)) {
+                            unset($record[$recordKey]);
+                        }
                     }
                 }
 
                 return $record;
             }, $records);
         } else {
+
             $records = array_map(function ($record) use ($keys) {
-                foreach ((array) $keys as $key) {
-                    foreach ($record as $recordKey => $recordValue) {
-                        //特别处理xxx.yyy形式的key的数据
-                        if (starts_with($recordKey, trim($key, '.').".")) {
-                            unset($record[$recordKey]);
+                if ($record) {
+                    foreach ((array) $keys as $key) {
+                        foreach ($record as $recordKey => $recordValue) {
+                            //特别处理xxx.yyy形式的key的数据
+                            if (starts_with($recordKey, trim($key, '.').".")) {
+                                unset($record[$recordKey]);
+                            }
                         }
+                        unset($record[$key]);
                     }
-                    unset($record[$key]);
                 }
 
                 return $record;

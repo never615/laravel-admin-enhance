@@ -10,10 +10,19 @@
         if (response.responseJSON && response.responseJSON.error) {
             return response.responseJSON.error;
         } else {
-            return response.statusText + ":" + response.status
+            if (response.responseJSON.errors) {
+                var msg = "";
+                $.each(response.responseJSON.errors, function (k, v) {
+                    msg += v + "\n";
+                });
+                return msg;
+            } else {
+                return response.statusText + ":" + response.status
+            }
         }
     };
-    $.fn.editable.defaults.emptytext = "空";
+
+    // $.fn.editable.defaults.emptytext = "空";
     //turn to inline mode
 //     $.fn.editable.defaults.mode = 'inline';
 //     $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
@@ -359,6 +368,19 @@
             res[parts[0]] = parts[1];
             return res;
         }, {});
+    }
+
+
+    window.etUrlRelativePath = function (url) {
+        var arrUrl = url.split("//");
+
+        var start = arrUrl[1].indexOf("/");
+        var relUrl = arrUrl[1].substring(start);//stop省略，截取从start开始到结尾的所有字符
+
+        if (relUrl.indexOf("?") != -1) {
+            relUrl = relUrl.split("?")[0];
+        }
+        return relUrl;
     }
 
 

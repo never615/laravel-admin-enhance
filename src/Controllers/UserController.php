@@ -9,6 +9,10 @@ use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
+use Mallto\Admin\Data\Subject;
+use Mallto\Admin\SelectConstants;
+use Mallto\Admin\SubjectUtils;
+use Mallto\Mall\SubjectConfigConstants;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -38,7 +42,19 @@ class UserController extends AdminCommonController
     {
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
+        $grid->status("账号状态")
+            ->display(function ($value) {
+                return Administrator::STATUS[$value] ?? "";
+            });
+
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
+
+        $grid->filter(function (Grid\Filter $filter) {
+            $filter->equal("adminable_type", "账号类型")->select(SelectConstants::ADMINABLE_TYPE);
+            $filter->ilike("username", trans('admin.username'));
+            $filter->ilike("name", trans('admin.name'));
+        });
+
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             //不能删除自己
@@ -57,66 +73,33 @@ class UserController extends AdminCommonController
             ->rules('required');
 
         $form->text('name', trans('admin.name'))->rules('required');
+
+
         if ($this->currentId) {
-            $form->html("<h3>绑定微信</h3>");
-
-            $currentAdminUser = Administrator::find($this->currentId);
-            if ($currentAdminUser) {
-                $qrcodeHelp = "";
-                if ($currentAdminUser->openid) {
-                    $qrcodeHelp = "已绑定微信,绑定用户微信昵称为:".$currentAdminUser->openid["nickname"].",扫码可重新绑定为其他用户";
-                } else {
-                    $qrcodeHelp = "未绑定微信,扫码可绑定(一个微信只能绑定一个账号,绑定新的账号后,旧的绑定关系会失效)";
-                }
-                $form->qrcode("qrcode", "扫码绑定微信")
-                    ->qrcodeUrl($this->getBindWechatUrl($this->currentId))
-                    ->help($qrcodeHelp);
-
-                $form->buttonE("unbind_wechat", "解绑微信")
-                    ->on("click", function () use ($currentAdminUser) {
-                        $uuid = $currentAdminUser->subject->uuid;
-
-                        return <<<EOT
-        var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
-                        
-        $.ajax({
-            type: 'GET',
-            url: '/admin/admin_unbind_wechat',
-            dataType: "json",
-            data: {iddd: Math.random(),id:{$currentAdminUser->id}},
-            headers: {
-                'REQUEST-TYPE': 'WEB',
-                'Accept': 'application/json',
-                'UUID': '{$uuid}'
-            },
-            success: function (data) {
-                layer.close(loadIndex);
-                toastr.success("解绑成功");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layer.close(loadIndex);
-                errorHandler(XMLHttpRequest);
-            }
-        });                        
-EOT;
+            $adminUser = Admin::user();
+            //只有有权限的人才能修改此配置
+            if ($adminUser->can("admin_users_subject_forbidden")) {
+                $form->select("status", "账号状态")
+                    ->options(Administrator::STATUS);
+            } else {
+                $form->displayE("status", "账号状态")
+                    ->with(function ($value) {
+                        return Administrator::STATUS[$value] ?? "";
                     });
-
             }
-
-            $form->divider();
-
         }
+
+        $this->formWechatBind($form);
         $form->image('avatar', trans('admin.avatar'))->removable();
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
-        $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
+        $form->password('password_confirmation', trans('admin.password_confirmation'))
+            ->rules('required')
             ->default(function ($form) {
                 return $form->model()->password;
             });
 
 
         //绑定微信,一个链接,包含时间戳,要绑定的管理端账号的id,加密签名
-
-
 //        $form->multipleSelect("manager_subject_ids", "数据查看范围")
 //            ->help("不设置,则默认只能查看管理账号所属主体下的数据")
 //            ->options(function () {
@@ -133,12 +116,32 @@ EOT;
 
         $form->ignore(['password_confirmation', 'qrcode', 'unbind_wechat']);
 
+        $form->select("adminable_type", "账号类型")
+            ->options(Administrator::ADMINABLE_TYPE)
+            ->rules("required");
+
+        $form->selectE("adminable_id", "账号所属")
+            ->rules("required")
+            ->help("按空格搜索全部")
+            ->options(function ($value) {
+                if (!empty($value)) {
+                    switch ($this->adminable_type) {
+                        case 'subject':
+                            $subject = Subject::find($value);
+                            if ($subject) {
+                                return $subject->pluck("name", "id");
+                            }
+                            break;
+                    }
+                }
+            })
+            ->ajaxLoad("adminable_type", data_source_url("ajax_load"));
+
 
         $form->multipleSelect('roles', trans('admin.roles'))
             ->options(Role::dynamicData()->get()->pluck('name', 'id'));
 
         $form->saving(function (Form $form) {
-
             //检查账户名称是否已经存在
             if ($form->username && ($form->username != $form->model()->username)) {
 
@@ -181,7 +184,7 @@ EOT;
 
 
             //自己不能修改自己的角色
-            if ($form->roles && !$this->equlityRole($form->roles,
+            if ($form->roles && !$this->equalRoleCheck($form->roles,
                     $form->model()->roles) && Admin::user()->id == $form->model()->id
             ) {
                 throw new AccessDeniedHttpException("自己不能修改自己的角色");
@@ -197,7 +200,7 @@ EOT;
     /**
      * form表单提交的和用户现有的角色是不是相等
      */
-    protected function equlityRole($formRoles, $roles)
+    protected function equalRoleCheck($formRoles, $roles)
     {
         $formRoles = array_filter($formRoles, function ($value) {
             return !empty($value) ? true : false;
@@ -214,7 +217,7 @@ EOT;
      * @param $ids
      * @return bool
      */
-    protected function equlityManagerSubjectIds($formIds, $ids)
+    protected function equalManagerSubjectIds($formIds, $ids)
     {
         $formIds = array_filter($formIds, function ($value) {
             return !empty($value) ? true : false;
@@ -248,13 +251,71 @@ EOT;
         $redirectUrl .= "?admin_user_id=".$adminUser->id;
 
         $queryDataStr = http_build_query([
-            "uuid"         => $uuid,
+            "uuid"         => SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject, $uuid),
             "redirect_url" => $redirectUrl,
         ]);
 
         $wechatOAuthUrl .= "?".$queryDataStr;
 
         return $wechatOAuthUrl;
+    }
+
+    /**
+     * 绑定微信form
+     *
+     * @param $form
+     */
+    protected function formWechatBind($form)
+    {
+        if ($this->currentId) {
+            $form->html("<h3>绑定微信</h3>");
+
+            $currentAdminUser = Administrator::find($this->currentId);
+            if ($currentAdminUser) {
+                $qrcodeHelp = "";
+                if ($currentAdminUser->openid) {
+                    $qrcodeHelp = "已绑定微信,绑定的用户微信昵称为:".$currentAdminUser->openid["nickname"];
+                } else {
+                    $qrcodeHelp = "未绑定微信,扫码可绑定(一个微信只能绑定一个管理账号,微信绑定新的管理账号后,微信的旧的绑定关系会失效)";
+                }
+                $form->qrcode("qrcode", "扫码绑定微信")
+                    ->qrcodeUrl($this->getBindWechatUrl($this->currentId))
+                    ->help($qrcodeHelp);
+
+                $form->buttonE("unbind_wechat", "解绑微信")
+                    ->on("click", function () use ($currentAdminUser) {
+                        $uuid = $currentAdminUser->subject->uuid;
+
+                        return <<<EOT
+        var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+                        
+        $.ajax({
+            type: 'GET',
+            url: '/admin/admin_unbind_wechat',
+            dataType: "json",
+            data: {iddd: Math.random(),id:{$currentAdminUser->id}},
+            headers: {
+                'REQUEST-TYPE': 'WEB',
+                'Accept': 'application/json',
+                'UUID': '{$uuid}'
+            },
+            success: function (data) {
+                layer.close(loadIndex);
+                toastr.success("解绑成功");
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                layer.close(loadIndex);
+                errorHandler(XMLHttpRequest);
+            }
+        });                        
+EOT;
+                    });
+
+            }
+
+            $form->divider();
+        }
     }
 
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
- */
 
 return [
 
@@ -14,7 +11,7 @@ return [
     | login page.
     |
     */
-    'name'                   => env('APP_NAME', '深圳墨兔'),
+    'name'                      => env('APP_NAME', 'MallTo'),
 
     /*
     |--------------------------------------------------------------------------
@@ -25,7 +22,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo'                   => '深圳<b>墨兔</b>',
+    'logo'                      => '<b>M</b>all<b>T</b>o',
 
     /*
     |--------------------------------------------------------------------------
@@ -37,22 +34,35 @@ return [
     | '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo-mini'              => '<b>墨</b>',
+    'logo-mini'                 => '<b>MT</b>',
 
     /*
-     |--------------------------------------------------------------------------
-     | Laravel-admin route settings
-     |--------------------------------------------------------------------------
-     |
-     | The routing configuration of the admin page, including the path prefix,
-     | the controller namespace, and the default middleware. If you want to
-     | access through the root path, just set the prefix to empty string.
-     |
-     */
-    'route'                  => [
-        'prefix'     => 'admin',
-        'namespace'  => 'App\\Admin\\Controllers',
-        'middleware' => ['web', 'adminE_base'],
+    |--------------------------------------------------------------------------
+    | Laravel-admin bootstrap setting
+    |--------------------------------------------------------------------------
+    |
+    | This value is the path of laravel-admin bootstrap file.
+    |
+    */
+    'bootstrap'                 => app_path('Admin/bootstrap.php'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel-admin route settings
+    |--------------------------------------------------------------------------
+    |
+    | The routing configuration of the admin page, including the path prefix,
+    | the controller namespace, and the default middleware. If you want to
+    | access through the root path, just set the prefix to empty string.
+    |
+    */
+    'route'                     => [
+
+        'prefix' => env('ADMIN_ROUTE_PREFIX', 'admin'),
+
+        'namespace' => 'App\\Admin\\Controllers',
+
+        'middleware' => ['web', 'adminE'],
     ],
 
     /*
@@ -65,8 +75,7 @@ return [
     | be set before running `artisan admin::install` to take effect.
     |
     */
-    'directory'              => app_path('Admin'),
-
+    'directory'                 => app_path('Admin'),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,8 +85,7 @@ return [
     | Html title for all pages.
     |
     */
-    'title'                  => env('APP_NAME', '深圳墨兔'),
-
+    'title'                     => env('APP_NAME', '深圳墨兔'),
 
     /*
     |--------------------------------------------------------------------------
@@ -87,52 +95,12 @@ return [
     | If your page is going to be accessed via https, set it to `true`.
     |
     */
-    'secure'                 => env('SECURE', true),
-    'https'                  => env('SECURE', true),
+    'https'                     => env('SECURE', true),
 
     /*
     * set default Exporter
     */
-    'exporter'               => Mallto\Admin\Grid\Exporters\CsvExporter::class,
-
-    /*
-     * Laravel-admin auth setting.
-     */
-    'auth'                   => [
-        'controller' => App\Admin\Controllers\AuthController::class,
-
-        'guards'    => [
-            'admin' => [
-                'driver'   => 'session',
-                'provider' => 'admin',
-            ],
-        ],
-        'providers' => [
-            'admin' => [
-                'driver' => 'eloquent',
-                'model'  => Mallto\Admin\Data\Administrator::class,
-            ],
-        ],
-    ],
-
-
-    /*
-     * Laravel-admin upload setting.
-     */
-    'upload'                 => [
-
-        'disk' => 'qiniu',
-
-        'private_disk' => 'qiniu_private',
-
-        'directory' => [
-            'image' => 'image',
-            'file'  => 'file',
-            'video' => 'video',
-        ],
-
-//        'host' => env("FILE_URL_PREFIX"),
-    ],
+    'exporter'                  => Mallto\Admin\Grid\Exporters\CsvExporter::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -142,8 +110,72 @@ return [
     | Authentication settings for all admin pages. Include an authentication
     | guard and a user provider setting of authentication driver.
     |
+    | You can specify a controller for `login` `logout` and other auth routes.
+    |
     */
-    'database'               => [
+    'auth'                      => [
+
+//        'controller' => App\Admin\Controllers\AuthController::class,
+
+        'guard' => 'admin',
+
+        'guards' => [
+            'admin' => [
+                'driver'   => 'session',
+                'provider' => 'admin',
+            ],
+        ],
+
+        'providers'   => [
+            'admin' => [
+                'driver' => 'eloquent',
+                'model'  => Mallto\Mall\Data\AdminUser::class,
+            ],
+        ],
+
+        // Add "remember me" to login form
+        'remember'    => true,
+
+        // Redirect to the specified URI when user is not authorized.
+        'redirect_to' => 'auth/login',
+
+        // The URIs that should be excluded from authorization.
+        'excepts'     => [
+            'auth/login',
+            'auth/logout',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel-admin upload setting
+    |--------------------------------------------------------------------------
+    |
+    | File system configuration for form upload files and images, including
+    | disk and upload path.
+    |
+    */
+    'upload'                    => [
+        'disk' => 'qiniu',
+
+        'private_disk' => 'qiniu_private',
+
+        'directory' => [
+            'image' => 'image',
+            'file'  => 'file',
+            'video' => 'video',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Laravel-admin database settings
+    |--------------------------------------------------------------------------
+    |
+    | Here are database settings for laravel-admin builtin model & tables.
+    |
+    */
+    'database'                  => [
 
         // Database connection for following tables.
         'connection'             => 'pgsql',
@@ -151,7 +183,6 @@ return [
         // User tables and model.
         'users_table'            => 'admin_users',
         'users_model'            => Mallto\Admin\Data\Administrator::class,
-
 
         // Role table and model.
         'roles_table'            => 'admin_roles',
@@ -173,12 +204,16 @@ return [
         'role_menu_table'        => 'admin_role_menu',
     ],
 
-
     /*
-     * By setting this option to open or close operation log in laravel-admin.
-     */
-    'operation_log'          => [
-        'enable' => true,
+    |--------------------------------------------------------------------------
+    | User operation log setting
+    |--------------------------------------------------------------------------
+    |
+    | By setting this option to open or close operation log in laravel-admin.
+    |
+    */
+    'operation_log'             => [
+        'enable'          => true,
 
 
         /*
@@ -192,10 +227,34 @@ return [
          * All method to path like: admin/auth/logs
          * or specific method to path like: get:admin/auth/logs
          */
-        'except' => [
+        'except'          => [
             'admin/auth/logs*',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Indicates whether to check route permission.
+    |--------------------------------------------------------------------------
+    */
+    'check_route_permission'    => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Indicates whether to check menu roles.
+    |--------------------------------------------------------------------------
+    */
+    'check_menu_roles'          => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | User default avatar
+    |--------------------------------------------------------------------------
+    |
+    | Set a default avatar for newly created users.
+    |
+    */
+    'default_avatar'            => '/vendor/laravel-admin/AdminLTE/dist/img/user2-160x160.jpg',
 
     /*
     |--------------------------------------------------------------------------
@@ -205,7 +264,7 @@ return [
     | Supported: "tencent", "google", "yandex".
     |
     */
-    'map_provider' => 'google',
+    'map_provider'              => 'google',
 
     /*
     |--------------------------------------------------------------------------
@@ -221,7 +280,7 @@ return [
     |    "skin-red", "skin-red-light", "skin-black", "skin-black-light".
     |
     */
-    'skin' => 'skin-blue-light',
+    'skin'                      => 'skin-blue-light',
 
     /*
     |--------------------------------------------------------------------------
@@ -235,7 +294,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout' => ['sidebar-mini', 'sidebar-collapse'],
+    'layout'                    => ['sidebar-mini'],
 
     /*
     |--------------------------------------------------------------------------
@@ -245,18 +304,7 @@ return [
     | This value is used to set the background image of login page.
     |
     */
-    'login_background_image' => '',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Version
-    |--------------------------------------------------------------------------
-    |
-    | This version number set will appear in the page footer.
-    |
-    */
-    'version'                => env('APP_VERSION'),
-
+    'login_background_image'    => '',
 
     /*
    |--------------------------------------------------------------------------
@@ -267,7 +315,7 @@ return [
    | each page
    |
    */
-    'show_version' => true,
+    'show_version'              => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -277,7 +325,7 @@ return [
     | Whether to display the environment at the footer of each page
     |
     */
-    'show_environment' => true,
+    'show_environment'          => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -286,7 +334,7 @@ return [
     |
     | whether enable menu bind to a permission
     */
-    'menu_bind_permission' => true,
+    'menu_bind_permission'      => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -299,13 +347,41 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Enable/Disable assets minify
+    |--------------------------------------------------------------------------
+    */
+    'minify_assets'             => [
+
+        // Assets will not be minified.
+        'excepts' => [
+
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable/Disable sidebar menu search
+    |--------------------------------------------------------------------------
+    */
+    'enable_menu_search'        => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Alert message that will displayed on top of the page.
+    |--------------------------------------------------------------------------
+    */
+    'top_alert'                 => '',
+
+    /*
+    |--------------------------------------------------------------------------
     | Extension Directory
     |--------------------------------------------------------------------------
     |
     | When you use command `php artisan admin:extend` to generate extensions,
     | the extension files will be generated in this directory.
     */
-    'extension_dir' => app_path('Admin/Extensions'),
+    'extension_dir'             => app_path('../packages'),
 
     /*
     |--------------------------------------------------------------------------
@@ -316,10 +392,28 @@ return [
     | https://github.com/laravel-admin-extensions.
     |
     */
-    'extensions' => [
+    'extensions'                => [
+        'ueditor' => [
 
+            // 如果要关掉这个扩展，设置为false
+            'enable' => true,
+
+            // 编辑器的前端配置 参考：http://fex.baidu.com/ueditor/#start-config
+            'config' => [
+                'initialFrameHeight' => 400, // 例如初始化高度
+            ],
+        ],
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | If your are using swoole, set it to `true`.
+    |--------------------------------------------------------------------------
+    */
+    'swoole'                    => env("SWOOLE", false),
+
+    //以下是扩展的laravel-admin的配置
 
     /*
      * Automatically generate a menu based on user-owned permissions.
@@ -327,11 +421,9 @@ return [
      * 在这种模式下,不需要根据用户角色创建菜单.只会有一份菜单,然后不同权限的人会根据自己的权限显示相应的菜单.
      *
      */
-    'auto_menu'              => true,
+    'auto_menu'                 => true,
 
     'admin_login' => '/admin/auth/login',
-
-
 
     /*
      * WangEditor
@@ -377,4 +469,14 @@ return [
         'owner' => 'owner',
         'admin' => 'admin',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Version
+    |--------------------------------------------------------------------------
+    |
+    | This version number set will appear in the page footer.
+    |
+    */
+    'version'                   => env('APP_VERSION'),
 ];

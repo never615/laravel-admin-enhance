@@ -15,16 +15,16 @@ class ImportPermissionsSeeder extends Seeder
 
     use SeederMaker;
 
-    protected $order = 1100;
 
     /**
      * Run the database seeds.
      *
      * @return void
+     * @throws \Exception
      */
     public function run()
     {
         $this->createPermissions("导入配置", "import_settings");
-        $this->createPermissions("数据导入", "import_records", true, 0, false, true);
+        $this->createPermissions("数据导入", "import_records", true, 0, false);
     }
 }

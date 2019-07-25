@@ -24,6 +24,8 @@ trait AdminFilterData
     /**
      * 过滤grid显示下的数据
      *
+     * 支持subject父子关系查看数据
+     *
      * @param $grid
      */
     protected function gridFilterData($grid)
@@ -45,8 +47,22 @@ trait AdminFilterData
                 }
             } else {
                 if (method_exists($this->getModel(), "scopeDynamicData")) {
+                    //获取登录账号的所有子主体
                     $currentSubject = $adminUser->subject;
                     $tempSubjectIds = $currentSubject->getChildrenSubject();
+
+                    //如果设置了 manager_subject_ids,则需要和并处理如果设置了manager_subject_ids数据
+                    $managerSubjectIds = $adminUser->manager_subject_ids;
+                    if (!empty($managerSubjectIds)) {
+                        $tempSubject = new Subject();
+                        $tempManagerSubjectIds = $managerSubjectIds;
+
+                        foreach ($managerSubjectIds as $managerSubjectId) {
+                            $tempManagerSubjectIds = array_merge($tempManagerSubjectIds,
+                                $tempSubject->getChildrenSubject($managerSubjectId));
+                        }
+                        $tempSubjectIds = array_unique(array_merge($tempSubjectIds, $tempManagerSubjectIds));
+                    }
 
                 } else {
                     throw new HttpException(500, "系统错误,未配置scopeDynamicData");

@@ -64,9 +64,13 @@ class ImportSettingController extends AdminCommonController
 <br>会通过resolve("\Mallto\Mall\Domain\Import\MemberCardImport");获取对象,处理导入操作.
 <br>该对象需要继承BaseImportHandler');
 
-        $form->file("template_with_annotation_url", "带说明的模板");
+        $form->file("template_with_annotation_url", "带说明的模板")
+            ->options([
+                'allowedPreviewTypes'   => [],
+                'allowedFileExtensions' => ['xls', 'xlsx'],
+            ]);
         if ($this->currentId) {
-            $form->display("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
+            $form->displayE("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
                 $value = $this->template_with_annotation_url;
                 if ($value) {
 

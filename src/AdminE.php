@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin;
 
+use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Data\Menu;
 
@@ -16,13 +17,49 @@ class AdminE
 {
 
 
+    public function quickAccess()
+    {
+        $adminUser = Admin::user();
+
+        if ($adminUser) {
+            $speedy = \Illuminate\Support\Facades\Cache::get("speedy_".$adminUser->id);
+            if (!$speedy) {
+                $speedy = [];
+
+                //读取对应主体中的快捷访问菜单配置
+                $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
+
+                if (!$menuIds) {
+                    return;
+                }
+                $menus = Menu::find($menuIds);
+
+                foreach ($menus as $menu) {
+                    if ($adminUser->can($menu->uri)) {
+                        $speedy = array_add($speedy, route($menu->uri, [], false), $menu->title);
+                    }
+                }
+
+                \Illuminate\Support\Facades\Cache::put("speedy_".$adminUser->id, $speedy, 30);
+            }
+
+            if (count($speedy) > 0) {
+                Admin::navbar(function (\Encore\Admin\Widgets\Navbar $navbar) use ($speedy) {
+                    $navbar->left(view('adminE::partials.left_navbar')
+                        ->with("speedy", $speedy));
+                });
+            }
+        }
+    }
+
 
     /**
      * Left sider-bar menu.
      *
      * @return array
      */
-    public function menu()
+    public
+    function menu()
     {
         return (new Menu())->toTree();
     }
@@ -33,7 +70,8 @@ class AdminE
      *
      * @return void
      */
-    public function registerAuthRoutes()
+    public
+    function registerAuthRoutes()
     {
 
         $attributes = [
@@ -51,8 +89,10 @@ class AdminE
                 $router->resource('auth/admins', '\Mallto\Admin\Controllers\UserController');
                 $router->resource('auth/roles', '\Mallto\Admin\Controllers\RoleController');
                 $router->resource('auth/permissions', '\Mallto\Admin\Controllers\PermissionController');
-                $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController', ['except' => ['create']]);
-                $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController', ['only' => ['index', 'destroy']]);
+                $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController',
+                    ['except' => ['create']]);
+                $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
+                    ['only' => ['index', 'destroy']]);
             });
 
             $router->get('auth/login', '\Encore\Admin\Controllers\AuthController@getLogin');

@@ -32,8 +32,7 @@ class SelectConstants
 
     //管理端用来选择账号类型的select
     const ADMINABLE_TYPE = [
-        'subject' => '商场',
-        'shop'    => '店铺',
+        'subject' => '主体',
     ];
 
     const GENGDER = [

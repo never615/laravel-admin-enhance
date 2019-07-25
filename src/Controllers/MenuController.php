@@ -19,15 +19,17 @@ use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Role;
+use Mallto\Admin\Data\Subject;
 
 class MenuController extends AdminCommonController
 {
     /**
      * Index interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function index()
+    public function index(Content $content)
     {
         return Admin::content(function (Content $content) {
             $content->header(trans('admin.menu'));
@@ -42,12 +44,19 @@ class MenuController extends AdminCommonController
 
                     $form->select('parent_id', trans('admin.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin.title'))->rules('required');
+                    $form->text('sub_title', "副标题");
                     $form->icon('icon',
                         trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin.uri'))->help("路径需要填写路由名,如:shops.index");
                     if (!config("admin.auto_menu")) {
                         $form->multipleSelect('roles', trans('admin.roles'))->options(Role::all()->pluck('name', 'id'));
                     }
+
+
+                    $form->multipleSelect("subjects", "主体")
+                        ->options(Subject::selectSourceDate())
+                        ->help("使用该菜单的主体,不设置表示所有主体都可以使用该菜单");
+
                     $form->hidden('_token')->default(csrf_token());
                     $column->append((new Box(trans('admin.new'), $form))->style('success'));
                 });
@@ -62,7 +71,7 @@ class MenuController extends AdminCommonController
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function show($id)
+    public function show($id, Content $content)
     {
         return redirect()->route('menu.edit', ['id' => $id]);
     }
@@ -76,7 +85,13 @@ class MenuController extends AdminCommonController
             $tree->disableCreate();
 
             $tree->branch(function ($branch) {
-                $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
+                $title = $branch['title'];
+
+//                if ($branch['sub_title']) {
+//                    $title = $branch['title']."-".$branch['sub_title'];
+//                }
+
+                $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$title}</strong>";
 
                 if (!isset($branch['children']) && $branch['uri']) {
 
@@ -137,6 +152,7 @@ class MenuController extends AdminCommonController
     {
         $form->select('parent_id', trans('admin.parent_id'))->options(Menu::selectOptions());
         $form->text('title', trans('admin.title'))->rules('required');
+        $form->text('sub_title', "副标题");
         $form->icon('icon',
             trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
         $form->text('uri', trans('admin.uri'));
@@ -144,6 +160,10 @@ class MenuController extends AdminCommonController
             $form->multipleSelect('roles', trans('admin.roles'))
                 ->options(Role::all()->pluck('name', 'id'));
         }
+
+        $form->multipleSelect("subjects", "主体")
+            ->options(Subject::selectSourceDate())
+            ->help("使用该菜单的主体,不设置表示所有主体都可以使用该菜单");
 
         $form->saving(function ($form) {
             //创建/修改菜单重新生成对应的path
@@ -157,11 +177,15 @@ class MenuController extends AdminCommonController
                 }
             }
 
-
             if ($form->uri && !ends_with($form->uri, ".index")) {
-                $form->uri = $form->uri.".index";
-            }
+                try {
+                    if (route($form->uri.".index")) {
+                        $form->uri = $form->uri.".index";
+                    }
+                } catch (\Exception $exception) {
 
+                }
+            }
         });
 
 
@@ -196,7 +220,8 @@ class MenuController extends AdminCommonController
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error($e);
+            \Log::error("删除菜单失败");
+            \Log::warning($e);
 
             return response()->json([
                 'status'  => false,

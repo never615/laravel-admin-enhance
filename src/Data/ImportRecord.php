@@ -21,6 +21,9 @@ class ImportRecord extends BaseModel
         "finish"            => "导入结束",
     ];
 
+    protected $casts = [
+        'extra'  => 'array',
+    ];
 
     public function setting()
     {

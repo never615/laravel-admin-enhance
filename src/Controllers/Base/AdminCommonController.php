@@ -6,17 +6,22 @@
 namespace Mallto\Admin\Controllers\Base;
 
 
+use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Exporter;
 use Encore\Admin\Layout\Content;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
+use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Traits\AdminFileHelp;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
-abstract class AdminCommonController extends Controller
+abstract class AdminCommonController extends AdminController
 {
-    use ModelForm, AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData;
+    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData, AdminFileHelp;
 
 
     /**
@@ -33,7 +38,7 @@ abstract class AdminCommonController extends Controller
      *
      * @var bool
      */
-    protected $closeIdAndTime = false;
+    protected $closeUpdated_at = true;
 
 
     /**
@@ -56,18 +61,35 @@ abstract class AdminCommonController extends Controller
      */
     protected $dataViewMode = 'dynamic';
 
+
     /**
      * Index interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function index()
+    public function index(Content $content)
     {
-        return Admin::content(function (Content $content) {
-            $content->header($this->getHeaderTitle());
-            $content->description($this->getIndexDesc());
-            $content->body($this->grid()->render());
-        });
+        $grid = $this->grid();
+        if (config('admin.swoole') && request(Exporter::$queryName)) {
+            return $grid->handleExportRequest();
+        }
+
+        return $content
+            ->title($this->title())
+            ->description($this->description['index'] ?? trans('admin.list'))
+            ->body($this->grid());
+    }
+
+    protected function getTableName()
+    {
+        if (!$this->tableName) {
+            $model = resolve($this->getModel());
+            $this->tableName = $model->getTable();
+        }
+
+
+        return $this->tableName;
     }
 
     /**
@@ -77,53 +99,95 @@ abstract class AdminCommonController extends Controller
      */
     protected function getHeaderTitle()
     {
-        $model = resolve($this->getModel());
-        $tableName = $model->getTable();
+        $this->title = admin_translate($this->getTableName(), "table");
 
-        return admin_translate($tableName, $tableName);
+        return $this->title;
+    }
+
+    /**
+     * Get content title.
+     *
+     * @return string
+     */
+    protected function title()
+    {
+        return $this->getHeaderTitle();
     }
 
 
     /**
      * Edit interface.
      *
-     * @param $id
+     * @param         $id
      *
+     * @param Content $content
      * @return Content
      */
-    public function edit($id)
+    public function edit($id, Content $content)
     {
         $this->currentId = $id;
 
         $this->editFilterData();
 
-        return Admin::content(function (Content $content) use ($id) {
-            $content->header($this->getHeaderTitle());
-            $content->description(trans('admin.edit'));
-            $content->body($this->form()->edit($id));
-        });
+
+        return $content
+            ->title($this->title())
+            ->description($this->description['edit'] ?? trans('admin.edit'))
+            ->body($this->form()->edit($id));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update($id)
+    {
+        $this->currentId = $id;
+
+        return parent::update($id);
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->currentId = $id;
+
+        return parent::destroy($id);
     }
 
 
     /**
      * Create interface.
      *
+     * @param Content $content
      * @return Content
      */
-    public function create()
+    public function create(Content $content)
     {
-        return Admin::content(function (Content $content) {
-            $content->header($this->getHeaderTitle());
-            $content->description(trans('admin.create'));
-            $content->body($this->form());
-        });
+        return $content
+            ->title($this->title())
+            ->description($this->description['create'] ?? trans('admin.create'))
+            ->body($this->form());
     }
 
 
     protected function form()
     {
         return Admin::form($this->getModel(), function (Form $form) {
-            $this->tableName = $form->model()->getTable();;
+            $this->tableName = $this->getTableName();
+
+            $this->formShopFilter($form);
+
             $this->defaultFormOption($form);
             $form->tools(function (Form\Tools $tools) {
                 $tools->disableView();
@@ -142,14 +206,15 @@ abstract class AdminCommonController extends Controller
 
     protected function defaultGridOption(Grid $grid)
     {
+        $this->gridShopFilter($grid);
 
         $grid->expandFilter();
 
-        $adminUser = Admin::user();
-
         $filter = $grid->getFilter();
 
-        if (!$adminUser->isOwner()) {
+        $isOwner = AdminUtils::isOwner();
+
+        if (!$isOwner) {
             $filter->disableIdFilter();
         } else {
             $grid->id('ID')->sortable();
@@ -170,8 +235,6 @@ abstract class AdminCommonController extends Controller
         });
 
 
-
-
         $this->gridModelFilter($grid);
         $this->gridFilterData($grid);
         $this->gridOrder($grid);
@@ -179,12 +242,14 @@ abstract class AdminCommonController extends Controller
         $this->gridSubject($grid);
 
         $grid->filter(function (Grid\Filter $filter) {
+            $this->gridAdminUserFilter($filter);
+
             $filter->between("created_at")->date();
         });
 
-        if (!$this->closeIdAndTime) {
-            $grid->created_at(trans('admin.created_at'))->sortable();
-            //$grid->updated_at(trans('admin.updated_at'))->sortable();
+        $grid->created_at(trans('admin.created_at'))->sortable();
+        if (!$this->closeUpdated_at) {
+            $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
     }
 
@@ -202,9 +267,7 @@ abstract class AdminCommonController extends Controller
      */
     protected function defaultFormOption(Form $form)
     {
-//        if (Admin::user()->isOwner()) {
-            $form->display('id', 'ID');
-//        }
+        $form->displayE('id', 'ID');
 
         $form->saving(function ($form) {
             $this->autoSubjectSaving($form);
@@ -215,12 +278,17 @@ abstract class AdminCommonController extends Controller
 
         $this->formSubject($form);
         $this->formAdminUser($form);
-        $form->display('created_at', trans('admin.created_at'));
-        $form->display('updated_at', trans('admin.updated_at'));
-
-
+        $form->displayE('created_at', trans('admin.created_at'));
+        $form->displayE('updated_at', trans('admin.updated_at'));
     }
 
+
+    protected function gridAdminUserFilter($filter)
+    {
+        if (Schema::hasColumn($this->tableName, "admin_user_id")) {
+            $filter->equal("admin_user_id", "操作人")->select(Administrator::selectSourceDatas());
+        }
+    }
 
     /**
      * 默认的排序,重写此方法覆盖
@@ -234,9 +302,82 @@ abstract class AdminCommonController extends Controller
     }
 
 
+    /**
+     * 自定义的列表过滤数据
+     *
+     * @param $grid
+     */
     protected function gridModelFilter($grid)
     {
         //$grid->model()->where("type", "park");
+    }
+
+
+    /**
+     * 列表店铺权限检查/数据过滤
+     *
+     * @param $grid
+     */
+    protected function gridShopFilter($grid)
+    {
+        $this->shopFilter($grid);
+    }
+
+    /**
+     * 表单页面店铺权限检查/数据过滤
+     *
+     * @param $form
+     */
+    protected function formShopFilter($form)
+    {
+        $this->shopFilter($form);
+    }
+
+    protected function shopFilter($grid)
+    {
+        //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
+        $adminUser = Admin::user();
+        $adminiableType = $adminUser->adminable_type;
+        if ($adminiableType) {
+            switch ($adminiableType) {
+                case "subject":
+                    $managerShopGroups = $adminUser->shop_groups;
+                    //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
+                    if (Schema::hasColumn($this->tableName, "shop_id")) {
+                        if (!empty($managerShopGroups)) {
+                            //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
+                            if ($grid instanceof Grid) {
+
+                                //判断model是否有shop()方法
+                                if (method_exists($this->getModel(), 'shop')) {
+                                    $grid->model()->whereHas("shop", function ($query) use ($managerShopGroups) {
+                                        $query->whereHas("groups", function ($query) use ($managerShopGroups) {
+                                            $query->whereIn("shop_groups.id", $managerShopGroups);
+                                        });
+                                    });
+                                }
+
+                            }
+                        }
+                    } elseif ($this->tableName == "shops") {
+                        //特别处理shops表的数据过滤
+                        if (!empty($managerShopGroups)) {
+                            $grid->model()->whereHas("groups", function ($query) use ($managerShopGroups) {
+                                $query->whereIn("id", $managerShopGroups);
+                            });
+                        }
+                    }
+
+
+                    break;
+                default:
+                    throw new PermissionDeniedException("非主体账号无权限查看");
+                    break;
+            }
+
+        } else {
+            throw new PermissionDeniedException("非主体账号无权限查看");
+        }
     }
 
 }

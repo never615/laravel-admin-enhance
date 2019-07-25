@@ -7,6 +7,7 @@ namespace Mallto\Admin\Data\Traits;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 
 /**
@@ -24,6 +25,9 @@ abstract class BaseModel extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'images' => 'array',
+    ];
 
 
     public function getIconAttribute($value)
@@ -36,7 +40,12 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        $url = config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
 
     public function getLogoAttribute($value)
@@ -49,7 +58,13 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value.'?imageView2/0/interlace/1/q/75|imageslim';
+        $url = config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
+
     }
 
     public function getImageAttribute($value)
@@ -62,14 +77,24 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
+        $url = config("app.file_url_prefix").$value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
 
     public function setImagesAttribute($values)
     {
         foreach ($values as $key => $value) {
             if (starts_with($value, config("app.file_url_prefix"))) {
-                $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
+                $url = str_replace(config("app.file_url_prefix"), "", $value);
+                if (str_contains($url, "?")) {
+                    $tmpUrls = explode("?", $url);
+                    $url = $tmpUrls[0];
+                }
+                $values[$key] = $url;
             }
         }
 
@@ -86,7 +111,13 @@ abstract class BaseModel extends Model
                 if (starts_with($value, "http")) {
                     $values[$key] = $value;
                 } else {
-                    $values[$key] = config("app.file_url_prefix").$value."?imageView2/0/interlace/1/q/75|imageslim";
+
+                    $url = config("app.file_url_prefix").$value;
+                    if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+                        $values[$key] = $url;
+                    } else {
+                        $values[$key] = $url.'?imageView2/0/interlace/1/q/75|imageslim';
+                    }
                 }
             }
         } else {

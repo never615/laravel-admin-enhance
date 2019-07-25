@@ -10,10 +10,10 @@ use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Passport\HasApiTokens;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions;
 use Mallto\Admin\Data\Traits\SelectSource;
+use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 
 /**
  * Class Administrator.
@@ -22,7 +22,18 @@ use Mallto\Admin\Data\Traits\SelectSource;
  */
 class Administrator extends Model implements AuthenticatableContract
 {
-    use Authenticatable, AdminBuilder, HasPermissions, DynamicData, HasApiTokens, SelectSource;
+    use Authenticatable, AdminBuilder, HasPermissions, DynamicData, HasMultiAuthApiTokens, SelectSource;
+
+
+    const STATUS = [
+        "normal"    => "正常",
+        "forbidden" => "禁用",
+    ];
+
+    //管理端用来选择账号类型的select
+    const ADMINABLE_TYPE = [
+        'subject' => '主体',
+    ];
 
     protected $fillable = [
         'username',

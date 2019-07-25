@@ -52,7 +52,9 @@ class ImportRecordController extends AdminCommonController
             return $value ? ImportRecord::STATUS[$value] : "";
         });
 
-        $grid->failure_reason();
+        $grid->failure_reason()->display(function ($value) {
+            return str_limit($value, 30);
+        });
 
         $grid->finish_at("完成时间");
 
@@ -64,25 +66,39 @@ class ImportRecordController extends AdminCommonController
     protected function formOption(Form $form)
     {
         if ($this->currentId) {
-            $form->display("setting.name", "模块");
+            $form->displayE("setting.name", "模块");
 
-            $form->display("status")->with(function ($value) {
+            $form->displayE("status")->with(function ($value) {
                 return ImportRecord::STATUS[$value] ?? "";
             });
-            $form->display("failure_reason");
-            $form->display("finish_at", "完成时间");
+            $form->displayE("failure_reason");
+            $form->displayE("finish_at", "完成时间");
 
+            $form->displayE("remark");
+
+            $form->footer(function (Form\Footer $footer) {
+                $footer->disableSubmit();
+                $footer->disableReset();
+            });
         } else {
             $moduleSlug = request("module_slug");
 
             if ($moduleSlug) {
+
                 $form->hidden("module_slug")
                     ->default($moduleSlug);
+
+                $form->displayE("module_slug_display", "模块")
+                    ->default($moduleSlug)
+                    ->with(function ($value) use ($moduleSlug) {
+                        return ImportSetting::where("module_slug", $moduleSlug)
+                                ->first()->name ?? $value;
+                    });
 
                 $importSetting = ImportSetting::where("module_slug", $moduleSlug)
                     ->first();
                 if ($importSetting && $importSetting->template_with_annotation_url) {
-                    $form->display("template_url", "导入模板示例")->with(function () use ($importSetting) {
+                    $form->displayE("template_url", "导入模板示例")->with(function () use ($importSetting) {
                         $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
 
                         return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
@@ -96,9 +112,18 @@ class ImportRecordController extends AdminCommonController
 
 
             $form->filePrivate("file_url", "文件")
+                ->options([
+                    'allowedPreviewTypes'   => [],
+                    'allowedFileExtensions' => ['xls', 'xlsx'],
+                ])
                 ->rules("required")
                 ->move(Admin::user()->id.'/import_file')
-                ->help("导入的数据一次不建议超过三万,否则可能失败");
+                ->help("导入文件只能保留一个工作表");
+
+
+            $this->formExtraConfig($form);
+
+            $form->textarea("remark");
         }
 
 
@@ -113,4 +138,19 @@ class ImportRecordController extends AdminCommonController
             dispatch(new ImportFileJob($form->model()->id));
         });
     }
+
+    /**
+     * 额外的导入配置
+     *
+     * @param $form
+     */
+    protected function formExtraConfig($form)
+    {
+//        $form->embeds("extra", "其他配置", function (EmbeddedForm $form) {
+//
+//        });
+    }
+
+
+
 }

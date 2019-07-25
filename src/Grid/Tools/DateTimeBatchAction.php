@@ -57,7 +57,7 @@ class DateTimeBatchAction extends BatchAction
         return <<<EOF
 $('{$this->getElementClass()}').on('click', function() {
 console.log("111");
-    var ids = selectedRows();
+    var ids = $.admin.grid.selected();
     if (ids.length < 1) {
         sweetAlert("最少需要选择一个条目");
     }else{
@@ -76,7 +76,7 @@ console.log("111");
                  console.log(tempDatetime);
                  doAjax("{$tempUrl}", "POST", {
                      _token: LA.token,
-                     ids: selectedRows(),
+                     ids: ids,
                      type: 'datetime',
                      column:"{$this->column}",
                      date: tempDatetime

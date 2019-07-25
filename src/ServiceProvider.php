@@ -5,8 +5,15 @@
 
 namespace Mallto\Admin;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\Type;
 use Encore\Admin\Facades\Admin;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Domain\User\AdminUserUsecase;
+use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -26,6 +33,7 @@ class ServiceProvider extends BaseServiceProvider
      * @var array
      */
     protected $routeMiddleware = [
+        'admin.auth'             => \Mallto\Admin\Middleware\Authenticate::class,
         'adminE.auto_permission' => \Mallto\Admin\Middleware\AutoPermissionMiddleware::class,
         'adminE.log'             => \Mallto\Admin\Middleware\OperationLog::class,
     ];
@@ -57,8 +65,8 @@ class ServiceProvider extends BaseServiceProvider
             $this->publishes([__DIR__.'/../resources/admin/views' => resource_path('views/vendor/admin')],
                 'laravel-admin-enhance-views');
             //发布assets覆盖laravel-admin的assets
-            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
-                'laravel-admin-enhance-assets');
+//            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
+//                'laravel-admin-enhance-assets');
         }
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'adminE');
@@ -66,6 +74,71 @@ class ServiceProvider extends BaseServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
+        $this->customMorphMap();
+
+        $this->adminBootstrap();
+
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->registerRouteMiddleware();
+
+        $this->commands($this->commands);
+
+
+        $this->app->bind(
+            AdminUserUsecase::class,
+            AdminUserUsecaseImpl::class
+        );
+
+        if (!Type::hasType('double')) {
+            try {
+                Type::addType('double', FloatType::class);
+            } catch (DBALException $e) {
+            }
+        }
+
+        Admin::booted(function () {
+            \Mallto\Admin\Facades\AdminE::quickAccess();
+        });
+    }
+
+
+    /**
+     * Register the route middleware.
+     *
+     * @return void
+     */
+    protected function registerRouteMiddleware()
+    {
+        // register route middleware.
+        foreach ($this->routeMiddleware as $key => $middleware) {
+            app('router')->aliasMiddleware($key, $middleware);
+        }
+
+        // register middleware group.
+        foreach ($this->middlewareGroups as $key => $middleware) {
+            app('router')->middlewareGroup($key, $middleware);
+        }
+    }
+
+
+    protected function customMorphMap()
+    {
+        Relation::morphMap([
+            'subject' => Subject::class,
+        ]);
+    }
+
+
+    protected function adminBootstrap()
+    {
         Admin::booting(function () {
             //表单文件上传控件:支持直传文件到七牛,目前支持单文件
             \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
@@ -90,6 +163,10 @@ class ServiceProvider extends BaseServiceProvider
             //qrcode
             \Encore\Admin\Form::extend('qrcode', \Mallto\Admin\Form\Field\QRcode::class);
 
+            \Encore\Admin\Form::extend('hasMany2', \Mallto\Admin\Form\Field\HasMany::class);
+
+            \Encore\Admin\Form::extend('displayE', \Mallto\Admin\Form\Field\Display::class);
+
             //表格扩展信息展示控件:支持点击按钮出现下拉展示信息表格
             \Encore\Admin\Grid\Column::extend("expand", \Mallto\Admin\Grid\Displayers\ExpandRow::class);
             //表格url控件:支持显示url二维码,和一键复制url
@@ -112,41 +189,11 @@ class ServiceProvider extends BaseServiceProvider
             Admin::js('vendor/laravel-adminE/jsQR/jsQR.js');
 
             //表格引入的两个库
-            Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
+//            Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
+//            Admin::js('https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js');
+            Admin::js('vendor/laravel-adminE/echarts/echarts.min.js');
             Admin::js('https://file.easy.mall-to.com/js/walden.js');
         });
-
-    }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->registerRouteMiddleware();
-
-        $this->commands($this->commands);
-    }
-
-
-    /**
-     * Register the route middleware.
-     *
-     * @return void
-     */
-    protected function registerRouteMiddleware()
-    {
-        // register route middleware.
-        foreach ($this->routeMiddleware as $key => $middleware) {
-            app('router')->aliasMiddleware($key, $middleware);
-        }
-
-        // register middleware group.
-        foreach ($this->middlewareGroups as $key => $middleware) {
-            app('router')->middlewareGroup($key, $middleware);
-        }
     }
 
 

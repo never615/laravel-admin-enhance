@@ -30,13 +30,18 @@ class OperationLog
      */
     public function handle(Request $request, \Closure $next)
     {
+        $adminUser = null;
 
-        $adminUser = Admin::user();
-        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
-            $adminUser = Auth::guard("admin_api")->user();
+        try {
+            $adminUser = Admin::user();
+            if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+                $adminUser = Auth::guard("admin_api")->user();
+            }
+        } catch (\Exception $exception) {
+
         }
 
-        if (config('admin.operation_log.enable') && $adminUser) {
+        if (config('admin.operation_log.enable')) {
 
             $ip = 0;
             $tempIp = $request->header("X-Forwarded-For");
@@ -48,12 +53,13 @@ class OperationLog
 
             $log = [
                 'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
-                'user_id'    => $adminUser->id,
+                'user_id'    => $adminUser->id ?? 0,
                 'path'       => $request->path(),
                 'method'     => $request->method(),
                 'request_ip' => $ip,
-                'input'      => json_encode($request->input()),
-                'subject_id' => $adminUser->subject->id,
+                'input'      => json_encode($request->all(), JSON_UNESCAPED_UNICODE),
+                'header'     => json_encode($request->headers->all(), JSON_UNESCAPED_UNICODE),
+                'subject_id' => $adminUser->subject->id ?? 0,
                 "action"     => "request",
             ];
 
@@ -61,7 +67,7 @@ class OperationLog
         }
 
         $response = $next($request);
-        if (config('admin.operation_log.enable') && $adminUser) {
+        if (config('admin.operation_log.enable')) {
             if (is_array($response->getContent())) {
                 $input = json_encode($response->getContent());
             } else {
@@ -83,12 +89,12 @@ class OperationLog
 
             $log = [
                 'uuid'       => SubjectUtils::getUUIDNoException() ?: 0,
-                'user_id'    => $adminUser->id,
+                'user_id'    => $adminUser->id ?? 0,
                 'path'       => $request->path(),
                 'method'     => $request->method(),
                 'request_ip' => $ip,
                 'input'      => $input,
-                'subject_id' => $adminUser->subject->id,
+                'subject_id' => $adminUser->subject->id ?? 0,
                 'action'     => "response",
                 'status'     => $response->getStatusCode(),
             ];

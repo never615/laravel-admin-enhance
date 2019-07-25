@@ -48,8 +48,8 @@ class InstallCommand extends Command
      */
     public function initDatabase()
     {
-        $this->call(InitDataSeeder::class);
         $this->call('migrate', ['--path' => str_replace(base_path(), '', __DIR__).'/../../migrations/']);
+        $this->call('db:seed', ['--class' => InitDataSeeder::class]);
         $this->call('db:seed', ['--class' => TablesSeeder::class]);
     }
 

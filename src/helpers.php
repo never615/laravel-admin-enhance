@@ -2,7 +2,11 @@
 /**
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
+
+use Illuminate\Support\Facades\Lang;
+
 if (!function_exists('array_dot2')) {
+
     /**
      * Flatten a multi-dimensional associative array with dots.
      *
@@ -16,12 +20,13 @@ if (!function_exists('array_dot2')) {
         $results = [];
 
         foreach ($array as $key => $value) {
-
             if (!empty($prepend)) {
                 //处理ignore设置为xxx.yyy的情况
-                $ignores = array_map(function ($ignore, $key) use ($prepend) {
+                $ignores = array_map(function ($ignore) use ($prepend) {
                     if (starts_with($ignore, $prepend)) {
                         return str_replace($prepend, "", $ignore);
+                    }else{
+                        return $ignore;
                     }
                 }, $ignores);
             }

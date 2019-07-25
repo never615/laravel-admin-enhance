@@ -105,7 +105,14 @@ class Permission extends Model
         return new Collection();
     }
 
-    public function elderPermissions2(){
+
+    /**
+     * 通过递归,效率差点
+     *
+     * @return Collection
+     */
+    public function elderPermissions2()
+    {
         $temps = \DB::select("with recursive tab as (
                  select * from admin_permissions where id = $this->parent_id
                   union all

@@ -6,8 +6,6 @@
 namespace Mallto\Admin\Data;
 
 
-use Encore\Admin\Facades\Admin;
-use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Traits\BaseModel;
 
 
@@ -34,15 +32,8 @@ class ImportSetting extends BaseModel
     }
 
 
-    public function scopeSelectSourceDatas()
-    {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return static::dynamicData()
-                ->select(\DB::raw("name||subject_id as name,module_slug"))->pluck("name", "module_slug");
-        } else {
-            return static::dynamicData()->pluck("name", "module_slug");
-        }
-    }
+    public $selectName = "name";
+    public $selectId = "module_slug";
 
 
 }

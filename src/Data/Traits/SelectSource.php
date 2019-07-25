@@ -5,9 +5,9 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 
 
 /**
@@ -18,13 +18,19 @@ use Illuminate\Support\Facades\Schema;
  */
 trait SelectSource
 {
+
+    public $selectName = "name";
+    public $selectId = "id";
+
     /**
      * @deprecated
      * @return mixed
      */
     public static function selectSourceDate()
     {
-        if (Admin::user()->isOwner()) {
+        $isOwner = AdminUtils::isOwner();
+
+        if ($isOwner) {
             return static::dynamicData()
                 ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
         } else {
@@ -33,31 +39,41 @@ trait SelectSource
     }
 
 
-    public function scopeSelectSourceDatas()
+    public function scopeSelectByOwner($query)
     {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return static::dynamicData()
-                ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
-        } else {
-            return static::dynamicData()->pluck("name", "id");
-        }
+        return $query->select(\DB::raw("$this->selectName
+        ||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
+    }
+
+
+    public function scopeSelectBySubject($query)
+    {
+        return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
+    }
+
+
+    public function scopeSelectSourceDatas($query)
+    {
+        return $query->selectSourceDatas2()
+            ->pluck($this->selectName, $this->selectId);
     }
 
     /**
      * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
      *
+     * @param $query
      * @return mixed
      */
-    public function scopeSelectSourceDatas2()
+    public function scopeSelectSourceDatas2($query)
     {
-        if (Admin::user()->isOwner() && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return static::dynamicData()
-                ->select(DB::raw("name||'-'||subject_id as name,id"));
+        $isOwner = AdminUtils::isOwner();
+
+        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
+            return $query->dynamicData()
+                ->selectByOwner();
         } else {
-            return static::dynamicData()
-                ->select(DB::raw("name as name,id"));
+            return $query->dynamicData()
+                ->selectBySubject();
         }
     }
-
-
 }

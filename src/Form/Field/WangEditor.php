@@ -6,8 +6,8 @@
 namespace Mallto\Admin\Form\Field;
 
 
-
 use Encore\Admin\Form\Field;
+use Encore\Admin\Form\NestedForm;
 
 class WangEditor extends Field
 {
@@ -46,9 +46,18 @@ class WangEditor extends Field
     public function render()
     {
 
+        $name = $this->elementName ?: $this->formatName($this->column);
+        $defaultKey = NestedForm::DEFAULT_KEY_NAME;
+
         $this->script = <<<EOT
         
-    var editor = new wangEditor('{$this->id}');
+    var tempName='{$name}';
+    try{
+        tempName=tempName.replace(/{$defaultKey}/g, index);
+    }catch(e){
+        
+    }
+    var editor = new wangEditor(document.getElementsByName(tempName));
 
     {$this->getMenuScript()}
     {$this->getUploadScript()}

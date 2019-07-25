@@ -48,7 +48,7 @@ class CommonButton extends AbstractTool
 
 
     $('.mt-grid-common').on("click",function(){
-        var ids = selectedRows();
+        var ids = $.admin.grid.selected();
         if (ids.length != 1) {
             sweetAlert("需要选择一个条目");
         }else{

@@ -10,6 +10,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Support\Facades\Cache;
+use Mallto\Admin\CacheConstants;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
@@ -58,29 +59,43 @@ class RoleController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        if (Admin::user()->isOwner()) {
-            $form->text('slug', trans('admin.slug'))
-                ->help("不填写会自动生成,建议不填写");
-        }
+//        if (\Mallto\Admin\AdminUtils::isOwner()) {
+//            $form->text('slug', trans('admin.slug'))
+//                ->help("不填写会自动生成,建议不填写");
+//        }
 
         $form->text('name', trans('admin.name'))->rules('required');
 
         $that = $this;
-        $form->multipleSelect('permissions', trans('admin.permissions'))
+//        $form->multipleSelect('permissions', trans('admin.permissions'))
+//        $form->listbox('permissions', trans('admin.permissions'))
+        $form->checkbox('permissions', trans('admin.permissions'))
             ->options(function () use ($that) {
                 $subjectId = Admin::user()->subject_id;
                 if ($subjectId == 1) {
-                    $permissions = Permission::all()->toArray();
+                    $permissions = Permission::orderBy("order")->get()->toArray();
                 } else {
-                    //主体拥有的权限需要加上那几个公共功能模块的权限
+                    $permissionsTemp = Subject::find($subjectId)
+                        ->permissions()
+                        ->orderBy("order")
+                        ->get();
 
-                    $permissionsTemp = Subject::find($subjectId)->permissions;
-                    $permissionsTemp = $permissionsTemp->merge(Permission::where("common", true)->get());
+                    //主体拥有的权限需要加上那几个公共功能模块的权限
+                    $permissionsTemp = $permissionsTemp->merge(
+                        Permission::where("common", true)->get()
+                    );
                     $permissions = $that->withSubPermissions($permissionsTemp);
                 }
 
-                return Permission::selectOptions($permissions, false, false);
+                //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
+                return Permission::selectOptions($permissions, false, false,
+                    (isset($permissionsTemp) ? array_unique($permissionsTemp->pluck("parent_id")->toArray()) : 0));
             })
+//            ->settings([
+//                "selectorMinimalHeight"   => 500,
+//                "preserveSelectionOnMove" => false,
+//            ])
+            ->stacked()
             ->help("权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限");
 
 
@@ -93,7 +108,7 @@ class RoleController extends AdminCommonController
         });
 
         $form->saved(function ($form) {
-            $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+            $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
 
             foreach ($cacheMenuKeys as $cacheMenuKey) {
                 Cache::forget($cacheMenuKey);

@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * 实现了后台报表导出且laravel的orm数据操作又内存泄露.所以使用了\DB中的方法进行操作.由此也就带来了很多麻烦的东西.
  * 有时间可以从底层改造,使用\DB的操作.写报表导出的时候就会方便很多.
  *
+ * @deprecated
  * Created by PhpStorm.
  * User: never615
  * Date: 29/03/2017
@@ -310,7 +311,7 @@ EOT;
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
-     * @param $datas
+     * @param array $datas
      * @return mixed
      */
     public abstract function customData($datas);

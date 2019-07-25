@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Tree;
 use Illuminate\Support\Facades\Cache;
+use Mallto\Admin\CacheConstants;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 
@@ -77,7 +78,7 @@ class PermissionController extends AdminCommonController
 
 
         $form->saved(function ($form) {
-            $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+            $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
 
             foreach ($cacheMenuKeys as $cacheMenuKey) {
                 Cache::forget($cacheMenuKey);

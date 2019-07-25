@@ -3,13 +3,15 @@
  * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Mallto\Admin\Controllers;
+namespace Mallto\Admin\Controllers\Api;
 
 
+use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
-use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
@@ -27,7 +29,7 @@ use Mallto\User\Domain\Traits\OpenidCheckTrait;
  *
  * @package Mallto\Admin\Controllers
  */
-class AuthController extends \Encore\Admin\Controllers\AuthController
+class AuthController extends Controller
 {
 
     use AuthValidateTrait, OpenidCheckTrait, ValidatesRequests;
@@ -42,7 +44,6 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
      */
     public function postLogin(Request $request)
     {
-
         switch ($request->header("REQUEST-TYPE")) {
             case "WECHAT":
                 //校验identifier(实际就是加密过得openid),确保只使用了一次
@@ -51,12 +52,20 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
                 return $this->loginByWechat($request);
                 break;
             default:
-                return parent::postLogin($request);
+                throw new ResourceException("不支持的登录方式:".$request->header("REQUEST-TYPE"));
                 break;
 
         }
     }
 
+
+    /**
+     * 微信端授权登录管理端
+     *
+     * @param Request $request
+     * @return mixed
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function loginByWechat(Request $request)
     {
         //请求字段验证
@@ -73,48 +82,21 @@ class AuthController extends \Encore\Admin\Controllers\AuthController
 
         $openid = $this->decryptOpenid($request->identifier);
 
-        $adminUser = Administrator::where("subject_id", $subject->id)
-            ->where("openid->openid", $openid)
-            ->first();
-        if (!$adminUser) {
-            //管理端账户不存在
-
-            //查询该openid对应会员的手机号,是否已经绑定了管理端账户
-            //这个是兼容旧的管理端账户绑定,直接输入会员的手机号
-
-            $user = User::with([
-                'userAuths' => function ($query) use ($openid) {
-                    $query->where("identity_type", "wechat")
-                        ->where("identifier", $openid);
-                },
-            ])->where("subject_id", $subject->id)->first();
-            if ($user && $user->mobile) {
-                $adminUser = Administrator::where("subject_id", $subject->id)
-                    ->where("mobile", $user->mobile)
-                    ->first();
-            }
-        }
+        $adminUserUsecase = app(AdminUserUsecase::class);
+        $adminUser = $adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
         if (!$adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
-        
-        $token = $adminUser->createToken("admin_api");
-        $adminUser->token = $token->accessToken;
 
-//        if ($adminUser->adminable_type == "shop") {
-//            $shop = Shop::find($adminUser->adminable_id);
-//        }
+        //检查账号是否被禁用
+        if ($adminUser->status == "forbidden") {
+            throw new PermissionDeniedException("当前账号已被禁用");
+        }
 
+        $adminUserUsecase = app(AdminUserUsecase::class);
 
-        return response()->json($adminUser->only([
-            "id",
-            "name",
-            "username",
-            "token",
-        ]));
-
-
+        return $adminUserUsecase->getReturnUserInfo($adminUser, true);
     }
 
 }

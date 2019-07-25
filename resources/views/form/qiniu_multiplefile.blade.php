@@ -20,27 +20,26 @@
         var clazz = "{{$class}}";
         var selectorClazz = '.' + clazz.replace(/ /g, ".");
 
-        var temp = $(selectorClazz).closest('.fields-group').find('input[name="{{$name}}"]');
 
         var setValue = function () {
-//            console.log('set value');
-//            console.log(files);
-            temp.val(files);
+            var temp = $(selectorClazz).closest('.fields-group').find('input[name="{{$name}}"]');
 
-//            if (files.length > 0) {
-//                console.log(files[0]);
-//                temp.val(files[0]);
-//            } else {
-//                temp.val("");
-//            }
+            // console.log('set value');
+            // console.log(files);
 
+            if (files.length > 0) {
+                // temp.val(JSON.stringify(files));
+                temp.val(files.join(","));
+            } else {
+                temp.val("");
+            }
 //            console.log(temp.val());
-
         };
 
         var files = [];
 
-        var file = $(selectorClazz).closest('.fields-group').find('input[name="file"]');
+        // var file = $(selectorClazz).closest('.fields-group').find('input[name="file"]');
+        var file = $(selectorClazz).closest('.fields-group').find('input[class="{{$class}}"]');
 
 
         file.on('fileremoved', function (event, id, index) {

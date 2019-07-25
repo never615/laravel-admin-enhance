@@ -8,6 +8,7 @@ namespace Mallto\Admin;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -21,9 +22,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SubjectUtils
 {
-    private static $subject;
-
-
     /**
      * 获取只有项目拥有者才能编辑的配置项
      *
@@ -40,7 +38,7 @@ class SubjectUtils
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
@@ -71,7 +69,7 @@ class SubjectUtils
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
@@ -94,17 +92,62 @@ class SubjectUtils
      * 对应主体管理的最后一个tab,即:系统参数(owner)
      *
      * @param      $key
+     * @param null $subjectId
+     * @param null $default
+     * @return mixed|null
+     */
+    public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
+    {
+        if (!$subjectId) {
+            try {
+                $subjectId = self::getSubjectId();
+            } catch (\Exception $exception) {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到");
+
+                }
+            }
+        }
+
+        $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
+            ->where("key", $key)
+            ->first();
+
+        if (!$subjectConfig) {
+            if ($default) {
+                return $default;
+            } else {
+                throw new SubjectConfigException($key."未配置,".$subjectId);
+            }
+        }
+
+        return $subjectConfig->value ?? $default;
+    }
+
+
+    /**
+     * 获取可以动态设置key的配置项
+     *
+     * 公开配置
+     *
+     * 只有owner可以编辑
+     *
+     * 对应主体管理的最后一个tab,即:系统参数(owner)
+     *
+     * @param      $key
      * @param null $default
      * @param null $subject
      * @return mixed|null
      */
-    public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
+    public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
         if (!$subject) {
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
-                if ($default) {
+                if (isset($default)) {
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
@@ -115,7 +158,9 @@ class SubjectUtils
 
         $subjectConfig = $subject->subjectConfigs()
             ->where("key", $key)
+            ->where("type", "public")
             ->first();
+
         if (!$subjectConfig) {
             if ($default) {
                 return $default;
@@ -131,17 +176,21 @@ class SubjectUtils
     /**
      * 获取uuid
      *
+     * @param null $app
      * @return mixed
      */
-    public static function getUUID()
+    public static function getUUID($app = null)
     {
-        if (self::$subject) {
-            return self::$subject->uuid;
-        }
-
-        $uuid = Request::header("UUID");
-        if (is_null($uuid)) {
-            $uuid = Input::get("uuid");
+        if ($app) {
+            $uuid = $app['request']->header("UUID");
+            if (is_null($uuid)) {
+                $uuid = $app['request']->get("uuid");
+            }
+        } else {
+            $uuid = Request::header("UUID");
+            if (is_null($uuid)) {
+                $uuid = Input::get("uuid");
+            }
         }
 
         if (empty($uuid) && \Admin::user()) {
@@ -151,6 +200,7 @@ class SubjectUtils
         if (empty($uuid)) {
             throw new HttpException(422, "uuid参数错误");
         }
+
 
         return $uuid;
     }
@@ -162,10 +212,6 @@ class SubjectUtils
      */
     public static function getUUIDNoException()
     {
-        if (self::$subject) {
-            return self::$subject->uuid;
-        }
-
         $uuid = Request::header("UUID");
         if (is_null($uuid)) {
             $uuid = Input::get("uuid");
@@ -185,59 +231,21 @@ class SubjectUtils
      */
     public static function getSubjectId()
     {
-
-        if (self::$subject) {
-            return self::$subject->id;
-        }
-
-        try {
-            $uuid = self::getUUID();
-        } catch (HttpException $e) {
-            $uuid = null;
-        }
-
-        if (!is_null($uuid)) {
-            $subject = Subject::where("uuid", $uuid)->first();
-            if ($subject) {
-                return $subject->id;
-            }
-        }
-
-        $user = \Admin::user();
-        if ($user) {
-            $subject = $user->subject;
-            if ($subject) {
-                return $subject->id;
-            }
-        }
-
-        throw new HttpException(422, "uuid参数错误".$uuid);
-    }
-
-    /**
-     * 设置主体,测试用
-     *
-     * @param $subject
-     */
-    public static function setSubject($subject)
-    {
-        self::$subject = $subject;
+        return self::getSubject()->id;
     }
 
 
     /**
-     * 获取主体
+     * 获取当前主体
      *
+     * @param null $app
      * @return Subject|null|static
      */
-    public static function getSubject()
+    public static function getSubject($app = null)
     {
-        if (self::$subject) {
-            return self::$subject;
-        }
-
+        //按照接口请求的方式,尝试获取subject
         try {
-            $uuid = self::getUUID();
+            $uuid = self::getUUID($app);
         } catch (HttpException $e) {
             $uuid = null;
         }
@@ -246,9 +254,17 @@ class SubjectUtils
             $subject = Subject::where("uuid", $uuid)->first();
             if ($subject) {
                 return $subject;
+            } else {
+                $subject = Subject::where('extra_config->'.SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                    $uuid)
+                    ->first();
+                if ($subject) {
+                    return $subject;
+                }
             }
         }
 
+        //按照管理端请求的方式,尝试获取subject
         $user = \Admin::user();
         if ($user) {
             $subject = $user->subject;

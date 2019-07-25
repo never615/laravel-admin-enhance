@@ -35,7 +35,7 @@ trait HasPermissions
      *
      * @return BelongsToMany
      */
-    public function roles() : BelongsToMany
+    public function roles(): BelongsToMany
     {
         $pivotTable = config('admin.database.role_users_table');
 
@@ -49,7 +49,7 @@ trait HasPermissions
      *
      * @return BelongsToMany
      */
-    public function permissions() : BelongsToMany
+    public function permissions(): BelongsToMany
     {
         $currentId = $this->id;
         if ($this->tempPermissions && isset($this->tempPermissions[$currentId])) {
@@ -71,7 +71,7 @@ trait HasPermissions
      *
      * @return mixed
      */
-    public function allPermissions() : Collection
+    public function allPermissions(): Collection
     {
         return $this->roles()
             ->with('permissions')
@@ -81,6 +81,7 @@ trait HasPermissions
             ->merge($this->permissions);
     }
 
+
     /**
      * Check if user has permission.
      *
@@ -88,7 +89,7 @@ trait HasPermissions
      *
      * @return bool
      */
-    public function can(string $permissionSlug) : bool
+    public function can(string $permissionSlug): bool
     {
         //1.项目拥有者拥有全部权限
         if ($this->isOwner()) {
@@ -102,6 +103,7 @@ trait HasPermissions
                 return true;
             }
         }
+
         //3.用户拥有该权限的父权限,通过
         //先查询该权限的父权限,因为权限支持多级,所以要查询出该权限的所有长辈权限
         $permission = Permission::where('slug', $permissionSlug)->first();
@@ -117,16 +119,31 @@ trait HasPermissions
 
         //4.用户的角色拥有该权限通过
         //5.用户的角色拥有该权限的父权限,通过
-        foreach ($this->roles as $role) {
-            if ($role->can($permissionSlug)) {
-                return true;
-            }
-            if ($elderPermissions && $role->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+//        foreach ($this->roles as $role) {
+//            if ($role->can($permissionSlug)) {
+//                return true;
+//            }
+//
+//            if ($elderPermissions && $role->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+//                return true;
+//            }
+//        }
+
+//        return false;
+
+        $waiteVerifyPermissionSlugs=array_merge($elderPermissions->pluck("slug")->toArray(), (array)$permission->slug);
+
+        $rolePermissionSlugs=$this->roles->pluck('permissions')->flatten()->pluck('slug');
+
+        foreach ( $waiteVerifyPermissionSlugs as $waiteVerifyPermissionSlug) {
+            if($rolePermissionSlugs->contains($waiteVerifyPermissionSlug)){
                 return true;
             }
         }
 
-        return $this->roles->pluck('permissions')->flatten()->pluck('slug')->contains($permission);
+        return false;
+//        return $this->roles->pluck('permissions')->flatten()->pluck('slug')
+//            ->contains($permission);
     }
 
     /**
@@ -136,7 +153,7 @@ trait HasPermissions
      *
      * @return bool
      */
-    public function cannot(string $permission) : bool
+    public function cannot(string $permission): bool
     {
         return !$this->can($permission);
     }
@@ -146,7 +163,7 @@ trait HasPermissions
      *
      * @return mixed
      */
-    public function isAdministrator() : bool
+    public function isAdministrator(): bool
     {
         return $this->isRole(config("admin.roles.admin"));
     }
@@ -164,7 +181,7 @@ trait HasPermissions
      *
      * @return mixed
      */
-    public function isRole(string $role) : bool
+    public function isRole(string $role): bool
     {
         return $this->roles()
             ->where('slug', $role)
@@ -178,7 +195,7 @@ trait HasPermissions
      *
      * @return mixed
      */
-    public function inRoles(array $roles = []) : bool
+    public function inRoles(array $roles = []): bool
     {
         return $this->roles()
             ->whereIn('slug', (array) $roles)->exists();
@@ -191,7 +208,7 @@ trait HasPermissions
      *
      * @return bool
      */
-    public function visible(array $roles = []) : bool
+    public function visible(array $roles = []): bool
     {
         if (empty($roles)) {
             return true;

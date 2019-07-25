@@ -6,6 +6,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
 
 
@@ -42,9 +43,17 @@ class Subject extends Model
     ];
 
 
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, "admin_menu_subjects", "subject_id", "admin_menu_id");
+    }
+
+
     public static function selectSourceDate()
     {
-        if (Admin::user()->isOwner()) {
+        $isOwner = AdminUtils::isOwner();
+
+        if ($isOwner) {
             return static::dynamicData()
                 ->select(DB::raw("name||id as name,id"))->pluck("name", "id");
         } else {

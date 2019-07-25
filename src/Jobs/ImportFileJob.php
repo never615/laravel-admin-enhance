@@ -31,7 +31,7 @@ class ImportFileJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
+    public $tries = 1;
     /**
      * @var
      */
@@ -64,12 +64,17 @@ class ImportFileJob implements ShouldQueue
             if ($setting) {
                 $handler = resolve($setting->module_handler);
                 $handler->handle($record);
+            } else {
+                $handler = resolve($record->module_slug);
+                if ($handler) {
+                    $handler->handle($record);
+                }
             }
         }
     }
 
 
-    public function fail($exception)
+    public function failed($exception)
     {
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "processing") {
@@ -78,6 +83,11 @@ class ImportFileJob implements ShouldQueue
             if ($setting) {
                 $handler = resolve($setting->module_handler);
                 $handler->fail($record, $exception);
+            } else {
+                $handler = resolve($record->module_slug);
+                if ($handler) {
+                    $handler->handle($record);
+                }
             }
         }
     }

@@ -67,13 +67,13 @@ class CommonBatchAction extends BatchAction
 $('{$this->getElementClass()}').on('click', function() {
                 console.log("click");
                 
-        var ids = selectedRows();
+        var ids = $.admin.grid.selected();
         if (ids.length < 1) {
             sweetAlert("最少需要选择一个条目");
         }else{
                 doAjax("{$tempUrl}", "POST", {
                     _token: LA.token,
-                    ids: selectedRows(),
+                    ids: ids,
                     action: '{$this->action}',
                     type: 'action',
                     column:'{$this->column}'

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\AdminUtils;
+use Mallto\Admin\CacheConstants;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -49,6 +51,25 @@ class Menu extends Model
 
         parent::__construct($attributes);
     }
+
+
+    public function getTitleAttribute($value)
+    {
+        $isOwner=AdminUtils::isOwner();
+
+        if ($isOwner && $this->sub_title) {
+            return $value."-".$this->sub_title;
+        } else {
+            return $value;
+        }
+    }
+
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, "admin_menu_subjects", "admin_menu_id", "subject_id");
+    }
+
 
     /**
      * A Menu belongs to many roles.
@@ -139,8 +160,22 @@ class Menu extends Model
                 $menus = new Collection();
                 //任何人都可以看到控制面板菜单
                 $menus = $menus->merge(static::where("uri", "dashboard")->get());
-                //查询权限对应的菜单
-                $menus = $menus->merge(static::whereIn("uri", $userPermissionSlugs)->get());
+
+
+                $menusQuery = static::whereIn("uri", $userPermissionSlugs);
+
+                if (!$adminUser->isOwner()) {
+                    $menusQuery = $menusQuery->where(function ($query) use ($adminUser) {
+                        $query->orWhereDoesntHave("subjects", function ($query) {
+
+                        })->orWhereHas("subjects", function ($query) use ($adminUser) {
+                            $query->where("id", $adminUser->subject_id);
+                        });
+                    });
+                }
+
+                //查询主体的菜单和通用菜单且在该账号权限内的
+                $menus = $menus->merge($menusQuery->get());
 
                 $tempMenus = $menus->toArray();
 
@@ -168,10 +203,11 @@ class Menu extends Model
 
                 $cacheMenuKey = "menu_".$adminUser->id;
                 Cache::put($cacheMenuKey, $result, 30);
-                $cacheMenuKeys = Cache::get("cache_menu_keys", []);
+
+                $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
                 $cacheMenuKeys[] = $cacheMenuKey;
 
-                Cache::forever("cache_menu_keys", $cacheMenuKeys);
+                Cache::put(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys,60*24);
 
                 return $result;
             }
