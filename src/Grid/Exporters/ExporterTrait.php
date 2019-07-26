@@ -25,17 +25,7 @@ trait ExporterTrait
     {
         $titles = collect(array_first($records))->keys()->map(
             function ($key) use ($tableName) {
-                if (str_contains($key, ".")) {
-                    try {
-                        $tempKeys = explode(".", $key);
-
-                        return admin_translate($tempKeys[1], $tempKeys[0]);
-                    } catch (\Exception $exception) {
-                        return admin_translate($key, $tableName);
-                    }
-                } else {
-                    return admin_translate($key, $tableName);
-                }
+                return admin_translate($key, $tableName);
             }
         );
 
