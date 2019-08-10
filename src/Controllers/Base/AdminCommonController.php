@@ -81,39 +81,6 @@ abstract class AdminCommonController extends AdminController
             ->body($this->grid());
     }
 
-    protected function getTableName()
-    {
-        if (!$this->tableName) {
-            $model = resolve($this->getModel());
-            $this->tableName = $model->getTable();
-        }
-
-
-        return $this->tableName;
-    }
-
-    /**
-     * 获取这个模块的标题
-     *
-     * @return mixed
-     */
-    protected function getHeaderTitle()
-    {
-        $this->title = admin_translate($this->getTableName(), "table");
-
-        return $this->title;
-    }
-
-    /**
-     * Get content title.
-     *
-     * @return string
-     */
-    protected function title()
-    {
-        return $this->getHeaderTitle();
-    }
-
 
     /**
      * Edit interface.
@@ -244,7 +211,7 @@ abstract class AdminCommonController extends AdminController
         $grid->filter(function (Grid\Filter $filter) {
             $this->gridAdminUserFilter($filter);
 
-            $filter->between("created_at")->date();
+            $filter->between("created_at")->datetime();
         });
 
         $grid->created_at(trans('admin.created_at'))->sortable();
@@ -378,6 +345,42 @@ abstract class AdminCommonController extends AdminController
         } else {
             throw new PermissionDeniedException("非主体账号无权限查看");
         }
+    }
+
+
+    protected function getTableName()
+    {
+        if (!$this->tableName) {
+            $model = resolve($this->getModel());
+            $this->tableName = $model->getTable();
+        }
+
+
+        return $this->tableName;
+    }
+
+    /**
+     * 获取这个模块的标题
+     *
+     * @return mixed
+     */
+    protected function getHeaderTitle()
+    {
+        $this->title = admin_translate($this->getTableName(), "table");
+
+        return $this->title;
+    }
+
+    /**
+     * Get content title.
+     *
+     * laravel-admin后来新增的方法,因为我已经有了getHeaderTitle且大量子类使用,所以继续使用getHeaderTitle
+     *
+     * @return string
+     */
+    protected function title()
+    {
+        return $this->getHeaderTitle();
     }
 
 }
