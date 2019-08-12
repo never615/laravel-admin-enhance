@@ -23,10 +23,13 @@ class UpdateRolesTable extends Migration
 
             $table->text("describe")->nullable();
 
+            $table->dropUnique(["slug"]);
+            $table->dropUnique(["name"]);
+
             //索引
             $table->index(['subject_id']);
-            $table->unique(["subject_id","slug"]);
-            $table->unique(["subject_id","name"]);
+            $table->unique(["subject_id", "slug"]);
+            $table->unique(["subject_id", "name"]);
         });
 
 
@@ -60,8 +63,8 @@ class UpdateRolesTable extends Migration
             $table->dropColumn('subject_id');
             $table->dropColumn('describe');
             $table->dropIndex(['subject_id']);
-            $table->dropUnique(["subject_id","slug"]);
-            $table->dropUnique(["subject_id","name"]);
+            $table->dropUnique(["subject_id", "slug"]);
+            $table->dropUnique(["subject_id", "name"]);
         });
 
 
