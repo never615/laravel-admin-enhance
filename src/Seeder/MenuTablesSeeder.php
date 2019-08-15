@@ -25,7 +25,6 @@ class MenuTablesSeeder extends Seeder
         $this->call(AdminManagerMenuSeeder::class);
         $this->call(DashboardMenuSeeder::class);
         $this->call(SystemManagerMenuSeeder::class);
-        $this->call(AdminUserGroupMenuSeeder::class);
 
 
     }

@@ -41,7 +41,17 @@ class AdminManagerMenuSeeder extends Seeder
             "roles.index", $adminManagerMenu->id,
             $order++, "角色", "fa-user");
 
+        $this->updateOrCreate(
+            "admin_user_groups.index", $adminManagerMenu->id,
+            $order++, "主体管理账户分组", "fa-group");
 
+        $order++;
+
+        $order++;
+
+        $this->updateOrCreate(
+            "import_records.index", $adminManagerMenu->id,
+            $order++, "数据导入", "fa-upload");
 
         $this->updateOrCreate(
             "reports.index", $adminManagerMenu->id,
@@ -57,11 +67,6 @@ class AdminManagerMenuSeeder extends Seeder
             "videos.index", $adminManagerMenu->id,
             $order++, "视频管理", "fa-file-video-o");
 
-
-
-        $this->updateOrCreate(
-            "import_records.index", $adminManagerMenu->id,
-            $order++, "数据导入", "fa-upload");
 
     }
 }
