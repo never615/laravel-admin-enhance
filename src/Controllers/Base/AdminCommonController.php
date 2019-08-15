@@ -74,7 +74,6 @@ abstract class AdminCommonController extends AdminController
         if (config('admin.swoole') && request(Exporter::$queryName)) {
             return $grid->handleExportRequest();
         }
-
         return $content
             ->title($this->title())
             ->description($this->description['index'] ?? trans('admin.list'))
@@ -223,7 +222,6 @@ abstract class AdminCommonController extends AdminController
             }
         }
 
-
         $grid->tools(function (Grid\Tools $tools) {
             $tools->batch(function (Grid\Tools\BatchActions $actions) {
                 $actions->disableDelete();
@@ -246,7 +244,6 @@ abstract class AdminCommonController extends AdminController
 
             $filter->between("created_at")->date();
         });
-
         $grid->created_at(trans('admin.created_at'))->sortable();
         if (!$this->closeUpdated_at) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
