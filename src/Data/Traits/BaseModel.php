@@ -87,18 +87,21 @@ abstract class BaseModel extends Model
 
     public function setImagesAttribute($values)
     {
-        foreach ($values as $key => $value) {
+        foreach ($values as &$value) {
             if (starts_with($value, config("app.file_url_prefix"))) {
                 $url = str_replace(config("app.file_url_prefix"), "", $value);
                 if (str_contains($url, "?")) {
                     $tmpUrls = explode("?", $url);
                     $url = $tmpUrls[0];
                 }
-                $values[$key] = $url;
+                $value = $url;
             }
         }
 
+        $values = array_values($values);
+
         $values = json_encode($values);
+
         $this->attributes['images'] = $values;
     }
 
@@ -123,6 +126,9 @@ abstract class BaseModel extends Model
         } else {
             return [];
         }
+
+        \Log::debug("get images");
+        \Log::debug($values);
 
         return $values;
     }

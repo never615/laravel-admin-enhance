@@ -74,6 +74,7 @@ abstract class AdminCommonController extends AdminController
         if (config('admin.swoole') && request(Exporter::$queryName)) {
             return $grid->handleExportRequest();
         }
+
         return $content
             ->title($this->title())
             ->description($this->description['index'] ?? trans('admin.list'))
@@ -101,6 +102,20 @@ abstract class AdminCommonController extends AdminController
             ->description($this->description['edit'] ?? trans('admin.edit'))
             ->body($this->form()->edit($id));
     }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed   $id
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function show($id, Content $content)
+    {
+        return redirect(request()->url()."/edit");
+    }
+
 
     /**
      * Update the specified resource in storage.
