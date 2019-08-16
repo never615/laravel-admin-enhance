@@ -127,9 +127,6 @@ abstract class BaseModel extends Model
             return [];
         }
 
-        \Log::debug("get images");
-        \Log::debug($values);
-
         return $values;
     }
 
