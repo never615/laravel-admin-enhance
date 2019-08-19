@@ -38,7 +38,15 @@ abstract class AdminCommonController extends AdminController
      *
      * @var bool
      */
-    protected $closeUpdated_at = true;
+    protected $closeGridUpdatedAt = true;
+
+
+    /**
+     * 关闭默认的过滤器
+     *
+     * @var bool
+     */
+    protected $defaultFilter = true;
 
 
     /**
@@ -222,12 +230,16 @@ abstract class AdminCommonController extends AdminController
         $this->gridSubject($grid);
 
         $grid->filter(function (Grid\Filter $filter) {
-            $this->gridAdminUserFilter($filter);
+            if ($this->defaultFilter) {
+                $this->gridAdminUserFilter($filter);
 
-            $filter->between("created_at")->datetime();
+                $filter->between("created_at")->datetime();
+            }
         });
+
         $grid->created_at(trans('admin.created_at'))->sortable();
-        if (!$this->closeUpdated_at) {
+
+        if (!$this->closeGridUpdatedAt) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
     }
