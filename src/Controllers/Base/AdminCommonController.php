@@ -42,7 +42,7 @@ abstract class AdminCommonController extends AdminController
 
 
     /**
-     * 关闭默认的过滤器
+     * 默认的过滤器是否显示
      *
      * @var bool
      */
