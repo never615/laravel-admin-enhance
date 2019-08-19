@@ -48,6 +48,12 @@ abstract class AdminCommonController extends AdminController
      */
     protected $defaultFilter = true;
 
+    /**
+     * 表格created_at是否显示
+     *
+     * @var bool
+     */
+    protected $closeGridCreatedAt = false;
 
     /**
      * 表名
@@ -236,9 +242,9 @@ abstract class AdminCommonController extends AdminController
                 $filter->between("created_at")->datetime();
             }
         });
-
-        $grid->created_at(trans('admin.created_at'))->sortable();
-
+        if (!$this->closeGridCreatedAt) {
+            $grid->created_at(trans('admin.created_at'))->sortable();
+        }
         if (!$this->closeGridUpdatedAt) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
