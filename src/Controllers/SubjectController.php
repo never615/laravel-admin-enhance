@@ -106,16 +106,15 @@ class SubjectController extends AdminCommonController
             });
         });
 
+
         $form = $form->tab("系统配置(owner)", function ($form) {
             $this->systemConfigBasic($form);
 
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-                if (\Mallto\Admin\AdminUtils::isOwner()) {
-                    $form->keyValue("extra_config");
+                $form->keyValue("extra_config");
 //                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
 //                    $this->systemConfigExtraConfigBasic($form);
 //                });
-                }
             }
 
         })->tab("系统参数(owner)", function ($form) {
