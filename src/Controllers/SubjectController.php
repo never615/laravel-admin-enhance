@@ -107,11 +107,12 @@ class SubjectController extends AdminCommonController
         });
 
 
-        $form = $form->tab("系统配置(owner)", function ($form) {
+        $form = $form->tab("系统配置(owner)", function (Form $form) {
             $this->systemConfigBasic($form);
 
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->keyValue("extra_config");
+                $form->textarea("extra_config");
+//                $form->keyValue("extra_config");
 //                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
 //                    $this->systemConfigExtraConfigBasic($form);
 //                });
