@@ -112,6 +112,14 @@ trait  AdminFileHelp
     }
 
 
+    /**
+     * 视频
+     *
+     * @param        $form
+     * @param        $columnName
+     * @param string $tableName
+     * @param string $displayName
+     */
     protected function formVideo($form, $columnName, $tableName = "easy", $displayName = "视频")
     {
         $form->qiniuFile($columnName, $displayName)
@@ -137,6 +145,14 @@ trait  AdminFileHelp
     }
 
 
+    /**
+     * 音频
+     *
+     * @param        $form
+     * @param        $columnName
+     * @param string $tableName
+     * @param string $displayName
+     */
     protected function formAudio($form, $columnName, $tableName = "easy", $displayName = "语音")
     {
         $form->qiniuFile($columnName, $displayName)
