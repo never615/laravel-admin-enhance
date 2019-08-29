@@ -244,7 +244,7 @@ trait ModelTree
         $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {
-            return collect($options)->prepend('根节点', $parentId)->all();
+            return collect($options)->prepend('无上级节点', $parentId)->all();
         } else {
             return collect($options)->all();
         }
