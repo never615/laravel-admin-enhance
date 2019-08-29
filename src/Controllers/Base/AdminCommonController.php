@@ -62,6 +62,12 @@ abstract class AdminCommonController extends AdminController
      */
     protected $tableName;
 
+    /**
+     * 新建頁面是否显示主体
+     *
+     * @var
+     */
+    protected $showSubject = true;
 
     /**
      * 数据查看模式:
@@ -272,8 +278,9 @@ abstract class AdminCommonController extends AdminController
         });
 
         $this->formOption($form);
-
-        $this->formSubject($form);
+        if($this->showSubject) {
+            $this->formSubject($form);
+        }
         $this->formAdminUser($form);
         $form->displayE('created_at', trans('admin.created_at'));
         $form->displayE('updated_at', trans('admin.updated_at'));
