@@ -64,6 +64,8 @@ class AutoPermissionMiddleware
             }
         }
 
+        $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
+
 
         if (is_null($currentRouteName)) {
             //todo 没有设置route name,使用uri来判断
@@ -98,11 +100,10 @@ class AutoPermissionMiddleware
 
         $export = $request->get("_export_");
         if ($export) {
-            if ($adminUser->can($currentRouteName)) {
-                //todo 
+            $currentRouteName = str_replace("index", "export", $currentRouteName);
 
-
-
+            if (!$adminUser->can($currentRouteName)) {
+                throw new AccessDeniedHttpException(trans("errors.permission_denied"));
             }
         }
     }
