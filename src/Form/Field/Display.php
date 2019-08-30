@@ -8,6 +8,12 @@ namespace Mallto\Admin\Form\Field;
 
 use Encore\Admin\Form\Field;
 
+/**
+ * 创建是不会显示
+ * Class Display
+ *
+ * @package Mallto\Admin\Form\Field
+ */
 class Display extends Field
 {
 
