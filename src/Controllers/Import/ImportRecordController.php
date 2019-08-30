@@ -88,7 +88,7 @@ class ImportRecordController extends AdminCommonController
                 $form->hidden("module_slug")
                     ->default($moduleSlug);
 
-                $form->displayE("module_slug_display", "模块")
+                $form->display("module_slug_display", "模块")
                     ->default($moduleSlug)
                     ->with(function ($value) use ($moduleSlug) {
                         return ImportSetting::where("module_slug", $moduleSlug)
@@ -98,11 +98,12 @@ class ImportRecordController extends AdminCommonController
                 $importSetting = ImportSetting::where("module_slug", $moduleSlug)
                     ->first();
                 if ($importSetting && $importSetting->template_with_annotation_url) {
-                    $form->displayE("template_url", "导入模板示例")->with(function () use ($importSetting) {
-                        $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
+                    $form->display("template_url", "导入模板示例")
+                        ->with(function () use ($importSetting) {
+                            $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
 
-                        return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
-                    });
+                            return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
+                        });
                 }
             } else {
                 $form->select("module_slug", "模块")
@@ -150,7 +151,6 @@ class ImportRecordController extends AdminCommonController
 //
 //        });
     }
-
 
 
 }

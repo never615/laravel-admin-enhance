@@ -118,15 +118,7 @@ trait ExporterTrait
     public function forget($records, $keys = [], $remainKeys = [], $default = true)
     {
         if ($default) {
-            $keys = array_merge([
-                "images",
-                "image",
-                "icon",
-                "logo",
-                "deleted_at",
-                "top_subject_id",
-                "subject_id",
-            ], (array) $keys);
+            $keys = array_merge($this->defaultForgetKeys, (array) $keys);
         }
 
         if ($remainKeys && count($remainKeys) > 0) {

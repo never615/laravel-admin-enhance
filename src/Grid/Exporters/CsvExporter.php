@@ -29,6 +29,20 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
     use ExporterTrait;
 
+    /**
+     * 默认移除的key
+     *
+     * @var array
+     */
+    protected $defaultForgetKeys = [
+        "images",
+        "image",
+        "icon",
+        "logo",
+        "deleted_at",
+        "top_subject_id",
+        "subject_id",
+    ];
 
     /**
      * 一般,当数据库字段保存的是json数据时,需要再次设置该字段,避免json数据被错误转换
