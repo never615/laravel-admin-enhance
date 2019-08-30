@@ -109,7 +109,7 @@ trait SubjectSaveTrait
      *
      * @param $form
      */
-    private function createOrUpdateAdminRole($form)
+    protected function createOrUpdateAdminRole($form)
     {
         $uuid = $form->uuid ?? $form->model()->uuid;
         if ($uuid) {
