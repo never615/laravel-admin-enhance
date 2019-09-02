@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -202,12 +203,12 @@ class Menu extends Model
 
 
                 $cacheMenuKey = "menu_".$adminUser->id;
-                Cache::put($cacheMenuKey, $result, 30);
+                CacheUtils::putMenu($cacheMenuKey,$result);
 
                 $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
                 $cacheMenuKeys[] = $cacheMenuKey;
 
-                Cache::put(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys,60*24);
+                CacheUtils::putMenuKeys($cacheMenuKeys);
 
                 return $result;
             }

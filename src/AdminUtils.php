@@ -136,29 +136,6 @@ class AdminUtils
         return $subject;
     }
 
-
-    /**
-     * 缓存主体数据
-     *
-     * @param $subject
-     */
-    public static function cacheSubject($subject)
-    {
-        if ($subject) {
-            Cache::put("subject_".$subject->id, $subject, 60 * 24);
-        }
-    }
-
-    /**
-     * 删除缓存的主体数据
-     *
-     * @param $id
-     */
-    public static function forgetSubject($id)
-    {
-        Cache::forget("subject_".$id);
-    }
-
     /**
      * 是否是管理端请求
      *
@@ -171,15 +148,37 @@ class AdminUtils
 
 
     /**
+     * 缓存主体数据
+     *
+     * @deprecated use CacheUtils
+     * @param $subject
+     */
+    public static function cacheSubject($subject)
+    {
+        CacheUtils::putSubject($subject);
+    }
+
+    /**
+     * 删除缓存的主体数据
+     *
+     * @deprecated use CacheUtils
+     *
+     * @param $id
+     */
+    public static function forgetSubject($id)
+    {
+        CacheUtils::forgetSubject($id);
+    }
+
+
+    /**
      * clea menu cache
+     *
+     * @deprecated use CacheUtils
      */
     public static function clearMenuCache()
     {
-        $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
-
-        foreach ($cacheMenuKeys as $cacheMenuKey) {
-            Cache::forget($cacheMenuKey);
-        }
+        CacheUtils::clearMenuCache();
     }
 
 
