@@ -15,6 +15,7 @@
 */
 
 
+use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Route;
 
 //----------------------------------------  管理端接口开始  -----------------------------------------------
@@ -44,6 +45,7 @@ Route::group([
 
 //----------------------------------------  管理端接口结束  -----------------------------------------------
 
+Admin::routes();
 
 Route::group([
     'namespace'  => 'Mallto\Admin\Controllers',
