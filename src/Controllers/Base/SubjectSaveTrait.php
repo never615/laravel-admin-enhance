@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
@@ -109,7 +110,7 @@ trait SubjectSaveTrait
      *
      * @param $form
      */
-    private function createOrUpdateAdminRole($form)
+    protected function createOrUpdateAdminRole($form)
     {
         $uuid = $form->uuid ?? $form->model()->uuid;
         if ($uuid) {
@@ -146,6 +147,8 @@ trait SubjectSaveTrait
 
                 //把subject的已购权限分配到该主体的管理员账号上
                 $adminRole->permissions()->sync($permissionIds);
+
+                AdminUtils::clearMenuCache();
             }
 
 

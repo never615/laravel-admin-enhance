@@ -170,4 +170,17 @@ class AdminUtils
     }
 
 
+    /**
+     * clea menu cache
+     */
+    public static function clearMenuCache()
+    {
+        $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
+
+        foreach ($cacheMenuKeys as $cacheMenuKey) {
+            Cache::forget($cacheMenuKey);
+        }
+    }
+
+
 }

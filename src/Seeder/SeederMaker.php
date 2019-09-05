@@ -20,6 +20,7 @@ trait SeederMaker
         "index"   => "查看",  //列表页/详情页/show
         "create"  => "创建/修改", //创建页/保存/修改
         "destroy" => "删除", //删除权限
+        "export"  => "导出", //导出权限
     ];
 
 

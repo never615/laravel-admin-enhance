@@ -64,6 +64,8 @@ class AutoPermissionMiddleware
             }
         }
 
+        $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
+
 
         if (is_null($currentRouteName)) {
             //todo 没有设置route name,使用uri来判断
@@ -80,7 +82,29 @@ class AutoPermissionMiddleware
             //denied
             throw new AccessDeniedHttpException(trans("errors.permission_denied"));
         }
+    }
 
 
+    /**
+     * 导出权限校验
+     *
+     * @param Request $request
+     * @param         $adminUser
+     * @param         $currentRouteName
+     */
+    private function exportPermissionHandler(Request $request, $adminUser, $currentRouteName)
+    {
+        //导出权限处理
+        //导出权限的路由是xxx.index,即:/admin/customer_service_desks?_pjax=%23pjax-container&_export_=page%3A1
+        //如果url参数包含_export_,则检查导出权限
+
+        $export = $request->get("_export_");
+        if ($export) {
+            $currentRouteName = str_replace("index", "export", $currentRouteName);
+
+            if (!$adminUser->can($currentRouteName)) {
+                throw new AccessDeniedHttpException(trans("errors.permission_denied"));
+            }
+        }
     }
 }

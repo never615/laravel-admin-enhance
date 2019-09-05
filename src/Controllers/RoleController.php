@@ -9,8 +9,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Illuminate\Support\Facades\Cache;
-use Mallto\Admin\CacheConstants;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
@@ -113,12 +112,7 @@ class RoleController extends AdminCommonController
         });
 
         $form->saved(function ($form) {
-            $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
-
-            foreach ($cacheMenuKeys as $cacheMenuKey) {
-                Cache::forget($cacheMenuKey);
-            }
-
+            AdminUtils::clearMenuCache();
         });
     }
 
