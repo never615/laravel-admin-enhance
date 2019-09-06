@@ -23,6 +23,11 @@ class AdminE
         $adminUser = Admin::user();
 
         if ($adminUser) {
+            $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
+            if(!$menuIds){
+                return;
+            }
+
             $speedy = \Illuminate\Support\Facades\Cache::get("speedy_".$adminUser->id);
             if (!$speedy) {
                 $speedy = [];
