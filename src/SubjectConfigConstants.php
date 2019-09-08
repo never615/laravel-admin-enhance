@@ -31,6 +31,8 @@ class SubjectConfigConstants
     //可配置标签种类
     const OWNER_CONFIG_TAG_TYPES = "tag_types";
 
+    //主体可导入模块配置
+    const OWNER_CONFIG_IMPORT_MODULE= "import_module";
     /**
      * 主体拥有者配置项
      */

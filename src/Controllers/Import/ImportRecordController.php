@@ -84,7 +84,6 @@ class ImportRecordController extends AdminCommonController
             $moduleSlug = request("module_slug");
 
             if ($moduleSlug) {
-
                 $form->hidden("module_slug")
                     ->default($moduleSlug);
 
@@ -108,7 +107,7 @@ class ImportRecordController extends AdminCommonController
             } else {
                 $form->select("module_slug", "模块")
                     ->rules("required")
-                    ->options(ImportSetting::selectSourceDatas());
+                    ->options(ImportSetting::selectSourceDataBySubject());
             }
 
 
