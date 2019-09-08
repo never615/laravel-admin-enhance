@@ -55,7 +55,7 @@ class Subject extends Model
 
         if ($isOwner) {
             return static::dynamicData()
-                ->select(DB::raw("name||id as name,id"))->pluck("name", "id");
+                ->select(DB::raw("name||'-主体id:'||id as name,id"))->pluck("name", "id");
         } else {
             return static::dynamicData()->pluck("name", "id");
         }
