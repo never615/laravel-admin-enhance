@@ -181,7 +181,7 @@ abstract class AdminCommonController extends AdminController
         return Admin::form($this->getModel(), function (Form $form) {
             $this->tableName = $this->getTableName();
 
-            $this->formShopFilter($form);
+            $this->formShopFilterInter($form);
 
             $this->defaultFormOption($form);
             $form->tools(function (Form\Tools $tools) {
@@ -201,7 +201,7 @@ abstract class AdminCommonController extends AdminController
 
     protected function defaultGridOption(Grid $grid)
     {
-        $this->gridShopFilter($grid);
+        $this->gridShopFilterInter($grid);
 
         $grid->expandFilter();
 
@@ -315,22 +315,7 @@ abstract class AdminCommonController extends AdminController
      *
      * @param $grid
      */
-    protected function gridShopFilter($grid)
-    {
-        $this->shopFilter($grid);
-    }
-
-    /**
-     * 表单页面店铺权限检查/数据过滤
-     *
-     * @param $form
-     */
-    protected function formShopFilter($form)
-    {
-        $this->shopFilter($form);
-    }
-
-    protected function shopFilter($grid)
+    protected function gridShopFilterInter($grid)
     {
         //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
         $adminUser = Admin::user();
@@ -338,22 +323,18 @@ abstract class AdminCommonController extends AdminController
         if ($adminiableType) {
             switch ($adminiableType) {
                 case "subject":
-                    $managerShopGroups = $adminUser->shop_groups;
                     //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
+                    $managerShopGroups = $adminUser->shop_groups;
                     if (Schema::hasColumn($this->tableName, "shop_id")) {
                         if (!empty($managerShopGroups)) {
                             //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
-                            if ($grid instanceof Grid) {
-
-                                //判断model是否有shop()方法
-                                if (method_exists($this->getModel(), 'shop')) {
-                                    $grid->model()->whereHas("shop", function ($query) use ($managerShopGroups) {
-                                        $query->whereHas("groups", function ($query) use ($managerShopGroups) {
-                                            $query->whereIn("shop_groups.id", $managerShopGroups);
-                                        });
+                            //判断model是否有shop()方法
+                            if (method_exists($this->getModel(), 'shop')) {
+                                $grid->model()->whereHas("shop", function ($query) use ($managerShopGroups) {
+                                    $query->whereHas("groups", function ($query) use ($managerShopGroups) {
+                                        $query->whereIn("shop_groups.id", $managerShopGroups);
                                     });
-                                }
-
+                                });
                             }
                         }
                     } elseif ($this->tableName == "shops") {
@@ -364,8 +345,9 @@ abstract class AdminCommonController extends AdminController
                             });
                         }
                     }
-
-
+                    break;
+                case "shop":
+                    $this->gridShopAccountFilter($grid);
                     break;
                 default:
                     throw new PermissionDeniedException("非主体账号无权限查看");
@@ -375,6 +357,72 @@ abstract class AdminCommonController extends AdminController
         } else {
             throw new PermissionDeniedException("非主体账号无权限查看");
         }
+    }
+
+    /**
+     * 详情页的店铺权限检查/数据过滤
+     *
+     * 运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
+     *
+     * @param $form
+     */
+    protected function formShopFilterInter($form)
+    {
+        //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
+        $adminUser = Admin::user();
+        $adminiableType = $adminUser->adminable_type;
+        if ($adminiableType) {
+            switch ($adminiableType) {
+                case "subject":
+                    //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
+                    $managerShopGroups = $adminUser->shop_groups;
+                    if (Schema::hasColumn($this->tableName, "shop_id")) {
+                        if (!empty($managerShopGroups)) {
+                            //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
+                            //todo 根据$this->currentId判断
+
+                        }
+                    } elseif ($this->tableName == "shops") {
+                        //特别处理shops表的数据过滤
+                        //todo 根据$this->currentId判断
+
+                    }
+                    break;
+                case "shop":
+                    $this->formShopAccountFilter($form);
+                    break;
+                default:
+                    throw new PermissionDeniedException("非主体账号无权限查看");
+                    break;
+            }
+
+        } else {
+            throw new PermissionDeniedException("非主体账号无权限查看");
+        }
+    }
+
+
+
+
+    /**
+     * 店铺账号列表权限检查
+     *
+     * @param $grid
+     */
+    protected function gridShopAccountFilter($grid)
+    {
+        throw new PermissionDeniedException("非主体账号无权限查看");
+    }
+
+
+    /**
+     * 店铺账号详情页全新检查
+     *
+     * @param $form
+     */
+    protected function formShopAccountFilter($form)
+    {
+        throw new PermissionDeniedException("非主体账号无权限查看");
     }
 
 
