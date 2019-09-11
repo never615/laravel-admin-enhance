@@ -6,6 +6,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
@@ -344,13 +345,9 @@ EOT;
     protected function formShopAccountFilter($form)
     {
         $user = Admin::user();
-        $form->model()->whereHasMorph(
-            'adminable',
-            ['Mallto\Mall\Data\Shop'],
-            function ($query) use ($user) {
-                $query->where('id', $user->adminable_id);
-            }
-        );
+        if(AdminUtils::getCurrentAdminUserId() != $this->currentId){
+            throw new PermissionDeniedException("非本账号店铺无权限查看");
+        }
     }
 
 }
