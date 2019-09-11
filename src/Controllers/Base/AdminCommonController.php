@@ -62,7 +62,6 @@ abstract class AdminCommonController extends AdminController
      */
     protected $tableName;
 
-
     /**
      * 数据查看模式:
      * 1.根据账号的所属的subject和数据的subject动态显示
@@ -272,7 +271,6 @@ abstract class AdminCommonController extends AdminController
         });
 
         $this->formOption($form);
-
         $this->formSubject($form);
         $this->formAdminUser($form);
         $form->displayE('created_at', trans('admin.created_at'));
