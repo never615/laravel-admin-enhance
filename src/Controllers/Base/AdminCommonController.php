@@ -63,13 +63,6 @@ abstract class AdminCommonController extends AdminController
     protected $tableName;
 
     /**
-     * 新建頁面是否显示主体
-     *
-     * @var
-     */
-    protected $showSubject = true;
-
-    /**
      * 数据查看模式:
      * 1.根据账号的所属的subject和数据的subject动态显示
      *    标志: dynamic
@@ -278,9 +271,7 @@ abstract class AdminCommonController extends AdminController
         });
 
         $this->formOption($form);
-        if($this->showSubject) {
-            $this->formSubject($form);
-        }
+        $this->formSubject($form);
         $this->formAdminUser($form);
         $form->displayE('created_at', trans('admin.created_at'));
         $form->displayE('updated_at', trans('admin.updated_at'));
