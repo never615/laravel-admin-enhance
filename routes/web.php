@@ -30,7 +30,8 @@ Route::group([
     $router->post('auth/login', 'AuthController@postLogin');
 
     Route::group([
-        "middleware" => ["auth:admin_api"],
+        "middleware" => ['multiauth:admin_api'],
+//        "middleware" => ["auth:admin_api"],
     ], function ($router) {
         Route::group([
             "middleware" => ["adminE.auto_permission"],
