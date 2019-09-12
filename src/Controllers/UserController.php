@@ -6,6 +6,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
@@ -13,6 +14,7 @@ use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SelectConstants;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Mall\SubjectConfigConstants;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
@@ -315,6 +317,36 @@ EOT;
             }
 
             $form->divider();
+        }
+    }
+
+    /**
+     * 店铺账号列表权限检查
+     *
+     * @param $grid
+     */
+    protected function gridShopAccountFilter($grid)
+    {
+        $user = Admin::user();
+        $grid->model()->whereHasMorph(
+            'adminable',
+            ['Mallto\Mall\Data\Shop'],
+            function ($query) use ($user) {
+                $query->where('id', $user->adminable_id);
+            }
+        );
+    }
+
+    /**
+     * 店铺账号详情页全新检查
+     *
+     * @param $form
+     */
+    protected function formShopAccountFilter($form)
+    {
+        $user = Admin::user();
+        if(AdminUtils::getCurrentAdminUserId() != $this->currentId){
+            throw new PermissionDeniedException("非本账号店铺无权限查看");
         }
     }
 
