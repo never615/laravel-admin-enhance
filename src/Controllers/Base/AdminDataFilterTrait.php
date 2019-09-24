@@ -145,7 +145,7 @@ trait AdminDataFilterTrait
             if ($this->tableName == "subjects") {
                 $grid->model()->whereIn("id", $tempSubjectIds);
             } elseif (Schema::hasColumn($this->tableName, "subject_id")) {
-                $grid->model()->whereIn("subject_id", $tempSubjectIds);
+                $grid->model()->whereIn($this->getTableName().".subject_id", $tempSubjectIds);
             }
         }
     }
