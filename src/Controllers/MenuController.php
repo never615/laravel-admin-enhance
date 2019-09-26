@@ -44,7 +44,7 @@ class MenuController extends AdminCommonController
 
                     $form->select('parent_id', trans('admin.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin.title'))->rules('required');
-                    $form->text('sub_title', "副标题");
+                    $form->text('sub_title',  "副标题");
                     $form->icon('icon',
                         trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin.uri'))->help("路径需要填写路由名,如:shops.index");
