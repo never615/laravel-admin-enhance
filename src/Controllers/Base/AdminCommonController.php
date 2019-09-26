@@ -17,11 +17,10 @@ use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Traits\AdminFileHelp;
-use Mallto\Tool\Exception\PermissionDeniedException;
 
 abstract class AdminCommonController extends AdminController
 {
-    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFilterData, AdminFileHelp;
+    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFileHelp, AdminDataFilterTrait;
 
 
     /**
@@ -94,6 +93,23 @@ abstract class AdminCommonController extends AdminController
             ->body($this->grid());
     }
 
+    /**
+     * Create interface.
+     *
+     * @param Content $content
+     *
+     * @return Content
+     */
+    public function create(Content $content)
+    {
+        $this->createFilter();
+
+        return $content
+            ->title($this->title())
+            ->description($this->description['create'] ?? trans('admin.create'))
+            ->body($this->form());
+    }
+
 
     /**
      * Edit interface.
@@ -107,8 +123,8 @@ abstract class AdminCommonController extends AdminController
     {
         $this->currentId = $id;
 
-        $this->editFilterData();
 
+        $this->editFilter($id);
 
         return $content
             ->title($this->title())
@@ -141,6 +157,8 @@ abstract class AdminCommonController extends AdminController
     {
         $this->currentId = $id;
 
+        $this->updateFilter($id);
+
         return parent::update($id);
     }
 
@@ -156,22 +174,9 @@ abstract class AdminCommonController extends AdminController
     {
         $this->currentId = $id;
 
+        $this->destroyFilter($id);
+
         return parent::destroy($id);
-    }
-
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->title($this->title())
-            ->description($this->description['create'] ?? trans('admin.create'))
-            ->body($this->form());
     }
 
 
@@ -179,8 +184,6 @@ abstract class AdminCommonController extends AdminController
     {
         return Admin::form($this->getModel(), function (Form $form) {
             $this->tableName = $this->getTableName();
-
-            $this->formShopFilterInter($form);
 
             $this->defaultFormOption($form);
             $form->tools(function (Form\Tools $tools) {
@@ -200,8 +203,6 @@ abstract class AdminCommonController extends AdminController
 
     protected function defaultGridOption(Grid $grid)
     {
-        $this->gridShopFilterInter($grid);
-
         $grid->expandFilter();
 
         $filter = $grid->getFilter();
@@ -229,7 +230,7 @@ abstract class AdminCommonController extends AdminController
 
 
         $this->gridModelFilter($grid);
-        $this->gridFilterData($grid);
+        $this->indexFilter($grid);
         $this->gridOrder($grid);
         $this->gridOption($grid);
         $this->gridSubject($grid);
@@ -308,122 +309,6 @@ abstract class AdminCommonController extends AdminController
     }
 
 
-    /**
-     * 列表店铺权限检查/数据过滤
-     *
-     * @param $grid
-     */
-    protected function gridShopFilterInter($grid)
-    {
-        //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
-        $adminUser = Admin::user();
-        $adminiableType = $adminUser->adminable_type;
-        if ($adminiableType) {
-            switch ($adminiableType) {
-                case "subject":
-                    //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
-                    $managerShopGroups = $adminUser->shop_groups;
-                    if (Schema::hasColumn($this->tableName, "shop_id")) {
-                        if (!empty($managerShopGroups)) {
-                            //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
-                            //判断model是否有shop()方法
-                            if (method_exists($this->getModel(), 'shop')) {
-                                $grid->model()->whereHas("shop", function ($query) use ($managerShopGroups) {
-                                    $query->whereHas("groups", function ($query) use ($managerShopGroups) {
-                                        $query->whereIn("shop_groups.id", $managerShopGroups);
-                                    });
-                                });
-                            }
-                        }
-                    } elseif ($this->tableName == "shops") {
-                        //特别处理shops表的数据过滤
-                        if (!empty($managerShopGroups)) {
-                            $grid->model()->whereHas("groups", function ($query) use ($managerShopGroups) {
-                                $query->whereIn("id", $managerShopGroups);
-                            });
-                        }
-                    }
-                    break;
-                case "shop":
-                    $this->gridShopAccountFilter($grid);
-                    break;
-                default:
-                    throw new PermissionDeniedException("非主体账号无权限查看");
-                    break;
-            }
-
-        } else {
-            throw new PermissionDeniedException("非主体账号无权限查看");
-        }
-    }
-
-    /**
-     * 详情页的店铺权限检查/数据过滤
-     *
-     * 运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
-     *
-     * @param $form
-     */
-    protected function formShopFilterInter($form)
-    {
-        //默认店铺账号不能查看任何数据,除非该模块专门代码处理进行支持
-        $adminUser = Admin::user();
-        $adminiableType = $adminUser->adminable_type;
-        if ($adminiableType) {
-            switch ($adminiableType) {
-                case "subject":
-                    //运营者只能查看指定范围的租户投诉建议,根据分配的店铺分组过滤,如果分组没设置则可以查看全部
-                    $managerShopGroups = $adminUser->shop_groups;
-                    if (Schema::hasColumn($this->tableName, "shop_id")) {
-                        if (!empty($managerShopGroups)) {
-                            //当前数据有店铺id且当前登录账号设置了店铺数据查看范围
-                            //todo 根据$this->currentId判断
-
-                        }
-                    } elseif ($this->tableName == "shops") {
-                        //特别处理shops表的数据过滤
-                        //todo 根据$this->currentId判断
-
-                    }
-                    break;
-                case "shop":
-                    $this->formShopAccountFilter($form);
-                    break;
-                default:
-                    throw new PermissionDeniedException("非主体账号无权限查看");
-                    break;
-            }
-
-        } else {
-            throw new PermissionDeniedException("非主体账号无权限查看");
-        }
-    }
-
-
-
-
-    /**
-     * 店铺账号列表权限检查
-     *
-     * @param $grid
-     */
-    protected function gridShopAccountFilter($grid)
-    {
-        throw new PermissionDeniedException("非主体账号无权限查看");
-    }
-
-
-    /**
-     * 店铺账号详情页全新检查
-     *
-     * @param $form
-     */
-    protected function formShopAccountFilter($form)
-    {
-        throw new PermissionDeniedException("非主体账号无权限查看");
-    }
-
-
     protected function getTableName()
     {
         if (!$this->tableName) {
@@ -458,5 +343,6 @@ abstract class AdminCommonController extends AdminController
     {
         return $this->getHeaderTitle();
     }
+
 
 }
