@@ -28,10 +28,10 @@ trait ImportSettingSeederMaker
     public function UpdateOrCreate($templateTag,$templateDealClass,$templateIntroduce = ''){
         return ImportSetting::updateOrCreate(
             [
-                'module_handler'       =>       $templateDealClass
+                'module_slug'  =>       $templateTag
             ],[
             'name'         =>       $templateIntroduce,
-            'module_slug'  =>       $templateTag
+            'module_handler'       =>       $templateDealClass
         ]);
     }
 
