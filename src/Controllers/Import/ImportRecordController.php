@@ -96,6 +96,7 @@ class ImportRecordController extends AdminCommonController
 
                 $importSetting = ImportSetting::where("module_slug", $moduleSlug)
                     ->first();
+
                 if ($importSetting && $importSetting->template_with_annotation_url) {
                     $form->display("template_url", "导入模板示例")
                         ->with(function () use ($importSetting) {

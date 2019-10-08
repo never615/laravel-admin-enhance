@@ -21,17 +21,18 @@ trait ImportSettingSeederMaker
 
     /**
      * @param      $templateIntroduce (模板说明)
-     * @param      $templateTag  (模板标识)
+     * @param      $templateTag       (模板标识)
      * @param      $templateDealClass (模板处理类)
      * @return mixed
      */
-    public function UpdateOrCreate($templateTag,$templateDealClass,$templateIntroduce = ''){
+    public function UpdateOrCreate($templateTag, $templateDealClass, $templateIntroduce = '')
+    {
         return ImportSetting::updateOrCreate(
             [
-                'module_slug'  =>       $templateTag
-            ],[
-            'name'         =>       $templateIntroduce,
-            'module_handler'       =>       $templateDealClass
+                'module_slug' => $templateTag,
+            ], [
+            'name'           => $templateIntroduce,
+            'module_handler' => $templateDealClass,
         ]);
     }
 
