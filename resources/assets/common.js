@@ -55,7 +55,18 @@
             success: function (data) {
                 // NProgress.done();
                 layer.close(loadIndex);
-                successHandler(data, successCallBack);
+
+                if (typeof data === 'object') {
+                    if (data.status === true) {
+                        swal(data.message, '', 'success');
+                    } else if (data.status === false) {
+                        swal(data.message, '', 'error');
+                    } else {
+                        successHandler(data, successCallBack);
+                    }
+                } else {
+                    successHandler(data, successCallBack);
+                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 // NProgress.done();
@@ -191,8 +202,7 @@
             if (isNaN(i)) {
                 arr.push("'" + i + "':" + fmt(o[i]));
 
-            }
-            else {
+            } else {
                 arr.push(fmt(o[i]));
             }
 
@@ -275,8 +285,7 @@
     function GetString(Str, size) {
         if (Str.toString().length > size) {
             return Str.substring(0, size) + "...";
-        }
-        else {
+        } else {
             return Str;
         }
     };
