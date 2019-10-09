@@ -81,4 +81,15 @@ abstract class BaseImportHandler
         $importRecord->save();
     }
 
+    protected function logError(
+        $line,
+        $failReason,
+        $msg
+    ) {
+        $failReason .= "第".($line - 1)."行错误:".$msg;
+
+        return $failReason;
+
+    }
+
 }
