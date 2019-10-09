@@ -14,6 +14,7 @@ use Mallto\Admin\Data\ImportRecord;
 use Mallto\Admin\Data\ImportSetting;
 use Mallto\Admin\Jobs\ImportFileJob;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Tool\Utils\UrlUtils;
 
 
 /**
@@ -100,7 +101,7 @@ class ImportRecordController extends AdminCommonController
                 if ($importSetting && $importSetting->template_with_annotation_url) {
                     $form->display("template_url", "导入模板示例")
                         ->with(function () use ($importSetting) {
-                            $url = config("app.file_url_prefix").$importSetting->template_with_annotation_url;
+                            $url = UrlUtils::addFileUrlPrefix($importSetting->template_with_annotation_url);
 
                             return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
                         });
