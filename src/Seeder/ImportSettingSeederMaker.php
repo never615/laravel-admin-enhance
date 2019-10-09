@@ -25,15 +25,15 @@ trait ImportSettingSeederMaker
      * @param      $templateDealClass (模板处理类)
      * @return mixed
      */
-    public function UpdateOrCreate($templateTag,$templateDealClass,$fileUrl='',$templateIntroduce = ''){
+    public function UpdateOrCreate($templateTag,$templateDealClass,$fileUrl = '', $templateIntroduce = ''){
         return ImportSetting::updateOrCreate(
             [
                 'module_slug'  =>       $templateTag
             ],[
-            'name'                 =>       $templateIntroduce,
+            'name'         =>       $templateIntroduce,
             'module_handler'       =>       $templateDealClass,
             'template_url'         =>       $fileUrl,
-            'template_with_annotation_url'  =>   $fileUrl,
+            'template_with_annotation_url'  =>  $fileUrl,
         ]);
     }
 
