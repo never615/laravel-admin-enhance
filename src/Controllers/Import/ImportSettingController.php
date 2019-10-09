@@ -73,8 +73,11 @@ class ImportSettingController extends AdminCommonController
             $form->displayE("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
                 $value = $this->template_with_annotation_url;
                 if ($value) {
-
-                    $url = config("app.file_url_prefix").$value;
+                    if (starts_with($value, "http")) {
+                        $url = $value;
+                    } else {
+                        $url = config("app.file_url_prefix") . $value;
+                    }
 
                     return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
                 }
