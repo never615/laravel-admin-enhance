@@ -22,7 +22,7 @@ class Display extends Field
      *
      * @return bool
      */
-    protected function shouldRender()
+    protected function shouldRender(): bool
     {
         if (!$this->display) {
             return false;
