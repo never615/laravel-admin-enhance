@@ -17,19 +17,6 @@ use Qiniu\Auth;
 trait QiniuToken
 {
 
-    private $bucket;
-    private $auth;
-
-    /**
-     * QiniuController constructor.
-     */
-    public function __construct()
-    {
-        $this->bucket = config("filesystems.disks.qiniu.bucket");
-        $this->auth = new Auth(config("filesystems.disks.qiniu.access_key"),
-            config("filesystems.disks.qiniu.secret_key"));
-    }
-
     /**
      * 获取七牛图片上传token
      *
@@ -39,6 +26,11 @@ trait QiniuToken
      */
     public function getUploadTokenInter($path = "file", $base64 = false)
     {
+
+        $bucket = config("filesystems.disks.qiniu.bucket");
+        $auth = new Auth(config("filesystems.disks.qiniu.access_key"),
+            config("filesystems.disks.qiniu.secret_key"));
+
         $returnBody = [
             'key' => "$(key)",
         ];
@@ -59,9 +51,7 @@ trait QiniuToken
 
 
         // 生成上传Token
-        $token = $this->auth->uploadToken($this->bucket, null, 3600, $policy);
-
-        return $token;
+        return $auth->uploadToken($bucket, null, 3600, $policy);
     }
 
 
