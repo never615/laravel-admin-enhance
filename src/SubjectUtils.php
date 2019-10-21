@@ -198,7 +198,7 @@ class SubjectUtils
         }
 
         if (empty($uuid)) {
-            throw new HttpException(422, "uuid参数错误");
+            throw new HttpException(422, "uuid为空");
         }
 
 
