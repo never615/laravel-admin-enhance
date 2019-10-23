@@ -189,7 +189,7 @@ class SubjectUtils
         } else {
             $uuid = Request::header("UUID");
             if (is_null($uuid)) {
-                $uuid = Input::get("uuid");
+                $uuid = \Request::input("uuid");
             }
         }
 
@@ -214,7 +214,7 @@ class SubjectUtils
     {
         $uuid = Request::header("UUID");
         if (is_null($uuid)) {
-            $uuid = Input::get("uuid");
+            $uuid = \Request::input("uuid");
         }
 
         if (empty($uuid) && \Admin::user()) {

@@ -30,8 +30,8 @@ class FileController extends Controller
      */
     public function getUploadToken()
     {
-        $path = Input::get("path", "file");
-        $base64 = Input::get("base64", 0);
+        $path = \Request::input("path", "file");
+        $base64 = \Request::input("base64", 0);
 
         $token = $this->getUploadTokenInter($path, $base64);
 
