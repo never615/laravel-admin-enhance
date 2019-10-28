@@ -205,7 +205,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
         $adminUser = Admin::user();
         $subjectId = $adminUser->subject_id;
 
-        $inputs = Input::all();
+        $inputs = \Request::all();
 
         $class = new ReflectionClass($this->model()); // 建立 Person这个类的反射类
         $instance = $class->newInstance(); // 相当于实例化Person 类
@@ -286,7 +286,7 @@ EOT;
                     $class = new ReflectionClass(get_class($this));
 
                     $instance = $class->newInstanceArgs([
-                        Input::all(),
+                        \Request::all(),
                         $subjectId,
                         $report->id,
                         $adminUser->id,
