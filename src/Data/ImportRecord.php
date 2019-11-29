@@ -17,12 +17,12 @@ class ImportRecord extends BaseModel
         "success"           => "全部导入成功",
         "processing"        => "进行中",
         "failure"           => "导入失败",
-        "partially_failure" => "部分成功",
+        "partially_failure" => "部分失败",
         "finish"            => "导入结束",
     ];
 
     protected $casts = [
-        'extra'  => 'array',
+        'extra' => 'array',
     ];
 
     public function setting()

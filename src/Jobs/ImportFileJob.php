@@ -58,6 +58,7 @@ class ImportFileJob implements ShouldQueue
     public function handle()
     {
         $record = ImportRecord::find($this->id);
+
         if ($record && $record->status == "not_start") {
             $setting = ImportSetting::where("module_slug", $record->module_slug)
                 ->first();

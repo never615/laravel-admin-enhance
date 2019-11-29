@@ -9,6 +9,7 @@ namespace Mallto\Admin\Controllers\Import;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Admin\Data\ImportSetting;
@@ -33,7 +34,7 @@ class ImportRecordController extends AdminCommonController
      */
     protected function getHeaderTitle()
     {
-        return "数据导入";
+        return '数据导入';
     }
 
     /**
@@ -48,16 +49,16 @@ class ImportRecordController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
-        $grid->setting()->name("模块");
+        $grid->setting()->name('模块');
         $grid->status()->display(function ($value) {
-            return $value ? ImportRecord::STATUS[$value] : "";
+            return $value ? ImportRecord::STATUS[$value] : '';
         });
 
         $grid->failure_reason()->display(function ($value) {
             return str_limit($value, 30);
         });
 
-        $grid->finish_at("完成时间");
+        $grid->finish_at('完成时间');
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
@@ -67,71 +68,76 @@ class ImportRecordController extends AdminCommonController
     protected function formOption(Form $form)
     {
         if ($this->currentId) {
-            $form->displayE("setting.name", "模块");
+            $form->displayE('setting.name', '模块');
 
-            $form->displayE("status")->with(function ($value) {
-                return ImportRecord::STATUS[$value] ?? "";
+            $form->displayE('status')->with(function ($value) {
+                return ImportRecord::STATUS[$value] ?? '';
             });
-            $form->displayE("failure_reason");
-            $form->displayE("finish_at", "完成时间");
 
-            $form->displayE("remark");
+            if (AdminUtils::isOwner()) {
+                $form->display('file_url');
+            }
+
+            $form->displayE('failure_reason');
+            $form->displayE('finish_at', '完成时间');
+
+            $form->displayE('remark');
 
             $form->footer(function (Form\Footer $footer) {
                 $footer->disableSubmit();
                 $footer->disableReset();
             });
         } else {
-            $moduleSlug = request("module_slug");
+            $moduleSlug = request('module_slug');
 
             if ($moduleSlug) {
-                $form->hidden("module_slug")
+                $form->hidden('module_slug')
                     ->default($moduleSlug);
 
-                $form->display("module_slug_display", "模块")
+                $form->display('module_slug_display', '模块')
                     ->default($moduleSlug)
                     ->with(function ($value) use ($moduleSlug) {
-                        return ImportSetting::where("module_slug", $moduleSlug)
+                        return ImportSetting::where('module_slug', $moduleSlug)
                                 ->first()->name ?? $value;
                     });
 
-                $importSetting = ImportSetting::where("module_slug", $moduleSlug)
+                $importSetting = ImportSetting::where('module_slug', $moduleSlug)
                     ->first();
 
                 if ($importSetting && $importSetting->template_with_annotation_url) {
-                    $form->display("template_url", "导入模板示例")
+                    $form->display('template_url', '导入模板示例')
                         ->with(function () use ($importSetting) {
                             $url = UrlUtils::addFileUrlPrefix($importSetting->template_with_annotation_url);
 
-                            return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
+                            return "<a target='_blank' href='$url'>点击下载示例模板</a>";
                         });
                 }
             } else {
-                $form->select("module_slug", "模块")
-                    ->rules("required")
+                $form->select('module_slug', '模块')
+                    ->rules('required')
                     ->options(ImportSetting::selectSourceDataBySubject());
             }
 
 
-            $form->filePrivate("file_url", "文件")
+            $form->filePrivate('file_url', '文件')
                 ->options([
                     'allowedPreviewTypes'   => [],
                     'allowedFileExtensions' => ['xls', 'xlsx'],
                 ])
-                ->rules("required")
+                ->rules('required')
                 ->move(Admin::user()->id.'/import_file')
-                ->help("导入文件只能保留一个工作表");
+                ->help('导入文件只能保留一个工作表<br>文件名只能是字母加数字');
 
 
             $this->formExtraConfig($form);
 
-            $form->textarea("remark");
+            $form->textarea('remark');
         }
 
 
         $form->saving(function ($form) {
             if ($this->currentId) {
-                throw new PermissionDeniedException("非法提交");
+                throw new PermissionDeniedException('非法提交');
             }
         });
 
@@ -148,7 +154,7 @@ class ImportRecordController extends AdminCommonController
      */
     protected function formExtraConfig($form)
     {
-//        $form->embeds("extra", "其他配置", function (EmbeddedForm $form) {
+//        $form->embeds('extra', '其他配置', function (EmbeddedForm $form) {
 //
 //        });
     }
