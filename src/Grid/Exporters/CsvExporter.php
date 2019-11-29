@@ -14,6 +14,8 @@ use Illuminate\Support\Collection;
  *
  * 数据导出源即为页面表格的数据源
  *
+ * 请直接使用SimpleCsvExporter,该类因历史原因有些代码在使用所以保留.
+ *
  *
  * 相比larvel-admin库的csv导出:
  * 1. 导出文件名:表名+时间(表名支持自动翻译)
@@ -45,11 +47,10 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
     ];
 
     /**
-     * 一般,当数据库字段保存的是json数据时,需要再次设置该字段,避免json数据被错误转换
+     * 只支持数据库字段是json类型的在此设置.
      *
-     * 部分数据以json形式保存在数据库的一个字段下,默认会转成数组,数组的key会当做列名做导出处理
      *
-     * 只支持数据库字段是json类型的在此设置
+     * 部分数据以json形式保存在数据库,默认会转成数组,数组的key会当做列名做导出处理,所以在此排除.
      *
      * @var array
      */
