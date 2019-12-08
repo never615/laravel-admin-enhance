@@ -34,6 +34,10 @@ class Authenticate
 
         //检查账号是否被禁用
         if ($adminUser && $adminUser->status == "forbidden") {
+            Admin::guard()->logout();
+
+            $request->session()->invalidate();
+
             return redirect('/error/4031');
         }
 
