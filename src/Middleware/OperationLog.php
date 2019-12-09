@@ -68,22 +68,15 @@ class OperationLog
 
         $response = $next($request);
         if (config('admin.operation_log.enable')) {
-            if (is_array($response->getContent())) {
-                $input = json_encode($response->getContent());
+            $content = $response->getContent();
+
+            if (is_array($content)) {
+                $input = json_encode($content);
             } else {
-                if (is_string($response->getContent())) {
-                    try {
-                        $input = json_decode($response->getContent());
-                        if (is_null($input)) {
-                            $input = "非json数据";
-                        } else {
-                            $input = $response->getContent();
-                        }
-                    } catch (\Exception $exception) {
-                        $input = "异常数据";
-                    }
-                } else {
+                if (!is_string($content)) {
                     $input = "其他数据";
+                } else {
+                    $input = $content;
                 }
             }
 
