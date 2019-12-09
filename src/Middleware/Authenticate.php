@@ -8,6 +8,7 @@ namespace Mallto\Admin\Middleware;
 use Closure;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Auth;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 class Authenticate
 {
@@ -38,7 +39,7 @@ class Authenticate
 
             $request->session()->invalidate();
 
-            return redirect('/error/4031');
+            throw new PermissionDeniedException('当前账号:'.$adminUser->name.'已被禁用');
         }
 
         return $next($request);
