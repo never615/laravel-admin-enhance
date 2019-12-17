@@ -56,7 +56,7 @@ Route::group([
     //todo 这个权限暂时放在这
     Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
     Route::get('admin/admin_unbind_wechat', 'AdminBindWechatController@unbindWechat');
-
+    $router->post('admin/auth/send_sms', 'AuthController@sendSms');
 
 //----------------------------------------  管理端开始  -----------------------------------------------
     Route::group(['prefix' => config('admin.route.prefix'), "middleware" => "adminE_base"],
@@ -70,7 +70,9 @@ Route::group([
 
 
             $router->get('auth/login', '\Encore\Admin\Controllers\AuthController@getLogin');
-            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
+//            $router->post('auth/login', '\Encore\Admin\Controllers\AuthController@postLogin');
+            $router->post('auth/login', 'AuthController@postLogin');
+
             $router->get('auth/logout', '\Encore\Admin\Controllers\AuthController@getLogout');
             $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
             $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');
