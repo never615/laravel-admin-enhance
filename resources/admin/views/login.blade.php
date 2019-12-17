@@ -54,7 +54,7 @@
 
                 @if($errors->has('mobile'))
                     @foreach($errors->get('mobile') as $message)
-                        <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError" style="color: #dd4b39"><i class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -79,12 +79,11 @@
                     <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}"
                            name="password" value="{{ old('password') }}">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                    <input type="text" class="form-control" name="login_type" value="password" style="display: none" id="password">
                 </div>
 
                 @if($errors->has('verify_number'))
                     @foreach($errors->get('verify_number') as $message)
-                        <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError" style="color: #dd4b39"><i class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -93,7 +92,6 @@
                            name="verify_number">
                     <input type="button" id="send-sms" style="height: 34px; width: 95px" onclick="sendmsg()"
                            value="发送验证码">
-                    <input type="text" class="form-control" name="login_type" value="sms" style="display: none" id="sms">
                 </div>
             </div>
             <div class="row">
@@ -146,12 +144,14 @@
 
 <script src="{{ admin_asset("vendor/laravel-adminE/notify/notify.js")}}"></script>
 <script>
-    var page_type = "{{ json_encode($errors->all()) }}";
-
-    console.log(page_type);
+    var page_type = "{{ json_encode($errors->get('mobile')) }}";
 
     $(document).ready(function () {
         switchMode1();
+
+        if (page_type.search("手机号") != -1) {
+            switchMode();
+        }
 
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',
@@ -207,7 +207,7 @@
         if (countdown == 0) {
             obj.attr('disabled', false);
             //obj.removeattr("disabled");
-            obj.val("免费获取验证码");
+            obj.val("发送验证码");
             countdown = 60;
             return;
         } else {
