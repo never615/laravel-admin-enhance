@@ -6,7 +6,11 @@
 namespace Mallto\Admin\Data;
 
 
+use Encore\Admin\Auth\Database\HasPermissions;
+use Encore\Admin\Traits\AdminBuilder;
+use Illuminate\Auth\Authenticatable;
 use Mallto\Admin\Data\Traits\DynamicData;
+use Mallto\Admin\Data\Traits\HasPermissions2;
 use Mallto\Admin\Data\Traits\SelectSource;
 use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 
@@ -17,7 +21,10 @@ use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
  */
 class Administrator extends \Encore\Admin\Auth\Database\Administrator
 {
-    use DynamicData, HasMultiAuthApiTokens, SelectSource;
+    use Authenticatable, AdminBuilder, HasPermissions,
+        DynamicData, HasMultiAuthApiTokens, SelectSource, HasPermissions2 {
+        HasPermissions2::can insteadof HasPermissions;
+    }
 
 
     const STATUS = [
