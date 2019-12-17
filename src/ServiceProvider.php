@@ -182,6 +182,7 @@ class ServiceProvider extends BaseServiceProvider
 
 
             Admin::js('vendor/laravel-adminE/clipboard/clipboard.min.js');
+            Admin::js('vendor/laravel-adminE/admin_init.js');
             Admin::js('vendor/laravel-adminE/common.js');
             Admin::js('vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
             Admin::js('vendor/laravel-adminE/notify/notify.js');
