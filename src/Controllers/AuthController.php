@@ -12,10 +12,16 @@ use Mallto\User\Domain\SmsUsecase;
 
 class AuthController extends BaseAuthController
 {
+    /**
+     * 手机号登录方式
+     *
+     * @return string
+     */
     public function mobile()
     {
         return 'mobile';
     }
+
     /**
      * 短信验证码登录
      *
@@ -32,9 +38,9 @@ class AuthController extends BaseAuthController
 
         $sms = app(SmsUsecase::class);
 
-        try{
+        try {
             $sms->checkVerifyCode($request->mobile, $request->verify_number, 'admin_sms_login', $adminUser->subject_id);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return back()->withInput()->withErrors([
                 'verify_number' => '验证码错误或已过期',
             ]);
