@@ -52,7 +52,7 @@ class AuthController extends BaseAuthController
 
         return back()->withInput()->withErrors([
             $this->mobile() => $this->getFailedLoginMessage(),
-            'login_page' => 'sms',
+            'login_page'    => 'sms',
         ]);
     }
 
@@ -80,7 +80,7 @@ class AuthController extends BaseAuthController
 
         return back()->withInput()->withErrors([
             $this->username() => $this->getFailedLoginMessage(),
-            'login_page' => 'password',
+            'login_page'      => 'password',
         ]);
     }
 
@@ -94,7 +94,7 @@ class AuthController extends BaseAuthController
     protected function loginSmsValidator(array $data)
     {
         return Validator::make($data, [
-            'mobile' => 'required',
+            'mobile'        => 'required',
             'verify_number' => 'required',
         ]);
     }
@@ -109,20 +109,23 @@ class AuthController extends BaseAuthController
     {
         $mobile = $request->mobile;
 
-        $user = AdminUser::query()->selectRaw('count(*) as user_count, subject_id')
+        $count = AdminUser::query()
             ->where('mobile', $mobile)
-            ->groupBy('subject_id')
+            ->count();
+
+        $user = AdminUser::query()
+            ->where('mobile', $mobile)
+            ->orderBy('id')
             ->first();
 
-        if (empty($user)) {
+        if ($count === 0) {
             throw new ResourceException('对不起，该用户未注册管理端');
         }
 
         $sms = app(SmsUsecase::class);
 
-        if ($user->user_count > 1) {
-            \Log::error("当前登录的手机号" . $mobile . "有多个主体");
-            \Log::warning($mobile);
+        if ($count > 1) {
+            \Log::error("当前登录的手机号".$mobile."有绑定了多个账号");
         }
 
         $sms->sendSms($mobile, $user->subject_id, 'admin_sms_login');
