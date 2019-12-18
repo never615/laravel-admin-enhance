@@ -235,8 +235,11 @@
         if (!isChrome) {
             layer.alert(
                 "<div style='text-align: center'><span style='font-size: 22px; color: rgba(245,139,152,1)'>*</span>" +
-                "<span style='font-size: 16px'>为了确保使用系统时更加流畅</span></div>" + "<br />" +
-                "<div style='text-align: center'><span style='font-size: 16px'>我们强烈推荐你使用</span><a href='https://www.google.cn/chrome/' style='color: rgba(245,139,152,1); font-size: 16px'>谷歌浏览器</a></div>"
+                "<span style='font-size: 16px'>本系统仅支持谷歌浏览器</span></div>" + "<br />" +
+                "<div style='text-align: center'><span style='font-size: 16px'>请使用</span>" +
+                "<a href='https://www.google.cn/chrome/' style='color: rgba(245,139,152,1); font-size: 16px'>谷歌浏览器</a>" +
+                "<span style='font-size: 16px'>进入本系统</span>" +
+                "</div>"
             )
         }
     }
