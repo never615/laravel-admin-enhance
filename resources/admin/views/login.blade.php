@@ -153,6 +153,9 @@
             switchMode();
         }
 
+        //判断浏览器是否为谷歌浏览器
+        isChrome();
+
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',
             radioClass: 'iradio_square-blue',
@@ -219,6 +222,23 @@
                 settime(obj)
             }
             , 1000)
+    }
+
+    function isChrome() {
+        //取得浏览器的userAgent字符串
+        var userAgent = navigator.userAgent;
+        //判断Chrome浏览器
+        var isChrome = userAgent.indexOf("Chrome") > -1
+            && userAgent.indexOf("Safari") > -1;
+
+        console.log(isChrome);
+        if (!isChrome) {
+            layer.alert(
+                "<div style='text-align: center'><span style='font-size: 22px; color: rgba(245,139,152,1)'>*</span>" +
+                "<span style='font-size: 16px'>为了确保使用系统时更加流畅</span></div>" + "<br />" +
+                "<div style='text-align: center'><span style='font-size: 16px'>我们强烈推荐你使用</span><a href='https://www.google.cn/chrome/' style='color: rgba(245,139,152,1); font-size: 16px'>谷歌浏览器</a></div>"
+            )
+        }
     }
 </script>
 </body>
