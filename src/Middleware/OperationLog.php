@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Middleware;
 
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,20 +20,36 @@ use Mallto\Tool\Jobs\LogJob;
  */
 class OperationLog
 {
+
+    /**
+     * 不记录日志的路径
+     *
+     * @var array
+     */
+    private $excludePath = [
+        'admin/log',
+    ];
+
+
     /**
      * Handle an incoming request.
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure                 $next
+     *
      * @return mixed
      */
     public function handle(Request $request, \Closure $next)
     {
         $adminUser = null;
 
+        if (in_array($request->path(), $this->excludePath)) {
+            return $next($request);
+        }
+
         try {
             $adminUser = Admin::user();
-            if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+            if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
                 $adminUser = Auth::guard("admin_api")->user();
             }
         } catch (\Exception $exception) {
@@ -73,7 +88,7 @@ class OperationLog
             if (is_array($content)) {
                 $input = json_encode($content);
             } else {
-                if (!is_string($content)) {
+                if ( ! is_string($content)) {
                     $input = "其他数据";
                 } else {
                     $input = $content;
@@ -94,7 +109,6 @@ class OperationLog
 
             dispatch(new LogJob("logAdminOperation", $log));
         }
-
 
         return $response;
     }
