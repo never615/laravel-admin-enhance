@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
@@ -19,10 +18,11 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\Tag;
 
-
 class SubjectController extends AdminCommonController
 {
+
     use SubjectSaveTrait;
+
 
     /**
      * 获取这个模块的标题
@@ -34,6 +34,7 @@ class SubjectController extends AdminCommonController
         return "主体";
     }
 
+
     /**
      * 获取这个模块的Model
      *o
@@ -44,6 +45,7 @@ class SubjectController extends AdminCommonController
     {
         return Subject::class;
     }
+
 
     protected function gridOption(Grid $grid)
     {
@@ -66,7 +68,6 @@ class SubjectController extends AdminCommonController
             $grid->uuid()->editable();
         }
 
-
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike("name");
         });
@@ -79,6 +80,7 @@ class SubjectController extends AdminCommonController
         });
 
     }
+
 
     /**
      * 如果form中使用到了tab,需要复写此方法
@@ -99,13 +101,11 @@ class SubjectController extends AdminCommonController
             $form->displayE('updated_at', trans('admin.updated_at'));
         });
 
-
         $form = $form->tab("配置项", function ($form) {
             $form->embeds("open_extra_config", "", function ($form) {
                 $this->openConfigBasic($form);
             });
         });
-
 
         $form = $form->tab("系统配置(owner)", function (Form $form) {
             $this->systemConfigBasic($form);
@@ -114,7 +114,6 @@ class SubjectController extends AdminCommonController
 
 
                 $form->textarea("extra_config");
-
 
 //                $form->keyValue("extra_config");
 //                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
@@ -134,7 +133,6 @@ class SubjectController extends AdminCommonController
             }
         });
 
-
         $form->saving(function ($form) {
             $adminUser = Admin::user();
 
@@ -153,6 +151,7 @@ class SubjectController extends AdminCommonController
             ->help("顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单")
             ->options(Menu::selectOptions());
     }
+
 
     protected function systemConfigBasic($form)
     {
@@ -175,10 +174,8 @@ class SubjectController extends AdminCommonController
                 }
             }
 
-
             return $arr;
         })->rules("required");
-
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             $permissions = Permission::
@@ -200,6 +197,7 @@ class SubjectController extends AdminCommonController
         }
     }
 
+
     /**
      * //todo 优化配置逻辑,如果其他库有自定义的参数
      * 系统配置中的json格式保存的配置项
@@ -218,6 +216,7 @@ class SubjectController extends AdminCommonController
         $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, "可配置标签种类")
             ->options(Tag::TYPE);
     }
+
 
     protected function formOption(Form $form)
     {

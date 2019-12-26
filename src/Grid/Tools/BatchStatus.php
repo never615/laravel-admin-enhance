@@ -7,7 +7,6 @@ namespace Mallto\Admin\Grid\Tools;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-
 /**
  *
  *
@@ -19,11 +18,14 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class BatchStatus extends \Encore\Admin\Grid\Tools\BatchAction
 {
+
     protected $status;
+
     /**
      * @var null
      */
     private $url;
+
 
     /**
      * BatchPass constructor.
@@ -31,19 +33,20 @@ class BatchStatus extends \Encore\Admin\Grid\Tools\BatchAction
      * @param string $status
      * @param null   $url 默认的请求地址为当前资源的url后拼接/status,如:https://integration-easy.mall-to.com/admin/subjects/status
      */
-    public function __construct($status,$url=null)
+    public function __construct($status, $url = null)
     {
-        if(empty($status)){
-            throw new HttpException('422',"未设置状态");
+        if (empty($status)) {
+            throw new HttpException('422', "未设置状态");
         }
         $this->status = $status;
         $this->url = $url;
     }
 
+
     public function script()
     {
-        if(is_null($this->url)){
-            $this->url=$this->resource.'/status';
+        if (is_null($this->url)) {
+            $this->url = $this->resource . '/status';
         }
 
         return <<<EOT

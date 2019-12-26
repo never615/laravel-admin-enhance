@@ -2,16 +2,15 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
 
-
 class Subject extends Model
 {
+
     use ModelTree;
 
     protected $tempChildrenSubjectIds;
@@ -37,7 +36,6 @@ class Subject extends Model
         'extra_config'      => 'array',
         'open_extra_config' => 'array',
     ];
-
 
     protected $guarded = [
     ];
@@ -72,8 +70,9 @@ class Subject extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
+
 
     public function subjectAdminUsers()
     {
@@ -96,6 +95,7 @@ class Subject extends Model
     {
         return $this->hasMany(Administrator::class);
     }
+
 
     public function reports()
     {
@@ -130,7 +130,7 @@ class Subject extends Model
         //处理数据查看范围
         //如果设置了manager_subject_ids,则优先处理该值
         $managerSubjectIds = $adminUser->manager_subject_ids;
-        if (!empty($managerSubjectIds)) {
+        if ( ! empty($managerSubjectIds)) {
             $tempSubject = new Subject();
             $tempSubjectIds = $managerSubjectIds;
 
@@ -144,10 +144,10 @@ class Subject extends Model
             $tempSubjectIds = $currentSubject->getChildrenSubject();
         }
 
-
         //3.限定查询范围为所有子主体
         $query->whereIn('id', $tempSubjectIds);
     }
+
 
     /**
      * 获取父类的基主体,一般来说是总公司的身份
@@ -161,9 +161,9 @@ class Subject extends Model
             return $this;
         } else {
             $baseSubject = null;
-            if (!empty($this->path)) {
+            if ( ! empty($this->path)) {
                 $parentIds = explode(".", trim($this->path, "."));
-                if (!empty($parentIds)) {
+                if ( ! empty($parentIds)) {
                     $baseSubject = Subject::whereIn("id", $parentIds)
                         ->where("base", true)
                         ->first();
@@ -174,10 +174,12 @@ class Subject extends Model
         }
     }
 
+
     /**
      * 获取所有子主体id,包括自身
      *
      * @param string $subjectId
+     *
      * @return array
      */
     public function getChildrenSubject($subjectId = null)
@@ -185,7 +187,7 @@ class Subject extends Model
 
         $currentSubjectId = $subjectId ?: $this->id;
 
-        return Subject::where("path", "like", "%.".$this->id.".%")
+        return Subject::where("path", "like", "%." . $this->id . ".%")
             ->orWhere("id", $currentSubjectId)
             ->pluck("id")
             ->toArray();
@@ -210,6 +212,7 @@ class Subject extends Model
 //        return $idResults;
     }
 
+
     /**
      * 获取所有父级主体,不包括自己
      *
@@ -219,8 +222,8 @@ class Subject extends Model
     public function getParentSubjectIds()
     {
         $parentIds = explode(".", trim($this->path, "."));
-        if (!empty($this->path)) {
-            if (!empty($parentIds)) {
+        if ( ! empty($this->path)) {
+            if ( ! empty($parentIds)) {
                 return Subject::whereIn("id", $parentIds)
                     ->pluck("id")
                     ->toArray();
@@ -243,14 +246,12 @@ class Subject extends Model
             return $this->tempParentSubject[$currentSubjectId];
         }
 
-
         $tempSubjects = DB::select("with recursive tab as (
                  select * from subjects where id = $currentSubjectId
                   union all
                   select s.* from subjects as s inner join tab on tab.parent_id = s.id
                 )
            select * from tab where id != $currentSubjectId order by id ");
-
 
         if (empty($tempSubjects)) {
             $idResults = [];
@@ -263,6 +264,7 @@ class Subject extends Model
         return $idResults;
     }
 
+
     /**
      * 判断该主体是否有子主体
      *
@@ -273,6 +275,7 @@ class Subject extends Model
         return static::where("parent_id", $this->id)->count() > 0 ? true : false;
     }
 
+
     /**
      * Get options for Select field in form.
      *
@@ -280,10 +283,15 @@ class Subject extends Model
      * @param bool  $root         ,是否返回root节点
      * @param bool  $defaultBlack ,是否使用默认的空格大小
      * @param int   $parentId
+     *
      * @return \Illuminate\Support\Collection
      */
-    public static function selectOptions(array $nodes = null, $root = true, $defaultBlack = true, $parentId = 0)
-    {
+    public static function selectOptions(
+        array $nodes = null,
+        $root = true,
+        $defaultBlack = true,
+        $parentId = 0
+    ) {
         $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {

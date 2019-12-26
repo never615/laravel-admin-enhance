@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateAdminUsersTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -24,6 +25,7 @@ class UpdateAdminUsersTable extends Migration
             $table->json("extra")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

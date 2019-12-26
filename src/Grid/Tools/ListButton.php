@@ -5,20 +5,21 @@
 
 namespace Mallto\Admin\Grid\Tools;
 
-use Encore\Admin\Facades\Admin;
-use Encore\Admin\Grid;
 use Encore\Admin\Grid\Tools\AbstractTool;
 
 class ListButton extends AbstractTool
 {
+
     /**
      * @var
      */
     private $name;
+
     /**
      * @var
      */
     private $link;
+
 
     /**
      * ListButton constructor.
@@ -26,7 +27,7 @@ class ListButton extends AbstractTool
      * @param $name
      * @param $link
      */
-    public function __construct($name,$link)
+    public function __construct($name, $link)
     {
         $this->name = $name;
         $this->link = $link;
@@ -40,7 +41,7 @@ class ListButton extends AbstractTool
      */
     public function render()
     {
-        $new = $this->name?:trans("lang.list");
+        $new = $this->name ?: trans("lang.list");
 
         return <<<EOT
 

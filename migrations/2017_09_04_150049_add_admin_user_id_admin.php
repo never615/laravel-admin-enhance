@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class AddAdminUserIdAdmin extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -35,13 +36,13 @@ class AddAdminUserIdAdmin extends Migration
 //            $table->foreign('admin_user_id')->references('id')->on('admin_users')->onDelete('SET NULL');
         });
 
-
         Schema::table("subjects", function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->unsignedInteger("admin_user_id")->nullable();
 //            $table->foreign('admin_user_id')->references('id')->on('admin_users')->onDelete('SET NULL');
         });
 
     }
+
 
     /**
      * Reverse the migrations.
@@ -65,7 +66,6 @@ class AddAdminUserIdAdmin extends Migration
         Schema::table("admin_roles", function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->dropColumn("admin_user_id");
         });
-
 
         Schema::table("subjects", function (\Illuminate\Database\Schema\Blueprint $table) {
             $table->dropColumn("admin_user_id");

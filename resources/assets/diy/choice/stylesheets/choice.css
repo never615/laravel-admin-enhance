@@ -46,7 +46,7 @@
     text-overflow: ellipsis
 }
 
-.ww_groupSelBtn:after, .ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item:after{
+.ww_groupSelBtn:after, .ww_groupSelBtn_ImageNoPadding .ww_groupSelBtn_item:after {
     clear: both;
     content: ".";
     display: block;
@@ -55,7 +55,7 @@
     visibility: hidden
 }
 
- .ww_groupSelBtn_item_text{
+.ww_groupSelBtn_item_text {
     white-space: nowrap
 }
 
@@ -116,16 +116,16 @@
 }
 
 /*.multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_circle, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn[disabled] .ww_commonImg_TreeMenuThumb {*/
-    /*background-image: url("../images/independent/status/TreeMenuThumbDisabled$9af9794d.png");*/
-    /*width: 14px;*/
-    /*height: 14px;*/
-    /*background-size: 100%*/
+/*background-image: url("../images/independent/status/TreeMenuThumbDisabled$9af9794d.png");*/
+/*width: 14px;*/
+/*height: 14px;*/
+/*background-size: 100%*/
 /*}*/
 
 /*@media (-webkit-min-device-pixel-ratio: 2),(min--moz-device-pixel-ratio: 2),(min-device-pixel-ratio: 2),(-o-min-device-pixel-ratio: 2/1),(min-resolution: 2dppx),(min-resolution: 192dpi) {*/
-    /*.multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_circle, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn[disabled] .ww_commonImg_TreeMenuThumb {*/
-        /*background-image: url("../images/independent/status/TreeMenuThumbDisabled_2x$2d4b360c.png")*/
-    /*}*/
+/*.multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_blue, .multiPickerDlg_right .ww_groupSelBtn[disabled] .icon_folder_circle, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_blue, .ww_groupSelBtn[disabled] .multiPickerDlg_right .icon_folder_circle, .ww_groupSelBtn[disabled] .ww_commonImg_TreeMenuThumb {*/
+/*background-image: url("../images/independent/status/TreeMenuThumbDisabled_2x$2d4b360c.png")*/
+/*}*/
 /*}*/
 
 .ww_groupSelBtn[disabled] .ww_groupSelBtn_item_text {

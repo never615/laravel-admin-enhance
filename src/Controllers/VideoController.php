@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -23,6 +22,7 @@ class VideoController extends AdminCommonController
 
     use QiniuToken;
 
+
     /**
      * 获取这个模块的标题
      *
@@ -32,6 +32,7 @@ class VideoController extends AdminCommonController
     {
         return "视频素材管理";
     }
+
 
     /**
      * 获取这个模块的Model
@@ -43,11 +44,13 @@ class VideoController extends AdminCommonController
         return Video::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
         $grid->name("视频名称");
         $grid->column('url', "视频地址")->urlWrapper();
     }
+
 
     protected function formOption(Form $form)
     {

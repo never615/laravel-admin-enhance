@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateAdminPermissionsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -21,6 +22,7 @@ class UpdateAdminPermissionsTable extends Migration
             $table->integer("order")->default(0);
         });
     }
+
 
     /**
      * Reverse the migrations.

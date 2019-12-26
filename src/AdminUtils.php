@@ -17,6 +17,7 @@ use Mallto\Admin\Data\Subject;
  */
 class AdminUtils
 {
+
     /**
      * 获取当前登录用户的信息
      *
@@ -28,7 +29,7 @@ class AdminUtils
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
 
-        if ($isOwner === null || !$currentSubject || !$adminUser) {
+        if ($isOwner === null || ! $currentSubject || ! $adminUser) {
             $adminUser = Admin::user();
             if ($adminUser) {
                 $isOwner = $adminUser->isOwner();
@@ -36,19 +37,17 @@ class AdminUtils
 
                 session([
                     CacheConstants::SESSION_ADMIN_USER      => array_except($adminUser->toArray(),
-                        ["roles", "subject"]),
+                        [ "roles", "subject" ]),
                     CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
                     CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject->toArray(),
                 ]);
             }
         }
 
-
 //        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
 //        \Log::debug(session(CacheConstants::SESSION_CURRENT_SUBJECT));
 
-
-        return [(object) $adminUser, $isOwner, (object) $currentSubject];
+        return [ (object) $adminUser, $isOwner, (object) $currentSubject ];
     }
 
 
@@ -62,7 +61,7 @@ class AdminUtils
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
 
         if ($isOwner === null) {
-            [$adminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+            [ $adminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
         }
 
         return $isOwner;
@@ -75,15 +74,14 @@ class AdminUtils
     public static function getCurrentAdminUser()
     {
         $currentAdminUser = session(CacheConstants::SESSION_ADMIN_USER);
-        if (!$currentAdminUser) {
-            [$currentAdminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+        if ( ! $currentAdminUser) {
+            [ $currentAdminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
         } else {
             $currentAdminUser = (object) $currentAdminUser;
         }
 
 //        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
 //        \Log::debug(\GuzzleHttp\json_encode($currentAdminUser));
-
 
         return $currentAdminUser;
     }
@@ -95,14 +93,15 @@ class AdminUtils
     public static function getCurrentSubject()
     {
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
-        if (!$currentSubject) {
-            [$currentAdminUser, $isOwner, $currentSubject] = self::getLoginUserData();
+        if ( ! $currentSubject) {
+            [ $currentAdminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
         } else {
             $currentSubject = (object) $currentSubject;
         }
 
         return $currentSubject;
     }
+
 
     /**
      * 获取当前管理端登录用户所属主体id
@@ -111,6 +110,7 @@ class AdminUtils
     {
         return self::getCurrentSubject()->id;
     }
+
 
     public static function getCurrentAdminUserId()
     {
@@ -122,19 +122,21 @@ class AdminUtils
      * 根据主体id 查询 subject
      *
      * @param $id
+     *
      * @return mixed
      */
     public static function getSubject($id)
     {
-        $subject = Cache::get("subject_".$id);
+        $subject = Cache::get("subject_" . $id);
 
-        if (!$subject) {
+        if ( ! $subject) {
             $subject = Subject::find($id);
             self::cacheSubject($subject);
         }
 
         return $subject;
     }
+
 
     /**
      * 是否是管理端请求
@@ -150,20 +152,23 @@ class AdminUtils
     /**
      * 缓存主体数据
      *
-     * @deprecated use CacheUtils
      * @param $subject
+     *
+     * @deprecated use CacheUtils
      */
     public static function cacheSubject($subject)
     {
         CacheUtils::putSubject($subject);
     }
 
+
     /**
      * 删除缓存的主体数据
      *
+     * @param $id
+     *
      * @deprecated use CacheUtils
      *
-     * @param $id
      */
     public static function forgetSubject($id)
     {
@@ -180,6 +185,5 @@ class AdminUtils
     {
         CacheUtils::clearMenuCache();
     }
-
 
 }

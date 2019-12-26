@@ -5,20 +5,19 @@
 
 namespace Mallto\Admin\Data;
 
-
-
 use Illuminate\Database\Eloquent\Model;
 use Mallto\Admin\Data\Traits\AdminUserTrait;
 use Mallto\Admin\Data\Traits\DynamicData;
 
-
 class Upload extends Model
 {
+
     use DynamicData, AdminUserTrait;
 
     protected $guarded = [
 
     ];
+
 
     public function getUrlAttribute($value)
     {
@@ -30,7 +29,7 @@ class Upload extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
 
 }

@@ -23,7 +23,9 @@ use Illuminate\Contracts\Support\Arrayable;
  */
 class Choice extends Field
 {
+
     protected $view = 'adminE::form.choice';
+
     protected static $css = [
         '/vendor/laravel-adminE/diy/choice/stylesheets/choice3.css',
         '/vendor/laravel-adminE/diy/choice/stylesheets/fx_pc_all.css',
@@ -33,10 +35,10 @@ class Choice extends Field
         '/vendor/laravel-adminE/diy/choice/scripts/main.js',
     ];
 
-
     protected $selects;
 
     protected $dataUrls;
+
 
     /**
      * Set options.

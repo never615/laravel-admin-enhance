@@ -21,6 +21,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 trait SubjectSaveTrait
 {
+
     /**
      * 修改是检查权限
      *
@@ -29,7 +30,7 @@ trait SubjectSaveTrait
      */
     private function saving($adminUser, $form)
     {
-        if (!$adminUser->isOwner()) {
+        if ( ! $adminUser->isOwner()) {
             //修改的是自己或者是自己的父级
             $currentSubject = $adminUser->subject;
 
@@ -43,15 +44,15 @@ trait SubjectSaveTrait
 
                     //提交过来的数组id,有一个null总是,过滤掉
                     $tempPermissions = array_filter($tempPermissions, function ($value) {
-                        if (!is_null($value)) {
+                        if ( ! is_null($value)) {
                             return $value;
                         }
                     });
 
                     $oldPermissions = $form->model()->permissions->pluck("id")->toArray();
 
-                    if (($form->permissions && (!empty(array_diff($tempPermissions,
-                                    $oldPermissions)) || !empty(array_diff($oldPermissions,
+                    if (($form->permissions && ( ! empty(array_diff($tempPermissions,
+                                    $oldPermissions)) || ! empty(array_diff($oldPermissions,
                                     $tempPermissions)))
                         )
                         ||
@@ -62,7 +63,6 @@ trait SubjectSaveTrait
                 }
             }
         }
-
 
         //父主体为顶级,即项目拥有者的主体,不能被修改
         if ($form->model()->parent_id === 0) {
@@ -86,15 +86,14 @@ trait SubjectSaveTrait
             }
         }
 
-
         //添加新创建的subject的path字段,用于加快查询速度
         $parentId = $form->parent_id ?? $form->model()->parent_id;
         $parent = Subject::find($parentId);
         if ($parent) {
-            if ($parent && !empty($parent->path)) {
-                $form->model()->path = $parent->path.$parent->id.".";
+            if ($parent && ! empty($parent->path)) {
+                $form->model()->path = $parent->path . $parent->id . ".";
             } else {
-                $form->model()->path = ".".$parent->id.".";
+                $form->model()->path = "." . $parent->id . ".";
             }
         }
 
@@ -117,15 +116,13 @@ trait SubjectSaveTrait
             $subjectId = $form->model()->id;
             $name = $form->model()->name;
 
-
             //创建角色
             $adminRole = Role::firstOrCreate([
                 "subject_id" => $subjectId,
                 "slug"       => "admin",
             ], [
-                "name" => $name."管理员",
+                "name" => $name . "管理员",
             ]);
-
 
             //给角色分配权限
             if ($form->permissions) {
@@ -133,7 +130,7 @@ trait SubjectSaveTrait
 
                 //提交过来的数组id,有一个null总是,过滤掉
                 $permissionIds = array_filter($permissionIds, function ($value) {
-                    if (!is_null($value)) {
+                    if ( ! is_null($value)) {
                         return $value;
                     }
                 });
@@ -151,15 +148,14 @@ trait SubjectSaveTrait
                 AdminUtils::clearMenuCache();
             }
 
-
-            if (!Administrator::where("subject_id", $subjectId)
+            if ( ! Administrator::where("subject_id", $subjectId)
                 ->exists()) {
                 $adminUser = Administrator::firstOrCreate([
                     "subject_id"     => $subjectId,
                     "adminable_id"   => $subjectId,
                     "adminable_type" => "subject",
                     "username"       => implode("", pinyin($name)),
-                    "name"           => $name."管理",
+                    "name"           => $name . "管理",
                     "password"       => bcrypt(implode("", pinyin($name))),
                 ]);
                 $adminUser->roles()->sync($adminRole->id);

@@ -5,10 +5,8 @@
 
 namespace Mallto\Admin\Seeder\Permission;
 
-
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\SeederMaker;
-
 
 class ImportPermissionsSeeder extends Seeder
 {

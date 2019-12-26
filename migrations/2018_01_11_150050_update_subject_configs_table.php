@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateSubjectConfigsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -19,6 +20,7 @@ class UpdateSubjectConfigsTable extends Migration
             $table->text("remark")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

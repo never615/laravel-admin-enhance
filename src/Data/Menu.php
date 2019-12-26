@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -28,12 +27,14 @@ use Mallto\Admin\Traits\ModelTree;
  */
 class Menu extends Model
 {
+
     use PermissionHelp, AdminBuilder, ModelTree {
         ModelTree::boot as treeBoot;
     }
 
 //    protected $fillable = ['parent_id', 'order', 'title', 'icon', 'uri'];
     protected $guarded = [];
+
     protected $fillable = [];
 
 
@@ -56,10 +57,10 @@ class Menu extends Model
 
     public function getTitleAttribute($value)
     {
-        $isOwner=AdminUtils::isOwner();
+        $isOwner = AdminUtils::isOwner();
 
         if ($isOwner && $this->sub_title) {
-            return $value."-".$this->sub_title;
+            return $value . "-" . $this->sub_title;
         } else {
             return $value;
         }
@@ -94,9 +95,9 @@ class Menu extends Model
      */
     public function parentMenu()
     {
-        if (!empty($this->path)) {
+        if ( ! empty($this->path)) {
             $parentIds = explode(".", trim($this->path, "."));
-            if (!empty($parentIds)) {
+            if ( ! empty($parentIds)) {
                 return Menu::whereIn("id", $parentIds)
                     ->get()
                     ->toArray();
@@ -116,7 +117,6 @@ class Menu extends Model
                 )
            select * from tab order by id");
 
-
         $menus = json_decode(json_encode($tempMenus), true);
 
         return $menus;
@@ -129,7 +129,7 @@ class Menu extends Model
     public function allNodes(): array
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
-        $byOrder = $orderColumn.' = 0,'.$orderColumn;
+        $byOrder = $orderColumn . ' = 0,' . $orderColumn;
         if (config("admin.auto_menu")) {
             //菜单不跟角色挂钩,只有一份菜单
             //每个人能看到的菜单,由其拥有的权限决定
@@ -138,7 +138,7 @@ class Menu extends Model
             if ($adminUser->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
-                $result = Cache::get("menu_".$adminUser->id);
+                $result = Cache::get("menu_" . $adminUser->id);
                 if ($result) {
                     return $result;
                 }
@@ -162,10 +162,9 @@ class Menu extends Model
                 //任何人都可以看到控制面板菜单
                 $menus = $menus->merge(static::where("uri", "dashboard")->get());
 
-
                 $menusQuery = static::whereIn("uri", $userPermissionSlugs);
 
-                if (!$adminUser->isOwner()) {
+                if ( ! $adminUser->isOwner()) {
                     $menusQuery = $menusQuery->where(function ($query) use ($adminUser) {
                         $query->orWhereDoesntHave("subjects", function ($query) {
 
@@ -188,7 +187,7 @@ class Menu extends Model
                 //过滤保证唯一
                 $uniqueTempArray = [];
                 $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
-                    if (!in_array($menu["id"], $uniqueTempArray)) {
+                    if ( ! in_array($menu["id"], $uniqueTempArray)) {
                         $uniqueTempArray[] = $menu["id"];
 
                         return true;
@@ -197,13 +196,11 @@ class Menu extends Model
                     }
                 });
 
-
                 //排序
                 $result = array_sort($tempMenus, $this->orderColumn);
 
-
-                $cacheMenuKey = "menu_".$adminUser->id;
-                CacheUtils::putMenu($cacheMenuKey,$result);
+                $cacheMenuKey = "menu_" . $adminUser->id;
+                CacheUtils::putMenu($cacheMenuKey, $result);
 
                 $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
                 $cacheMenuKeys[] = $cacheMenuKey;
@@ -216,6 +213,7 @@ class Menu extends Model
             return static::with('roles')->orderByRaw($byOrder)->get()->toArray();
         }
     }
+
 
     /**
      * Detach models from the relationship.

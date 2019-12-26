@@ -54,7 +54,8 @@
 
                 @if($errors->has('mobile'))
                     @foreach($errors->get('mobile') as $message)
-                        <label class="control-label" for="inputError" style="color: #dd4b39"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError" style="color: #dd4b39"><i
+                                class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -62,7 +63,7 @@
                     <input type="text" class="form-control" placeholder="手机号码"
                            onkeyup="value=value.replace(/[^\d]/g,'')" maxlength=11 id="mobile" name="mobile"
                            value="{{ old('phone') }}"
-                           disabled >
+                           disabled>
                     <span class="glyphicon glyphicon-phone form-control-feedback"></span>
                 </div>
 
@@ -83,7 +84,8 @@
 
                 @if($errors->has('verify_number'))
                     @foreach($errors->get('verify_number') as $message)
-                        <label class="control-label" for="inputError" style="color: #dd4b39"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError" style="color: #dd4b39"><i
+                                class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif

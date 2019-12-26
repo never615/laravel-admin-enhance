@@ -6,10 +6,8 @@
 namespace Mallto\Admin;
 
 use Encore\Admin\Facades\Admin;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Data\Menu;
-
 
 /**
  * Class Admin.
@@ -17,25 +15,24 @@ use Mallto\Admin\Data\Menu;
 class AdminE
 {
 
-
     public function quickAccess()
     {
         $adminUser = Admin::user();
 
         if ($adminUser) {
             $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
-            if(!$menuIds){
+            if ( ! $menuIds) {
                 return;
             }
 
-            $speedy = \Illuminate\Support\Facades\Cache::get("speedy_".$adminUser->id);
-            if (!$speedy) {
+            $speedy = \Illuminate\Support\Facades\Cache::get("speedy_" . $adminUser->id);
+            if ( ! $speedy) {
                 $speedy = [];
 
                 //读取对应主体中的快捷访问菜单配置
                 $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
 
-                if (!$menuIds) {
+                if ( ! $menuIds) {
                     return;
                 }
                 $menus = Menu::find($menuIds);
@@ -46,7 +43,7 @@ class AdminE
                     }
                 }
 
-                CacheUtils::putSeedy($adminUser,$speedy);
+                CacheUtils::putSeedy($adminUser, $speedy);
             }
 
             if (count($speedy) > 0) {
@@ -82,23 +79,22 @@ class AdminE
 
         $attributes = [
             'prefix'     => config('admin.route.prefix'),
-            'middleware' => ['adminE_base'],
+            'middleware' => [ 'adminE_base' ],
         ];
 
-
         Route::group($attributes, function ($router) {
-            $attributes = ['middleware' => ['adminE.auto_permission']];
+            $attributes = [ 'middleware' => [ 'adminE.auto_permission' ] ];
             /* @var \Illuminate\Routing\Router $router */
-            $router->group([$attributes], function ($router) {
+            $router->group([ $attributes ], function ($router) {
 
                 /* @var \Illuminate\Routing\Router $router */
                 $router->resource('auth/admins', '\Mallto\Admin\Controllers\UserController');
                 $router->resource('auth/roles', '\Mallto\Admin\Controllers\RoleController');
                 $router->resource('auth/permissions', '\Mallto\Admin\Controllers\PermissionController');
                 $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController',
-                    ['except' => ['create']]);
+                    [ 'except' => [ 'create' ] ]);
                 $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
-                    ['only' => ['index', 'destroy']]);
+                    [ 'only' => [ 'index', 'destroy' ] ]);
             });
 
             $router->get('auth/login', '\Encore\Admin\Controllers\AuthController@getLogin');

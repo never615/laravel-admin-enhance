@@ -16,6 +16,7 @@ use Encore\Admin\Grid;
  */
 trait AdminOption
 {
+
 //    /**
 //     * 获取这个模块的标题
 //     *
@@ -33,6 +34,7 @@ trait AdminOption
         return trans('admin.list');
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -40,7 +42,9 @@ trait AdminOption
      */
     protected abstract function getModel();
 
+
     protected abstract function gridOption(Grid $grid);
+
 
     /**
      * 需要实现的form设置
@@ -52,6 +56,7 @@ trait AdminOption
      * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
      * @param Form $form
+     *
      * @return mixed
      */
     protected abstract function formOption(Form $form);

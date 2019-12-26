@@ -13,9 +13,11 @@ use Encore\Admin\Form\Field;
 
 class QRcode extends Field
 {
+
     protected $view = 'adminE::form.qrcode';
 
     protected $qrcodeUrl;
+
 
     /**
      * @return mixed
@@ -34,6 +36,7 @@ class QRcode extends Field
         return "<img src='$baseUrl/api/qr_image?size=150x150&data={$this->qrcodeUrl}' style='height: 150px;width: 150px;'/>";
     }
 
+
     public function qrcodeUrl($url)
     {
         $this->qrcodeUrl = $url;
@@ -51,6 +54,5 @@ class QRcode extends Field
             'qrcodeUrl' => $this->getQrcodeUrl(),
         ]);
     }
-
 
 }

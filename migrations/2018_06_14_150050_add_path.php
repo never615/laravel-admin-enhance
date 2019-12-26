@@ -7,9 +7,9 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-
 class AddPath extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -29,6 +29,7 @@ class AddPath extends Migration
             $table->string("path")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

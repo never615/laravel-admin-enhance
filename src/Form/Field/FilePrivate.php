@@ -5,13 +5,13 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class FilePrivate extends Field
 {
+
     use Field\UploadField;
 
     protected $view = 'admin::form.file';
@@ -35,6 +35,7 @@ class FilePrivate extends Field
         '/vendor/laravel-admin/bootstrap-fileinput/js/fileinput.min.js?v=4.3.7',
     ];
 
+
     /**
      * Create a new File instance.
      *
@@ -48,6 +49,7 @@ class FilePrivate extends Field
         parent::__construct($column, $arguments);
     }
 
+
     /**
      * Default directory for file to upload.
      *
@@ -57,6 +59,7 @@ class FilePrivate extends Field
     {
         return config('admin.upload.directory.file');
     }
+
 
     /**
      * {@inheritdoc}
@@ -80,7 +83,7 @@ class FilePrivate extends Field
 
         $rules = $attributes = [];
 
-        if (!$fieldRules = $this->getRules()) {
+        if ( ! $fieldRules = $this->getRules()) {
             return false;
         }
 
@@ -89,6 +92,7 @@ class FilePrivate extends Field
 
         return Validator::make($input, $rules, [], $attributes);
     }
+
 
     /**
      * Prepare for saving.
@@ -108,6 +112,7 @@ class FilePrivate extends Field
         return $this->uploadAndDeleteOriginal($file);
     }
 
+
     /**
      * Upload file and delete original file.
      *
@@ -119,7 +124,7 @@ class FilePrivate extends Field
     {
         $this->renameIfExists($file);
 
-        $target = $this->getDirectory().'/'.$this->name;
+        $target = $this->getDirectory() . '/' . $this->name;
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
@@ -127,6 +132,7 @@ class FilePrivate extends Field
 
         return $target;
     }
+
 
     /**
      * Preview html for file-upload plugin.
@@ -137,6 +143,7 @@ class FilePrivate extends Field
     {
         return $this->objectUrl($this->value);
     }
+
 
     /**
      * Initialize the caption.
@@ -150,21 +157,23 @@ class FilePrivate extends Field
         return basename($caption);
     }
 
+
     /**
      * @return array
      */
     protected function initialPreviewConfig()
     {
-        if (!empty($this->fileType)) {
+        if ( ! empty($this->fileType)) {
             return [
-                ['caption' => basename($this->value), 'key' => 0, 'filetype' => $this->fileType],
+                [ 'caption' => basename($this->value), 'key' => 0, 'filetype' => $this->fileType ],
             ];
         } else {
             return [
-                ['caption' => basename($this->value), 'key' => 0],
+                [ 'caption' => basename($this->value), 'key' => 0 ],
             ];
         }
     }
+
 
     /**
      * Render file upload field.
@@ -175,13 +184,13 @@ class FilePrivate extends Field
     {
         $this->setupDefaultOptions();
 
-        if (!empty($this->value)) {
+        if ( ! empty($this->value)) {
             $this->attribute('data-initial-preview', $this->preview());
 
             $this->setupPreviewOptions();
         }
 
-        $this->options(['overwriteInitial' => true]);
+        $this->options([ 'overwriteInitial' => true ]);
 
         $options = json_encode($this->options);
 

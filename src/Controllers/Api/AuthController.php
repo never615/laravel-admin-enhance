@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers\Api;
 
-
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -39,6 +38,7 @@ class AuthController extends Controller
      * 登录
      *
      * @param Request $request
+     *
      * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|User|null
      * @throws \Illuminate\Auth\AuthenticationException
      */
@@ -52,7 +52,7 @@ class AuthController extends Controller
                 return $this->loginByWechat($request);
                 break;
             default:
-                throw new ResourceException("不支持的登录方式:".$request->header("REQUEST-TYPE"));
+                throw new ResourceException("不支持的登录方式:" . $request->header("REQUEST-TYPE"));
                 break;
 
         }
@@ -63,6 +63,7 @@ class AuthController extends Controller
      * 微信端授权登录管理端
      *
      * @param Request $request
+     *
      * @return mixed
      * @throws \Illuminate\Auth\AuthenticationException
      */
@@ -85,7 +86,7 @@ class AuthController extends Controller
         $adminUserUsecase = app(AdminUserUsecase::class);
         $adminUser = $adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
-        if (!$adminUser) {
+        if ( ! $adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
 

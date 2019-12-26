@@ -2,7 +2,6 @@
 
 namespace Mallto\Admin\Seeder\Permission;
 
-
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\SeederMaker;
 
@@ -10,6 +9,7 @@ class AdminmanagerSeeder extends Seeder
 {
 
     use SeederMaker;
+
 
     /**
      * Run the database seeds.
@@ -43,18 +43,15 @@ class AdminmanagerSeeder extends Seeder
         $this->createPermissions("店铺(租户)账号禁用权限", "admin_users_shop_forbidden",
             false, $parentId);
 
-
         /**
          * ------------------------  角色  ---------------------------
          */
         $this->createPermissions("角色", "roles", true, 0, false, true);
 
-
         /**
          * ------------------------  权限  ---------------------------
          */
         $this->createPermissions("权限", "permissions");
-
 
         /**
          * ------------------------  菜单  ---------------------------
@@ -74,7 +71,6 @@ class AdminmanagerSeeder extends Seeder
 //        $this->createPermissions("文件", "uploads");
 
         $this->createPermissions("视频", "videos");
-
 
         $this->createPermissions("Dashboard", "dashboard", false, 0, true);
     }

@@ -5,11 +5,11 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Mallto\Admin\Data\Traits\BaseModel;
 
 class SubjectConfig extends BaseModel
 {
+
     const TYPE = [
         'public'  => "公共配置",
         'private' => "私有配置",

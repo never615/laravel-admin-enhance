@@ -13,28 +13,34 @@ namespace Mallto\Admin\Domain\User;
  */
 interface AdminUserUsecase
 {
+
     /**
      * 返回给前端的用户信息
      *
      * @param      $adminUser
      * @param bool $addToken
+     *
      * @return mixed
      */
     public function getReturnUserInfo($adminUser, $addToken = true);
+
 
     /**
      * 根据openid查询管理端用户
      *
      * @param $openid
      * @param $subjectId
+     *
      * @return mixed
      */
     public function getUserByOpenid($openid, $subjectId);
+
 
     /**
      * 获取管理用户对应的openid
      *
      * @param $adminUser
+     *
      * @return mixed
      */
     public function getOpenid($adminUser);

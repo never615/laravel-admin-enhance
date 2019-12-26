@@ -15,7 +15,7 @@
 
         var selectedRows = function () {
             var selected = [];
-            $('.grid-row-checkbox:checked').each(function(){
+            $('.grid-row-checkbox:checked').each(function () {
                 selected.push($(this).data('id'));
             });
 

@@ -28,7 +28,8 @@
         <div class="dialog-body has-padding has-footer">
             <div class="x-layout-table">
                 <div class="x-layout-table-row">
-                    <div class="x-layout-table-item fx_base_select fx_member_select" widgetname="memberSelect" style="width: 570px; height: 450px;">
+                    <div class="x-layout-table-item fx_base_select fx_member_select" widgetname="memberSelect"
+                         style="width: 570px; height: 450px;">
                         <ul id="mt-choice-selected" class="select-list">
                             @if(!is_null($value)|$value=json_decode($value,true))
                                 @foreach($value as $item)
@@ -67,9 +68,11 @@
         </div>
         <div class="dialog-footer">
             <div class="dialog-btn-row">
-                <div class="dialog-btn cancel-btn x-btn style-white" widgetname="confirmBtnCancel" style="height: 32px; line-height: 30px;">
+                <div class="dialog-btn cancel-btn x-btn style-white" widgetname="confirmBtnCancel"
+                     style="height: 32px; line-height: 30px;">
                     <span>取消</span></div>
-                <div class="dialog-btn ok-btn x-btn style-green" widgetname="confirmBtnOK" style="height: 32px; line-height: 30px;">
+                <div class="dialog-btn ok-btn x-btn style-green" widgetname="confirmBtnOK"
+                     style="height: 32px; line-height: 30px;">
                     <span>确定</span></div>
             </div>
         </div>
@@ -82,7 +85,7 @@
         var originalValues = @json($value);
         //当前页面操作中的数据
         var currentValues = originalValues;
-        if (typeof(currentValues) == "undefined" || currentValues == null) {
+        if (typeof (currentValues) == "undefined" || currentValues == null) {
             currentValues = [];
         }
 
@@ -116,9 +119,6 @@
             //加载默认选中项的数据
             renderDatas();
         }
-
-
-
 
 
         /**
@@ -163,7 +163,7 @@
 
             $(".ww_groupSelBtn_item").remove();
 
-            if (typeof(currentValues) != "undefined" && currentValues != null) {
+            if (typeof (currentValues) != "undefined" && currentValues != null) {
                 var tempform = "";
                 for (var i = 0; i < currentValues.length; i++) {
                     var data = currentValues[i];
@@ -247,7 +247,7 @@
 
             // console.log(page);
 
-            if (typeof(page) != "undefined" && page != null) {
+            if (typeof (page) != "undefined" && page != null) {
                 // console.log(page);
 
                 currentPage = 1;
@@ -258,7 +258,7 @@
 
             var queryData = {'per_page': 200, "page": page};
 
-            if (typeof(query) != "undefined" && query != null) {
+            if (typeof (query) != "undefined" && query != null) {
                 queryData.q = query;
             }
 
@@ -270,7 +270,7 @@
 
                 var datas = responseData.data;
 
-                if (typeof(query) != "undefined" && query != null) {
+                if (typeof (query) != "undefined" && query != null) {
                     if (datas.length <= 0) {
                         tree.empty();
                         currentPage = 1;
@@ -304,7 +304,7 @@
                     var select = "";
 
                     //同时比对已选数据,存在的则置为选中状态
-                    if (typeof(currentValues) != "undefined" && currentValues != null) {
+                    if (typeof (currentValues) != "undefined" && currentValues != null) {
                         for (var j = 0; j < currentValues.length; j++) {
                             if ((currentValues[j].id == data.id) && (currentValues[j].type = currentType)) {
                                 select = "select";

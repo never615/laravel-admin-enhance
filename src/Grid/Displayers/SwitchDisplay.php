@@ -10,7 +10,6 @@ use Encore\Admin\Admin;
 class SwitchDisplay extends \Encore\Admin\Grid\Displayers\SwitchDisplay
 {
 
-
     public function display($states = [])
     {
         $this->updateStates($states);

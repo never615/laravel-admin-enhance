@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateUploadsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -21,9 +22,10 @@ class UpdateUploadsTable extends Migration
     public function up()
     {
         Schema::table('uploads', function (Blueprint $table) {
-            $table->renameColumn("file","url");
+            $table->renameColumn("file", "url");
         });
     }
+
 
     /**
      * Reverse the migrations.
@@ -33,7 +35,7 @@ class UpdateUploadsTable extends Migration
     public function down()
     {
         Schema::table('uploads', function (Blueprint $table) {
-            $table->renameColumn("url","file");
+            $table->renameColumn("url", "file");
         });
     }
 }

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
-
 use Encore\Admin\Controllers\AdminController;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
@@ -20,8 +19,8 @@ use Mallto\Admin\Traits\AdminFileHelp;
 
 abstract class AdminCommonController extends AdminController
 {
-    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFileHelp, AdminDataFilterTrait;
 
+    use  AdminOption, AdminSubjectTrait, AdminUserTrait, AdminFileHelp, AdminDataFilterTrait;
 
     /**
      * 编辑或者查看详情时,当前条目的id,不存在则表示是创建模式
@@ -38,7 +37,6 @@ abstract class AdminCommonController extends AdminController
      * @var bool
      */
     protected $closeGridUpdatedAt = true;
-
 
     /**
      * 默认的过滤器是否显示
@@ -78,6 +76,7 @@ abstract class AdminCommonController extends AdminController
      * Index interface.
      *
      * @param Content $content
+     *
      * @return Content
      */
     public function index(Content $content)
@@ -92,6 +91,7 @@ abstract class AdminCommonController extends AdminController
             ->description($this->description['index'] ?? trans('admin.list'))
             ->body($this->grid());
     }
+
 
     /**
      * Create interface.
@@ -117,12 +117,12 @@ abstract class AdminCommonController extends AdminController
      * @param         $id
      *
      * @param Content $content
+     *
      * @return Content
      */
     public function edit($id, Content $content)
     {
         $this->currentId = $id;
-
 
         $this->editFilter($id);
 
@@ -131,6 +131,7 @@ abstract class AdminCommonController extends AdminController
             ->description($this->description['edit'] ?? trans('admin.edit'))
             ->body($this->form()->edit($id));
     }
+
 
     /**
      * Show interface.
@@ -142,7 +143,7 @@ abstract class AdminCommonController extends AdminController
      */
     public function show($id, Content $content)
     {
-        return redirect(request()->url()."/edit");
+        return redirect(request()->url() . "/edit");
     }
 
 
@@ -201,6 +202,7 @@ abstract class AdminCommonController extends AdminController
         });
     }
 
+
     protected function defaultGridOption(Grid $grid)
     {
         $grid->expandFilter();
@@ -209,7 +211,7 @@ abstract class AdminCommonController extends AdminController
 
         $isOwner = AdminUtils::isOwner();
 
-        if (!$isOwner) {
+        if ( ! $isOwner) {
             $filter->disableIdFilter();
         } else {
             $grid->id('ID')->sortable();
@@ -228,7 +230,6 @@ abstract class AdminCommonController extends AdminController
             $actions->disableView();
         });
 
-
         $this->gridModelFilter($grid);
         $this->indexFilter($grid);
         $this->gridOrder($grid);
@@ -242,10 +243,10 @@ abstract class AdminCommonController extends AdminController
                 $filter->between("created_at")->datetime();
             }
         });
-        if (!$this->closeGridCreatedAt) {
+        if ( ! $this->closeGridCreatedAt) {
             $grid->created_at(trans('admin.created_at'))->sortable();
         }
-        if (!$this->closeGridUpdatedAt) {
+        if ( ! $this->closeGridUpdatedAt) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
     }
@@ -286,6 +287,7 @@ abstract class AdminCommonController extends AdminController
         }
     }
 
+
     /**
      * 默认的排序,重写此方法覆盖
      * 没有默认排序的话出来都是乱的
@@ -311,14 +313,14 @@ abstract class AdminCommonController extends AdminController
 
     protected function getTableName()
     {
-        if (!$this->tableName) {
+        if ( ! $this->tableName) {
             $model = resolve($this->getModel());
             $this->tableName = $model->getTable();
         }
 
-
         return $this->tableName;
     }
+
 
     /**
      * 获取这个模块的标题
@@ -332,6 +334,7 @@ abstract class AdminCommonController extends AdminController
         return $this->title;
     }
 
+
     /**
      * Get content title.
      *
@@ -343,6 +346,5 @@ abstract class AdminCommonController extends AdminController
     {
         return $this->getHeaderTitle();
     }
-
 
 }

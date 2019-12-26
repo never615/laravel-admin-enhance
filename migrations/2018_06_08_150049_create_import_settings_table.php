@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateImportSettingsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -40,6 +41,7 @@ class CreateImportSettingsTable extends Migration
             $table->softDeletes();
         });
     }
+
 
     /**
      * Reverse the migrations.

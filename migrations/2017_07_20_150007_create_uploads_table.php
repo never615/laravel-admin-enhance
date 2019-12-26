@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateUploadsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -32,6 +33,7 @@ class CreateUploadsTable extends Migration
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

@@ -62,7 +62,7 @@ return [
 
         'namespace' => 'App\\Admin\\Controllers',
 
-        'middleware' => ['web', 'adminE'],
+        'middleware' => [ 'web', 'adminE' ],
     ],
 
     /*
@@ -215,11 +215,20 @@ return [
     'operation_log'             => [
         'enable'          => true,
 
-
         /*
          * Only logging allowed methods in the list
          */
-        'allowed_methods' => ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'],
+        'allowed_methods' => [
+            'GET',
+            'HEAD',
+            'POST',
+            'PUT',
+            'DELETE',
+            'CONNECT',
+            'OPTIONS',
+            'TRACE',
+            'PATCH',
+        ],
 
         /*
          * Routes that will not log to database.
@@ -294,7 +303,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout'                    => ['sidebar-mini'],
+    'layout'                    => [ 'sidebar-mini' ],
 
     /*
     |--------------------------------------------------------------------------
@@ -405,7 +414,6 @@ return [
         ],
     ],
 
-
     /*
     |--------------------------------------------------------------------------
     | If your are using swoole, set it to `true`.
@@ -461,7 +469,6 @@ return [
         'fullscreen',
     ],
 
-
     /*
      * 角色名字
      */
@@ -478,5 +485,5 @@ return [
     | This version number set will appear in the page footer.
     |
     */
-    'version'                   => env('APP_VERSION'),
+    'version'     => env('APP_VERSION'),
 ];

@@ -4,7 +4,6 @@ namespace Mallto\Admin\Seeder;
 
 use Mallto\Admin\Data\Permission;
 
-
 /**
  * 生成权限的seeder基础方法
  *
@@ -34,6 +33,7 @@ trait SeederMaker
      * @param bool $closeCreate ,是否关闭创建子权限之`创建/修改`权限
      * @param null $routeNames
      * @param bool $force       ,存在同名权限,则删除
+     *
      * @return int
      * @throws \Exception
      */
@@ -56,10 +56,10 @@ trait SeederMaker
         $path = "";
         $parentPermission = Permission::find($parentId);
         if ($parentPermission) {
-            if (!empty($parentPermission->path)) {
-                $path = $parentPermission->path.$parentPermission->id.".";
+            if ( ! empty($parentPermission->path)) {
+                $path = $parentPermission->path . $parentPermission->id . ".";
             } else {
-                $path = ".".$parentPermission->id.".";
+                $path = "." . $parentPermission->id . ".";
             }
         }
 
@@ -101,16 +101,15 @@ trait SeederMaker
         $path = "";
         $parentPermission = Permission::find($parentId);
         if ($parentPermission) {
-            if (!empty($parentPermission->path)) {
-                $path = $parentPermission->path.$parentPermission->id.".";
+            if ( ! empty($parentPermission->path)) {
+                $path = $parentPermission->path . $parentPermission->id . ".";
             } else {
-                $path = ".".$parentPermission->id.".";
+                $path = "." . $parentPermission->id . ".";
             }
         }
 
-
         if ($sub) {
-            if (!$routeNames) {
+            if ( ! $routeNames) {
                 $routeNames = $this->routeNames;
             }
 
@@ -124,11 +123,11 @@ trait SeederMaker
 
             foreach ($routeNames as $routeName => $permissionName) {
                 Permission::updateOrCreate([
-                    "slug" => $slug.".".$routeName,
+                    "slug" => $slug . "." . $routeName,
                 ], [
                     'parent_id' => $parentId,
                     'order'     => $this->order += 1,
-                    "name"      => $name.$permissionName,
+                    "name"      => $name . $permissionName,
                     "path"      => $path,
 
                 ]);
@@ -137,6 +136,7 @@ trait SeederMaker
 
         return $parentId;
     }
+
 
     public function __get($name)
     {
@@ -148,6 +148,5 @@ trait SeederMaker
             }
         }
     }
-
 
 }

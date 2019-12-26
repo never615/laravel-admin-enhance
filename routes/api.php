@@ -13,12 +13,13 @@
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 use Illuminate\Support\Facades\Route;
 
 $attributes = [
     'namespace'  => 'Mallto\Admin\Controllers\Api',
     'prefix'     => 'api',
-    'middleware' => ['api'],
+    'middleware' => [ 'api' ],
 ];
 
 Route::group($attributes, function ($router) {
@@ -26,7 +27,7 @@ Route::group($attributes, function ($router) {
     /**
      * 需要经过验证
      */
-    Route::group(['middleware' => []], function ($router) {
+    Route::group([ 'middleware' => [] ], function ($router) {
 
         //获取七牛upload token
         $router->get('uptoken', '\Mallto\Admin\Controllers\FileController@getUploadToken');
@@ -34,16 +35,14 @@ Route::group($attributes, function ($router) {
         /**
          * 需要经过签名校验
          */
-        Route::group(['middleware' => ['authSign']], function () {
+        Route::group([ 'middleware' => [ 'authSign' ] ], function () {
 
         });
-
 
         /**
          * 需要经过授权
          */
-        Route::group(['middleware' => ['auth:api']], function ($router) {
-
+        Route::group([ 'middleware' => [ 'auth:api' ] ], function ($router) {
 
 
         });

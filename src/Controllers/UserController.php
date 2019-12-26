@@ -2,7 +2,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -18,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserController extends AdminCommonController
 {
+
     /**
      * 获取这个模块的标题
      *
@@ -28,6 +28,7 @@ class UserController extends AdminCommonController
         return "管理账户";
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -37,6 +38,7 @@ class UserController extends AdminCommonController
     {
         return Administrator::class;
     }
+
 
     protected function gridOption(Grid $grid)
     {
@@ -55,7 +57,6 @@ class UserController extends AdminCommonController
             $filter->ilike("name", trans('admin.name'));
         });
 
-
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             //不能删除自己
             if (Admin::user()->id == $actions->row->id) {
@@ -73,7 +74,6 @@ class UserController extends AdminCommonController
             ->rules('required');
 
         $form->text('name', trans('admin.name'))->rules('required');
-
 
         if ($this->currentId) {
             $adminUser = Admin::user();
@@ -98,7 +98,6 @@ class UserController extends AdminCommonController
                 return $form->model()->password;
             });
 
-
         //绑定微信,一个链接,包含时间戳,要绑定的管理端账号的id,加密签名
 //        $form->multipleSelect("manager_subject_ids", "数据查看范围")
 //            ->help("不设置,则默认只能查看管理账号所属主体下的数据")
@@ -113,8 +112,7 @@ class UserController extends AdminCommonController
 //                return Subject::selectOptions($tempSubjects->toArray(), false, false, $baseSubject->parent_id);
 //            });
 
-
-        $form->ignore(['password_confirmation', 'qrcode', 'unbind_wechat']);
+        $form->ignore([ 'password_confirmation', 'qrcode', 'unbind_wechat' ]);
 
         $form->select("adminable_type", "账号类型")
             ->options(Administrator::ADMINABLE_TYPE)
@@ -124,7 +122,7 @@ class UserController extends AdminCommonController
             ->rules("required")
             ->help("按空格搜索全部")
             ->options(function ($value) {
-                if (!empty($value)) {
+                if ( ! empty($value)) {
                     switch ($this->adminable_type) {
                         case 'subject':
                             $subject = Subject::find($value);
@@ -136,7 +134,6 @@ class UserController extends AdminCommonController
                 }
             })
             ->ajaxLoad("adminable_type", data_source_url("ajax_load"));
-
 
         $form->multipleSelect('roles', trans('admin.roles'))
             ->options(Role::dynamicData()->get()->pluck('name', 'id'));
@@ -151,7 +148,7 @@ class UserController extends AdminCommonController
                     ->first();
 
                 if ($adminUser) {
-                    throw new ResourceException("用户名".$form->username."已经存在");
+                    throw new ResourceException("用户名" . $form->username . "已经存在");
                 }
             }
 
@@ -182,9 +179,8 @@ class UserController extends AdminCommonController
 //
 //            }
 
-
             //自己不能修改自己的角色
-            if ($form->roles && !$this->equalRoleCheck($form->roles,
+            if ($form->roles && ! $this->equalRoleCheck($form->roles,
                     $form->model()->roles) && Admin::user()->id == $form->model()->id
             ) {
                 throw new AccessDeniedHttpException("自己不能修改自己的角色");
@@ -203,24 +199,25 @@ class UserController extends AdminCommonController
     protected function equalRoleCheck($formRoles, $roles)
     {
         $formRoles = array_filter($formRoles, function ($value) {
-            return !empty($value) ? true : false;
+            return ! empty($value) ? true : false;
         });
-
 
         return empty(array_diff($formRoles, $roles->pluck('id')->toArray())) ? true : false;
     }
+
 
     /**
      * form表单提交的和用户现有的角色是不是相等
      *
      * @param $formIds
      * @param $ids
+     *
      * @return bool
      */
     protected function equalManagerSubjectIds($formIds, $ids)
     {
         $formIds = array_filter($formIds, function ($value) {
-            return !empty($value) ? true : false;
+            return ! empty($value) ? true : false;
         });
 
         return $formIds == $ids;
@@ -231,6 +228,7 @@ class UserController extends AdminCommonController
      * 生成绑定微信的url
      *
      * @param $adminUserId
+     *
      * @return string
      */
     protected function getBindWechatUrl($adminUserId)
@@ -242,13 +240,13 @@ class UserController extends AdminCommonController
 
         if (config("app.env") == "production" || config("app.env") == "staging") {
             $wechatOAuthUrl = "https://wechat.mall-to.com/wechat/oauth";
-            $redirectUrl = config("app.url")."/admin/admin_bind_wechat";
+            $redirectUrl = config("app.url") . "/admin/admin_bind_wechat";
         } else {
             $wechatOAuthUrl = "https://test-wechat.mall-to.com/wechat/oauth";
-            $redirectUrl = config("app.url")."/admin/admin_bind_wechat";
+            $redirectUrl = config("app.url") . "/admin/admin_bind_wechat";
         }
 
-        $redirectUrl .= "?admin_user_id=".$adminUser->id;
+        $redirectUrl .= "?admin_user_id=" . $adminUser->id;
 
         $queryDataStr = http_build_query([
             "uuid"         => SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
@@ -256,10 +254,11 @@ class UserController extends AdminCommonController
             "redirect_url" => $redirectUrl,
         ]);
 
-        $wechatOAuthUrl .= "?".$queryDataStr;
+        $wechatOAuthUrl .= "?" . $queryDataStr;
 
         return $wechatOAuthUrl;
     }
+
 
     /**
      * 绑定微信form
@@ -275,7 +274,7 @@ class UserController extends AdminCommonController
             if ($currentAdminUser) {
                 $qrcodeHelp = "";
                 if ($currentAdminUser->openid) {
-                    $qrcodeHelp = "已绑定微信,绑定的用户微信昵称为:".($currentAdminUser->openid["nickname"] ?? "未知");
+                    $qrcodeHelp = "已绑定微信,绑定的用户微信昵称为:" . ($currentAdminUser->openid["nickname"] ?? "未知");
                 } else {
                     $qrcodeHelp = "未绑定微信,扫码可绑定(一个微信只能绑定一个管理账号,微信绑定新的管理账号后,微信的旧的绑定关系会失效)";
                 }

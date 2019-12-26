@@ -5,12 +5,10 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Subject;
-
 
 /**
  * 处理subject的显示和自动保存
@@ -40,6 +38,7 @@ trait AdminSubjectTrait
             }
         }
     }
+
 
     /**
      * form 主体的设置显示
@@ -76,13 +75,14 @@ trait AdminSubjectTrait
      * 而form->saving方法是在调用下面方法之前调用的
      *
      * @param $form
+     *
      * @return
      */
     protected function autoSubjectSaving($form)
     {
         //不是项目拥有者才自动设置subject_id
         if (Schema::hasColumn($this->tableName, "subject_id") &&
-            !\Mallto\Admin\AdminUtils::isOwner()) {
+            ! \Mallto\Admin\AdminUtils::isOwner()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
             $subject = Admin::user()->subject;

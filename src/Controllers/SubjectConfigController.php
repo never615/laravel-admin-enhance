@@ -29,6 +29,7 @@ class SubjectConfigController extends AdminCommonController
         return SubjectConfig::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
         $grid->key()->display(function ($value) {
@@ -41,6 +42,7 @@ class SubjectConfigController extends AdminCommonController
         });
     }
 
+
     /**
      * 需要实现的form设置
      *
@@ -51,6 +53,7 @@ class SubjectConfigController extends AdminCommonController
      * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
      * @param Form $form
+     *
      * @return mixed
      */
     protected function formOption(Form $form)
@@ -59,15 +62,15 @@ class SubjectConfigController extends AdminCommonController
             ->options(SubjectConfig::TYPE)
             ->default("private");
 
-        $form->displayE("show_default_key","预设的一些key")
-            ->with(function($values){
-                $html='<table border="1"><tr><th>说明</th><th>key</th></tr>';
-               foreach (config("app.subject_config_key") as $key=>$value){
-                   $html.="<tr><th>$value</th><th>$key</th></tr>";
+        $form->displayE("show_default_key", "预设的一些key")
+            ->with(function ($values) {
+                $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
+                foreach (config("app.subject_config_key") as $key => $value) {
+                    $html .= "<tr><th>$value</th><th>$key</th></tr>";
 //                   $html.=' <tr>'.$value.":".$key."</tr>";
-               }
+                }
 
-               return $html."</table>";
+                return $html . "</table>";
             });
 
         $form->text("key");

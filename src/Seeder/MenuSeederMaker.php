@@ -7,7 +7,6 @@ namespace Mallto\Admin\Seeder;
 
 use Mallto\Admin\Data\Menu;
 
-
 /**
  * 生成权限的seeder基础方法
  *
@@ -18,6 +17,7 @@ use Mallto\Admin\Data\Menu;
  */
 trait MenuSeederMaker
 {
+
     /**
      * @param      $uri
      * @param      $parentId
@@ -25,6 +25,7 @@ trait MenuSeederMaker
      * @param      $title
      * @param      $icon
      * @param null $subTitle
+     *
      * @return mixed
      */
     protected function updateOrCreate($uri, $parentId, $order, $title, $icon, $subTitle = null)
@@ -32,10 +33,10 @@ trait MenuSeederMaker
         $path = "";
         $parentMenu = Menu::find($parentId);
         if ($parentMenu) {
-            if (!empty($parentMenu->path)) {
-                $path = $parentMenu->path.$parentMenu->id.".";
+            if ( ! empty($parentMenu->path)) {
+                $path = $parentMenu->path . $parentMenu->id . ".";
             } else {
-                $path = ".".$parentMenu->id.".";
+                $path = "." . $parentMenu->id . ".";
             }
         }
 

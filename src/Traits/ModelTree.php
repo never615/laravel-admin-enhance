@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Request;
 
 trait ModelTree
 {
+
     /**
      * @var array
      */
@@ -36,6 +37,7 @@ trait ModelTree
      */
     protected $queryCallback;
 
+
     /**
      * Get children of current node.
      *
@@ -45,6 +47,7 @@ trait ModelTree
     {
         return $this->hasMany(static::class, $this->parentColumn);
     }
+
 
     /**
      * Get parent of current node.
@@ -56,6 +59,7 @@ trait ModelTree
         return $this->belongsTo(static::class, $this->parentColumn);
     }
 
+
     /**
      * @return string
      */
@@ -63,6 +67,7 @@ trait ModelTree
     {
         return $this->parentColumn;
     }
+
 
     /**
      * Set parent column.
@@ -74,6 +79,7 @@ trait ModelTree
         $this->parentColumn = $column;
     }
 
+
     /**
      * Get title column.
      *
@@ -83,6 +89,7 @@ trait ModelTree
     {
         return $this->titleColumn;
     }
+
 
     /**
      * Set title column.
@@ -94,6 +101,7 @@ trait ModelTree
         $this->titleColumn = $column;
     }
 
+
     /**
      * Get order column name.
      *
@@ -104,6 +112,7 @@ trait ModelTree
         return $this->orderColumn;
     }
 
+
     /**
      * Set order column.
      *
@@ -113,6 +122,7 @@ trait ModelTree
     {
         $this->orderColumn = $column;
     }
+
 
     /**
      * Set query callback to model.
@@ -128,6 +138,7 @@ trait ModelTree
         return $this;
     }
 
+
     /**
      * Format data to tree like array.
      *
@@ -137,6 +148,7 @@ trait ModelTree
     {
         return $this->buildNestedArray();
     }
+
 
     /**
      * Build Nested array.
@@ -169,6 +181,7 @@ trait ModelTree
         return $branch;
     }
 
+
     /**
      * Get all elements.
      *
@@ -177,7 +190,7 @@ trait ModelTree
     public function allNodes()
     {
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
-        $byOrder = $orderColumn.' = 0,'.$orderColumn;
+        $byOrder = $orderColumn . ' = 0,' . $orderColumn;
 
         $self = new static();
 
@@ -187,6 +200,7 @@ trait ModelTree
 
         return $self->orderByRaw($byOrder)->get()->toArray();
     }
+
 
     /**
      * Set the order of branches in the tree.
@@ -203,6 +217,7 @@ trait ModelTree
             return ++$item;
         }, static::$branchOrder);
     }
+
 
     /**
      * Save tree order from a tree like array.
@@ -237,10 +252,15 @@ trait ModelTree
      * @param bool      $root         ,是否返回root节点
      * @param bool      $defaultBlack ,是否使用默认的空格大小
      * @param int|array $parentId     ,进来的nodes默认只有parent_id是0的才能进行下一步,此配置支持接收数组,可以配置多个parentId
+     *
      * @return \Illuminate\Support\Collection
      */
-    public static function selectOptions(array $nodes = null, $root = true, $defaultBlack = true, $parentId = 0)
-    {
+    public static function selectOptions(
+        array $nodes = null,
+        $root = true,
+        $defaultBlack = true,
+        $parentId = 0
+    ) {
         $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {
@@ -259,6 +279,7 @@ trait ModelTree
      * @param string $prefix
      *
      * @param bool   $defaultBlack
+     *
      * @return array
      */
     protected function buildSelectOptions(
@@ -279,18 +300,16 @@ trait ModelTree
             $nodes = $this->allNodes();
         }
 
-
         $parentId = (array) $parentId;
 
         foreach ($nodes as $node) {
             if ($defaultBlack) {
-                $node[$this->titleColumn] = $prefix.'&nbsp;'.$node[$this->titleColumn];
+                $node[$this->titleColumn] = $prefix . '&nbsp;' . $node[$this->titleColumn];
             }
-
 
 //            if ($node[$this->parentColumn] == $parentId) {
             if (in_array($node[$this->parentColumn], $parentId)) {
-                $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix.$prefix);
+                $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix . $prefix);
 
                 $options[$node[$this->getKeyName()]] = $node[$this->titleColumn];
 
@@ -303,6 +322,7 @@ trait ModelTree
         return $options;
     }
 
+
     /**
      * {@inheritdoc}
      */
@@ -312,6 +332,7 @@ trait ModelTree
 
         return parent::delete();
     }
+
 
     /**
      * {@inheritdoc}

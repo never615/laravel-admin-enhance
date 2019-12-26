@@ -12,8 +12,6 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
-
 use Mallto\Admin\Data\Administrator;
 
 /**
@@ -24,6 +22,7 @@ use Mallto\Admin\Data\Administrator;
  */
 trait AdminUserTrait
 {
+
     public function adminUser()
     {
         return $this->belongsTo(Administrator::class, "admin_user_id");

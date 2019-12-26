@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateImportRecordsAddExtra extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -24,6 +25,7 @@ class UpdateImportRecordsAddExtra extends Migration
             $table->text("remark")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

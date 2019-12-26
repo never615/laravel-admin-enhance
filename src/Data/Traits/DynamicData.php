@@ -5,13 +5,13 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
 /**
  * Created by PhpStorm.
  * User: never615
  * Date: 24/03/2017
  * Time: 7:51 PM
  */
+
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
@@ -60,7 +60,6 @@ trait DynamicData
 //                $tempSubjectIds = array_merge($tempSubjectIds, $ids);
 //                $ids = array_unique($tempSubjectIds);
 //            }
-
 
             //3.限定查询范围为所有子主体
 

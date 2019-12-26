@@ -5,12 +5,12 @@
 
 namespace Mallto\Admin\Grid\Displayers;
 
-
 use Encore\Admin\Admin;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 
 class Select extends AbstractDisplayer
 {
+
     public function display($options = [])
     {
         $name = $this->column->getName();

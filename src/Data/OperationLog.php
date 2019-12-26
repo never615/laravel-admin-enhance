@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -35,6 +34,7 @@ class OperationLog extends Model
         'PURGE',
     ];
 
+
     /**
      * Create a new Eloquent model instance.
      *
@@ -51,10 +51,12 @@ class OperationLog extends Model
         parent::__construct($attributes);
     }
 
+
     public function subject()
     {
         return $this->belongsTo(Subject::class);
     }
+
 
     /**
      * Log belongs to users.

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
@@ -18,10 +17,10 @@ use Mallto\Admin\Data\Administrator;
  */
 abstract class BaseModel extends Model
 {
+
     use DynamicData, SelectSource;
 
-
-    protected $hidden = ['deleted_at'];
+    protected $hidden = [ 'deleted_at' ];
 
     protected $guarded = [];
 
@@ -40,13 +39,14 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        $url = config("app.file_url_prefix").$value;
+        $url = config("app.file_url_prefix") . $value;
         if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
             return $url;
         } else {
-            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
         }
     }
+
 
     public function getLogoAttribute($value)
     {
@@ -58,14 +58,15 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        $url = config("app.file_url_prefix").$value;
+        $url = config("app.file_url_prefix") . $value;
         if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
             return $url;
         } else {
-            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
         }
 
     }
+
 
     public function getImageAttribute($value)
     {
@@ -77,13 +78,14 @@ abstract class BaseModel extends Model
             return $value;
         }
 
-        $url = config("app.file_url_prefix").$value;
+        $url = config("app.file_url_prefix") . $value;
         if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
             return $url;
         } else {
-            return $url.'?imageView2/0/interlace/1/q/75|imageslim';
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
         }
     }
+
 
     public function setImagesAttribute($values)
     {
@@ -105,6 +107,7 @@ abstract class BaseModel extends Model
         $this->attributes['images'] = $values;
     }
 
+
     public function getImagesAttribute($value)
     {
         $values = json_decode($value);
@@ -115,11 +118,11 @@ abstract class BaseModel extends Model
                     $values[$key] = $value;
                 } else {
 
-                    $url = config("app.file_url_prefix").$value;
+                    $url = config("app.file_url_prefix") . $value;
                     if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
                         $values[$key] = $url;
                     } else {
-                        $values[$key] = $url.'?imageView2/0/interlace/1/q/75|imageslim';
+                        $values[$key] = $url . '?imageView2/0/interlace/1/q/75|imageslim';
                     }
                 }
             }
@@ -129,6 +132,7 @@ abstract class BaseModel extends Model
 
         return $values;
     }
+
 
     public function admin()
     {

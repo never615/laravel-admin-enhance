@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateReportsTable2 extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -17,7 +18,7 @@ class UpdateReportsTable2 extends Migration
     public function up()
     {
         Schema::table('reports', function (Blueprint $table) {
-            $table->dropForeign(["admin_user_id"]);
+            $table->dropForeign([ "admin_user_id" ]);
             $table->foreign('admin_user_id')
                 ->references('id')
                 ->on('admin_users')
@@ -26,6 +27,7 @@ class UpdateReportsTable2 extends Migration
 
         });
     }
+
 
     /**
      * Reverse the migrations.

@@ -23,7 +23,6 @@ class ModelBaseImport extends BaseImport implements
     ToModel, WithBatchInserts
 {
 
-
     /**
      * @param array $row
      *
@@ -69,6 +68,7 @@ class ModelBaseImport extends BaseImport implements
         return 1000;
     }
 
+
     /**
      * @return int
      */
@@ -76,7 +76,5 @@ class ModelBaseImport extends BaseImport implements
     {
         return 1000;
     }
-
-
 
 }

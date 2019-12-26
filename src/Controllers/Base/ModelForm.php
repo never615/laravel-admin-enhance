@@ -5,9 +5,9 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
-
 trait ModelForm
 {
+
     /**
      * Display the specified resource.
      *
@@ -22,6 +22,7 @@ trait ModelForm
         return $this->edit($id);
     }
 
+
     /**
      * Update the specified resource in storage.
      *
@@ -35,6 +36,7 @@ trait ModelForm
 
         return $this->form()->update($id);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -71,6 +73,7 @@ trait ModelForm
             ]);
         }
     }
+
 
     /**
      * Store a newly created resource in storage.

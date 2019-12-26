@@ -38,6 +38,7 @@ trait AdminDataFilterTrait
 
     }
 
+
     /**
      * 处理进入详情页/更新数据/删除数据的权限
      *
@@ -58,6 +59,7 @@ trait AdminDataFilterTrait
     }
 
     //=========== 以上几个方法涵盖了增删改查各个纬度,一般重写以上方法即可  =================
+
 
     /**
      * 编辑页权限检查
@@ -105,7 +107,7 @@ trait AdminDataFilterTrait
     {
         $adminUser = Admin::user();
 
-        if (!$adminUser->isOwner()) {
+        if ( ! $adminUser->isOwner()) {
             //过滤数据展示使用
 
             if ($this->dataViewMode == 'all') {
@@ -126,7 +128,7 @@ trait AdminDataFilterTrait
 
                     //如果设置了 manager_subject_ids,则需要和并处理如果设置了manager_subject_ids数据
                     $managerSubjectIds = $adminUser->manager_subject_ids;
-                    if (!empty($managerSubjectIds)) {
+                    if ( ! empty($managerSubjectIds)) {
                         $tempSubject = new Subject();
                         $tempManagerSubjectIds = $managerSubjectIds;
 
@@ -145,10 +147,11 @@ trait AdminDataFilterTrait
             if ($this->tableName == "subjects") {
                 $grid->model()->whereIn("id", $tempSubjectIds);
             } elseif (Schema::hasColumn($this->tableName, "subject_id")) {
-                $grid->model()->whereIn($this->getTableName().".subject_id", $tempSubjectIds);
+                $grid->model()->whereIn($this->getTableName() . ".subject_id", $tempSubjectIds);
             }
         }
     }
+
 
     /**
      * 处理subject纬度阻止没有数据权限的操作
@@ -160,14 +163,14 @@ trait AdminDataFilterTrait
         $model = resolve($this->getModel());
         //检查记录是否已经删除
         $obj = $model::find($id);
-        if (!$obj) {
+        if ( ! $obj) {
             throw new HttpException(422, "记录不存在或已经删除");
         }
 
         $adminUser = Admin::user();
 
         //过滤数据:只能查看自己主体或者子主体的数据;项目拥有者可以查看全部
-        if (!$adminUser->isOwner()) {
+        if ( ! $adminUser->isOwner()) {
             if ($this->dataViewMode == 'all') {
                 // 根据账号所属的总公司,显示其下全部主体的数据
                 $subject = $adminUser->subject;
@@ -185,7 +188,7 @@ trait AdminDataFilterTrait
 
                 $managerSubjectIds = $adminUser->manager_subject_ids;
 
-                if (!empty($managerSubjectIds)) {
+                if ( ! empty($managerSubjectIds)) {
                     $tempSubject = new Subject();
                     $tempSubjectIds = $managerSubjectIds;
 
@@ -203,16 +206,15 @@ trait AdminDataFilterTrait
             $tableName = $model->getTable();
             if ($tableName == "subjects") {
                 //如果访问的subject的id属于$subjectIds可以访问
-                if (!in_array($id, $subjectIds)) {
+                if ( ! in_array($id, $subjectIds)) {
                     throw new HttpException(403, "没有权限查看");
                 }
             } elseif (Schema::hasColumn($tableName, "subject_id")) {
-                if (!$model->whereIn('subject_id', $subjectIds)->where('id', $id)->exists()) {
+                if ( ! $model->whereIn('subject_id', $subjectIds)->where('id', $id)->exists()) {
                     throw new HttpException(403, "没有权限查看");
                 }
             }
         }
     }
-
 
 }

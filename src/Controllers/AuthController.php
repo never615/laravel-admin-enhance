@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Controllers\AuthController as BaseAuthController;
@@ -12,6 +11,7 @@ use Mallto\User\Domain\SmsUsecase;
 
 class AuthController extends BaseAuthController
 {
+
     /**
      * 手机号登录方式
      *
@@ -22,10 +22,12 @@ class AuthController extends BaseAuthController
         return 'mobile';
     }
 
+
     /**
      * 短信验证码登录
      *
      * @param Request $request
+     *
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
      */
     public function smsLogin(Request $request)
@@ -39,7 +41,8 @@ class AuthController extends BaseAuthController
         $sms = app(SmsUsecase::class);
 
         try {
-            $sms->checkVerifyCode($request->mobile, $request->verify_number, 'admin_sms_login', $adminUser->subject_id);
+            $sms->checkVerifyCode($request->mobile, $request->verify_number, 'admin_sms_login',
+                $adminUser->subject_id);
         } catch (\Exception $e) {
             return back()->withInput()->withErrors([
                 'verify_number' => '验证码错误或已过期',
@@ -56,6 +59,7 @@ class AuthController extends BaseAuthController
         ]);
     }
 
+
     /**
      * Handle a login request.
      *
@@ -71,7 +75,7 @@ class AuthController extends BaseAuthController
 
         $this->loginValidator($request->all())->validate();
 
-        $credentials = $request->only([$this->username(), 'password']);
+        $credentials = $request->only([ $this->username(), 'password' ]);
         $remember = $request->get('remember', false);
 
         if ($this->guard()->attempt($credentials, $remember)) {
@@ -83,6 +87,7 @@ class AuthController extends BaseAuthController
             'login_page'      => 'password',
         ]);
     }
+
 
     /**
      * Get a validator for an incoming login request.
@@ -99,10 +104,12 @@ class AuthController extends BaseAuthController
         ]);
     }
 
+
     /**
      * 管理端登录短信验证码
      *
      * @param Request $request
+     *
      * @return \Illuminate\Http\Response
      */
     public function sendSms(Request $request)
@@ -125,7 +132,7 @@ class AuthController extends BaseAuthController
         $sms = app(SmsUsecase::class);
 
         if ($count > 1) {
-            \Log::error("当前登录的手机号".$mobile."有绑定了多个账号");
+            \Log::error("当前登录的手机号" . $mobile . "有绑定了多个账号");
         }
 
         $sms->sendSms($mobile, $user->subject_id, 'admin_sms_login');
