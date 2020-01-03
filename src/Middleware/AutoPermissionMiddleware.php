@@ -29,20 +29,23 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class AutoPermissionMiddleware
 {
+
     protected $except = [
     ];
+
 
     /**
      * Handle an incoming request.
      *
      * @param         $request
      * @param Closure $next
+     *
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
         $adminUser = Auth::guard("admin")->user();
-        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+        if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }
 
@@ -52,26 +55,28 @@ class AutoPermissionMiddleware
         if (count($routenameArr) == 2) {
             $subRouteName = $routenameArr[1];
 
-            if (!Permission::where("slug", $currentRouteName)
+            if ( ! Permission::where("slug", $currentRouteName)
                 ->exists()) {
-                if ($subRouteName == "edit" || $subRouteName == "show") {
-                    $currentRouteName = $routenameArr[0].".index";
+                if ($subRouteName === "edit" || $subRouteName === "show") {
+                    $currentRouteName = $routenameArr[0] . ".index";
                 }
 
-                if ($subRouteName == "store" || $subRouteName == "update") {
-                    $currentRouteName = $routenameArr[0].".create";
+                if ($subRouteName === "store" || $subRouteName === "update") {
+                    $currentRouteName = $routenameArr[0] . ".create";
                 }
             }
         }
 
         $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
 
-
         if (is_null($currentRouteName)) {
             //todo 没有设置route name,使用uri来判断
             return $next($request);
         }
 
+        if ($currentRouteName === 'admin.handle-action' || $currentRouteName === 'admin.handle-form') {
+            return $next($request);
+        }
 
         //权限管理有该权限,检查用户是否有该权限
         if ($adminUser->can($currentRouteName)) {
@@ -102,7 +107,7 @@ class AutoPermissionMiddleware
         if ($export) {
             $currentRouteName = str_replace("index", "export", $currentRouteName);
 
-            if (!$adminUser->can($currentRouteName)) {
+            if ( ! $adminUser->can($currentRouteName)) {
                 throw new AccessDeniedHttpException(trans("errors.permission_denied"));
             }
         }
