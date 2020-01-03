@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Grid\Tools;
 
-
 use Encore\Admin\Grid\Tools\AbstractTool;
 use Illuminate\Contracts\Support\Arrayable;
 
@@ -31,19 +30,21 @@ class TagSelect extends AbstractTool
     protected $options = [];
 
     protected $url;
+
     /**
      * @var
      */
     private $placeholder;
 
+
     /**
      * TagSelect constructor.
      *
      * @param        $options
-     * @param        $actionUrl,店铺标签按钮提交的地址
+     * @param        $actionUrl ,店铺标签按钮提交的地址
      * @param string $placeholder
      */
-    public function __construct($options,$actionUrl,$placeholder = "设置标签")
+    public function __construct($options, $actionUrl, $placeholder = "设置标签")
     {
         $this->placeholder = $placeholder;
         $this->options = $options;
@@ -63,6 +64,7 @@ class TagSelect extends AbstractTool
 
         return $this;
     }
+
 
     public function options($options = [])
     {

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateSubjects5Table extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -16,6 +17,7 @@ class UpdateSubjects5Table extends Migration
             $table->bigInteger('sms_count')->default(0)->comment("短信数量");
         });
     }
+
 
     /**
      * Reverse the migrations.

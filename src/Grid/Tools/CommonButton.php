@@ -21,8 +21,11 @@ use Encore\Admin\Grid\Tools\AbstractTool;
  */
 class CommonButton extends AbstractTool
 {
+
     private $name;
+
     private $url;
+
 
     /**
      * CommonButton constructor.
@@ -70,7 +73,6 @@ EOT;
     public function render()
     {
         Admin::script($this->script());
-
 
         return <<<EOT
 <a class="btn btn-sm btn-primary mt-grid-common" target="_blank"> $this->name</a>

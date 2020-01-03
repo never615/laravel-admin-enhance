@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controller;
 
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\InvalidParamException;
-
 
 class SelectSourceController extends Controller
 {
@@ -30,6 +28,7 @@ class SelectSourceController extends Controller
      *
      * @param         $key
      * @param Request $request
+     *
      * @return mixed
      */
     public function dataSource($key, Request $request)
@@ -44,7 +43,6 @@ class SelectSourceController extends Controller
         //ajaxload使用,父节点的值
         $fatherValue = $request->get('father_value');
 
-
         if ($key == 'ajax_load') {
             $key = $fatherValue;
         }
@@ -52,7 +50,7 @@ class SelectSourceController extends Controller
         $adminUser = Admin::user();
 
         $subject = $this->getSubject($request);
-        if (!$subject) {
+        if ( ! $subject) {
             $subject = $adminUser->subject;
         }
 
@@ -62,7 +60,7 @@ class SelectSourceController extends Controller
         switch ($key) {
             case "subject":
             case "subject_id":
-                if (!is_null($id)) {
+                if ( ! is_null($id)) {
                     $id = explode(",", $id);
 
                     return Subject::select(DB::raw("id,name as text"))->findOrFail($id);
@@ -71,7 +69,7 @@ class SelectSourceController extends Controller
                     return Subject::select(DB::raw("id,name as text"))
                         ->whereIn('id', $childSubjectIds)
                         ->where('name', '~*', "$q")
-                        ->paginate($perPage, ['id', 'text']);
+                        ->paginate($perPage, [ 'id', 'text' ]);
                 }
                 break;
             case "load": //load 模式是直接加载全部数据,不过是远程加载
@@ -80,7 +78,7 @@ class SelectSourceController extends Controller
                     case 'suject':
                         return Subject::select(DB::raw("id,name as text"))
 //                            ->where("id", $childSubjectIds)
-                            ->paginate($perPage, ['id', 'text']);
+                            ->paginate($perPage, [ 'id', 'text' ]);
                         break;
                     default:
                         throw new InvalidParamException();
@@ -92,6 +90,7 @@ class SelectSourceController extends Controller
                 break;
         }
     }
+
 
     private
     function getSubject(

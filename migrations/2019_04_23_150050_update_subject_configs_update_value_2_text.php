@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateSubjectConfigsUpdateValue2Text extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -24,6 +25,7 @@ class UpdateSubjectConfigsUpdateValue2Text extends Migration
             $table->text("value")->nullable()->change();
         });
     }
+
 
     /**
      * Reverse the migrations.

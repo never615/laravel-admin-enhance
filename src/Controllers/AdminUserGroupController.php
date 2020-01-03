@@ -5,16 +5,15 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\AdminUserGroup;
 
-
 class AdminUserGroupController extends AdminCommonController
 {
+
     /**
      * 获取这个模块的标题
      *
@@ -24,6 +23,7 @@ class AdminUserGroupController extends AdminCommonController
     {
         return "管理账户分组";
     }
+
 
     /**
      * 获取这个模块的Model
@@ -35,14 +35,15 @@ class AdminUserGroupController extends AdminCommonController
         return AdminUserGroup::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
         $grid->name("组名");
 //        $grid->slug();
 //        $grid->remark();
 
-
     }
+
 
     /**
      * 需要实现的form设置
@@ -51,6 +52,7 @@ class AdminUserGroupController extends AdminCommonController
      * 然后formOption留空即可
      *
      * @param Form $form
+     *
      * @return mixed
      */
     protected function formOption(Form $form)

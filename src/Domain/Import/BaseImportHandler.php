@@ -12,7 +12,6 @@ use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Tool\Utils\TimeUtils;
 
-
 /**
  *
  * 使用laravel-excel处理导入
@@ -26,20 +25,22 @@ use Mallto\Tool\Utils\TimeUtils;
 abstract class BaseImportHandler
 {
 
-
     /**
      * 导入模式,可选: array and models
      *
      * 设置不同的模式,则public function dataHandler($importRecord, $rows) 的$rows参数返回不同的数据.
      *
      *
-     * models:  $rows返回一条数据(array),即导入的一行数据.参考https://docs.laravel-excel.com/3.1/imports/model.html 中的model()方法,需要返回model.
-     * eachRow: $rows返回一条数据(array),即导入的一行数据.参考:https://docs.laravel-excel.com/3.1/imports/model.html#handling-persistence-on-your-own
-     * array:   $rows返回导入的数据的二维数组,数组中每一条子数组表示导入的一行数据.使用参考:https://docs.laravel-excel.com/3.1/imports/collection.html
+     * models:  $rows返回一条数据(array),即导入的一行数据.参考https://docs.laravel-excel.com/3.1/imports/model.html
+     * 中的model()方法,需要返回model. eachRow:
+     * $rows返回一条数据(array),即导入的一行数据.参考:https://docs.laravel-excel.com/3.1/imports/model.html#handling-persistence-on-your-own
+     * array:  
+     * $rows返回导入的数据的二维数组,数组中每一条子数组表示导入的一行数据.使用参考:https://docs.laravel-excel.com/3.1/imports/collection.html
      *
      * @return mixed
      */
     public $importMode = 'models';
+
 
     /**
      * BaseImportHandler constructor.
@@ -68,6 +69,7 @@ abstract class BaseImportHandler
      * 使用的七牛私有空间的filesystem,可以重写该方法,按自己的需求使用filesystem
      *
      * @param ImportRecord $importRecord
+     *
      * @return mixed
      */
     public function handle($importRecord)
@@ -88,10 +90,9 @@ abstract class BaseImportHandler
         }
 
         //保存到服务器本地临时目录,便于读取文件
-        $tempFileName = $importRecord->subject_id.'_'.$importRecord->module_slug.'_'.$importRecord->created_at.'.'.$ext;
-        Storage::disk('local')->put('tmp/import_file/'.$tempFileName, $contents);
-        $path = storage_path('app/tmp/import_file/'.$tempFileName);
-
+        $tempFileName = $importRecord->subject_id . '_' . $importRecord->module_slug . '_' . $importRecord->created_at . '.' . $ext;
+        Storage::disk('local')->put('tmp/import_file/' . $tempFileName, $contents);
+        $path = storage_path('app/tmp/import_file/' . $tempFileName);
 
         //1. 修改状态为进行中
         $this->updateRecordStatus($importRecord, 'processing');
@@ -107,7 +108,6 @@ abstract class BaseImportHandler
 
             return false;
         }
-
 
         //3. 开始导入
         switch ($this->getImportMode()) {
@@ -132,7 +132,6 @@ abstract class BaseImportHandler
 
         $failures = $import->failures();
         $errors = $import->errors();
-
 
         if (count($failures) === 0 && count($errors) === 0) {
             $this->updateRecordStatus($importRecord, 'success');
@@ -179,15 +178,18 @@ abstract class BaseImportHandler
      * @link https://docs.laravel-excel.com/3.1/imports/validation.html
      *
      * @param $importRecord
+     *
      * @return array
      */
     abstract public function rule($importRecord);
+
 
     /**
      * 插入数据
      *
      * @param                  $importRecord
      * @param array            $row |$rows
+     *
      * @return mixed
      * @throws \Exception
      */
@@ -198,14 +200,17 @@ abstract class BaseImportHandler
      * 导入之前触发
      *
      * @param $importRecord
+     *
      * @return mixed
      */
     abstract public function beforeSheet($importRecord);
+
 
     /**
      * 导入之后触发
      *
      * @param $importRecord
+     *
      * @return mixed
      */
     abstract public function afterSheet($importRecord);
@@ -216,6 +221,7 @@ abstract class BaseImportHandler
      *
      * @param ImportRecord $record
      * @param \Throwable   $exception
+     *
      * @return mixed
      */
     public
@@ -226,6 +232,7 @@ abstract class BaseImportHandler
         $this->updateRecordStatus($record, 'failure',
             $exception->getMessage());
     }
+
 
     /**
      * 修改导入任务状态
@@ -241,17 +248,16 @@ abstract class BaseImportHandler
         $failureReason = null,
         $finishAt = null
     ) {
-        if (!$finishAt && $status !== 'processing') {
+        if ( ! $finishAt && $status !== 'processing') {
             $finishAt = TimeUtils::getNowTime();
         }
-
 
         //获取最新的 importRecord
         $importRecord->refresh();
 
-        $msg = $importRecord->failure_reason ? $importRecord->failure_reason."\n" : '';
+        $msg = $importRecord->failure_reason ? $importRecord->failure_reason . "\n" : '';
 
-        $failureReason = $failureReason ? $msg.$failureReason : $msg;
+        $failureReason = $failureReason ? $msg . $failureReason : $msg;
 
         if ($failureReason && $status === 'success') {
             $status = 'partially_failure';
@@ -262,6 +268,7 @@ abstract class BaseImportHandler
         $importRecord->finish_at = $finishAt ?: null;
         $importRecord->save();
     }
+
 
     /**
      * 默认的rule规则
@@ -278,10 +285,12 @@ abstract class BaseImportHandler
         return $rule;
     }
 
+
     /**
      * @param        $msg
      * @param string $failReason
      * @param null   $line
+     *
      * @return string
      * @deprecated
      */
@@ -291,7 +300,7 @@ abstract class BaseImportHandler
         $line = null
     ) {
         if ($line) {
-            $failReason .= '第'.($line - 1).'行错误:'.$msg;
+            $failReason .= '第' . ($line - 1) . '行错误:' . $msg;
         } else {
             $failReason .= $msg;
         }

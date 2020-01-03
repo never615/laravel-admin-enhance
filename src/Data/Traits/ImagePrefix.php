@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
 /**
  * Created by PhpStorm.
  * User: never615
@@ -14,14 +13,16 @@ namespace Mallto\Admin\Data\Traits;
  */
 trait ImagePrefix
 {
+
     public function getLogoAttribute($value)
     {
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
+
 
     public function getImageAttribute($value)
     {
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
 
 //    public function getImagesAttribute($values)

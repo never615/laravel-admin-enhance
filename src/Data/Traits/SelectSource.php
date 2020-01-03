@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 
-
 /**
  * Created by PhpStorm.
  * User: never615
@@ -20,11 +19,13 @@ trait SelectSource
 {
 
     public $selectName = "name";
+
     public $selectId = "id";
 
+
     /**
-     * @deprecated
      * @return mixed
+     * @deprecated
      */
     public static function selectSourceDate()
     {
@@ -58,10 +59,12 @@ trait SelectSource
             ->pluck($this->selectName, $this->selectId);
     }
 
+
     /**
      * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
      *
      * @param $query
+     *
      * @return mixed
      */
     public function scopeSelectSourceDatas2($query)

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Domain\User;
 
-use Mallto\Admin\Data\Administrator;
 use Mallto\User\Data\User;
 
 /**
@@ -22,6 +21,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      *
      * @param      $adminUser
      * @param bool $addToken
+     *
      * @return mixed
      */
     public function getReturnUserInfo($adminUser, $addToken = true)
@@ -31,7 +31,6 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             $token = $adminUser->createToken("admin_api");
             $adminUser->token = $token->accessToken;
         }
-
 
         return array_merge($adminUser->only([
             "id",
@@ -47,22 +46,24 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         ]);
     }
 
+
     /**
      * 根据openid查询管理端用户
      *
      * @param $openid
      * @param $subjectId
+     *
      * @return mixed
      */
     public function getUserByOpenid($openid, $subjectId)
     {
         $class = config('auth.providers.admin_users.model');
 
-        $adminUser = $class::with(["adminable"])
+        $adminUser = $class::with([ "adminable" ])
             ->where("subject_id", $subjectId)
             ->where("openid->openid", $openid)
             ->first();
-        if (!$adminUser) {
+        if ( ! $adminUser) {
             //管理端账户不存在
 
             //查询该openid对应会员的手机号,是否已经绑定了管理端账户
@@ -75,9 +76,8 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
                 },
             ])->where("subject_id", $subjectId)->first();
 
-
             if ($user && $user->mobile) {
-                $adminUser = $class::with(["adminable"])
+                $adminUser = $class::with([ "adminable" ])
                     ->where("subject_id", $subjectId)
                     ->where("mobile", $user->mobile)
                     ->first();
@@ -87,15 +87,17 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         return $adminUser;
     }
 
+
     /**
      * 获取管理用户对应的openid
      *
      * @param $adminUser
+     *
      * @return mixed
      */
     public function getOpenid($adminUser)
     {
-        if (!empty($adminUser->openid["openid"])) {
+        if ( ! empty($adminUser->openid["openid"])) {
             return $adminUser->openid["openid"];
         } else {
             $user = User::where("mobile", $adminUser->mobile)

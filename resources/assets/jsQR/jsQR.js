@@ -3,93 +3,129 @@
  */
 
 (function webpackUniversalModuleDefinition(root, factory) {
-    if(typeof exports === 'object' && typeof module === 'object')
+    if (typeof exports === 'object' && typeof module === 'object')
         module.exports = factory();
-    else if(typeof define === 'function' && define.amd)
+    else if (typeof define === 'function' && define.amd)
         define([], factory);
-    else if(typeof exports === 'object')
+    else if (typeof exports === 'object')
         exports["jsQR"] = factory();
     else
         root["jsQR"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
-    return /******/ (function(modules) { // webpackBootstrap
+})(typeof self !== 'undefined' ? self : this, function () {
+    return /******/ (function (modules) { // webpackBootstrap
         /******/ 	// The module cache
-        /******/ 	var installedModules = {};
+        /******/
+        var installedModules = {};
         /******/
         /******/ 	// The require function
-        /******/ 	function __webpack_require__(moduleId) {
+        /******/
+        function __webpack_require__(moduleId) {
             /******/
             /******/ 		// Check if module is in cache
-            /******/ 		if(installedModules[moduleId]) {
-                /******/ 			return installedModules[moduleId].exports;
-                /******/ 		}
+            /******/
+            if (installedModules[moduleId]) {
+                /******/
+                return installedModules[moduleId].exports;
+                /******/
+            }
             /******/ 		// Create a new module (and put it into the cache)
-            /******/ 		var module = installedModules[moduleId] = {
-                /******/ 			i: moduleId,
-                /******/ 			l: false,
-                /******/ 			exports: {}
-                /******/ 		};
+            /******/
+            var module = installedModules[moduleId] = {
+                /******/            i: moduleId,
+                /******/            l: false,
+                /******/            exports: {}
+                /******/
+            };
             /******/
             /******/ 		// Execute the module function
-            /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+            /******/
+            modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
             /******/
             /******/ 		// Flag the module as loaded
-            /******/ 		module.l = true;
+            /******/
+            module.l = true;
             /******/
             /******/ 		// Return the exports of the module
-            /******/ 		return module.exports;
-            /******/ 	}
+            /******/
+            return module.exports;
+            /******/
+        }
+
         /******/
         /******/
         /******/ 	// expose the modules object (__webpack_modules__)
-        /******/ 	__webpack_require__.m = modules;
+        /******/
+        __webpack_require__.m = modules;
         /******/
         /******/ 	// expose the module cache
-        /******/ 	__webpack_require__.c = installedModules;
+        /******/
+        __webpack_require__.c = installedModules;
         /******/
         /******/ 	// define getter function for harmony exports
-        /******/ 	__webpack_require__.d = function(exports, name, getter) {
-            /******/ 		if(!__webpack_require__.o(exports, name)) {
-                /******/ 			Object.defineProperty(exports, name, {
-                    /******/ 				configurable: false,
-                    /******/ 				enumerable: true,
-                    /******/ 				get: getter
-                    /******/ 			});
-                /******/ 		}
-            /******/ 	};
+        /******/
+        __webpack_require__.d = function (exports, name, getter) {
+            /******/
+            if (!__webpack_require__.o(exports, name)) {
+                /******/
+                Object.defineProperty(exports, name, {
+                    /******/                configurable: false,
+                    /******/                enumerable: true,
+                    /******/                get: getter
+                    /******/
+                });
+                /******/
+            }
+            /******/
+        };
         /******/
         /******/ 	// getDefaultExport function for compatibility with non-harmony modules
-        /******/ 	__webpack_require__.n = function(module) {
-            /******/ 		var getter = module && module.__esModule ?
-                /******/ 			function getDefault() { return module['default']; } :
-                /******/ 			function getModuleExports() { return module; };
-            /******/ 		__webpack_require__.d(getter, 'a', getter);
-            /******/ 		return getter;
-            /******/ 	};
+        /******/
+        __webpack_require__.n = function (module) {
+            /******/
+            var getter = module && module.__esModule ?
+                    /******/            function getDefault() {
+                        return module['default'];
+                    } :
+                    /******/            function getModuleExports() {
+                        return module;
+                    };
+            /******/
+            __webpack_require__.d(getter, 'a', getter);
+            /******/
+            return getter;
+            /******/
+        };
         /******/
         /******/ 	// Object.prototype.hasOwnProperty.call
-        /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+        /******/
+        __webpack_require__.o = function (object, property) {
+            return Object.prototype.hasOwnProperty.call(object, property);
+        };
         /******/
         /******/ 	// __webpack_public_path__
-        /******/ 	__webpack_require__.p = "";
+        /******/
+        __webpack_require__.p = "";
         /******/
         /******/ 	// Load entry module and return exports
-        /******/ 	return __webpack_require__(__webpack_require__.s = 3);
-        /******/ })
+        /******/
+        return __webpack_require__(__webpack_require__.s = 3);
+        /******/
+    })
     /************************************************************************/
-    /******/ ([
+    /******/([
         /* 0 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var BitMatrix = /** @class */ (function () {
                 function BitMatrix(data, width) {
                     this.width = width;
                     this.height = data.length / width;
                     this.data = data;
                 }
+
                 BitMatrix.createEmpty = function (width, height) {
                     return new BitMatrix(new Uint8ClampedArray(width * height), width);
                 };
@@ -114,17 +150,20 @@
             exports.BitMatrix = BitMatrix;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 1 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var GenericGFPoly_1 = __webpack_require__(2);
+
             function addOrSubtractGF(a, b) {
                 return a ^ b; // tslint:disable-line:no-bitwise
             }
+
             exports.addOrSubtractGF = addOrSubtractGF;
             var GenericGF = /** @class */ (function () {
                 function GenericGF(primitive, size, genBase) {
@@ -147,6 +186,7 @@
                     this.zero = new GenericGFPoly_1.default(this, Uint8ClampedArray.from([0]));
                     this.one = new GenericGFPoly_1.default(this, Uint8ClampedArray.from([1]));
                 }
+
                 GenericGF.prototype.multiply = function (a, b) {
                     if (a === 0 || b === 0) {
                         return 0;
@@ -184,13 +224,14 @@
             exports.default = GenericGF;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 2 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var GenericGF_1 = __webpack_require__(1);
             var GenericGFPoly = /** @class */ (function () {
                 function GenericGFPoly(field, coefficients) {
@@ -207,18 +248,17 @@
                         }
                         if (firstNonZero === coefficientsLength) {
                             this.coefficients = field.zero.coefficients;
-                        }
-                        else {
+                        } else {
                             this.coefficients = new Uint8ClampedArray(coefficientsLength - firstNonZero);
                             for (var i = 0; i < this.coefficients.length; i++) {
                                 this.coefficients[i] = coefficients[firstNonZero + i];
                             }
                         }
-                    }
-                    else {
+                    } else {
                         this.coefficients = coefficients;
                     }
                 }
+
                 GenericGFPoly.prototype.degree = function () {
                     return this.coefficients.length - 1;
                 };
@@ -321,17 +361,19 @@
             exports.default = GenericGFPoly;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 3 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var binarizer_1 = __webpack_require__(4);
             var decoder_1 = __webpack_require__(5);
             var extractor_1 = __webpack_require__(11);
             var locator_1 = __webpack_require__(12);
+
             function scan(matrix) {
                 var location = locator_1.locate(matrix);
                 if (!location) {
@@ -358,47 +400,57 @@
                     },
                 };
             }
+
             var defaultOptions = {
                 inversionAttempts: "attemptBoth",
             };
+
             function jsQR(data, width, height, providedOptions) {
-                if (providedOptions === void 0) { providedOptions = {}; }
+                if (providedOptions === void 0) {
+                    providedOptions = {};
+                }
                 var options = defaultOptions;
                 Object.keys(options || {}).forEach(function (opt) {
                     options[opt] = providedOptions[opt] || options[opt];
                 });
                 var shouldInvert = options.inversionAttempts === "attemptBoth" || options.inversionAttempts === "invertFirst";
                 var tryInvertedFirst = options.inversionAttempts === "onlyInvert" || options.inversionAttempts === "invertFirst";
-                var _a = binarizer_1.binarize(data, width, height, shouldInvert), binarized = _a.binarized, inverted = _a.inverted;
+                var _a = binarizer_1.binarize(data, width, height, shouldInvert), binarized = _a.binarized,
+                        inverted = _a.inverted;
                 var result = scan(tryInvertedFirst ? inverted : binarized);
                 if (!result && (options.inversionAttempts === "attemptBoth" || options.inversionAttempts === "invertFirst")) {
                     result = scan(tryInvertedFirst ? binarized : inverted);
                 }
                 return result;
             }
+
             jsQR.default = jsQR;
             exports.default = jsQR;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 4 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var BitMatrix_1 = __webpack_require__(0);
             var REGION_SIZE = 8;
             var MIN_DYNAMIC_RANGE = 24;
+
             function numBetween(value, min, max) {
                 return value < min ? min : value > max ? max : value;
             }
+
 // Like BitMatrix but accepts arbitry Uint8 values
             var Matrix = /** @class */ (function () {
                 function Matrix(width, height) {
                     this.width = width;
                     this.data = new Uint8ClampedArray(width * height);
                 }
+
                 Matrix.prototype.get = function (x, y) {
                     return this.data[y * this.width + x];
                 };
@@ -407,6 +459,7 @@
                 };
                 return Matrix;
             }());
+
             function binarize(data, width, height, returnInverted) {
                 if (data.length !== width * height * 4) {
                     throw new Error("Malformed data passed to binarizer.");
@@ -453,8 +506,8 @@
                                 // the boundaries is used for the interior.
                                 // The (min < bp) is arbitrary but works better than other heuristics that were tried.
                                 var averageNeighborBlackPoint = (blackPoints.get(hortizontalRegion, verticalRegion - 1) +
-                                    (2 * blackPoints.get(hortizontalRegion - 1, verticalRegion)) +
-                                    blackPoints.get(hortizontalRegion - 1, verticalRegion - 1)) / 4;
+                                        (2 * blackPoints.get(hortizontalRegion - 1, verticalRegion)) +
+                                        blackPoints.get(hortizontalRegion - 1, verticalRegion - 1)) / 4;
                                 if (min < averageNeighborBlackPoint) {
                                     average = averageNeighborBlackPoint;
                                 }
@@ -493,24 +546,27 @@
                     }
                 }
                 if (returnInverted) {
-                    return { binarized: binarized, inverted: inverted };
+                    return {binarized: binarized, inverted: inverted};
                 }
-                return { binarized: binarized };
+                return {binarized: binarized};
             }
+
             exports.binarize = binarize;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 5 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var BitMatrix_1 = __webpack_require__(0);
             var decodeData_1 = __webpack_require__(6);
             var reedsolomon_1 = __webpack_require__(9);
             var version_1 = __webpack_require__(10);
+
 // tslint:disable:no-bitwise
             function numBitsDiffering(x, y) {
                 var z = x ^ y;
@@ -521,54 +577,73 @@
                 }
                 return bitCount;
             }
+
             function pushBit(bit, byte) {
                 return (byte << 1) | bit;
             }
+
 // tslint:enable:no-bitwise
             var FORMAT_INFO_TABLE = [
-                { bits: 0x5412, formatInfo: { errorCorrectionLevel: 1, dataMask: 0 } },
-                { bits: 0x5125, formatInfo: { errorCorrectionLevel: 1, dataMask: 1 } },
-                { bits: 0x5E7C, formatInfo: { errorCorrectionLevel: 1, dataMask: 2 } },
-                { bits: 0x5B4B, formatInfo: { errorCorrectionLevel: 1, dataMask: 3 } },
-                { bits: 0x45F9, formatInfo: { errorCorrectionLevel: 1, dataMask: 4 } },
-                { bits: 0x40CE, formatInfo: { errorCorrectionLevel: 1, dataMask: 5 } },
-                { bits: 0x4F97, formatInfo: { errorCorrectionLevel: 1, dataMask: 6 } },
-                { bits: 0x4AA0, formatInfo: { errorCorrectionLevel: 1, dataMask: 7 } },
-                { bits: 0x77C4, formatInfo: { errorCorrectionLevel: 0, dataMask: 0 } },
-                { bits: 0x72F3, formatInfo: { errorCorrectionLevel: 0, dataMask: 1 } },
-                { bits: 0x7DAA, formatInfo: { errorCorrectionLevel: 0, dataMask: 2 } },
-                { bits: 0x789D, formatInfo: { errorCorrectionLevel: 0, dataMask: 3 } },
-                { bits: 0x662F, formatInfo: { errorCorrectionLevel: 0, dataMask: 4 } },
-                { bits: 0x6318, formatInfo: { errorCorrectionLevel: 0, dataMask: 5 } },
-                { bits: 0x6C41, formatInfo: { errorCorrectionLevel: 0, dataMask: 6 } },
-                { bits: 0x6976, formatInfo: { errorCorrectionLevel: 0, dataMask: 7 } },
-                { bits: 0x1689, formatInfo: { errorCorrectionLevel: 3, dataMask: 0 } },
-                { bits: 0x13BE, formatInfo: { errorCorrectionLevel: 3, dataMask: 1 } },
-                { bits: 0x1CE7, formatInfo: { errorCorrectionLevel: 3, dataMask: 2 } },
-                { bits: 0x19D0, formatInfo: { errorCorrectionLevel: 3, dataMask: 3 } },
-                { bits: 0x0762, formatInfo: { errorCorrectionLevel: 3, dataMask: 4 } },
-                { bits: 0x0255, formatInfo: { errorCorrectionLevel: 3, dataMask: 5 } },
-                { bits: 0x0D0C, formatInfo: { errorCorrectionLevel: 3, dataMask: 6 } },
-                { bits: 0x083B, formatInfo: { errorCorrectionLevel: 3, dataMask: 7 } },
-                { bits: 0x355F, formatInfo: { errorCorrectionLevel: 2, dataMask: 0 } },
-                { bits: 0x3068, formatInfo: { errorCorrectionLevel: 2, dataMask: 1 } },
-                { bits: 0x3F31, formatInfo: { errorCorrectionLevel: 2, dataMask: 2 } },
-                { bits: 0x3A06, formatInfo: { errorCorrectionLevel: 2, dataMask: 3 } },
-                { bits: 0x24B4, formatInfo: { errorCorrectionLevel: 2, dataMask: 4 } },
-                { bits: 0x2183, formatInfo: { errorCorrectionLevel: 2, dataMask: 5 } },
-                { bits: 0x2EDA, formatInfo: { errorCorrectionLevel: 2, dataMask: 6 } },
-                { bits: 0x2BED, formatInfo: { errorCorrectionLevel: 2, dataMask: 7 } },
+                {bits: 0x5412, formatInfo: {errorCorrectionLevel: 1, dataMask: 0}},
+                {bits: 0x5125, formatInfo: {errorCorrectionLevel: 1, dataMask: 1}},
+                {bits: 0x5E7C, formatInfo: {errorCorrectionLevel: 1, dataMask: 2}},
+                {bits: 0x5B4B, formatInfo: {errorCorrectionLevel: 1, dataMask: 3}},
+                {bits: 0x45F9, formatInfo: {errorCorrectionLevel: 1, dataMask: 4}},
+                {bits: 0x40CE, formatInfo: {errorCorrectionLevel: 1, dataMask: 5}},
+                {bits: 0x4F97, formatInfo: {errorCorrectionLevel: 1, dataMask: 6}},
+                {bits: 0x4AA0, formatInfo: {errorCorrectionLevel: 1, dataMask: 7}},
+                {bits: 0x77C4, formatInfo: {errorCorrectionLevel: 0, dataMask: 0}},
+                {bits: 0x72F3, formatInfo: {errorCorrectionLevel: 0, dataMask: 1}},
+                {bits: 0x7DAA, formatInfo: {errorCorrectionLevel: 0, dataMask: 2}},
+                {bits: 0x789D, formatInfo: {errorCorrectionLevel: 0, dataMask: 3}},
+                {bits: 0x662F, formatInfo: {errorCorrectionLevel: 0, dataMask: 4}},
+                {bits: 0x6318, formatInfo: {errorCorrectionLevel: 0, dataMask: 5}},
+                {bits: 0x6C41, formatInfo: {errorCorrectionLevel: 0, dataMask: 6}},
+                {bits: 0x6976, formatInfo: {errorCorrectionLevel: 0, dataMask: 7}},
+                {bits: 0x1689, formatInfo: {errorCorrectionLevel: 3, dataMask: 0}},
+                {bits: 0x13BE, formatInfo: {errorCorrectionLevel: 3, dataMask: 1}},
+                {bits: 0x1CE7, formatInfo: {errorCorrectionLevel: 3, dataMask: 2}},
+                {bits: 0x19D0, formatInfo: {errorCorrectionLevel: 3, dataMask: 3}},
+                {bits: 0x0762, formatInfo: {errorCorrectionLevel: 3, dataMask: 4}},
+                {bits: 0x0255, formatInfo: {errorCorrectionLevel: 3, dataMask: 5}},
+                {bits: 0x0D0C, formatInfo: {errorCorrectionLevel: 3, dataMask: 6}},
+                {bits: 0x083B, formatInfo: {errorCorrectionLevel: 3, dataMask: 7}},
+                {bits: 0x355F, formatInfo: {errorCorrectionLevel: 2, dataMask: 0}},
+                {bits: 0x3068, formatInfo: {errorCorrectionLevel: 2, dataMask: 1}},
+                {bits: 0x3F31, formatInfo: {errorCorrectionLevel: 2, dataMask: 2}},
+                {bits: 0x3A06, formatInfo: {errorCorrectionLevel: 2, dataMask: 3}},
+                {bits: 0x24B4, formatInfo: {errorCorrectionLevel: 2, dataMask: 4}},
+                {bits: 0x2183, formatInfo: {errorCorrectionLevel: 2, dataMask: 5}},
+                {bits: 0x2EDA, formatInfo: {errorCorrectionLevel: 2, dataMask: 6}},
+                {bits: 0x2BED, formatInfo: {errorCorrectionLevel: 2, dataMask: 7}},
             ];
             var DATA_MASKS = [
-                function (p) { return ((p.y + p.x) % 2) === 0; },
-                function (p) { return (p.y % 2) === 0; },
-                function (p) { return p.x % 3 === 0; },
-                function (p) { return (p.y + p.x) % 3 === 0; },
-                function (p) { return (Math.floor(p.y / 2) + Math.floor(p.x / 3)) % 2 === 0; },
-                function (p) { return ((p.x * p.y) % 2) + ((p.x * p.y) % 3) === 0; },
-                function (p) { return ((((p.y * p.x) % 2) + (p.y * p.x) % 3) % 2) === 0; },
-                function (p) { return ((((p.y + p.x) % 2) + (p.y * p.x) % 3) % 2) === 0; },
+                function (p) {
+                    return ((p.y + p.x) % 2) === 0;
+                },
+                function (p) {
+                    return (p.y % 2) === 0;
+                },
+                function (p) {
+                    return p.x % 3 === 0;
+                },
+                function (p) {
+                    return (p.y + p.x) % 3 === 0;
+                },
+                function (p) {
+                    return (Math.floor(p.y / 2) + Math.floor(p.x / 3)) % 2 === 0;
+                },
+                function (p) {
+                    return ((p.x * p.y) % 2) + ((p.x * p.y) % 3) === 0;
+                },
+                function (p) {
+                    return ((((p.y * p.x) % 2) + (p.y * p.x) % 3) % 2) === 0;
+                },
+                function (p) {
+                    return ((((p.y + p.x) % 2) + (p.y * p.x) % 3) % 2) === 0;
+                },
             ];
+
             function buildFunctionPatternMask(version) {
                 var dimension = 17 + 4 * version.versionNumber;
                 var matrix = BitMatrix_1.BitMatrix.createEmpty(dimension, dimension);
@@ -593,6 +668,7 @@
                 }
                 return matrix;
             }
+
             function readCodewords(matrix, version, formatInfo) {
                 var dataMask = DATA_MASKS[formatInfo.dataMask];
                 var dimension = matrix.height;
@@ -613,7 +689,7 @@
                             if (!functionPatternMask.get(x, y)) {
                                 bitsRead++;
                                 var bit = matrix.get(x, y);
-                                if (dataMask({ y: y, x: x })) {
+                                if (dataMask({y: y, x: x})) {
                                     bit = !bit;
                                 }
                                 currentByte = pushBit(bit, currentByte);
@@ -629,6 +705,7 @@
                 }
                 return codewords;
             }
+
             function readVersion(matrix) {
                 var dimension = matrix.height;
                 var provisionalVersion = Math.floor((dimension - 17) / 4);
@@ -671,6 +748,7 @@
                     return bestVersion;
                 }
             }
+
             function readFormatInformation(matrix) {
                 var topLeftFormatInfoBits = 0;
                 for (var x = 0; x <= 8; x++) {
@@ -717,13 +795,14 @@
                 }
                 return null;
             }
+
             function getDataBlocks(codewords, version, ecLevel) {
                 var ecInfo = version.errorCorrectionLevels[ecLevel];
                 var dataBlocks = [];
                 var totalCodewords = 0;
                 ecInfo.ecBlocks.forEach(function (block) {
                     for (var i = 0; i < block.numBlocks; i++) {
-                        dataBlocks.push({ numDataCodewords: block.dataCodewordsPerBlock, codewords: [] });
+                        dataBlocks.push({numDataCodewords: block.dataCodewordsPerBlock, codewords: []});
                         totalCodewords += block.dataCodewordsPerBlock + ecInfo.ecCodewordsPerBlock;
                     }
                 });
@@ -759,6 +838,7 @@
                 }
                 return dataBlocks;
             }
+
             function decodeMatrix(matrix) {
                 var version = readVersion(matrix);
                 if (!version) {
@@ -774,7 +854,9 @@
                     return null;
                 }
                 // Count total number of data bytes
-                var totalBytes = dataBlocks.reduce(function (a, b) { return a + b.numDataCodewords; }, 0);
+                var totalBytes = dataBlocks.reduce(function (a, b) {
+                    return a + b.numDataCodewords;
+                }, 0);
                 var resultBytes = new Uint8ClampedArray(totalBytes);
                 var resultIndex = 0;
                 for (var _i = 0, dataBlocks_3 = dataBlocks; _i < dataBlocks_3.length; _i++) {
@@ -789,11 +871,11 @@
                 }
                 try {
                     return decodeData_1.decode(resultBytes, version.versionNumber);
-                }
-                catch (_a) {
+                } catch (_a) {
                     return null;
                 }
             }
+
             function decode(matrix) {
                 if (matrix == null) {
                     return null;
@@ -813,16 +895,18 @@
                 }
                 return decodeMatrix(matrix);
             }
+
             exports.decode = decode;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 6 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
 // tslint:disable:no-bitwise
             var BitStream_1 = __webpack_require__(7);
             var shiftJISTable_1 = __webpack_require__(8);
@@ -846,6 +930,7 @@
                 // FNC1FirstPosition = 0x5,
                 // FNC1SecondPosition = 0x9,
             })(ModeByte || (ModeByte = {}));
+
             function decodeNumeric(stream, size) {
                 var bytes = [];
                 var text = "";
@@ -874,8 +959,7 @@
                     var b = num % 10;
                     bytes.push(48 + a, 48 + b);
                     text += a.toString() + b.toString();
-                }
-                else if (length === 1) {
+                } else if (length === 1) {
                     var num = stream.readBits(4);
                     if (num >= 10) {
                         throw new Error("Invalid numeric value above 9");
@@ -883,8 +967,9 @@
                     bytes.push(48 + num);
                     text += num.toString();
                 }
-                return { bytes: bytes, text: text };
+                return {bytes: bytes, text: text};
             }
+
             var AlphanumericCharacterCodes = [
                 "0", "1", "2", "3", "4", "5", "6", "7", "8",
                 "9", "A", "B", "C", "D", "E", "F", "G", "H",
@@ -892,6 +977,7 @@
                 "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
                 " ", "$", "%", "*", "+", "-", ".", "/", ":",
             ];
+
             function decodeAlphanumeric(stream, size) {
                 var bytes = [];
                 var text = "";
@@ -910,8 +996,9 @@
                     bytes.push(AlphanumericCharacterCodes[a].charCodeAt(0));
                     text += AlphanumericCharacterCodes[a];
                 }
-                return { bytes: bytes, text: text };
+                return {bytes: bytes, text: text};
             }
+
             function decodeByte(stream, size) {
                 var bytes = [];
                 var text = "";
@@ -922,13 +1009,15 @@
                     bytes.push(b);
                 }
                 try {
-                    text += decodeURIComponent(bytes.map(function (b) { return "%" + ("0" + b.toString(16)).substr(-2); }).join(""));
-                }
-                catch (_a) {
+                    text += decodeURIComponent(bytes.map(function (b) {
+                        return "%" + ("0" + b.toString(16)).substr(-2);
+                    }).join(""));
+                } catch (_a) {
                     // failed to decode
                 }
-                return { bytes: bytes, text: text };
+                return {bytes: bytes, text: text};
             }
+
             function decodeKanji(stream, size) {
                 var bytes = [];
                 var text = "";
@@ -939,15 +1028,15 @@
                     var c = (Math.floor(k / 0xC0) << 8) | (k % 0xC0);
                     if (c < 0x1F00) {
                         c += 0x8140;
-                    }
-                    else {
+                    } else {
                         c += 0xC140;
                     }
                     bytes.push(c >> 8, c & 0xFF);
                     text += String.fromCharCode(shiftJISTable_1.shiftJISTable[c]);
                 }
-                return { bytes: bytes, text: text };
+                return {bytes: bytes, text: text};
             }
+
             function decode(data, version) {
                 var stream = new BitStream_1.BitStream(data);
                 // There are 3 'sizes' based on the version. 1-9 is small (0), 10-26 is medium (1) and 27-40 is large (2).
@@ -961,35 +1050,30 @@
                     var mode = stream.readBits(4);
                     if (mode === ModeByte.Terminator) {
                         return result;
-                    }
-                    else if (mode === ModeByte.ECI) {
+                    } else if (mode === ModeByte.ECI) {
                         if (stream.readBits(1) === 0) {
                             result.chunks.push({
                                 type: Mode.ECI,
                                 assignmentNumber: stream.readBits(7),
                             });
-                        }
-                        else if (stream.readBits(1) === 0) {
+                        } else if (stream.readBits(1) === 0) {
                             result.chunks.push({
                                 type: Mode.ECI,
                                 assignmentNumber: stream.readBits(14),
                             });
-                        }
-                        else if (stream.readBits(1) === 0) {
+                        } else if (stream.readBits(1) === 0) {
                             result.chunks.push({
                                 type: Mode.ECI,
                                 assignmentNumber: stream.readBits(21),
                             });
-                        }
-                        else {
+                        } else {
                             // ECI data seems corrupted
                             result.chunks.push({
                                 type: Mode.ECI,
                                 assignmentNumber: -1,
                             });
                         }
-                    }
-                    else if (mode === ModeByte.Numeric) {
+                    } else if (mode === ModeByte.Numeric) {
                         var numericResult = decodeNumeric(stream, size);
                         result.text += numericResult.text;
                         (_a = result.bytes).push.apply(_a, numericResult.bytes);
@@ -997,8 +1081,7 @@
                             type: Mode.Numeric,
                             text: numericResult.text,
                         });
-                    }
-                    else if (mode === ModeByte.Alphanumeric) {
+                    } else if (mode === ModeByte.Alphanumeric) {
                         var alphanumericResult = decodeAlphanumeric(stream, size);
                         result.text += alphanumericResult.text;
                         (_b = result.bytes).push.apply(_b, alphanumericResult.bytes);
@@ -1006,8 +1089,7 @@
                             type: Mode.Alphanumeric,
                             text: alphanumericResult.text,
                         });
-                    }
-                    else if (mode === ModeByte.Byte) {
+                    } else if (mode === ModeByte.Byte) {
                         var byteResult = decodeByte(stream, size);
                         result.text += byteResult.text;
                         (_c = result.bytes).push.apply(_c, byteResult.bytes);
@@ -1016,8 +1098,7 @@
                             bytes: byteResult.bytes,
                             text: byteResult.text,
                         });
-                    }
-                    else if (mode === ModeByte.Kanji) {
+                    } else if (mode === ModeByte.Kanji) {
                         var kanjiResult = decodeKanji(stream, size);
                         result.text += kanjiResult.text;
                         (_d = result.bytes).push.apply(_d, kanjiResult.bytes);
@@ -1030,23 +1111,26 @@
                 }
                 var _a, _b, _c, _d;
             }
+
             exports.decode = decode;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 7 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
 // tslint:disable:no-bitwise
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var BitStream = /** @class */ (function () {
                 function BitStream(bytes) {
                     this.byteOffset = 0;
                     this.bitOffset = 0;
                     this.bytes = bytes;
                 }
+
                 BitStream.prototype.readBits = function (numBits) {
                     if (numBits < 1 || numBits > 32 || numBits > this.available()) {
                         throw new Error("Cannot read " + numBits.toString() + " bits");
@@ -1091,13 +1175,14 @@
             exports.BitStream = BitStream;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 8 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             exports.shiftJISTable = {
                 0x20: 0x0020,
                 0x21: 0x0021,
@@ -8139,15 +8224,17 @@
             };
 
 
-            /***/ }),
+            /***/
+        }),
         /* 9 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var GenericGF_1 = __webpack_require__(1);
             var GenericGFPoly_1 = __webpack_require__(2);
+
             function runEuclideanAlgorithm(field, a, b, R) {
                 // Assume a's degree is >= b's
                 if (a.degree() < b.degree()) {
@@ -8191,6 +8278,7 @@
                 return [t.multiply(inverse), r.multiply(inverse)];
                 var _a;
             }
+
             function findErrorLocations(field, errorLocator) {
                 // This is a direct application of Chien's search
                 var numErrors = errorLocator.degree();
@@ -8210,6 +8298,7 @@
                 }
                 return result;
             }
+
             function findErrorMagnitudes(field, errorEvaluator, errorLocations) {
                 // This is directly applying Forney's Formula
                 var s = errorLocations.length;
@@ -8229,6 +8318,7 @@
                 }
                 return result;
             }
+
             function decode(bytes, twoS) {
                 var outputBytes = new Uint8ClampedArray(bytes.length);
                 outputBytes.set(bytes);
@@ -8265,16 +8355,18 @@
                 }
                 return outputBytes;
             }
+
             exports.decode = decode;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 10 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             exports.VERSIONS = [
                 {
                     infoBits: null,
@@ -8283,19 +8375,19 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 7,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 19 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 19}],
                         },
                         {
                             ecCodewordsPerBlock: 10,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 16 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 16}],
                         },
                         {
                             ecCodewordsPerBlock: 13,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 13 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 13}],
                         },
                         {
                             ecCodewordsPerBlock: 17,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 9 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 9}],
                         },
                     ],
                 },
@@ -8306,19 +8398,19 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 10,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 34 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 34}],
                         },
                         {
                             ecCodewordsPerBlock: 16,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 28 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 28}],
                         },
                         {
                             ecCodewordsPerBlock: 22,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 22 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 22}],
                         },
                         {
                             ecCodewordsPerBlock: 28,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 16 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 16}],
                         },
                     ],
                 },
@@ -8329,19 +8421,19 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 15,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 55 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 55}],
                         },
                         {
                             ecCodewordsPerBlock: 26,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 44 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 44}],
                         },
                         {
                             ecCodewordsPerBlock: 18,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 17 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 17}],
                         },
                         {
                             ecCodewordsPerBlock: 22,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 13 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 13}],
                         },
                     ],
                 },
@@ -8352,19 +8444,19 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 20,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 80 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 80}],
                         },
                         {
                             ecCodewordsPerBlock: 18,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 32 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 32}],
                         },
                         {
                             ecCodewordsPerBlock: 26,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 24 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 24}],
                         },
                         {
                             ecCodewordsPerBlock: 16,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 9 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 9}],
                         },
                     ],
                 },
@@ -8375,24 +8467,24 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 26,
-                            ecBlocks: [{ numBlocks: 1, dataCodewordsPerBlock: 108 }],
+                            ecBlocks: [{numBlocks: 1, dataCodewordsPerBlock: 108}],
                         },
                         {
                             ecCodewordsPerBlock: 24,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 43 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 43}],
                         },
                         {
                             ecCodewordsPerBlock: 18,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 15},
+                                {numBlocks: 2, dataCodewordsPerBlock: 16},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 11 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 12 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 11},
+                                {numBlocks: 2, dataCodewordsPerBlock: 12},
                             ],
                         },
                     ],
@@ -8404,19 +8496,19 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 18,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 68 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 68}],
                         },
                         {
                             ecCodewordsPerBlock: 16,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 27 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 27}],
                         },
                         {
                             ecCodewordsPerBlock: 24,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 19 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 19}],
                         },
                         {
                             ecCodewordsPerBlock: 28,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 15 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 15}],
                         },
                     ],
                 },
@@ -8427,24 +8519,24 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 20,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 78 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 78}],
                         },
                         {
                             ecCodewordsPerBlock: 18,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 31 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 31}],
                         },
                         {
                             ecCodewordsPerBlock: 18,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 14 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 15 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 14},
+                                {numBlocks: 4, dataCodewordsPerBlock: 15},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 13 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 14 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 13},
+                                {numBlocks: 1, dataCodewordsPerBlock: 14},
                             ],
                         },
                     ],
@@ -8456,27 +8548,27 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 24,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 97 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 97}],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 38 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 39 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 38},
+                                {numBlocks: 2, dataCodewordsPerBlock: 39},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 18 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 19 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 18},
+                                {numBlocks: 2, dataCodewordsPerBlock: 19},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 14 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 15 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 14},
+                                {numBlocks: 2, dataCodewordsPerBlock: 15},
                             ],
                         },
                     ],
@@ -8488,27 +8580,27 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 30,
-                            ecBlocks: [{ numBlocks: 2, dataCodewordsPerBlock: 116 }],
+                            ecBlocks: [{numBlocks: 2, dataCodewordsPerBlock: 116}],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 36 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 37 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 36},
+                                {numBlocks: 2, dataCodewordsPerBlock: 37},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 20,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 16},
+                                {numBlocks: 4, dataCodewordsPerBlock: 17},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 12 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 13 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 12},
+                                {numBlocks: 4, dataCodewordsPerBlock: 13},
                             ],
                         },
                     ],
@@ -8521,29 +8613,29 @@
                         {
                             ecCodewordsPerBlock: 18,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 68 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 69 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 68},
+                                {numBlocks: 2, dataCodewordsPerBlock: 69},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 43 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 44 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 43},
+                                {numBlocks: 1, dataCodewordsPerBlock: 44},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 19 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 20 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 19},
+                                {numBlocks: 2, dataCodewordsPerBlock: 20},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 15},
+                                {numBlocks: 2, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -8555,27 +8647,27 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 20,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 81 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 81}],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 1, dataCodewordsPerBlock: 50 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 51 },
+                                {numBlocks: 1, dataCodewordsPerBlock: 50},
+                                {numBlocks: 4, dataCodewordsPerBlock: 51},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 22 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 23 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 22},
+                                {numBlocks: 4, dataCodewordsPerBlock: 23},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 12 },
-                                { numBlocks: 8, dataCodewordsPerBlock: 13 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 12},
+                                {numBlocks: 8, dataCodewordsPerBlock: 13},
                             ],
                         },
                     ],
@@ -8588,29 +8680,29 @@
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 92 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 93 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 92},
+                                {numBlocks: 2, dataCodewordsPerBlock: 93},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 36 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 37 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 36},
+                                {numBlocks: 2, dataCodewordsPerBlock: 37},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 20 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 21 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 20},
+                                {numBlocks: 6, dataCodewordsPerBlock: 21},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 7, dataCodewordsPerBlock: 14 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 15 },
+                                {numBlocks: 7, dataCodewordsPerBlock: 14},
+                                {numBlocks: 4, dataCodewordsPerBlock: 15},
                             ],
                         },
                     ],
@@ -8622,27 +8714,27 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 26,
-                            ecBlocks: [{ numBlocks: 4, dataCodewordsPerBlock: 107 }],
+                            ecBlocks: [{numBlocks: 4, dataCodewordsPerBlock: 107}],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 37 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 38 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 37},
+                                {numBlocks: 1, dataCodewordsPerBlock: 38},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 20 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 21 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 20},
+                                {numBlocks: 4, dataCodewordsPerBlock: 21},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 12, dataCodewordsPerBlock: 11 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 12 },
+                                {numBlocks: 12, dataCodewordsPerBlock: 11},
+                                {numBlocks: 4, dataCodewordsPerBlock: 12},
                             ],
                         },
                     ],
@@ -8655,29 +8747,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 115 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 116 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 115},
+                                {numBlocks: 1, dataCodewordsPerBlock: 116},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 40 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 41 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 40},
+                                {numBlocks: 5, dataCodewordsPerBlock: 41},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 20,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 16},
+                                {numBlocks: 5, dataCodewordsPerBlock: 17},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 12 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 13 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 12},
+                                {numBlocks: 5, dataCodewordsPerBlock: 13},
                             ],
                         },
                     ],
@@ -8690,29 +8782,29 @@
                         {
                             ecCodewordsPerBlock: 22,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 87 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 88 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 87},
+                                {numBlocks: 1, dataCodewordsPerBlock: 88},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 41 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 42 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 41},
+                                {numBlocks: 5, dataCodewordsPerBlock: 42},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 24},
+                                {numBlocks: 7, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 12 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 13 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 12},
+                                {numBlocks: 7, dataCodewordsPerBlock: 13},
                             ],
                         },
                     ],
@@ -8725,29 +8817,29 @@
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 98 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 99 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 98},
+                                {numBlocks: 1, dataCodewordsPerBlock: 99},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 7, dataCodewordsPerBlock: 45 },
-                                { numBlocks: 3, dataCodewordsPerBlock: 46 },
+                                {numBlocks: 7, dataCodewordsPerBlock: 45},
+                                {numBlocks: 3, dataCodewordsPerBlock: 46},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
                             ecBlocks: [
-                                { numBlocks: 15, dataCodewordsPerBlock: 19 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 20 },
+                                {numBlocks: 15, dataCodewordsPerBlock: 19},
+                                {numBlocks: 2, dataCodewordsPerBlock: 20},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 13, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 15},
+                                {numBlocks: 13, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -8760,29 +8852,29 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 1, dataCodewordsPerBlock: 107 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 108 },
+                                {numBlocks: 1, dataCodewordsPerBlock: 107},
+                                {numBlocks: 5, dataCodewordsPerBlock: 108},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 10, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 10, dataCodewordsPerBlock: 46},
+                                {numBlocks: 1, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 1, dataCodewordsPerBlock: 22 },
-                                { numBlocks: 15, dataCodewordsPerBlock: 23 },
+                                {numBlocks: 1, dataCodewordsPerBlock: 22},
+                                {numBlocks: 15, dataCodewordsPerBlock: 23},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 14 },
-                                { numBlocks: 17, dataCodewordsPerBlock: 15 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 14},
+                                {numBlocks: 17, dataCodewordsPerBlock: 15},
                             ],
                         },
                     ],
@@ -8795,29 +8887,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 120 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 121 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 120},
+                                {numBlocks: 1, dataCodewordsPerBlock: 121},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 9, dataCodewordsPerBlock: 43 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 44 },
+                                {numBlocks: 9, dataCodewordsPerBlock: 43},
+                                {numBlocks: 4, dataCodewordsPerBlock: 44},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 17, dataCodewordsPerBlock: 22 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 23 },
+                                {numBlocks: 17, dataCodewordsPerBlock: 22},
+                                {numBlocks: 1, dataCodewordsPerBlock: 23},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 14 },
-                                { numBlocks: 19, dataCodewordsPerBlock: 15 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 14},
+                                {numBlocks: 19, dataCodewordsPerBlock: 15},
                             ],
                         },
                     ],
@@ -8830,29 +8922,29 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 113 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 114 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 113},
+                                {numBlocks: 4, dataCodewordsPerBlock: 114},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 44 },
-                                { numBlocks: 11, dataCodewordsPerBlock: 45 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 44},
+                                {numBlocks: 11, dataCodewordsPerBlock: 45},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 17, dataCodewordsPerBlock: 21 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 22 },
+                                {numBlocks: 17, dataCodewordsPerBlock: 21},
+                                {numBlocks: 4, dataCodewordsPerBlock: 22},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 9, dataCodewordsPerBlock: 13 },
-                                { numBlocks: 16, dataCodewordsPerBlock: 14 },
+                                {numBlocks: 9, dataCodewordsPerBlock: 13},
+                                {numBlocks: 16, dataCodewordsPerBlock: 14},
                             ],
                         },
                     ],
@@ -8865,29 +8957,29 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 107 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 108 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 107},
+                                {numBlocks: 5, dataCodewordsPerBlock: 108},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 41 },
-                                { numBlocks: 13, dataCodewordsPerBlock: 42 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 41},
+                                {numBlocks: 13, dataCodewordsPerBlock: 42},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 15, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 15, dataCodewordsPerBlock: 24},
+                                {numBlocks: 5, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 15, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 15, dataCodewordsPerBlock: 15},
+                                {numBlocks: 10, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -8900,26 +8992,26 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 116 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 117 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 116},
+                                {numBlocks: 4, dataCodewordsPerBlock: 117},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 26,
-                            ecBlocks: [{ numBlocks: 17, dataCodewordsPerBlock: 42 }],
+                            ecBlocks: [{numBlocks: 17, dataCodewordsPerBlock: 42}],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 17, dataCodewordsPerBlock: 22 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 23 },
+                                {numBlocks: 17, dataCodewordsPerBlock: 22},
+                                {numBlocks: 6, dataCodewordsPerBlock: 23},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 16},
+                                {numBlocks: 6, dataCodewordsPerBlock: 17},
                             ],
                         },
                     ],
@@ -8932,24 +9024,24 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 111 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 112 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 111},
+                                {numBlocks: 7, dataCodewordsPerBlock: 112},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
-                            ecBlocks: [{ numBlocks: 17, dataCodewordsPerBlock: 46 }],
+                            ecBlocks: [{numBlocks: 17, dataCodewordsPerBlock: 46}],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 7, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 16, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 7, dataCodewordsPerBlock: 24},
+                                {numBlocks: 16, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 24,
-                            ecBlocks: [{ numBlocks: 34, dataCodewordsPerBlock: 13 }],
+                            ecBlocks: [{numBlocks: 34, dataCodewordsPerBlock: 13}],
                         },
                     ],
                 },
@@ -8961,29 +9053,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 121 },
-                                { numBlocks: 5, dataCodewordsPerBlock: 122 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 121},
+                                {numBlocks: 5, dataCodewordsPerBlock: 122},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 47},
+                                {numBlocks: 14, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 24},
+                                {numBlocks: 14, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 16, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 16, dataCodewordsPerBlock: 15},
+                                {numBlocks: 14, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -8996,29 +9088,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 117 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 118 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 117},
+                                {numBlocks: 4, dataCodewordsPerBlock: 118},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 45 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 46 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 45},
+                                {numBlocks: 14, dataCodewordsPerBlock: 46},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 16, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 24},
+                                {numBlocks: 16, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 30, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 30, dataCodewordsPerBlock: 16},
+                                {numBlocks: 2, dataCodewordsPerBlock: 17},
                             ],
                         },
                     ],
@@ -9031,29 +9123,29 @@
                         {
                             ecCodewordsPerBlock: 26,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 106 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 107 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 106},
+                                {numBlocks: 4, dataCodewordsPerBlock: 107},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 13, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 47},
+                                {numBlocks: 13, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 7, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 22, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 7, dataCodewordsPerBlock: 24},
+                                {numBlocks: 22, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 22, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 13, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 22, dataCodewordsPerBlock: 15},
+                                {numBlocks: 13, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9066,29 +9158,29 @@
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 10, dataCodewordsPerBlock: 114 },
-                                { numBlocks: 2, dataCodewordsPerBlock: 115 },
+                                {numBlocks: 10, dataCodewordsPerBlock: 114},
+                                {numBlocks: 2, dataCodewordsPerBlock: 115},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 46},
+                                {numBlocks: 4, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 28, dataCodewordsPerBlock: 22 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 23 },
+                                {numBlocks: 28, dataCodewordsPerBlock: 22},
+                                {numBlocks: 6, dataCodewordsPerBlock: 23},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 33, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 33, dataCodewordsPerBlock: 16},
+                                {numBlocks: 4, dataCodewordsPerBlock: 17},
                             ],
                         },
                     ],
@@ -9101,29 +9193,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 122 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 123 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 122},
+                                {numBlocks: 4, dataCodewordsPerBlock: 123},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 22, dataCodewordsPerBlock: 45 },
-                                { numBlocks: 3, dataCodewordsPerBlock: 46 },
+                                {numBlocks: 22, dataCodewordsPerBlock: 45},
+                                {numBlocks: 3, dataCodewordsPerBlock: 46},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 8, dataCodewordsPerBlock: 23 },
-                                { numBlocks: 26, dataCodewordsPerBlock: 24 },
+                                {numBlocks: 8, dataCodewordsPerBlock: 23},
+                                {numBlocks: 26, dataCodewordsPerBlock: 24},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 12, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 28, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 12, dataCodewordsPerBlock: 15},
+                                {numBlocks: 28, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9136,29 +9228,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 117 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 118 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 117},
+                                {numBlocks: 10, dataCodewordsPerBlock: 118},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 3, dataCodewordsPerBlock: 45 },
-                                { numBlocks: 23, dataCodewordsPerBlock: 46 },
+                                {numBlocks: 3, dataCodewordsPerBlock: 45},
+                                {numBlocks: 23, dataCodewordsPerBlock: 46},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 31, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 24},
+                                {numBlocks: 31, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 31, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 15},
+                                {numBlocks: 31, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9171,29 +9263,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 7, dataCodewordsPerBlock: 116 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 117 },
+                                {numBlocks: 7, dataCodewordsPerBlock: 116},
+                                {numBlocks: 7, dataCodewordsPerBlock: 117},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 21, dataCodewordsPerBlock: 45 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 46 },
+                                {numBlocks: 21, dataCodewordsPerBlock: 45},
+                                {numBlocks: 7, dataCodewordsPerBlock: 46},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 1, dataCodewordsPerBlock: 23 },
-                                { numBlocks: 37, dataCodewordsPerBlock: 24 },
+                                {numBlocks: 1, dataCodewordsPerBlock: 23},
+                                {numBlocks: 37, dataCodewordsPerBlock: 24},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 26, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 15},
+                                {numBlocks: 26, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9206,29 +9298,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 5, dataCodewordsPerBlock: 115 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 116 },
+                                {numBlocks: 5, dataCodewordsPerBlock: 115},
+                                {numBlocks: 10, dataCodewordsPerBlock: 116},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 47},
+                                {numBlocks: 10, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 15, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 25, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 15, dataCodewordsPerBlock: 24},
+                                {numBlocks: 25, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 23, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 25, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 23, dataCodewordsPerBlock: 15},
+                                {numBlocks: 25, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9241,29 +9333,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 13, dataCodewordsPerBlock: 115 },
-                                { numBlocks: 3, dataCodewordsPerBlock: 116 },
+                                {numBlocks: 13, dataCodewordsPerBlock: 115},
+                                {numBlocks: 3, dataCodewordsPerBlock: 116},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 29, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 46},
+                                {numBlocks: 29, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 42, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 42, dataCodewordsPerBlock: 24},
+                                {numBlocks: 1, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 23, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 28, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 23, dataCodewordsPerBlock: 15},
+                                {numBlocks: 28, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9275,27 +9367,27 @@
                     errorCorrectionLevels: [
                         {
                             ecCodewordsPerBlock: 30,
-                            ecBlocks: [{ numBlocks: 17, dataCodewordsPerBlock: 115 }],
+                            ecBlocks: [{numBlocks: 17, dataCodewordsPerBlock: 115}],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 10, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 23, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 10, dataCodewordsPerBlock: 46},
+                                {numBlocks: 23, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 10, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 35, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 10, dataCodewordsPerBlock: 24},
+                                {numBlocks: 35, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 35, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 15},
+                                {numBlocks: 35, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9308,29 +9400,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 17, dataCodewordsPerBlock: 115 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 116 },
+                                {numBlocks: 17, dataCodewordsPerBlock: 115},
+                                {numBlocks: 1, dataCodewordsPerBlock: 116},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 14, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 21, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 14, dataCodewordsPerBlock: 46},
+                                {numBlocks: 21, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 29, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 19, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 29, dataCodewordsPerBlock: 24},
+                                {numBlocks: 19, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 11, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 46, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 11, dataCodewordsPerBlock: 15},
+                                {numBlocks: 46, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9343,29 +9435,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 13, dataCodewordsPerBlock: 115 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 116 },
+                                {numBlocks: 13, dataCodewordsPerBlock: 115},
+                                {numBlocks: 6, dataCodewordsPerBlock: 116},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 14, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 23, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 14, dataCodewordsPerBlock: 46},
+                                {numBlocks: 23, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 44, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 44, dataCodewordsPerBlock: 24},
+                                {numBlocks: 7, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 59, dataCodewordsPerBlock: 16 },
-                                { numBlocks: 1, dataCodewordsPerBlock: 17 },
+                                {numBlocks: 59, dataCodewordsPerBlock: 16},
+                                {numBlocks: 1, dataCodewordsPerBlock: 17},
                             ],
                         },
                     ],
@@ -9378,29 +9470,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 12, dataCodewordsPerBlock: 121 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 122 },
+                                {numBlocks: 12, dataCodewordsPerBlock: 121},
+                                {numBlocks: 7, dataCodewordsPerBlock: 122},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 12, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 26, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 12, dataCodewordsPerBlock: 47},
+                                {numBlocks: 26, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 39, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 39, dataCodewordsPerBlock: 24},
+                                {numBlocks: 14, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 22, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 41, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 22, dataCodewordsPerBlock: 15},
+                                {numBlocks: 41, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9413,29 +9505,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 121 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 122 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 121},
+                                {numBlocks: 14, dataCodewordsPerBlock: 122},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 6, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 34, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 6, dataCodewordsPerBlock: 47},
+                                {numBlocks: 34, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 46, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 46, dataCodewordsPerBlock: 24},
+                                {numBlocks: 10, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 2, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 64, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 2, dataCodewordsPerBlock: 15},
+                                {numBlocks: 64, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9448,29 +9540,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 17, dataCodewordsPerBlock: 122 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 123 },
+                                {numBlocks: 17, dataCodewordsPerBlock: 122},
+                                {numBlocks: 4, dataCodewordsPerBlock: 123},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 29, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 29, dataCodewordsPerBlock: 46},
+                                {numBlocks: 14, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 49, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 10, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 49, dataCodewordsPerBlock: 24},
+                                {numBlocks: 10, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 24, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 46, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 24, dataCodewordsPerBlock: 15},
+                                {numBlocks: 46, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9483,29 +9575,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 4, dataCodewordsPerBlock: 122 },
-                                { numBlocks: 18, dataCodewordsPerBlock: 123 },
+                                {numBlocks: 4, dataCodewordsPerBlock: 122},
+                                {numBlocks: 18, dataCodewordsPerBlock: 123},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 13, dataCodewordsPerBlock: 46 },
-                                { numBlocks: 32, dataCodewordsPerBlock: 47 },
+                                {numBlocks: 13, dataCodewordsPerBlock: 46},
+                                {numBlocks: 32, dataCodewordsPerBlock: 47},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 48, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 14, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 48, dataCodewordsPerBlock: 24},
+                                {numBlocks: 14, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 42, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 32, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 42, dataCodewordsPerBlock: 15},
+                                {numBlocks: 32, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9518,29 +9610,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 20, dataCodewordsPerBlock: 117 },
-                                { numBlocks: 4, dataCodewordsPerBlock: 118 },
+                                {numBlocks: 20, dataCodewordsPerBlock: 117},
+                                {numBlocks: 4, dataCodewordsPerBlock: 118},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 40, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 7, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 40, dataCodewordsPerBlock: 47},
+                                {numBlocks: 7, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 43, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 22, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 43, dataCodewordsPerBlock: 24},
+                                {numBlocks: 22, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 10, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 67, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 10, dataCodewordsPerBlock: 15},
+                                {numBlocks: 67, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9553,29 +9645,29 @@
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 19, dataCodewordsPerBlock: 118 },
-                                { numBlocks: 6, dataCodewordsPerBlock: 119 },
+                                {numBlocks: 19, dataCodewordsPerBlock: 118},
+                                {numBlocks: 6, dataCodewordsPerBlock: 119},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 28,
                             ecBlocks: [
-                                { numBlocks: 18, dataCodewordsPerBlock: 47 },
-                                { numBlocks: 31, dataCodewordsPerBlock: 48 },
+                                {numBlocks: 18, dataCodewordsPerBlock: 47},
+                                {numBlocks: 31, dataCodewordsPerBlock: 48},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 34, dataCodewordsPerBlock: 24 },
-                                { numBlocks: 34, dataCodewordsPerBlock: 25 },
+                                {numBlocks: 34, dataCodewordsPerBlock: 24},
+                                {numBlocks: 34, dataCodewordsPerBlock: 25},
                             ],
                         },
                         {
                             ecCodewordsPerBlock: 30,
                             ecBlocks: [
-                                { numBlocks: 20, dataCodewordsPerBlock: 15 },
-                                { numBlocks: 61, dataCodewordsPerBlock: 16 },
+                                {numBlocks: 20, dataCodewordsPerBlock: 15},
+                                {numBlocks: 61, dataCodewordsPerBlock: 16},
                             ],
                         },
                     ],
@@ -9583,14 +9675,16 @@
             ];
 
 
-            /***/ }),
+            /***/
+        }),
         /* 11 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var BitMatrix_1 = __webpack_require__(0);
+
             function squareToQuadrilateral(p1, p2, p3, p4) {
                 var dx3 = p1.x - p2.x + p3.x - p4.x;
                 var dy3 = p1.y - p2.y + p3.y - p4.y;
@@ -9606,8 +9700,7 @@
                         a32: p1.y,
                         a33: 1,
                     };
-                }
-                else {
+                } else {
                     var dx1 = p2.x - p3.x;
                     var dx2 = p4.x - p3.x;
                     var dy1 = p2.y - p3.y;
@@ -9628,6 +9721,7 @@
                     };
                 }
             }
+
             function quadrilateralToSquare(p1, p2, p3, p4) {
                 // Here, the adjoint serves as the inverse:
                 var sToQ = squareToQuadrilateral(p1, p2, p3, p4);
@@ -9643,6 +9737,7 @@
                     a33: sToQ.a11 * sToQ.a22 - sToQ.a12 * sToQ.a21,
                 };
             }
+
             function times(a, b) {
                 return {
                     a11: a.a11 * b.a11 + a.a21 * b.a12 + a.a31 * b.a13,
@@ -9656,8 +9751,15 @@
                     a33: a.a13 * b.a31 + a.a23 * b.a32 + a.a33 * b.a33,
                 };
             }
+
             function extract(image, location) {
-                var qToS = quadrilateralToSquare({ x: 3.5, y: 3.5 }, { x: location.dimension - 3.5, y: 3.5 }, { x: location.dimension - 6.5, y: location.dimension - 6.5 }, { x: 3.5, y: location.dimension - 3.5 });
+                var qToS = quadrilateralToSquare({x: 3.5, y: 3.5}, {
+                    x: location.dimension - 3.5,
+                    y: 3.5
+                }, {x: location.dimension - 6.5, y: location.dimension - 6.5}, {
+                    x: 3.5,
+                    y: location.dimension - 3.5
+                });
                 var sToQ = squareToQuadrilateral(location.topLeft, location.topRight, location.alignmentPattern, location.bottomLeft);
                 var transform = times(sToQ, qToS);
                 var matrix = BitMatrix_1.BitMatrix.createEmpty(location.dimension, location.dimension);
@@ -9681,23 +9783,31 @@
                     mappingFunction: mappingFunction,
                 };
             }
+
             exports.extract = extract;
 
 
-            /***/ }),
+            /***/
+        }),
         /* 12 */
-        /***/ (function(module, exports, __webpack_require__) {
+        /***/ (function (module, exports, __webpack_require__) {
 
             "use strict";
 
-            Object.defineProperty(exports, "__esModule", { value: true });
+            Object.defineProperty(exports, "__esModule", {value: true});
             var MAX_FINDERPATTERNS_TO_SEARCH = 4;
             var MIN_QUAD_RATIO = 0.5;
             var MAX_QUAD_RATIO = 1.5;
-            var distance = function (a, b) { return Math.sqrt(Math.pow((b.x - a.x), 2) + Math.pow((b.y - a.y), 2)); };
+            var distance = function (a, b) {
+                return Math.sqrt(Math.pow((b.x - a.x), 2) + Math.pow((b.y - a.y), 2));
+            };
+
             function sum(values) {
-                return values.reduce(function (a, b) { return a + b; });
+                return values.reduce(function (a, b) {
+                    return a + b;
+                });
             }
+
 // Takes three finder patterns and organizes them into topLeft, topRight, etc
             function reorderFinderPatterns(pattern1, pattern2, pattern3) {
                 // Find distances between pattern centers
@@ -9710,11 +9820,9 @@
                 // Assume one closest to other two is B; A and C will just be guesses at first
                 if (twoThreeDistance >= oneTwoDistance && twoThreeDistance >= oneThreeDistance) {
                     _a = [pattern2, pattern1, pattern3], bottomLeft = _a[0], topLeft = _a[1], topRight = _a[2];
-                }
-                else if (oneThreeDistance >= twoThreeDistance && oneThreeDistance >= oneTwoDistance) {
+                } else if (oneThreeDistance >= twoThreeDistance && oneThreeDistance >= oneTwoDistance) {
                     _b = [pattern1, pattern2, pattern3], bottomLeft = _b[0], topLeft = _b[1], topRight = _b[2];
-                }
-                else {
+                } else {
                     _c = [pattern1, pattern3, pattern2], bottomLeft = _c[0], topLeft = _c[1], topRight = _c[2];
                 }
                 // Use cross product to figure out whether bottomLeft (A) and topRight (C) are correct or flipped in relation to topLeft (B)
@@ -9723,15 +9831,16 @@
                 if (((topRight.x - topLeft.x) * (bottomLeft.y - topLeft.y)) - ((topRight.y - topLeft.y) * (bottomLeft.x - topLeft.x)) < 0) {
                     _d = [topRight, bottomLeft], bottomLeft = _d[0], topRight = _d[1];
                 }
-                return { bottomLeft: bottomLeft, topLeft: topLeft, topRight: topRight };
+                return {bottomLeft: bottomLeft, topLeft: topLeft, topRight: topRight};
                 var _a, _b, _c, _d;
             }
+
 // Computes the dimension (number of modules on a side) of the QR Code based on the position of the finder patterns
             function computeDimension(topLeft, topRight, bottomLeft, matrix) {
                 var moduleSize = (sum(countBlackWhiteRun(topLeft, bottomLeft, matrix, 5)) / 7 + // Divide by 7 since the ratio is 1:1:3:1:1
-                    sum(countBlackWhiteRun(topLeft, topRight, matrix, 5)) / 7 +
-                    sum(countBlackWhiteRun(bottomLeft, topLeft, matrix, 5)) / 7 +
-                    sum(countBlackWhiteRun(topRight, topLeft, matrix, 5)) / 7) / 4;
+                        sum(countBlackWhiteRun(topLeft, topRight, matrix, 5)) / 7 +
+                        sum(countBlackWhiteRun(bottomLeft, topLeft, matrix, 5)) / 7 +
+                        sum(countBlackWhiteRun(topRight, topLeft, matrix, 5)) / 7) / 4;
                 if (moduleSize < 1) {
                     throw new Error("Invalid module size");
                 }
@@ -9746,13 +9855,14 @@
                         dimension--;
                         break;
                 }
-                return { dimension: dimension, moduleSize: moduleSize };
+                return {dimension: dimension, moduleSize: moduleSize};
             }
+
 // Takes an origin point and an end point and counts the sizes of the black white run from the origin towards the end point.
 // Returns an array of elements, representing the pixel size of the black white run.
 // Uses a variant of http://en.wikipedia.org/wiki/Bresenham's_line_algorithm
             function countBlackWhiteRunTowardsPoint(origin, end, matrix, length) {
-                var switchPoints = [{ x: Math.floor(origin.x), y: Math.floor(origin.y) }];
+                var switchPoints = [{x: Math.floor(origin.x), y: Math.floor(origin.y)}];
                 var steep = Math.abs(end.y - origin.y) > Math.abs(end.x - origin.x);
                 var fromX;
                 var fromY;
@@ -9763,8 +9873,7 @@
                     fromY = Math.floor(origin.x);
                     toX = Math.floor(end.y);
                     toY = Math.floor(end.x);
-                }
-                else {
+                } else {
                     fromX = Math.floor(origin.x);
                     fromY = Math.floor(origin.y);
                     toX = Math.floor(end.x);
@@ -9785,7 +9894,7 @@
                     var realY = steep ? x : y;
                     if (matrix.get(realX, realY) !== currentPixel) {
                         currentPixel = !currentPixel;
-                        switchPoints.push({ x: realX, y: realY });
+                        switchPoints.push({x: realX, y: realY});
                         if (switchPoints.length === length + 1) {
                             break;
                         }
@@ -9803,13 +9912,13 @@
                 for (var i = 0; i < length; i++) {
                     if (switchPoints[i] && switchPoints[i + 1]) {
                         distances.push(distance(switchPoints[i], switchPoints[i + 1]));
-                    }
-                    else {
+                    } else {
                         distances.push(0);
                     }
                 }
                 return distances;
             }
+
 // Takes an origin point and an end point and counts the sizes of the black white run in the origin point
 // along the line that intersects with the end point. Returns an array of elements, representing the pixel sizes
 // of the black white run. Takes a length which represents the number of switches from black to white to look for.
@@ -9817,11 +9926,15 @@
                 var rise = end.y - origin.y;
                 var run = end.x - origin.x;
                 var towardsEnd = countBlackWhiteRunTowardsPoint(origin, end, matrix, Math.ceil(length / 2));
-                var awayFromEnd = countBlackWhiteRunTowardsPoint(origin, { x: origin.x - run, y: origin.y - rise }, matrix, Math.ceil(length / 2));
+                var awayFromEnd = countBlackWhiteRunTowardsPoint(origin, {
+                    x: origin.x - run,
+                    y: origin.y - rise
+                }, matrix, Math.ceil(length / 2));
                 var middleValue = towardsEnd.shift() + awayFromEnd.shift() - 1; // Substract one so we don't double count a pixel
                 return (_a = awayFromEnd.concat(middleValue)).concat.apply(_a, towardsEnd);
                 var _a;
             }
+
 // Takes in a black white run and an array of expected ratios. Returns the average size of the run as well as the "error" -
 // that is the amount the run diverges from the expected ratio
             function scoreBlackWhiteRun(sequence, ratios) {
@@ -9830,15 +9943,16 @@
                 ratios.forEach(function (ratio, i) {
                     error += Math.pow((sequence[i] - ratio * averageSize), 2);
                 });
-                return { averageSize: averageSize, error: error };
+                return {averageSize: averageSize, error: error};
             }
+
 // Takes an X,Y point and an array of sizes and scores the point against those ratios.
 // For example for a finder pattern takes the ratio list of 1:1:3:1:1 and checks horizontal, vertical and diagonal ratios
 // against that.
             function scorePattern(point, ratios, matrix) {
                 try {
-                    var horizontalRun = countBlackWhiteRun(point, { x: -1, y: point.y }, matrix, ratios.length);
-                    var verticalRun = countBlackWhiteRun(point, { x: point.x, y: -1 }, matrix, ratios.length);
+                    var horizontalRun = countBlackWhiteRun(point, {x: -1, y: point.y}, matrix, ratios.length);
+                    var verticalRun = countBlackWhiteRun(point, {x: point.x, y: -1}, matrix, ratios.length);
                     var topLeftPoint = {
                         x: Math.max(0, point.x - point.y) - 1,
                         y: Math.max(0, point.y - point.x) - 1,
@@ -9854,20 +9968,20 @@
                     var diagDownError = scoreBlackWhiteRun(topLeftBottomRightRun, ratios);
                     var diagUpError = scoreBlackWhiteRun(bottomLeftTopRightRun, ratios);
                     var ratioError = Math.sqrt(horzError.error * horzError.error +
-                        vertError.error * vertError.error +
-                        diagDownError.error * diagDownError.error +
-                        diagUpError.error * diagUpError.error);
+                            vertError.error * vertError.error +
+                            diagDownError.error * diagDownError.error +
+                            diagUpError.error * diagUpError.error);
                     var avgSize = (horzError.averageSize + vertError.averageSize + diagDownError.averageSize + diagUpError.averageSize) / 4;
                     var sizeError = (Math.pow((horzError.averageSize - avgSize), 2) +
-                        Math.pow((vertError.averageSize - avgSize), 2) +
-                        Math.pow((diagDownError.averageSize - avgSize), 2) +
-                        Math.pow((diagUpError.averageSize - avgSize), 2)) / avgSize;
+                            Math.pow((vertError.averageSize - avgSize), 2) +
+                            Math.pow((diagDownError.averageSize - avgSize), 2) +
+                            Math.pow((diagUpError.averageSize - avgSize), 2)) / avgSize;
                     return ratioError + sizeError;
-                }
-                catch (_a) {
+                } catch (_a) {
                     return Infinity;
                 }
             }
+
             function locate(matrix) {
                 var finderPatternQuads = [];
                 var activeFinderPatternQuads = [];
@@ -9881,63 +9995,60 @@
                         var v = matrix.get(x, y);
                         if (v === lastBit) {
                             length_1++;
-                        }
-                        else {
+                        } else {
                             scans = [scans[1], scans[2], scans[3], scans[4], length_1];
                             length_1 = 1;
                             lastBit = v;
                             // Do the last 5 color changes ~ match the expected ratio for a finder pattern? 1:1:3:1:1 of b:w:b:w:b
                             var averageFinderPatternBlocksize = sum(scans) / 7;
                             var validFinderPattern = Math.abs(scans[0] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
-                                Math.abs(scans[1] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
-                                Math.abs(scans[2] - 3 * averageFinderPatternBlocksize) < 3 * averageFinderPatternBlocksize &&
-                                Math.abs(scans[3] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
-                                Math.abs(scans[4] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
-                                !v; // And make sure the current pixel is white since finder patterns are bordered in white
+                                    Math.abs(scans[1] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
+                                    Math.abs(scans[2] - 3 * averageFinderPatternBlocksize) < 3 * averageFinderPatternBlocksize &&
+                                    Math.abs(scans[3] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
+                                    Math.abs(scans[4] - averageFinderPatternBlocksize) < averageFinderPatternBlocksize &&
+                                    !v; // And make sure the current pixel is white since finder patterns are bordered in white
                             // Do the last 3 color changes ~ match the expected ratio for an alignment pattern? 1:1:1 of w:b:w
                             var averageAlignmentPatternBlocksize = sum(scans.slice(-3)) / 3;
                             var validAlignmentPattern = Math.abs(scans[2] - averageAlignmentPatternBlocksize) < averageAlignmentPatternBlocksize &&
-                                Math.abs(scans[3] - averageAlignmentPatternBlocksize) < averageAlignmentPatternBlocksize &&
-                                Math.abs(scans[4] - averageAlignmentPatternBlocksize) < averageAlignmentPatternBlocksize &&
-                                v; // Is the current pixel black since alignment patterns are bordered in black
+                                    Math.abs(scans[3] - averageAlignmentPatternBlocksize) < averageAlignmentPatternBlocksize &&
+                                    Math.abs(scans[4] - averageAlignmentPatternBlocksize) < averageAlignmentPatternBlocksize &&
+                                    v; // Is the current pixel black since alignment patterns are bordered in black
                             if (validFinderPattern) {
                                 // Compute the start and end x values of the large center black square
                                 var endX_1 = x - scans[3] - scans[4];
                                 var startX_1 = endX_1 - scans[2];
-                                var line = { startX: startX_1, endX: endX_1, y: y };
+                                var line = {startX: startX_1, endX: endX_1, y: y};
                                 // Is there a quad directly above the current spot? If so, extend it with the new line. Otherwise, create a new quad with
                                 // that line as the starting point.
                                 var matchingQuads = activeFinderPatternQuads.filter(function (q) {
                                     return (startX_1 >= q.bottom.startX && startX_1 <= q.bottom.endX) ||
-                                        (endX_1 >= q.bottom.startX && startX_1 <= q.bottom.endX) ||
-                                        (startX_1 <= q.bottom.startX && endX_1 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
-                                            (scans[2] / (q.bottom.endX - q.bottom.startX)) > MIN_QUAD_RATIO));
+                                            (endX_1 >= q.bottom.startX && startX_1 <= q.bottom.endX) ||
+                                            (startX_1 <= q.bottom.startX && endX_1 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
+                                                    (scans[2] / (q.bottom.endX - q.bottom.startX)) > MIN_QUAD_RATIO));
                                 });
                                 if (matchingQuads.length > 0) {
                                     matchingQuads[0].bottom = line;
-                                }
-                                else {
-                                    activeFinderPatternQuads.push({ top: line, bottom: line });
+                                } else {
+                                    activeFinderPatternQuads.push({top: line, bottom: line});
                                 }
                             }
                             if (validAlignmentPattern) {
                                 // Compute the start and end x values of the center black square
                                 var endX_2 = x - scans[4];
                                 var startX_2 = endX_2 - scans[3];
-                                var line = { startX: startX_2, y: y, endX: endX_2 };
+                                var line = {startX: startX_2, y: y, endX: endX_2};
                                 // Is there a quad directly above the current spot? If so, extend it with the new line. Otherwise, create a new quad with
                                 // that line as the starting point.
                                 var matchingQuads = activeAlignmentPatternQuads.filter(function (q) {
                                     return (startX_2 >= q.bottom.startX && startX_2 <= q.bottom.endX) ||
-                                        (endX_2 >= q.bottom.startX && startX_2 <= q.bottom.endX) ||
-                                        (startX_2 <= q.bottom.startX && endX_2 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
-                                            (scans[2] / (q.bottom.endX - q.bottom.startX)) > MIN_QUAD_RATIO));
+                                            (endX_2 >= q.bottom.startX && startX_2 <= q.bottom.endX) ||
+                                            (startX_2 <= q.bottom.startX && endX_2 >= q.bottom.endX && ((scans[2] / (q.bottom.endX - q.bottom.startX)) < MAX_QUAD_RATIO &&
+                                                    (scans[2] / (q.bottom.endX - q.bottom.startX)) > MIN_QUAD_RATIO));
                                 });
                                 if (matchingQuads.length > 0) {
                                     matchingQuads[0].bottom = line;
-                                }
-                                else {
-                                    activeAlignmentPatternQuads.push({ top: line, bottom: line });
+                                } else {
+                                    activeAlignmentPatternQuads.push({top: line, bottom: line});
                                 }
                             }
                         }
@@ -9945,59 +10056,93 @@
                     for (var x = -1; x <= matrix.width; x++) {
                         _loop_2(x);
                     }
-                    finderPatternQuads.push.apply(finderPatternQuads, activeFinderPatternQuads.filter(function (q) { return q.bottom.y !== y && q.bottom.y - q.top.y >= 2; }));
-                    activeFinderPatternQuads = activeFinderPatternQuads.filter(function (q) { return q.bottom.y === y; });
-                    alignmentPatternQuads.push.apply(alignmentPatternQuads, activeAlignmentPatternQuads.filter(function (q) { return q.bottom.y !== y; }));
-                    activeAlignmentPatternQuads = activeAlignmentPatternQuads.filter(function (q) { return q.bottom.y === y; });
+                    finderPatternQuads.push.apply(finderPatternQuads, activeFinderPatternQuads.filter(function (q) {
+                        return q.bottom.y !== y && q.bottom.y - q.top.y >= 2;
+                    }));
+                    activeFinderPatternQuads = activeFinderPatternQuads.filter(function (q) {
+                        return q.bottom.y === y;
+                    });
+                    alignmentPatternQuads.push.apply(alignmentPatternQuads, activeAlignmentPatternQuads.filter(function (q) {
+                        return q.bottom.y !== y;
+                    }));
+                    activeAlignmentPatternQuads = activeAlignmentPatternQuads.filter(function (q) {
+                        return q.bottom.y === y;
+                    });
                 };
                 for (var y = 0; y <= matrix.height; y++) {
                     _loop_1(y);
                 }
-                finderPatternQuads.push.apply(finderPatternQuads, activeFinderPatternQuads.filter(function (q) { return q.bottom.y - q.top.y >= 2; }));
+                finderPatternQuads.push.apply(finderPatternQuads, activeFinderPatternQuads.filter(function (q) {
+                    return q.bottom.y - q.top.y >= 2;
+                }));
                 alignmentPatternQuads.push.apply(alignmentPatternQuads, activeAlignmentPatternQuads);
                 var finderPatternGroups = finderPatternQuads
-                    .filter(function (q) { return q.bottom.y - q.top.y >= 2; }) // All quads must be at least 2px tall since the center square is larger than a block
-                    .map(function (q) {
-                        var x = (q.top.startX + q.top.endX + q.bottom.startX + q.bottom.endX) / 4;
-                        var y = (q.top.y + q.bottom.y + 1) / 2;
-                        if (!matrix.get(Math.round(x), Math.round(y))) {
-                            return;
-                        }
-                        var lengths = [q.top.endX - q.top.startX, q.bottom.endX - q.bottom.startX, q.bottom.y - q.top.y + 1];
-                        var size = sum(lengths) / lengths.length;
-                        var score = scorePattern({ x: Math.round(x), y: Math.round(y) }, [1, 1, 3, 1, 1], matrix);
-                        return { score: score, x: x, y: y, size: size };
-                    })
-                    .filter(function (q) { return !!q; }) // Filter out any rejected quads from above
-                    .sort(function (a, b) { return a.score - b.score; })
-                    .map(function (point, i, finderPatterns) {
-                        if (i > MAX_FINDERPATTERNS_TO_SEARCH) {
-                            return null;
-                        }
-                        var otherPoints = finderPatterns
-                            .filter(function (p, ii) { return i !== ii; })
-                            .map(function (p) { return ({ x: p.x, y: p.y, score: p.score + (Math.pow((p.size - point.size), 2)) / point.size, size: p.size }); })
-                            .sort(function (a, b) { return a.score - b.score; });
-                        if (otherPoints.length < 2) {
-                            return null;
-                        }
-                        var score = point.score + otherPoints[0].score + otherPoints[1].score;
-                        return { points: [point].concat(otherPoints.slice(0, 2)), score: score };
-                    })
-                    .filter(function (q) { return !!q; }) // Filter out any rejected finder patterns from above
-                    .sort(function (a, b) { return a.score - b.score; });
+                        .filter(function (q) {
+                            return q.bottom.y - q.top.y >= 2;
+                        }) // All quads must be at least 2px tall since the center square is larger than a block
+                        .map(function (q) {
+                            var x = (q.top.startX + q.top.endX + q.bottom.startX + q.bottom.endX) / 4;
+                            var y = (q.top.y + q.bottom.y + 1) / 2;
+                            if (!matrix.get(Math.round(x), Math.round(y))) {
+                                return;
+                            }
+                            var lengths = [q.top.endX - q.top.startX, q.bottom.endX - q.bottom.startX, q.bottom.y - q.top.y + 1];
+                            var size = sum(lengths) / lengths.length;
+                            var score = scorePattern({
+                                x: Math.round(x),
+                                y: Math.round(y)
+                            }, [1, 1, 3, 1, 1], matrix);
+                            return {score: score, x: x, y: y, size: size};
+                        })
+                        .filter(function (q) {
+                            return !!q;
+                        }) // Filter out any rejected quads from above
+                        .sort(function (a, b) {
+                            return a.score - b.score;
+                        })
+                        .map(function (point, i, finderPatterns) {
+                            if (i > MAX_FINDERPATTERNS_TO_SEARCH) {
+                                return null;
+                            }
+                            var otherPoints = finderPatterns
+                                    .filter(function (p, ii) {
+                                        return i !== ii;
+                                    })
+                                    .map(function (p) {
+                                        return ({
+                                            x: p.x,
+                                            y: p.y,
+                                            score: p.score + (Math.pow((p.size - point.size), 2)) / point.size,
+                                            size: p.size
+                                        });
+                                    })
+                                    .sort(function (a, b) {
+                                        return a.score - b.score;
+                                    });
+                            if (otherPoints.length < 2) {
+                                return null;
+                            }
+                            var score = point.score + otherPoints[0].score + otherPoints[1].score;
+                            return {points: [point].concat(otherPoints.slice(0, 2)), score: score};
+                        })
+                        .filter(function (q) {
+                            return !!q;
+                        }) // Filter out any rejected finder patterns from above
+                        .sort(function (a, b) {
+                            return a.score - b.score;
+                        });
                 if (finderPatternGroups.length === 0) {
                     return null;
                 }
-                var _a = reorderFinderPatterns(finderPatternGroups[0].points[0], finderPatternGroups[0].points[1], finderPatternGroups[0].points[2]), topRight = _a.topRight, topLeft = _a.topLeft, bottomLeft = _a.bottomLeft;
+                var _a = reorderFinderPatterns(finderPatternGroups[0].points[0], finderPatternGroups[0].points[1], finderPatternGroups[0].points[2]),
+                        topRight = _a.topRight, topLeft = _a.topLeft, bottomLeft = _a.bottomLeft;
                 // Now that we've found the three finder patterns we can determine the blockSize and the size of the QR code.
                 // We'll use these to help find the alignment pattern but also later when we do the extraction.
                 var dimension;
                 var moduleSize;
                 try {
                     (_b = computeDimension(topLeft, topRight, bottomLeft, matrix), dimension = _b.dimension, moduleSize = _b.moduleSize);
-                }
-                catch (e) {
+                } catch (e) {
                     return null;
                 }
                 // Now find the alignment pattern
@@ -10012,35 +10157,44 @@
                     y: topLeft.y + correctionToTopLeft * (bottomRightFinderPattern.y - topLeft.y),
                 };
                 var alignmentPatterns = alignmentPatternQuads
-                    .map(function (q) {
-                        var x = (q.top.startX + q.top.endX + q.bottom.startX + q.bottom.endX) / 4;
-                        var y = (q.top.y + q.bottom.y + 1) / 2;
-                        if (!matrix.get(Math.floor(x), Math.floor(y))) {
-                            return;
-                        }
-                        var lengths = [q.top.endX - q.top.startX, q.bottom.endX - q.bottom.startX, (q.bottom.y - q.top.y + 1)];
-                        var size = sum(lengths) / lengths.length;
-                        var sizeScore = scorePattern({ x: Math.floor(x), y: Math.floor(y) }, [1, 1, 1], matrix);
-                        var score = sizeScore + distance({ x: x, y: y }, expectedAlignmentPattern);
-                        return { x: x, y: y, score: score };
-                    })
-                    .filter(function (v) { return !!v; })
-                    .sort(function (a, b) { return a.score - b.score; });
+                        .map(function (q) {
+                            var x = (q.top.startX + q.top.endX + q.bottom.startX + q.bottom.endX) / 4;
+                            var y = (q.top.y + q.bottom.y + 1) / 2;
+                            if (!matrix.get(Math.floor(x), Math.floor(y))) {
+                                return;
+                            }
+                            var lengths = [q.top.endX - q.top.startX, q.bottom.endX - q.bottom.startX, (q.bottom.y - q.top.y + 1)];
+                            var size = sum(lengths) / lengths.length;
+                            var sizeScore = scorePattern({
+                                x: Math.floor(x),
+                                y: Math.floor(y)
+                            }, [1, 1, 1], matrix);
+                            var score = sizeScore + distance({x: x, y: y}, expectedAlignmentPattern);
+                            return {x: x, y: y, score: score};
+                        })
+                        .filter(function (v) {
+                            return !!v;
+                        })
+                        .sort(function (a, b) {
+                            return a.score - b.score;
+                        });
                 // If there are less than 15 modules between finder patterns it's a version 1 QR code and as such has no alignmemnt pattern
                 // so we can only use our best guess.
                 var alignmentPattern = modulesBetweenFinderPatterns >= 15 && alignmentPatterns.length ? alignmentPatterns[0] : expectedAlignmentPattern;
                 return {
-                    alignmentPattern: { x: alignmentPattern.x, y: alignmentPattern.y },
-                    bottomLeft: { x: bottomLeft.x, y: bottomLeft.y },
+                    alignmentPattern: {x: alignmentPattern.x, y: alignmentPattern.y},
+                    bottomLeft: {x: bottomLeft.x, y: bottomLeft.y},
                     dimension: dimension,
-                    topLeft: { x: topLeft.x, y: topLeft.y },
-                    topRight: { x: topRight.x, y: topRight.y },
+                    topLeft: {x: topLeft.x, y: topLeft.y},
+                    topRight: {x: topRight.x, y: topRight.y},
                 };
                 var _b;
             }
+
             exports.locate = locate;
 
 
-            /***/ })
-        /******/ ])["default"];
+            /***/
+        })
+        /******/])["default"];
 });

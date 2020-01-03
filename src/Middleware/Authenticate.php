@@ -12,6 +12,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
 
 class Authenticate
 {
+
     /**
      * Handle an incoming request.
      *
@@ -22,10 +23,10 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::guard('admin')->guest() && !$this->shouldPassThrough($request)) {
+        if (Auth::guard('admin')->guest() && ! $this->shouldPassThrough($request)) {
             if ($request->expectsJson()) {
                 return response()
-                    ->json(['error' => "未授权,请登录"], 401);
+                    ->json([ 'error' => "未授权,请登录" ], 401);
             } else {
                 return redirect()->guest(admin_base_path('auth/login'));
             }
@@ -39,11 +40,12 @@ class Authenticate
 
             $request->session()->invalidate();
 
-            throw new PermissionDeniedException('当前账号:'.$adminUser->name.'已被禁用');
+            throw new PermissionDeniedException('当前账号:' . $adminUser->name . '已被禁用');
         }
 
         return $next($request);
     }
+
 
     /**
      * Determine if the request has a URI that should pass through verification.

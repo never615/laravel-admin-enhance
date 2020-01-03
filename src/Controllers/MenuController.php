@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -23,10 +22,12 @@ use Mallto\Admin\Data\Subject;
 
 class MenuController extends AdminCommonController
 {
+
     /**
      * Index interface.
      *
      * @param Content $content
+     *
      * @return Content
      */
     public function index(Content $content)
@@ -44,14 +45,14 @@ class MenuController extends AdminCommonController
 
                     $form->select('parent_id', trans('admin.parent_id'))->options(Menu::selectOptions());
                     $form->text('title', trans('admin.title'))->rules('required');
-                    $form->text('sub_title',  "副标题");
+                    $form->text('sub_title', "副标题");
                     $form->icon('icon',
                         trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
                     $form->text('uri', trans('admin.uri'))->help("路径需要填写路由名,如:shops.index");
-                    if (!config("admin.auto_menu")) {
-                        $form->multipleSelect('roles', trans('admin.roles'))->options(Role::all()->pluck('name', 'id'));
+                    if ( ! config("admin.auto_menu")) {
+                        $form->multipleSelect('roles',
+                            trans('admin.roles'))->options(Role::all()->pluck('name', 'id'));
                     }
-
 
                     $form->multipleSelect("subjects", "主体")
                         ->options(Subject::selectSourceDate())
@@ -64,6 +65,7 @@ class MenuController extends AdminCommonController
         });
     }
 
+
     /**
      * Redirect to edit page.
      *
@@ -73,8 +75,9 @@ class MenuController extends AdminCommonController
      */
     public function show($id, Content $content)
     {
-        return redirect()->route('menu.edit', ['id' => $id]);
+        return redirect()->route('menu.edit', [ 'id' => $id ]);
     }
+
 
     /**
      * @return \Encore\Admin\Tree
@@ -93,7 +96,7 @@ class MenuController extends AdminCommonController
 
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$title}</strong>";
 
-                if (!isset($branch['children']) && $branch['uri']) {
+                if ( ! isset($branch['children']) && $branch['uri']) {
 
                     if (Route::has($branch['uri'])) {
                         $uri = route($branch['uri']);
@@ -134,6 +137,7 @@ class MenuController extends AdminCommonController
         return "菜单管理";
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -144,9 +148,11 @@ class MenuController extends AdminCommonController
         return Menu::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
     }
+
 
     protected function formOption(Form $form)
     {
@@ -156,7 +162,7 @@ class MenuController extends AdminCommonController
         $form->icon('icon',
             trans('admin.icon'))->default('fa-bars')->rules('required')->help($this->iconHelp());
         $form->text('uri', trans('admin.uri'));
-        if (!config("admin.auto_menu")) {
+        if ( ! config("admin.auto_menu")) {
             $form->multipleSelect('roles', trans('admin.roles'))
                 ->options(Role::all()->pluck('name', 'id'));
         }
@@ -170,24 +176,23 @@ class MenuController extends AdminCommonController
             $parentId = $form->parent_id ?? $form->model()->parent_id;
             $parent = Menu::find($parentId);
             if ($parent) {
-                if (!empty($parent->path)) {
-                    $form->model()->path = $parent->path.$parent->id.".";
+                if ( ! empty($parent->path)) {
+                    $form->model()->path = $parent->path . $parent->id . ".";
                 } else {
-                    $form->model()->path = ".".$parent->id.".";
+                    $form->model()->path = "." . $parent->id . ".";
                 }
             }
 
-            if ($form->uri && !ends_with($form->uri, ".index")) {
+            if ($form->uri && ! ends_with($form->uri, ".index")) {
                 try {
-                    if (route($form->uri.".index")) {
-                        $form->uri = $form->uri.".index";
+                    if (route($form->uri . ".index")) {
+                        $form->uri = $form->uri . ".index";
                     }
                 } catch (\Exception $exception) {
 
                 }
             }
         });
-
 
         $form->saved(function ($form) {
             $cacheMenuKeys = Cache::get("cache_menu_keys", []);

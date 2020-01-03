@@ -5,17 +5,17 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Mallto\Admin\Data\Traits\BaseModel;
 
 class AdminUserGroup extends BaseModel
 {
+
     protected $table = 'admin_user_groups';
 
 
     public function users()
     {
         return $this->belongsToMany(Administrator::class, "admin_user_group_users",
-             'group_id','user_id');
+            'group_id', 'user_id');
     }
 }

@@ -7,11 +7,12 @@ use Illuminate\Support\Str;
 
 class Select extends Field\Select
 {
+
     private $sourceUrl;
+
     private $idField;
 
     protected $view = 'adminE::form.select';
-
 
 //    private function initDefaultValue()
 //    {
@@ -55,7 +56,7 @@ class Select extends Field\Select
     {
         if (Str::contains($field, '.')) {
             $field = $this->formatName($field);
-            $class = str_replace(['[', ']'], '_', $field);
+            $class = str_replace([ '[', ']' ], '_', $field);
         } else {
             $class = $field;
         }

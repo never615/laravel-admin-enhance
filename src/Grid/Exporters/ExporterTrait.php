@@ -15,10 +15,12 @@ namespace Mallto\Admin\Grid\Exporters;
  */
 trait ExporterTrait
 {
+
     /**
      * @param            $records
      *
      * @param            $tableName
+     *
      * @return array
      */
     public function getHeaderRowFromRecords($records, $tableName): array
@@ -29,9 +31,9 @@ trait ExporterTrait
             }
         );
 
-
         return $titles->toArray();
     }
+
 
     /**
      * @param  $record
@@ -49,13 +51,14 @@ trait ExporterTrait
         }, $record);
     }
 
+
     public function getFileName($extension = "")
     {
         $tableName = $this->getTable();
         $now = date('Y-m-d H:i:s');
 
 //        return admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).$extension;
-        return admin_translate("table.".$tableName)."_".$now.$extension;
+        return admin_translate("table." . $tableName) . "_" . $now . $extension;
     }
 
 
@@ -63,10 +66,11 @@ trait ExporterTrait
      * 一般用来处理关联对象的属性
      * 使用 array_map
      *
-     * @deprecated
      * @param $records
      * @param $callback
+     *
      * @return array
+     * @deprecated
      */
     public function transform2($records, $callback)
     {
@@ -79,15 +83,17 @@ trait ExporterTrait
         return $newRecords;
     }
 
+
     /**
      * 一般用来处理关联对象的属性
      * 使用类似 array_map
      *
-     * @deprecated use transform2
      * @param $records
      * @param $keys ,需要做变形的key
      * @param $callback
+     *
      * @return array
+     * @deprecated use transform2
      */
     public function transform($records, $keys, $callback)
     {
@@ -113,6 +119,7 @@ trait ExporterTrait
      * @param array|string $keys       ,需要移除的字段,
      * @param              $remainKeys ,设置此字段,会忽略keys的设置
      * @param bool         $default    true,是否默认移除一些字段
+     *
      * @return array
      */
     public function forget($records, $keys = [], $remainKeys = [], $default = true)
@@ -126,7 +133,7 @@ trait ExporterTrait
                 if ($record) {
                     foreach ($record as $recordKey => $recordValue) {
                         //只要不是$remainKeys中的就unset
-                        if (!in_array($recordKey, $remainKeys)) {
+                        if ( ! in_array($recordKey, $remainKeys)) {
                             unset($record[$recordKey]);
                         }
                     }
@@ -141,7 +148,7 @@ trait ExporterTrait
                     foreach ((array) $keys as $key) {
                         foreach ($record as $recordKey => $recordValue) {
                             //特别处理xxx.yyy形式的key的数据
-                            if (starts_with($recordKey, trim($key, '.').".")) {
+                            if (starts_with($recordKey, trim($key, '.') . ".")) {
                                 unset($record[$recordKey]);
                             }
                         }
@@ -153,9 +160,7 @@ trait ExporterTrait
             }, $records);
         }
 
-
         return $records;
-
 
 //
 //        $records = $records->map(function (Model $record) use ($keys) {
@@ -177,6 +182,5 @@ trait ExporterTrait
 //
 //        return $records;
     }
-
 
 }

@@ -18,7 +18,8 @@ use Throwable;
 /**
  * 使用参考: https://docs.laravel-excel.com/3.1/imports/model.html#handling-persistence-on-your-own
  *
- * When using OnEachRow you cannot use batch inserts, as the the model is already persisted in the onRow method.
+ * When using OnEachRow you cannot use batch inserts, as the the model is already persisted in the onRow
+ * method.
  *
  * User: never615 <never615.com>
  * Date: 2019/11/26
@@ -27,7 +28,6 @@ use Throwable;
 class EachRowBaseImport extends BaseImport implements
     OnEachRow, WithBatchInserts
 {
-
 
     /**
      * @param Row $row
@@ -61,10 +61,11 @@ class EachRowBaseImport extends BaseImport implements
         try {
             $this->importHandler->dataHandler($this->importRecord, $row);
         } catch (Throwable $e) {
-            $e = new $e("第$rowIndex 行错误:".$e->getMessage(), $e->getCode(), $e->getPrevious());
+            $e = new $e("第$rowIndex 行错误:" . $e->getMessage(), $e->getCode(), $e->getPrevious());
             $this->onError($e);
         }
     }
+
 
     /**
      * @return array
@@ -100,6 +101,7 @@ class EachRowBaseImport extends BaseImport implements
         return 1000;
     }
 
+
     /**
      * @return int
      */
@@ -107,6 +109,5 @@ class EachRowBaseImport extends BaseImport implements
     {
         return 1000;
     }
-
 
 }

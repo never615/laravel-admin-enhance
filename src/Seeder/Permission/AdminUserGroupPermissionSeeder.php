@@ -5,16 +5,15 @@
 
 namespace Mallto\Admin\Seeder\Permission;
 
-
+use Encore\Admin\Auth\Database\Permission;
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\SeederMaker;
-use Encore\Admin\Auth\Database\Permission;
-
 
 class AdminUserGroupPermissionSeeder extends Seeder
 {
 
     use SeederMaker;
+
 
     /**
      * Run the database seeds.
@@ -24,11 +23,11 @@ class AdminUserGroupPermissionSeeder extends Seeder
      */
     public function run()
     {
-        $parentId=0;
-        $parentPermisson=Permission::where("slug","")->first();
-        if($parentPermisson){
-            $parentId=$parentPermisson->id;
+        $parentId = 0;
+        $parentPermisson = Permission::where("slug", "")->first();
+        if ($parentPermisson) {
+            $parentId = $parentPermisson->id;
         }
-        $this->createPermissions("管理账户分组", "admin_user_groups",true,$parentId);
+        $this->createPermissions("管理账户分组", "admin_user_groups", true, $parentId);
     }
 }

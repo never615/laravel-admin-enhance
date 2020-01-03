@@ -2,10 +2,6 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\Data\Permission;
 
 trait HasPermissions2
@@ -17,6 +13,7 @@ trait HasPermissions2
      * @param       $permissionSlug
      *
      * @param array $arguments
+     *
      * @return bool
      */
     public function can($permissionSlug, $arguments = []): bool
@@ -25,7 +22,6 @@ trait HasPermissions2
         if ($this->isOwner()) {
             return true;
         }
-
 
         //2.用户拥有该权限通过
         if (method_exists($this, 'permissions')) {
@@ -37,13 +33,14 @@ trait HasPermissions2
         //3.用户拥有该权限的父权限,通过
         //先查询该权限的父权限,因为权限支持多级,所以要查询出该权限的所有长辈权限
         $permission = Permission::where('slug', $permissionSlug)->first();
-        if (!$permission) {
+        if ( ! $permission) {
             return false;
         }
         //查询该权限的父权限
         $elderPermissions = $permission->elderPermissions();
         //检查用户的权限中有没有父权限
-        if ($elderPermissions && $this->permissions()->whereIn("id", $elderPermissions->pluck("id"))->exists()) {
+        if ($elderPermissions && $this->permissions()->whereIn("id",
+                $elderPermissions->pluck("id"))->exists()) {
             return true;
         }
 
@@ -61,12 +58,13 @@ trait HasPermissions2
 
 //        return false;
 
-        $waiteVerifyPermissionSlugs=array_merge($elderPermissions->pluck("slug")->toArray(), (array)$permission->slug);
+        $waiteVerifyPermissionSlugs = array_merge($elderPermissions->pluck("slug")->toArray(),
+            (array) $permission->slug);
 
-        $rolePermissionSlugs=$this->roles->pluck('permissions')->flatten()->pluck('slug');
+        $rolePermissionSlugs = $this->roles->pluck('permissions')->flatten()->pluck('slug');
 
-        foreach ( $waiteVerifyPermissionSlugs as $waiteVerifyPermissionSlug) {
-            if($rolePermissionSlugs->contains($waiteVerifyPermissionSlug)){
+        foreach ($waiteVerifyPermissionSlugs as $waiteVerifyPermissionSlug) {
+            if ($rolePermissionSlugs->contains($waiteVerifyPermissionSlug)) {
                 return true;
             }
         }
@@ -109,7 +107,6 @@ trait HasPermissions2
 //        return $this->roles()
 //            ->whereIn('slug', (array) $roles)->exists();
 //    }
-
 
 //    /**
 //     * Detach models from the relationship.

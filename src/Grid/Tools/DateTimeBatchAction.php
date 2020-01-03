@@ -16,8 +16,11 @@ use Encore\Admin\Grid\Tools\BatchAction;
  */
 class DateTimeBatchAction extends BatchAction
 {
+
     private $text;
+
     private $url;
+
     private $column;
 
 
@@ -28,7 +31,7 @@ class DateTimeBatchAction extends BatchAction
      * @param        $url
      * @param        $column
      */
-    public function __construct($text="时间",$url,$column)
+    public function __construct($text = "时间", $url, $column)
     {
         $this->text = $text;
         $this->url = $url;
@@ -44,15 +47,12 @@ class DateTimeBatchAction extends BatchAction
         if (starts_with($this->url, "http")) {
             $tempUrl = $this->url;
         } else {
-            $tempUrl = $this->resource."/".$this->url;
+            $tempUrl = $this->resource . "/" . $this->url;
         }
 
-
         //selectedRows()
-        $locale=config('app.locale');
-        $layDateId="laydate_".$this->id;
-
-
+        $locale = config('app.locale');
+        $layDateId = "laydate_" . $this->id;
 
         return <<<EOF
 $('{$this->getElementClass()}').on('click', function() {

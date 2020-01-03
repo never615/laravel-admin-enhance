@@ -3,7 +3,6 @@
  * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-
 namespace Mallto\Admin;
 
 /**
@@ -32,7 +31,7 @@ class SubjectConfigConstants
     const OWNER_CONFIG_TAG_TYPES = "tag_types";
 
     //主体可导入模块配置
-    const OWNER_CONFIG_IMPORT_MODULE= "import_module";
+    const OWNER_CONFIG_IMPORT_MODULE = "import_module";
     /**
      * 主体拥有者配置项
      */

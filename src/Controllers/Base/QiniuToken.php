@@ -7,7 +7,6 @@ namespace Mallto\Admin\Controllers\Base;
 
 use Qiniu\Auth;
 
-
 /**
  * Created by PhpStorm.
  * User: never615
@@ -22,6 +21,7 @@ trait QiniuToken
      *
      * @param string $path
      * @param bool   $base64
+     *
      * @return string
      */
     public function getUploadTokenInter($path = "file", $base64 = false)
@@ -37,11 +37,10 @@ trait QiniuToken
 
         $path = trim($path, '/');
 
-
         if ($base64) {
-            $saveKey = $path.'/'.uniqid()."$(etag)";
+            $saveKey = $path . '/' . uniqid() . "$(etag)";
         } else {
-            $saveKey = $path.'/'.uniqid().'$(etag)$(ext)';
+            $saveKey = $path . '/' . uniqid() . '$(etag)$(ext)';
         }
 
         $policy = [
@@ -49,10 +48,8 @@ trait QiniuToken
             'saveKey'    => $saveKey,
         ];
 
-
         // 生成上传Token
         return $auth->uploadToken($bucket, null, 3600, $policy);
     }
-
 
 }

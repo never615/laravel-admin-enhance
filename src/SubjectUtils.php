@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class SubjectUtils
 {
+
     /**
      * 获取只有项目拥有者才能编辑的配置项
      *
@@ -30,11 +31,12 @@ class SubjectUtils
      * @param      $key
      * @param null $default
      * @param null $subject
+     *
      * @return null
      */
     public static function getConfigByOwner($key, $subject = null, $default = null)
     {
-        if (!$subject) {
+        if ( ! $subject) {
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
@@ -61,11 +63,12 @@ class SubjectUtils
      * @param      $key
      * @param null $default
      * @param null $subject
+     *
      * @return null
      */
     public static function getConfigBySubjectOwner($key, $default = null, $subject = null)
     {
-        if (!$subject) {
+        if ( ! $subject) {
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
@@ -94,11 +97,12 @@ class SubjectUtils
      * @param      $key
      * @param null $subjectId
      * @param null $default
+     *
      * @return mixed|null
      */
     public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
     {
-        if (!$subjectId) {
+        if ( ! $subjectId) {
             try {
                 $subjectId = self::getSubjectId();
             } catch (\Exception $exception) {
@@ -115,11 +119,11 @@ class SubjectUtils
             ->where("key", $key)
             ->first();
 
-        if (!$subjectConfig) {
+        if ( ! $subjectConfig) {
             if ($default) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key."未配置,".$subjectId);
+                throw new SubjectConfigException($key . "未配置," . $subjectId);
             }
         }
 
@@ -139,11 +143,12 @@ class SubjectUtils
      * @param      $key
      * @param null $default
      * @param null $subject
+     *
      * @return mixed|null
      */
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
-        if (!$subject) {
+        if ( ! $subject) {
             try {
                 $subject = self::getSubject();
             } catch (\Exception $exception) {
@@ -161,11 +166,11 @@ class SubjectUtils
             ->where("type", "public")
             ->first();
 
-        if (!$subjectConfig) {
+        if ( ! $subjectConfig) {
             if ($default) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key."未配置,".$subject->id);
+                throw new SubjectConfigException($key . "未配置," . $subject->id);
             }
         }
 
@@ -177,6 +182,7 @@ class SubjectUtils
      * 获取uuid
      *
      * @param null $app
+     *
      * @return mixed
      */
     public static function getUUID($app = null)
@@ -201,9 +207,9 @@ class SubjectUtils
             throw new HttpException(422, "uuid为空");
         }
 
-
         return $uuid;
     }
+
 
     /**
      * 获取uuid
@@ -224,6 +230,7 @@ class SubjectUtils
         return $uuid;
     }
 
+
     /**
      * 获取主体id
      *
@@ -239,6 +246,7 @@ class SubjectUtils
      * 获取当前主体
      *
      * @param null $app
+     *
      * @return Subject|null|static
      */
     public static function getSubject($app = null)
@@ -250,12 +258,12 @@ class SubjectUtils
             $uuid = null;
         }
 
-        if (!is_null($uuid)) {
+        if ( ! is_null($uuid)) {
             $subject = Subject::where("uuid", $uuid)->first();
             if ($subject) {
                 return $subject;
             } else {
-                $subject = Subject::where('extra_config->'.SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
                     $uuid)
                     ->first();
                 if ($subject) {
@@ -273,8 +281,7 @@ class SubjectUtils
             }
         }
 
-        throw new HttpException(422, "uuid参数错误:".$uuid);
+        throw new HttpException(422, "uuid参数错误:" . $uuid);
     }
-
 
 }

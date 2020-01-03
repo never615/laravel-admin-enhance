@@ -5,15 +5,11 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
-use Encore\Admin\Form;
-use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Form\Field;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class Embeds extends Field\Embeds
 {
+
     protected $view = 'adminE::form.embeds';
 
 }

@@ -10,7 +10,9 @@ use Illuminate\Support\Arr;
 
 class Button extends Field
 {
+
     protected $class = 'btn-primary';
+
 
     public function info()
     {
@@ -19,11 +21,11 @@ class Button extends Field
         return $this;
     }
 
+
     public function on($event, $callback)
     {
 
         $js = $callback();
-
 
         $this->script = <<<EOT
 
@@ -54,6 +56,6 @@ EOT;
             return $classes;
         }
 
-        return implode(' ', $elementClass).' '.$this->class;
+        return implode(' ', $elementClass) . ' ' . $this->class;
     }
 }

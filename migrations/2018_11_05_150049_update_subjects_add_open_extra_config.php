@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateSubjectsAddOpenExtraConfig extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -21,6 +22,7 @@ class UpdateSubjectsAddOpenExtraConfig extends Migration
                 ->comment("非项目拥有者可以编辑的额外的配置,还有extra_config一半用做项目拥有者才能编辑的配置");
         });
     }
+
 
     /**
      * Reverse the migrations.

@@ -6,9 +6,9 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-
 class CreateAdminMenuSubjectsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -25,6 +25,7 @@ class CreateAdminMenuSubjectsTable extends Migration
             $table->string("sub_title")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

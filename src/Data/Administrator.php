@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Encore\Admin\Auth\Database\HasPermissions;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
@@ -21,11 +20,11 @@ use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
  */
 class Administrator extends \Encore\Admin\Auth\Database\Administrator
 {
+
     use Authenticatable, AdminBuilder, HasPermissions,
         DynamicData, HasMultiAuthApiTokens, SelectSource, HasPermissions2 {
         HasPermissions2::can insteadof HasPermissions;
     }
-
 
     const STATUS = [
         "normal"    => "正常",
@@ -39,7 +38,6 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
 
     protected $fillable = [
     ];
-
 
     protected $guarded = [];
 
@@ -55,10 +53,12 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
         return $this->belongsTo(Subject::class);
     }
 
+
     public function adminable()
     {
         return $this->morphTo();
     }
+
 
     public function groups()
     {

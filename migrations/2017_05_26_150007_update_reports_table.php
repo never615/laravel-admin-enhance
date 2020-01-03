@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateReportsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -21,6 +22,7 @@ class UpdateReportsTable extends Migration
             $table->text("status")->nullable()->comment("报表状态")->change();
         });
     }
+
 
     /**
      * Reverse the migrations.

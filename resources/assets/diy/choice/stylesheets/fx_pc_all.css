@@ -3273,7 +3273,7 @@ table td[class*=col-], table th[class*=col-] {
     border-bottom: solid 4px #3482b4
 }
 
-.fui_user .select-menu .icon-search  {
+.fui_user .select-menu .icon-search {
     line-height: 38px;
     color: #989898;
     cursor: pointer;
@@ -3283,7 +3283,7 @@ table td[class*=col-], table th[class*=col-] {
     right: 10px
 }
 
-#icon-refresh  {
+#icon-refresh {
     line-height: 38px;
     color: #989898;
     cursor: pointer;

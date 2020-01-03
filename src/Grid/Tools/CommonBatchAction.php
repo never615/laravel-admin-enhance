@@ -29,15 +29,19 @@ use Encore\Admin\Grid\Tools\BatchAction;
  */
 class CommonBatchAction extends BatchAction
 {
+
     private $url;
+
     /**
      * @var string
      */
     private $action;
+
     /**
      * @var string
      */
     private $column;
+
 
     /**
      * CommonBatchAction constructor.
@@ -60,7 +64,7 @@ class CommonBatchAction extends BatchAction
         if (starts_with($this->url, "http")) {
             $tempUrl = $this->url;
         } else {
-            $tempUrl = $this->resource."/".$this->url;
+            $tempUrl = $this->resource . "/" . $this->url;
         }
 
         return <<<EOT

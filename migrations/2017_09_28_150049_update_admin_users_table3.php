@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateAdminUsersTable3 extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -19,6 +20,7 @@ class UpdateAdminUsersTable3 extends Migration
             $table->string("mobile")->nullable();
         });
     }
+
 
     /**
      * Reverse the migrations.

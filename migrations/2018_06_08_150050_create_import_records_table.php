@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateImportRecordsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -41,11 +42,11 @@ class CreateImportRecordsTable extends Migration
             $table->timestamp("finish_at")
                 ->nullable();
 
-
             $table->timestamps();
             $table->softDeletes();
         });
     }
+
 
     /**
      * Reverse the migrations.

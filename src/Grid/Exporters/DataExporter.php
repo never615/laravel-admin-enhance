@@ -63,6 +63,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
     protected $table;
 
     protected $report;
+
     /**
      * @var null
      */
@@ -85,6 +86,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
         $this->adminUserId = $adminUserId;
     }
+
 
     /**
      * Execute the job.
@@ -119,46 +121,47 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
 //            $savePath = storage_path('app/public/exports');
             $savePath = 'public/exports';
-            if (!Storage::exists($savePath)) {
+            if ( ! Storage::exists($savePath)) {
                 Storage::makeDirectory($savePath);
             }
 
-            $fp = fopen(storage_path('app/public/exports')."/".$report->name, "a");
-            fwrite($fp, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
+            $fp = fopen(storage_path('app/public/exports') . "/" . $report->name, "a");
+            fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
             $firstWrite = true;
-            $query = $this->customQuery($query,$this->subjectId);
-            $query->orderBy($tableName.".id")->chunk(1000, function ($data) use (&$firstWrite, $fp, $tableName) {
-                $data = json_decode(json_encode($data), true);
+            $query = $this->customQuery($query, $this->subjectId);
+            $query->orderBy($tableName . ".id")->chunk(1000,
+                function ($data) use (&$firstWrite, $fp, $tableName) {
+                    $data = json_decode(json_encode($data), true);
 
-                $data = $this->customData($data);
-                //有一些列总是不导出,如icon,image,images
-                $data = ExportUtils::removeInvalids($data);
-                //写列名
-                if ($firstWrite) {
-                    $columnNames = [];
-                    //获取列名
-                    foreach ($data[0] as $key => $value) {
-                        $columnNames[] = admin_translate($key, $tableName);
+                    $data = $this->customData($data);
+                    //有一些列总是不导出,如icon,image,images
+                    $data = ExportUtils::removeInvalids($data);
+                    //写列名
+                    if ($firstWrite) {
+                        $columnNames = [];
+                        //获取列名
+                        foreach ($data[0] as $key => $value) {
+                            $columnNames[] = admin_translate($key, $tableName);
+                        }
+                        fputcsv($fp, $columnNames);
+
+                        unset($columnNames);
+                        $firstWrite = false;
                     }
-                    fputcsv($fp, $columnNames);
-
-                    unset($columnNames);
-                    $firstWrite = false;
-                }
-                foreach ($data as $item) {
-                    fputcsv($fp, $item);
-                }
-            });
+                    foreach ($data as $item) {
+                        fputcsv($fp, $item);
+                    }
+                });
 
             fclose($fp);
 
             //上传文件到七牛
             $disk = Storage::disk("qiniu_private");
 
-            $filePath = public_path('storage/exports/'.$report->name);
+            $filePath = public_path('storage/exports/' . $report->name);
 //            \Log::info($filePath);
 
-            $disk->put(config("app.unique").'/'.config("app.env").'/exports/'.$report->name,
+            $disk->put(config("app.unique") . '/' . config("app.env") . '/exports/' . $report->name,
                 fopen($filePath, 'r+')); //分段上传文件。建议大文件>10Mb使用。
 
             $report->update([
@@ -171,6 +174,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
             Log::info("导出失败:report not found");
         }
     }
+
 
     /**
      * The job failed to process.
@@ -186,7 +190,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
         $this->report->update([
             "finish" => true,
-            "status" => Report::ERROR.$e,
+            "status" => Report::ERROR . $e,
         ]);
     }
 
@@ -200,7 +204,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
     {
         $tableName = $this->getTable();
         $now = TimeUtils::getNowTime();
-        $fileName = admin_translate("table.".$tableName)."_".$now."_".substr(time(), 5).'.csv';
+        $fileName = admin_translate("table." . $tableName) . "_" . $now . "_" . substr(time(), 5) . '.csv';
 
         $adminUser = Admin::user();
         $subjectId = $adminUser->subject_id;
@@ -219,41 +223,42 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
         if ($count < 30000) {
             $response = new StreamedResponse(null, 200, [
                 'Content-Type'        => 'text/csv;charset=UTF-8',
-                'Content-Disposition' => 'attachment; filename="'.$fileName.'"',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
             ]);
-            $response->setCallback(function () use ($query, $tableName,$subjectId) {
+            $response->setCallback(function () use ($query, $tableName, $subjectId) {
                 $out = fopen('php://output', 'w');
-                fwrite($out, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
+                fwrite($out, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
                 $firstWrite = true;
-                $query = $this->customQuery($query,$subjectId);
-                $query->orderBy($tableName.".id")->chunk(500, function ($data) use (&$firstWrite, $out, $tableName) {
-                    $data = json_decode(json_encode($data), true);
-                    $data = $this->customData($data);
-                    //有一些列总是不导出,如icon,image,images
-                    $data = ExportUtils::removeInvalids($data);
-                    //写列名
-                    if ($firstWrite) {
-                        $columnNames = [];
-                        //获取列名
-                        foreach ($data[0] as $key => $value) {
-                            $columnNames[] = admin_translate($key, $tableName);
-                        }
-                        fputcsv($out, $columnNames);
+                $query = $this->customQuery($query, $subjectId);
+                $query->orderBy($tableName . ".id")->chunk(500,
+                    function ($data) use (&$firstWrite, $out, $tableName) {
+                        $data = json_decode(json_encode($data), true);
+                        $data = $this->customData($data);
+                        //有一些列总是不导出,如icon,image,images
+                        $data = ExportUtils::removeInvalids($data);
+                        //写列名
+                        if ($firstWrite) {
+                            $columnNames = [];
+                            //获取列名
+                            foreach ($data[0] as $key => $value) {
+                                $columnNames[] = admin_translate($key, $tableName);
+                            }
+                            fputcsv($out, $columnNames);
 
-                        unset($columnNames);
-                        $firstWrite = false;
-                    }
-                    foreach ($data as $item) {
-                        fputcsv($out, $item);
-                    }
-                });
+                            unset($columnNames);
+                            $firstWrite = false;
+                        }
+                        foreach ($data as $item) {
+                            fputcsv($out, $item);
+                        }
+                    });
 
                 fclose($out);
             });
             $response->send();
             exit;
         } else {
-            $tableName = admin_translate("table.".$tableName);
+            $tableName = admin_translate("table." . $tableName);
             if (Report::where("finish", false)->where("name", "like", "$tableName%")->exists()) {
 
                 echo <<<EOT
@@ -306,24 +311,29 @@ EOT;
         }
     }
 
+
     /**
      * 自定义数据处理
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
      * @param array $datas
+     *
      * @return mixed
      */
     public abstract function customData($datas);
+
 
     /**
      * 查询数据的方法
      *
      * @param      $query
      * @param null $subjectId
+     *
      * @return mixed
      */
-    public abstract function customQuery($query,$subjectId=null);
+    public abstract function customQuery($query, $subjectId = null);
+
 
     /**
      * 是否允许大数据导出
@@ -332,6 +342,7 @@ EOT;
      */
     public abstract function allBigData();
 
+
     /**
      * 数据模型
      *
@@ -339,14 +350,17 @@ EOT;
      */
     public abstract function model();
 
+
     /**
      * 过滤器处理,一般就是列表grid中配置的过滤器,特别的需要单独处理.
      * 需要添加key的表名
      *
      * @param $filter
+     *
      * @return mixed
      */
     public abstract function filter($filter);
+
 
     /**
      * 存下关联数据查询的时候需要实现先关查询操作
@@ -366,6 +380,5 @@ EOT;
             return $dbQuery;
         };
     }
-
 
 }

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -17,14 +16,13 @@ use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Tool\Domain\Traits\SlugAutoSave;
 use Mallto\Tool\Exception\ResourceException;
-use mysql_xdevapi\Collection;
-use PhpParser\Node\Expr\Cast\Object_;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends AdminCommonController
 {
 
     use PermissionHelp, SlugAutoSave;
+
 
     /**
      * 获取这个模块的标题
@@ -36,6 +34,7 @@ class RoleController extends AdminCommonController
         return "角色管理";
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -45,6 +44,7 @@ class RoleController extends AdminCommonController
     {
         return Role::class;
     }
+
 
     protected function gridOption(Grid $grid)
     {
@@ -58,6 +58,7 @@ class RoleController extends AdminCommonController
             $actions->disableView();
         });
     }
+
 
     protected function formOption(Form $form)
     {
@@ -100,12 +101,11 @@ class RoleController extends AdminCommonController
             ->stacked()
             ->help("权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限");
 
-
         $form->saving(function (Form $form) {
             if ($form->slug == config("admin.roles.owner")) {
                 throw new HttpException(403, "没有权限创建标识为owner的角色");
             }
-            if(!\Mallto\Admin\AdminUtils::isOwner() && $form->model()->slug == 'admin'){
+            if ( ! \Mallto\Admin\AdminUtils::isOwner() && $form->model()->slug == 'admin') {
                 Throw new ResourceException('非项目拥有者不能编辑该角色');
             }
             $this->slugSavingCheck($form);
@@ -115,6 +115,5 @@ class RoleController extends AdminCommonController
             AdminUtils::clearMenuCache();
         });
     }
-
 
 }

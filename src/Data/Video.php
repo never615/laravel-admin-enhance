@@ -5,21 +5,20 @@
 
 namespace Mallto\Admin\Data;
 
-
-
 use Illuminate\Database\Eloquent\Model;
 use Mallto\Admin\Data\Traits\AdminUserTrait;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\SelectSource;
 
-
 class Video extends Model
 {
+
     use DynamicData, AdminUserTrait, SelectSource;
 
     protected $guarded = [
 
     ];
+
 
     public function getUrlAttribute($value)
     {
@@ -31,8 +30,7 @@ class Video extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
-
 
 }

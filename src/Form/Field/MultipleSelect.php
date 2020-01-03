@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MultipleSelect extends Select
@@ -20,12 +19,13 @@ class MultipleSelect extends Select
      */
     protected $otherKey;
 
+
     /**
      * Get other key for this many-to-many relation.
      *
+     * @return string
      * @throws \Exception
      *
-     * @return string
      */
     protected function getOtherKey()
     {
@@ -33,7 +33,7 @@ class MultipleSelect extends Select
             return $this->otherKey;
         }
 
-        if (is_callable([$this->form->model(), $this->column]) &&
+        if (is_callable([ $this->form->model(), $this->column ]) &&
             ($relation = $this->form->model()->{$this->column}()) instanceof BelongsToMany
         ) {
             /* @var BelongsToMany $relation */
@@ -44,6 +44,7 @@ class MultipleSelect extends Select
 
         throw new \Exception('Column of this field must be a `BelongsToMany` relation.');
     }
+
 
     public function fill($data)
     {
@@ -64,6 +65,7 @@ class MultipleSelect extends Select
         }
     }
 
+
     public function setOriginal($data)
     {
         $relations = array_get($data, $this->column);
@@ -82,6 +84,7 @@ class MultipleSelect extends Select
             }
         }
     }
+
 
     public function prepare($value)
     {

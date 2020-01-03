@@ -3,7 +3,6 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-
 namespace Mallto\Admin\Grid\Exporters;
 
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +28,7 @@ use Illuminate\Support\Collection;
  */
 class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
+
     use ExporterTrait;
 
     /**
@@ -56,15 +56,15 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
      */
     protected $ignore2Array = [];
 
+
     /**
      * {@inheritdoc}
      */
     public function export()
     {
-        if (!ini_get('safe_mode')) {
+        if ( ! ini_get('safe_mode')) {
             set_time_limit(60 * 60 * 5);
         }
-
 
         $tableName = $this->getTable();
 
@@ -84,7 +84,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
             $this->chunk(function (Collection $records) use (&$titles, $handle, $tableName) {
 
                 if ($records && count($records) > 0) {
-                    fwrite($handle, chr(0xEF).chr(0xBB).chr(0xBF)); // 添加 BOM
+                    fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
                     //todo 优化,减少多次循环的逻辑
                     $records = $records->map(function (Model $record) {
@@ -120,7 +120,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
             fclose($handle);
         }, $fileName, $headers);
 
-        if (!config("admin.swoole")) {
+        if ( ! config("admin.swoole")) {
             $response->send();
             exit();
         } else {
@@ -128,12 +128,14 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
         }
     }
 
+
     /**
      * 自定义数据处理
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
-     * @param  array $records ,orm查询结果经过array_dot后得到$records数组
+     * @param array $records ,orm查询结果经过array_dot后得到$records数组
+     *
      * @return array
      */
     public function customData($records)
@@ -144,6 +146,5 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
         return $this->forget($records, [
         ]);
     }
-
 
 }

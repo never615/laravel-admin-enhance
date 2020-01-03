@@ -18,6 +18,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class AdminUserController extends Controller
 {
+
     public function index()
     {
         $adminUser = Auth::guard("admin_api")->user();

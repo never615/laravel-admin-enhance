@@ -5,12 +5,10 @@
 
 namespace Mallto\Admin\Controllers\Import;
 
-
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\ImportSetting;
-
 
 /**
  * 导入配置
@@ -31,6 +29,7 @@ class ImportSettingController extends AdminCommonController
         return "导入配置";
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -41,6 +40,7 @@ class ImportSettingController extends AdminCommonController
         return ImportSetting::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
         $grid->name("模块说明");
@@ -48,6 +48,7 @@ class ImportSettingController extends AdminCommonController
         $grid->module_handler("模块处理类");
 
     }
+
 
     protected function formOption(Form $form)
     {
@@ -67,7 +68,7 @@ class ImportSettingController extends AdminCommonController
         $form->file("template_with_annotation_url", "带说明的模板")
             ->options([
                 'allowedPreviewTypes'   => [],
-                'allowedFileExtensions' => ['xls', 'xlsx'],
+                'allowedFileExtensions' => [ 'xls', 'xlsx' ],
             ]);
         if ($this->currentId) {
             $form->displayE("show_template_with_annotation_url", "带说明的模板下载")->with(function ($value) {
@@ -79,7 +80,7 @@ class ImportSettingController extends AdminCommonController
                         $url = config("app.file_url_prefix") . $value;
                     }
 
-                    return '<a target="_blank" href="'.$url.'">点击下载示例模板</a>';
+                    return '<a target="_blank" href="' . $url . '">点击下载示例模板</a>';
                 }
             });
         }

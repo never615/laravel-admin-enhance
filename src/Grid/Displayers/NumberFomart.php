@@ -9,8 +9,10 @@ use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 
 class NumberFomart extends AbstractDisplayer
 {
+
     /**
      * @param $value
+     *
      * @return string
      */
     public function display($value = 2)

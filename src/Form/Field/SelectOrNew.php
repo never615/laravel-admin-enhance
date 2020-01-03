@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 /**
  * Select an existing option or type a new one to create it.
  */
@@ -29,6 +28,7 @@ class SelectOrNew extends \Encore\Admin\Form\Field\Select
      */
     protected $dataModel;
 
+
     /**
      * @param array $options
      *
@@ -40,6 +40,7 @@ class SelectOrNew extends \Encore\Admin\Form\Field\Select
 
         return parent::options($options);
     }
+
 
     /**
      * Fill in the options by selecting the distinct values for the model's column.
@@ -69,6 +70,7 @@ class SelectOrNew extends \Encore\Admin\Form\Field\Select
         return $this;
     }
 
+
     /**
      * Set the datamodel used to get the default data.
      *
@@ -78,6 +80,7 @@ class SelectOrNew extends \Encore\Admin\Form\Field\Select
     {
         $this->dataModel = $className;
     }
+
 
     /**
      * @param bool $allow
@@ -91,12 +94,13 @@ class SelectOrNew extends \Encore\Admin\Form\Field\Select
         return $this;
     }
 
+
     /**
      * {@inheritdoc}
      */
     public function render()
     {
-        if (!$this->optionsSet) {
+        if ( ! $this->optionsSet) {
             $this->setDefaultOptions();
         }
         $allowClear = $this->allowClear ? 'true' : 'false';

@@ -9,6 +9,7 @@ use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 
 class Link extends AbstractDisplayer
 {
+
     public function display($href = '', $target = '_blank')
     {
 
@@ -20,7 +21,7 @@ class Link extends AbstractDisplayer
         }
         if ($href) {
             return "<a href='$href' target='$target'>{$this->value}</a>";
-        }else{
+        } else {
             return $this->value;
         }
 

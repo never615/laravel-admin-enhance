@@ -7,7 +7,6 @@ namespace Mallto\Admin;
 
 use Illuminate\Support\Facades\Cache;
 
-
 /**
  * User: never615 <never615.com>
  * Date: 2019/9/2
@@ -15,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class CacheUtils
 {
+
     /**
      * 缓存主体数据
      *
@@ -23,9 +23,10 @@ class CacheUtils
     public static function putSubject($subject)
     {
         if ($subject) {
-            Cache::put("subject_".$subject->id, $subject, 60 * 60 * 24);
+            Cache::put("subject_" . $subject->id, $subject, 60 * 60 * 24);
         }
     }
+
 
     /**
      * 删除缓存的主体数据
@@ -34,8 +35,9 @@ class CacheUtils
      */
     public static function forgetSubject($id)
     {
-        Cache::forget("subject_".$id);
+        Cache::forget("subject_" . $id);
     }
+
 
     /**
      * clea menu cache
@@ -49,6 +51,7 @@ class CacheUtils
         }
     }
 
+
     /**
      * 缓存账号对应的菜单
      *
@@ -60,6 +63,7 @@ class CacheUtils
         Cache::put($cacheMenuKey, $result, 30 * 60);
     }
 
+
     /**
      * 缓存保存菜单的key
      *
@@ -70,6 +74,7 @@ class CacheUtils
         Cache::put(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys, 60 * 60 * 24);
     }
 
+
     /**
      * 缓存快捷访问菜单
      *
@@ -78,10 +83,7 @@ class CacheUtils
      */
     public static function putSeedy($adminUser, $speedy)
     {
-        Cache::put("speedy_".$adminUser->id, $speedy, 30 * 60);
+        Cache::put("speedy_" . $adminUser->id, $speedy, 30 * 60);
     }
-
-
-
 
 }

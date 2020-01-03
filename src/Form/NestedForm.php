@@ -7,11 +7,11 @@ namespace Mallto\Admin\Form;
 
 use Encore\Admin\Admin;
 use Encore\Admin\Form;
-use Illuminate\Support\Collection;
 
 //todo 增加了下列方法用于处理重复控件的问题,原库没有,待验证
 class NestedForm extends Form\NestedForm
 {
+
     /**
      * Fill data to all fields in form.
      *
@@ -31,6 +31,7 @@ class NestedForm extends Form\NestedForm
 
         return $this;
     }
+
 
     /**
      * Get the html and script of template.
@@ -62,7 +63,7 @@ class NestedForm extends Form\NestedForm
 
         }
 
-        return [$html, implode("\r\n", $scripts)];
+        return [ $html, implode("\r\n", $scripts) ];
     }
 
 }

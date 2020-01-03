@@ -5,13 +5,11 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Report;
-
 
 class ReportController extends AdminCommonController
 {
@@ -26,10 +24,12 @@ class ReportController extends AdminCommonController
         return "大数据报表";
     }
 
+
     protected function getIndexDesc()
     {
         return "管理";
     }
+
 
     /**
      * 获取这个模块的Model
@@ -40,6 +40,7 @@ class ReportController extends AdminCommonController
     {
         return Report::class;
     }
+
 
     protected function gridOption(Grid $grid)
     {
@@ -55,7 +56,7 @@ class ReportController extends AdminCommonController
         $grid->column("download")->display(function () {
             if ($this->finish === true) {
                 $disk = Storage::disk("qiniu_private");
-                $url = $disk->privateDownloadUrl(config("app.unique").'/'.config("app.env").'/exports/'.$this->name,
+                $url = $disk->privateDownloadUrl(config("app.unique") . '/' . config("app.env") . '/exports/' . $this->name,
                     60);
 
                 return <<<EOT
@@ -84,6 +85,5 @@ EOT;
     {
     }
     //todo 删除事件->删除对应文件
-
 
 }

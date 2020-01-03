@@ -17,6 +17,7 @@ use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 
 class ExpandRow extends AbstractDisplayer
 {
+
     public function display(\Closure $callback = null, $btn = '')
     {
         $callback = $callback->bindTo($this->row);

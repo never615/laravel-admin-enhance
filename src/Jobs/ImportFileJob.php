@@ -3,7 +3,6 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-
 namespace Mallto\Admin\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -16,8 +15,8 @@ use Mallto\Admin\Data\ImportSetting;
 
 class ImportFileJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -32,6 +31,7 @@ class ImportFileJob implements ShouldQueue
      * @var int
      */
     public $tries = 1;
+
     /**
      * @var
      */
@@ -48,6 +48,7 @@ class ImportFileJob implements ShouldQueue
 
         $this->id = $id;
     }
+
 
     /**
      * Execute the job.
@@ -92,6 +93,5 @@ class ImportFileJob implements ShouldQueue
             }
         }
     }
-
 
 }

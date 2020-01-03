@@ -5,20 +5,22 @@
 
 namespace Mallto\Admin\Grid\Tools;
 
-
 use Encore\Admin\Admin;
 use Encore\Admin\Grid\Tools\AbstractTool;
 
 class ImportButton extends AbstractTool
 {
+
     /**
      * @var null|string
      */
     private $moduleSlug;
+
     /**
      * @var null
      */
     private $url;
+
 
     /**
      * ImportButton constructor.
@@ -53,6 +55,7 @@ EOF;
 
         Admin::script($script);
     }
+
 
     /**
      * Render Export button.
