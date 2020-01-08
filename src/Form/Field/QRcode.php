@@ -33,6 +33,7 @@ class QRcode extends Field
 
         $baseUrl = config("app.url");
 
+        //return "<a target='_blank' href='$baseUrl/api/qr_image?size=150x150&data={$this->qrcodeUrl}' download='w3logo' '>下载</a>";
         return "<img src='$baseUrl/api/qr_image?size=150x150&data={$this->qrcodeUrl}' style='height: 150px;width: 150px;'/>";
     }
 
