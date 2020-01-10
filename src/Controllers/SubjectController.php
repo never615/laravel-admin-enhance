@@ -178,6 +178,12 @@ class SubjectController extends AdminCommonController
         })->rules("required");
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
+            if ($this->currentId) {
+                $form->displayE('sms_count', "消费短信数");
+            }
+            $form->text("uuid", "主体唯一标识");
+            $form->switch("base", "总部");
+
             $permissions = Permission::
 //            where("parent_id", 0)
             where("common", false)
@@ -189,11 +195,7 @@ class SubjectController extends AdminCommonController
                     false, false))
                 ->stacked();
 
-            if ($this->currentId) {
-                $form->displayE('sms_count', "消费短信数");
-            }
-            $form->text("uuid", "主体唯一标识");
-            $form->switch("base", "总部");
+
         }
     }
 
