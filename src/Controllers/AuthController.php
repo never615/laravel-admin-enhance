@@ -114,6 +114,12 @@ class AuthController extends BaseAuthController
      */
     public function sendSms(Request $request)
     {
+        $request->validate([
+            'mobile' => 'required',
+        ], [
+            'mobile.required' => '手机号不能为空',
+        ]);
+
         $mobile = $request->mobile;
 
         $count = AdminUser::query()
