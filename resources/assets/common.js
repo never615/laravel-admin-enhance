@@ -77,7 +77,19 @@
             success: function (data) {
                 // NProgress.done();
                 layer.close(loadIndex);
-                successHandler(data, successCallBack);
+
+                //处理后端异常信息
+                if (typeof data === 'object') {
+                    if (data.status === true) {
+                        swal(data.message, '', 'success');
+                    } else if (data.status === false) {
+                        swal(data.message, '', 'error');
+                    } else {
+                        successHandler(data, successCallBack);
+                    }
+                } else {
+                    successHandler(data, successCallBack);
+                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 // NProgress.done();
