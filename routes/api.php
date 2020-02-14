@@ -32,6 +32,8 @@ Route::group($attributes, function ($router) {
         //获取七牛upload token
         $router->get('uptoken', '\Mallto\Admin\Controllers\FileController@getUploadToken');
 
+        Route::resource('subject', 'SubjectController');
+
         /**
          * 需要经过签名校验
          */
