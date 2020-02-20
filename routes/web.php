@@ -21,25 +21,25 @@ use Illuminate\Support\Facades\Route;
 
 //token 授权的管理端接口
 Route::group([
-    'prefix'     => "admin/api",
-    "middleware" => [ "oauth.providers", "api", "adminE.log" ],
+    'prefix'     => 'admin/api',
+    'middleware' => [ 'oauth.providers', 'api', 'adminE.log', 'requestCheck' ],
     'namespace'  => 'Mallto\Admin\Controllers\Api',
 ], function ($router) {
 
     $router->post('auth/login', 'AuthController@postLogin');
 
     Route::group([
-        "middleware" => [ 'multiauth:admin_api' ],
-//        "middleware" => ["auth:admin_api"],
+        'middleware' => [ 'multiauth:admin_api' ],
+//        'middleware' => ['auth:admin_api'],
     ], function ($router) {
         Route::group([
-            "middleware" => [ "adminE.auto_permission" ],
-            "namespace"  => "Api",
+            'middleware' => [ 'adminE.auto_permission' ],
+            'namespace'  => 'Api',
         ], function ($router) {
 
         });
 
-        $router->get("admin_user", 'AdminUserController@index');
+        $router->get('admin_user', 'AdminUserController@index');
     });
 });
 
@@ -58,9 +58,9 @@ Route::group([
     $router->post('admin/auth/send_sms', 'AuthController@sendSms');
 
 //----------------------------------------  管理端开始  -----------------------------------------------
-    Route::group([ 'prefix' => config('admin.route.prefix'), "middleware" => "adminE_base" ],
+    Route::group([ 'prefix' => config('admin.route.prefix'), 'middleware' => 'adminE_base' ],
         function ($router) {
-            $router->get('/', 'HomeController@index')->name("dashboard");
+            $router->get('/', 'HomeController@index')->name('dashboard');
 
             //获取七牛upload token
             $router->get('uptoken', 'FileController@getUploadToken');
@@ -75,7 +75,7 @@ Route::group([
             $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
             $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');
 
-            Route::get("select_data/{key}", 'SelectSourceController@dataSource');
+            Route::get('select_data/{key}', 'SelectSourceController@dataSource');
 
             Route::group([ 'middleware' => [ 'adminE.auto_permission' ] ], function ($router) {
                 $router->resource('auth/admins', '\Mallto\Admin\Controllers\UserController');
@@ -86,19 +86,19 @@ Route::group([
                 $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
                     [ 'only' => [ 'index', 'destroy' ] ]);
 
-                $router->resource("subjects", "SubjectController");
+                $router->resource('subjects', 'SubjectController');
 
-                $router->resource("reports", "ReportController");
-                $router->resource("uploads", "UploadController");
-                $router->resource("videos", "VideoController");
+                $router->resource('reports', 'ReportController');
+                $router->resource('uploads', 'UploadController');
+                $router->resource('videos', 'VideoController');
 
                 //主体配置管理
-                $router->resource("subject_configs", 'SubjectConfigController');
+                $router->resource('subject_configs', 'SubjectConfigController');
 
                 //文件导入模块
-                $router->resource("import_settings", 'Import\ImportSettingController');
+                $router->resource('import_settings', 'Import\ImportSettingController');
                 //导入记录
-                $router->resource("import_records", 'Import\ImportRecordController');
+                $router->resource('import_records', 'Import\ImportRecordController');
 
                 //账户分组
                 Route::resource('admin_user_groups', 'AdminUserGroupController');

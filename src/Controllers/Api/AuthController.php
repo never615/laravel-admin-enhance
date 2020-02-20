@@ -33,6 +33,22 @@ class AuthController extends Controller
 
     use AuthValidateTrait, OpenidCheckTrait, ValidatesRequests;
 
+    /**
+     * @var AdminUserUsecase
+     */
+    private $adminUserUsecase;
+
+
+    /**
+     * AuthController constructor.
+     *
+     * @param AdminUserUsecase $adminUserUsecase
+     */
+    public function __construct(AdminUserUsecase $adminUserUsecase)
+    {
+        $this->adminUserUsecase = $adminUserUsecase;
+    }
+
 
     /**
      * 登录
@@ -41,17 +57,22 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|User|null
      * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function postLogin(Request $request)
     {
         switch ($request->header("REQUEST-TYPE")) {
-            case "WECHAT":
+            case 'WECHAT':
                 //校验identifier(实际就是加密过得openid),确保只使用了一次
 //                $request = $this->checkOpenid($request, 'identifier');
 
                 return $this->loginByWechat($request);
                 break;
             default:
+                if ($request->username && $request->password) {
+                    return $this->loginByUsername($request);
+                }
+
                 throw new ResourceException("不支持的登录方式:" . $request->header("REQUEST-TYPE"));
                 break;
 
@@ -66,6 +87,7 @@ class AuthController extends Controller
      *
      * @return mixed
      * @throws \Illuminate\Auth\AuthenticationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function loginByWechat(Request $request)
     {
@@ -83,15 +105,61 @@ class AuthController extends Controller
 
         $openid = $this->decryptOpenid($request->identifier);
 
-        $adminUserUsecase = app(AdminUserUsecase::class);
-        $adminUser = $adminUserUsecase->getUserByOpenid($openid, $subject->id);
+        $adminUser = $this->adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
         if ( ! $adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
 
         //检查账号是否被禁用
-        if ($adminUser->status == "forbidden") {
+        if ($adminUser->status == 'forbidden') {
+            throw new PermissionDeniedException("当前账号已被禁用");
+        }
+
+        return $this->beforeReturnUser($adminUser);
+    }
+
+
+    /**
+     * 管理端账号app登录
+     *
+     * @param Request $request
+     *
+     * @return mixed
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function loginByUsername(Request $request)
+    {
+
+        $subject = SubjectUtils::getSubject();
+
+        $this->validate($request, [
+            'username' => 'required',
+            'password' => 'required',
+        ]);
+
+        $adminUser = $this->adminUserUsecase->getUserByUsernameAndPassword($request->username,
+            $request->password, $subject->id);
+
+        if ( ! $adminUser) {
+            throw new ResourceException('账号密码错误或账号不存在');
+        }
+
+        return $this->beforeReturnUser($adminUser);
+    }
+
+
+    /**
+     * 返回管理端用户及检查
+     *
+     * @param $adminUser
+     *
+     * @return mixed
+     */
+    private function beforeReturnUser($adminUser)
+    {
+        //检查账号是否被禁用
+        if ($adminUser->status == 'forbidden') {
             throw new PermissionDeniedException("当前账号已被禁用");
         }
 

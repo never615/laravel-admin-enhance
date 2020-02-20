@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Domain\User;
 
+use Mallto\Admin\SubjectUtils;
 use Mallto\User\Data\User;
 
 /**
@@ -114,5 +115,26 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             return null;
         }
 
+    }
+
+
+    /**
+     * 根据用户名密码查询用户
+     *
+     * @param $username
+     * @param $password
+     * @param $subjectId
+     *
+     * @return mixed
+     */
+    public function getUserByUsernameAndPassword($username, $password, $subjectId)
+    {
+        $class = config('auth.providers.admin_users.model');
+
+        return $class::where([
+            'username'   => $username,
+            'password'   => $password,
+            'subject_id' => SubjectUtils::getSubjectId(),
+        ])->first();
     }
 }

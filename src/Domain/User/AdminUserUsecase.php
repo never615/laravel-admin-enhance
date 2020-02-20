@@ -37,6 +37,18 @@ interface AdminUserUsecase
 
 
     /**
+     * 根据用户名密码查询用户
+     *
+     * @param $username
+     * @param $password
+     * @param $subjectId
+     *
+     * @return mixed
+     */
+    public function getUserByUsernameAndPassword($username, $password, $subjectId);
+
+
+    /**
      * 获取管理用户对应的openid
      *
      * @param $adminUser
