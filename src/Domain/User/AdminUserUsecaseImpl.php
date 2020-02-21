@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Domain\User;
 
+use Illuminate\Support\Facades\Hash;
 use Mallto\Admin\SubjectUtils;
 use Mallto\User\Data\User;
 
@@ -131,10 +132,16 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     {
         $class = config('auth.providers.admin_users.model');
 
-        return $class::where([
+        $adminUser = $class::where([
             'username'   => $username,
-            'password'   => $password,
             'subject_id' => SubjectUtils::getSubjectId(),
         ])->first();
+
+        if (Hash::check($password, $adminUser->password)) {
+            // 密码匹配...
+            return $adminUser;
+        }
+
+        return null;
     }
 }

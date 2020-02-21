@@ -34,7 +34,6 @@ Route::group([
     ], function ($router) {
         Route::group([
             'middleware' => [ 'adminE.auto_permission' ],
-            'namespace'  => 'Api',
         ], function ($router) {
 
         });

@@ -168,4 +168,17 @@ class AuthController extends Controller
         return $adminUserUsecase->getReturnUserInfo($adminUser, true);
     }
 
+
+    ///**
+    // * Get the guard to be used during authentication.
+    // *
+    // * @return \Illuminate\Contracts\Auth\PasswordBroker
+    // */
+    //protected function guard()
+    //{
+    //    $guard = 'admin_api';
+    //
+    //    return Auth::guard($guard);
+    //}
+
 }
