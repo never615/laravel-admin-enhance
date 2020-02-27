@@ -30,21 +30,22 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     {
         $adminable = $adminUser->adminable;
         if ($addToken) {
-            $token = $adminUser->createToken("admin_api");
+            $token = $adminUser->createToken('admin_api');
             $adminUser->token = $token->accessToken;
         }
 
         return array_merge($adminUser->only([
-            "id",
-            "name",
-            "username",
-            "adminable_type",
-            "adminable_id",
-            "token",
+            'id',
+            'name',
+            'username',
+            'adminable_type',
+            'adminable_id',
+            'token',
         ]), [
-            "adminable" => $adminable->only([
-                "name",
+            'adminable' => $adminable->only([
+                'name',
             ]),
+            'uuid'      => SubjectUtils::getSubject()->uuid,
         ]);
     }
 
@@ -61,9 +62,9 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     {
         $class = config('auth.providers.admin_users.model');
 
-        $adminUser = $class::with([ "adminable" ])
-            ->where("subject_id", $subjectId)
-            ->where("openid->openid", $openid)
+        $adminUser = $class::with([ 'adminable' ])
+            ->where('subject_id', $subjectId)
+            ->where('openid->openid', $openid)
             ->first();
         if ( ! $adminUser) {
             //管理端账户不存在
@@ -73,15 +74,15 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
 
             $user = User::with([
                 'userAuths' => function ($query) use ($openid) {
-                    $query->where("identity_type", "wechat")
-                        ->where("identifier", $openid);
+                    $query->where('identity_type', 'wechat')
+                        ->where('identifier', $openid);
                 },
-            ])->where("subject_id", $subjectId)->first();
+            ])->where('subject_id', $subjectId)->first();
 
             if ($user && $user->mobile) {
-                $adminUser = $class::with([ "adminable" ])
-                    ->where("subject_id", $subjectId)
-                    ->where("mobile", $user->mobile)
+                $adminUser = $class::with([ 'adminable' ])
+                    ->where('subject_id', $subjectId)
+                    ->where('mobile', $user->mobile)
                     ->first();
             }
         }
@@ -99,14 +100,14 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      */
     public function getOpenid($adminUser)
     {
-        if ( ! empty($adminUser->openid["openid"])) {
-            return $adminUser->openid["openid"];
+        if ( ! empty($adminUser->openid['openid'])) {
+            return $adminUser->openid['openid'];
         } else {
-            $user = User::where("mobile", $adminUser->mobile)
-                ->where("subject_id", $adminUser->subject_id)
+            $user = User::where('mobile', $adminUser->mobile)
+                ->where('subject_id', $adminUser->subject_id)
                 ->first();
             if ($user) {
-                $userAuth = $user->userAuths()->where("identity_type", "wechat")
+                $userAuth = $user->userAuths()->where('identity_type', 'wechat')
                     ->first();
                 if ($userAuth) {
                     return $userAuth->identifier;
