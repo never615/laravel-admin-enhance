@@ -31,29 +31,29 @@ class SystemManagerMenuSeeder extends Seeder
         $order = 3;
 
         $systemManagerMenu = $this->updateOrCreate(
-            "system_manager", 0, $order++, "系统管理", "fa-windows");
+            'system_manager', 0, $order++, '系统管理', 'fa-windows');
 
         $order = $systemManagerMenu->order;
 
         $this->updateOrCreate(
-            "permissions.index", $systemManagerMenu->id,
-            $order++, "权限", "fa-user");
+            'permissions.index', $systemManagerMenu->id,
+            $order++, '权限', 'fa-user');
 
         $this->updateOrCreate(
-            "menus.index", $systemManagerMenu->id,
-            $order++, "菜单", "fa-bars");
-
-//        $this->updateOrCreate(
-//            "logs.index", $systemManagerMenu->id,
-//            $order++, "操作日志", "fa-history");
+            'menus.index', $systemManagerMenu->id,
+            $order++, '菜单', 'fa-bars');
 
         $this->updateOrCreate(
-            "import_settings.index", $systemManagerMenu->id,
-            $order++, "导入配置", "fa-connectdevelop");
+            'logs.index', $systemManagerMenu->id,
+            $order++, '操作日志', 'fa-history');
 
         $this->updateOrCreate(
-            "subject_configs.index", $systemManagerMenu->id,
-            $order++, "主体配置", "fa-assistive-listening");
+            'import_settings.index', $systemManagerMenu->id,
+            $order++, '导入配置', 'fa-connectdevelop');
+
+        $this->updateOrCreate(
+            'subject_configs.index', $systemManagerMenu->id,
+            $order++, '主体配置', 'fa-assistive-listening');
 
 
     }
