@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Middleware;
 
 use Encore\Admin\Facades\Admin;
+use Encore\Admin\Middleware\LogOperation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\SubjectUtils;
@@ -18,18 +19,8 @@ use Mallto\Tool\Jobs\LogJob;
  *
  * @package Mallto\Tool\Middleware
  */
-class OperationLog
+class OperationLog extends LogOperation
 {
-
-    /**
-     * 不记录日志的路径
-     *
-     * @var array
-     */
-    private $excludePath = [
-        'admin/log',
-    ];
-
 
     /**
      * Handle an incoming request.
@@ -41,22 +32,18 @@ class OperationLog
      */
     public function handle(Request $request, \Closure $next)
     {
-        $adminUser = null;
 
-        if (in_array($request->path(), $this->excludePath)) {
-            return $next($request);
-        }
+        if ($this->shouldLogOperation($request)) {
+            $adminUser = null;
 
-        try {
-            $adminUser = Admin::user();
-            if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
-                $adminUser = Auth::guard("admin_api")->user();
+            try {
+                $adminUser = Admin::user();
+                if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
+                    $adminUser = Auth::guard("admin_api")->user();
+                }
+            } catch (\Exception $exception) {
+
             }
-        } catch (\Exception $exception) {
-
-        }
-
-        if (config('admin.operation_log.enable')) {
 
             $ip = 0;
             $tempIp = $request->header("X-Forwarded-For");
@@ -79,10 +66,8 @@ class OperationLog
             ];
 
             dispatch(new LogJob("logAdminOperation", $log));
-        }
 
-        $response = $next($request);
-        if (config('admin.operation_log.enable')) {
+            $response = $next($request);
             $content = $response->getContent();
 
             if (is_array($content)) {
@@ -112,4 +97,5 @@ class OperationLog
 
         return $response;
     }
+
 }
