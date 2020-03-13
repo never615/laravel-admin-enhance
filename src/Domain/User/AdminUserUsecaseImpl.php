@@ -35,8 +35,6 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             $adminUser->token = $token->accessToken;
         }
 
-        $subject = Subject::find($adminUser->subject_id);
-
         return array_merge($adminUser->only([
             'id',
             'name',
@@ -48,7 +46,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             'adminable' => $adminable->only([
                 'name',
             ]),
-            'uuid'      => $subject->uuid,
+            'uuid'      => $adminable->uuid,
         ]);
     }
 
