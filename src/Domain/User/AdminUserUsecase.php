@@ -45,7 +45,7 @@ interface AdminUserUsecase
      *
      * @return mixed
      */
-    public function getUserByUsernameAndPassword($username, $password, $subjectId);
+    public function getUserByUsernameAndPassword($username, $password);
 
 
     /**

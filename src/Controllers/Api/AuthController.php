@@ -131,15 +131,13 @@ class AuthController extends Controller
     public function loginByUsername(Request $request)
     {
 
-        $subject = SubjectUtils::getSubject();
-
         $this->validate($request, [
             'username' => 'required',
             'password' => 'required',
         ]);
 
         $adminUser = $this->adminUserUsecase->getUserByUsernameAndPassword($request->username,
-            $request->password, $subject->id);
+            $request->password);
 
         if ( ! $adminUser) {
             throw new ResourceException('账号密码错误或账号不存在');

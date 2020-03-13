@@ -7,6 +7,7 @@ namespace Mallto\Admin\Domain\User;
 
 use Illuminate\Support\Facades\Hash;
 use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 
 /**
@@ -125,18 +126,20 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      *
      * @param $username
      * @param $password
-     * @param $subjectId
      *
      * @return mixed
      */
-    public function getUserByUsernameAndPassword($username, $password, $subjectId)
+    public function getUserByUsernameAndPassword($username, $password)
     {
         $class = config('auth.providers.admin_users.model');
 
         $adminUser = $class::where([
             'username'   => $username,
-            'subject_id' => SubjectUtils::getSubjectId(),
         ])->first();
+
+        if ( ! $adminUser) {
+            throw new ResourceException('登录账号不存在');
+        }
 
         if (Hash::check($password, $adminUser->password)) {
             // 密码匹配...
