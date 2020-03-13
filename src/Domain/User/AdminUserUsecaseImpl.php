@@ -6,7 +6,7 @@
 namespace Mallto\Admin\Domain\User;
 
 use Illuminate\Support\Facades\Hash;
-use Mallto\Admin\SubjectUtils;
+use Mallto\Admin\Data\Subject;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 
@@ -35,6 +35,8 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             $adminUser->token = $token->accessToken;
         }
 
+        $subject = Subject::find($adminUser->subject_id);
+
         return array_merge($adminUser->only([
             'id',
             'name',
@@ -46,7 +48,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             'adminable' => $adminable->only([
                 'name',
             ]),
-            'uuid'      => SubjectUtils::getSubject()->uuid,
+            'uuid'      => $subject->uuid,
         ]);
     }
 
@@ -134,7 +136,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         $class = config('auth.providers.admin_users.model');
 
         $adminUser = $class::where([
-            'username'   => $username,
+            'username' => $username,
         ])->first();
 
         if ( ! $adminUser) {
