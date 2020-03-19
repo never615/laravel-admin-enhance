@@ -28,7 +28,7 @@ class SystemManagerMenuSeeder extends Seeder
     public function run()
     {
 
-        $order = 3;
+        $order = 4;
 
         $systemManagerMenu = $this->updateOrCreate(
             "system_manager", 0, $order++, "系统管理", "fa-windows");
