@@ -177,6 +177,8 @@ class ServiceProvider extends BaseServiceProvider
                 \Mallto\Admin\Grid\Displayers\NumberFomart::class);
             //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
+            //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理，和修改弹窗确认
+            \Encore\Admin\Grid\Column::extend("switchAlert", \Mallto\Admin\Grid\Displayers\SwitchAlertDisplay::class);
             //select:在laravel-admin select,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("selectE", \Mallto\Admin\Grid\Displayers\Select::class);
             //表格link控件:在laravel-admin的link的基础上,支持回调方法,可以获取当前操作的数据对象
