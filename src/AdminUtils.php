@@ -31,6 +31,7 @@ class AdminUtils
 
         if ($isOwner === null || ! $currentSubject || ! $adminUser) {
             $adminUser = Admin::user();
+
             if ($adminUser) {
                 $isOwner = $adminUser->isOwner();
                 $currentSubject = $adminUser->subject;
@@ -108,13 +109,13 @@ class AdminUtils
      */
     public static function getCurrentSubjectId()
     {
-        return self::getCurrentSubject()->id;
+        return self::getCurrentSubject()->id ?? null;
     }
 
 
     public static function getCurrentAdminUserId()
     {
-        return self::getCurrentAdminUser()->id;
+        return self::getCurrentAdminUser()->id ?? null;
     }
 
 
