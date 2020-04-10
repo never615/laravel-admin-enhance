@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Mall\Data\UserCoupon;
 use Mallto\Mall\Domain\VerificationUsecase;
-use Mallto\Mall\Exception\ExchangeCodeNotFoundException;
 
 class VerificationCoupon extends RowAction
 {
@@ -23,12 +22,6 @@ class VerificationCoupon extends RowAction
         $verificationUsecase = app(VerificationUsecase::class);
 
         $adminUser = Auth::guard("admin")->user();
-
-        try {
-            $verificationUsecase->getByCode($userCoupon->exchange_code, true);
-        } catch (\Exception $exception) {
-            throw new ExchangeCodeNotFoundException('该记录未找到！');
-        }
 
         $verificationUsecase->verify($userCoupon->exchange_code, $adminUser, 'admin', false,
             $request->verify_count);
