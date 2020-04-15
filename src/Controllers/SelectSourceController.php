@@ -3,7 +3,7 @@
  * Copyright (c) 2017. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Mallto\Admin\Controllerss;
+namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
