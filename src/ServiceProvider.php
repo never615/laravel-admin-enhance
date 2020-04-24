@@ -14,6 +14,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
+use Mallto\Admin\Middleware\Pjax;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -37,6 +38,7 @@ class ServiceProvider extends BaseServiceProvider
         'admin.auth'             => \Mallto\Admin\Middleware\Authenticate::class,
         'adminE.auto_permission' => \Mallto\Admin\Middleware\AutoPermissionMiddleware::class,
         'adminE.log'             => \Mallto\Admin\Middleware\OperationLog::class,
+        'adminE.pjax'            => Pjax::class,
     ];
 
     /**
@@ -45,6 +47,19 @@ class ServiceProvider extends BaseServiceProvider
      * @var array
      */
     protected $middlewareGroups = [
+        'adminE'      => [
+            'admin.auth',
+            'adminE.pjax',
+            'admin.bootstrap',
+            'adminE.auto_permission',
+            'adminE.log',
+        ],
+        'adminE_base' => [
+            'admin.auth',
+            'adminE.pjax',
+            'admin.bootstrap',
+            'adminE.log',
+        ],
     ];
 
 
@@ -178,7 +193,8 @@ class ServiceProvider extends BaseServiceProvider
             //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
             //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理，和修改弹窗确认
-            \Encore\Admin\Grid\Column::extend("switchAlert", \Mallto\Admin\Grid\Displayers\SwitchAlertDisplay::class);
+            \Encore\Admin\Grid\Column::extend("switchAlert",
+                \Mallto\Admin\Grid\Displayers\SwitchAlertDisplay::class);
             //select:在laravel-admin select,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("selectE", \Mallto\Admin\Grid\Displayers\Select::class);
             //表格link控件:在laravel-admin的link的基础上,支持回调方法,可以获取当前操作的数据对象
