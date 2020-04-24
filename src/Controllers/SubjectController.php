@@ -182,6 +182,7 @@ class SubjectController extends AdminCommonController
                 $form->displayE('sms_count', "消费短信数");
             }
             $form->text("uuid", "主体唯一标识");
+            $form->text("wechat_uuid", "微信授权标识");
             $form->switch("base", "总部");
 
             $permissions = Permission::
