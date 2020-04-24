@@ -12,8 +12,9 @@
      * @param data1
      * @param successCallBack
      * @param async
+     * @param dataType
      */
-    window.doAjax = function (url, type, data1, successCallBack, async) {
+    window.doAjax = function (url, type, data1, successCallBack, async, dataType) {
         // NProgress.start();
         var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 
@@ -21,7 +22,7 @@
             type: type || 'POST',
             url: url,
             async: async || true,
-            dataType: "json",
+            dataType: dataType || "json",
             // data: data + "&iddd=" + Math.random(),
             data: Object.assign({}, {iddd: Math.random()}, data1),
             headers: {
