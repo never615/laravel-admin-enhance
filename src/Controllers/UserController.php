@@ -13,6 +13,7 @@ use Mallto\Admin\SelectConstants;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
+use Mallto\Tool\Utils\AppUtils;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class UserController extends AdminCommonController
@@ -238,7 +239,7 @@ class UserController extends AdminCommonController
         $subject = $adminUser->subject;
         $uuid = $subject->uuid;
 
-        if (config("app.env") == "production" || config("app.env") == "staging") {
+        if ( ! AppUtils::isTestEnv()) {
             $wechatOAuthUrl = "https://wechat.mall-to.com/wechat/oauth";
             $redirectUrl = config("app.url") . "/admin/admin_bind_wechat";
         } else {
