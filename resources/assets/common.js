@@ -53,45 +53,6 @@
         });
     };
 
-    /**
-     * 封装ajax请求(兼容pjax渲染页面)
-     * @param url
-     * @param type
-     * @param data1
-     * @param successCallBack
-     * @param async
-     * @param dataType
-     */
-    window.doAjax1 = function (url, type, data1, successCallBack, async, dataType) {
-        return $.ajax({
-            type: type || 'POST',
-            url: url,
-            async: async || true,
-            dataType: dataType || "json",
-            data: Object.assign({}, {iddd: Math.random()}, data1),
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'REQUEST-TYPE': 'WEB'
-            },
-            success: function (data) {
-                if (typeof data === 'object') {
-                    if (data.status === true) {
-                        swal(data.message, '', 'success');
-                    } else if (data.status === false) {
-                        swal(data.message, '', 'error');
-                    } else {
-                        successHandler(data, successCallBack);
-                    }
-                } else {
-                    successHandler(data, successCallBack);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                errorHandler(XMLHttpRequest);
-            }
-        });
-    };
-
 
     /**
      * 封装ajax请求
