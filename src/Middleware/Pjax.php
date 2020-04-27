@@ -5,16 +5,14 @@
 
 namespace Mallto\Admin\Middleware;
 
-
 use Closure;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Support\MessageBag;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 
 class Pjax extends \Encore\Admin\Middleware\Pjax
 {
+
     /**
      * Handle an incoming request.
      *
@@ -27,7 +25,7 @@ class Pjax extends \Encore\Admin\Middleware\Pjax
     {
         $response = $next($request);
 
-        if($request->get('mt_pjax')){
+        if ($request->get('mt_pjax')) {
             try {
                 $this->filterResponse($response, '#pjax-container')
                     ->setUriHeader($response, $request);
@@ -35,11 +33,11 @@ class Pjax extends \Encore\Admin\Middleware\Pjax
             }
         }
 
-        if (!$request->pjax() || $response->isRedirection() || Admin::guard()->guest()) {
+        if ( ! $request->pjax() || $response->isRedirection() || Admin::guard()->guest()) {
             return $response;
         }
 
-        if (!$response->isSuccessful()) {
+        if ( ! $response->isSuccessful()) {
             return $this->handleErrorResponse($response);
         }
 
@@ -51,6 +49,5 @@ class Pjax extends \Encore\Admin\Middleware\Pjax
 
         return $response;
     }
-
 
 }
