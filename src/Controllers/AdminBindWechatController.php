@@ -36,9 +36,12 @@ class AdminBindWechatController extends Controller
             throw new ResourceException("无效请求");
         }
 
-        $subjecct = $waiteBindAdminUser->subject;
-        $wechatUserInfo = $wechatUsecase->getUserInfo(SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-            $subjecct, $subjecct), $openid);
+        $subject = $waiteBindAdminUser->subject;
+
+        $wechatUserInfo = $wechatUsecase->getUserInfo(
+            SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject),
+            $openid);
 
         if ( ! $wechatUserInfo) {
             throw new ResourceException("未找到相应微信用户");
