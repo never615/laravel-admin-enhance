@@ -332,8 +332,8 @@ SCRIPT;
         $html = null;
         if ($openid) {
             foreach ($openid as $wechatOpenid => $userInfo) {
-                $nickname = $userInfo['nickname'];
-                $userOpenid = $userInfo['openid'];
+                $nickname = $userInfo['nickname'] ?? '未知昵称';
+                $userOpenid = $userInfo['openid'] ?? '';
                 $html .= "<tr><td>$nickname</td><td>$userOpenid</td><td><button type='button' class='btn btn-danger unbind_wechat' value=$userOpenid>解除绑定</button></td></tr>";
             }
         } else {
