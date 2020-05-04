@@ -34,7 +34,7 @@ abstract class BaseImportHandler
      * models:  $rows返回一条数据(array),即导入的一行数据.参考https://docs.laravel-excel.com/3.1/imports/model.html
      * 中的model()方法,需要返回model. eachRow:
      * $rows返回一条数据(array),即导入的一行数据.参考:https://docs.laravel-excel.com/3.1/imports/model.html#handling-persistence-on-your-own
-     * array:  
+     * array:
      * $rows返回导入的数据的二维数组,数组中每一条子数组表示导入的一行数据.使用参考:https://docs.laravel-excel.com/3.1/imports/collection.html
      *
      * @return mixed
@@ -100,6 +100,12 @@ abstract class BaseImportHandler
         //2. 校验导入列名
         $importKeys = (new HeadingRowImport)->toArray($path);
         $importKeys = $importKeys[0][0];
+
+        foreach ($importKeys as $key => $importKey) {
+            if ($importKey) {
+                $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
+            }
+        }
 
         $expectKeys = $this->getExpectKeys();
 
