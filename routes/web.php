@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::group([
     'prefix'     => 'admin/api',
     'middleware' => [ 'oauth.providers', 'api', 'adminE.log' ],
-    'namespace'  => 'Mallto\Admin\Controllers\Api',
+    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
 ], function ($router) {
 
     $router->post('auth/login', 'AuthController@postLogin');
