@@ -11,8 +11,9 @@ class SubjectConfig extends BaseModel
 {
 
     const TYPE = [
-        'public'  => "公共配置",
-        'private' => "私有配置",
+        'public'  => '公共配置',
+        'private' => '私有配置',
+        'front'   => '前端配置',
     ];
 
 }

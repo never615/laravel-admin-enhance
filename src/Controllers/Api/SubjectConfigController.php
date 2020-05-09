@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Admin\SubjectUtils;
 
@@ -28,11 +29,19 @@ class SubjectConfigController extends Controller
     {
         $subject = SubjectUtils::getSubject();
 
+        $frontConfigs = SubjectConfig::where(
+            [
+                'subject_id' => $subject->id,
+                'type' => 'front',
+            ]
+        )->pluck('value','key')->toArray();
+
         return [
             'name'               => $subject->name,
             'wechat_uuid'        => $subject->wechat_uuid ?? $subject->uuid,
             'tenant_wechat_uuid' => SubjectUtils::getConfigByOwner(
                 SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, $subject),
+            'front_configs'      => $frontConfigs,
         ];
 
 
