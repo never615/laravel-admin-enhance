@@ -28,9 +28,10 @@ class SubjectUtils
      *
      * 对应主体管理的"配置项"tab
      *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
+     *
+     * @param string $key 参见 SubjectConfigConstants::class
+     * @param null   $default
+     * @param null   $subject
      *
      * @return null
      */

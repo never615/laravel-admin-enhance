@@ -3,7 +3,7 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Mallto\Admin\Controllers\Api;
+namespace Mallto\Admin\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;

@@ -16,8 +16,14 @@ use Mallto\Admin\Data\Subject;
 class SubjectController extends Controller
 {
 
+    /**
+     * 获取主体列表
+     *
+     * @return mixed
+     */
     public function index()
     {
         return Subject::whereNotNull('uuid')->select('name', 'uuid')->get();
     }
+
 }
