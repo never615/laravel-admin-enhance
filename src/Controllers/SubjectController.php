@@ -111,11 +111,11 @@ class SubjectController extends AdminCommonController
             $this->systemConfigBasic($form);
 
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-
-
                 $form->textarea("extra_config");
 
-//                $form->keyValue("extra_config");
+                //不能调用systemConfigExtraConfigBasic,避免引入该库的项目在extra_config增加了自己的配置,
+                //但是没有复写subjectController,就会导致自己加的读取不出来
+
 //                $form->embeds("extra_config", "其他配置", function (EmbeddedForm $form) {
 //                    $this->systemConfigExtraConfigBasic($form);
 //                });
@@ -202,7 +202,9 @@ class SubjectController extends AdminCommonController
 
 
     /**
-     * //todo 优化配置逻辑,如果其他库有自定义的参数
+     * //todo 优化配置逻辑,如果其他库有自定义的参数,且没有调用覆盖这个配置就会读取不出来,
+     * 因为这个subjectcontroller中是写死的这几个配置
+     *
      * 系统配置中的json格式保存的配置项
      *
      * @param $form
@@ -210,7 +212,8 @@ class SubjectController extends AdminCommonController
     protected function systemConfigExtraConfigBasic(EmbeddedForm $form)
     {
         $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, "管理端微信服务uuid")
-            ->help("用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid");
+            ->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
+有的项目管理端单独使用一个公众号,所以需要配置单独的uuid');
 
         $form->text(SubjectConfigConstants::OWNER_CONFIG_SMS_SIGN, "短信签名");
 
