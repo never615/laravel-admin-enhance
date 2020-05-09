@@ -32,7 +32,8 @@ Route::group($attributes, function ($router) {
         //获取七牛upload token
         $router->get('uptoken', '\Mallto\Admin\Controllers\FileController@getUploadToken');
 
-        Route::resource('subject', 'SubjectController');
+        //这个路由不能用resource,因为还有个路由是subject/config会冲突
+        Route::get('subject', 'SubjectController@index');
         Route::get('subject_config', 'SubjectConfigController@config');
 
         /**
