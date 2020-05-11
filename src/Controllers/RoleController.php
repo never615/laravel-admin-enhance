@@ -31,7 +31,7 @@ class RoleController extends AdminCommonController
      */
     protected function getHeaderTitle()
     {
-        return "角色管理";
+        return '角色管理';
     }
 
 
@@ -67,7 +67,9 @@ class RoleController extends AdminCommonController
 //                ->help("不填写会自动生成,建议不填写");
 //        }
 
-        $form->text('name', trans('admin.name'))->rules('required');
+        $form->text('name', trans('admin.name'))
+            ->rules('required')
+            ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
 
         $that = $this;
 //        $form->multipleSelect('permissions', trans('admin.permissions'))
@@ -99,11 +101,11 @@ class RoleController extends AdminCommonController
 //                "preserveSelectionOnMove" => false,
 //            ])
             ->stacked()
-            ->help("权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限");
+            ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
 
         $form->saving(function (Form $form) {
-            if ($form->slug == config("admin.roles.owner")) {
-                throw new HttpException(403, "没有权限创建标识为owner的角色");
+            if ($form->slug == config('admin.roles.owner')) {
+                throw new HttpException(403, '没有权限创建标识为owner的角色');
             }
             if ( ! \Mallto\Admin\AdminUtils::isOwner() && $form->model()->slug == 'admin') {
                 Throw new ResourceException('非项目拥有者不能编辑该角色');
