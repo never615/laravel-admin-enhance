@@ -67,8 +67,7 @@ class SubjectConfigController extends AdminCommonController
             ->with(function ($values) {
                 $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
                 foreach (config('other.subject_config_key') as $key => $value) {
-                    $html .= '<tr><th>$value</th><th>$key</th></tr>';
-//                   $html.=' <tr>'.$value.':'.$key.'</tr>';
+                    $html .= "<tr><th>$value</th><th>$key</th></tr>";
                 }
 
                 return $html . '</table>';
