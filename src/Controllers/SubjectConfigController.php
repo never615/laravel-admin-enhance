@@ -33,12 +33,12 @@ class SubjectConfigController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->key()->display(function ($value) {
-            return config("app.subject_config_key")[$value] ?? $value;
+            return config('other.subject_config_key')[$value] ?? $value;
         });
-        $grid->value()->limit(100);
+        $grid->value()->limit(50);
 
         $grid->filter(function (Grid\Filter $filter) {
-            $filter->ilike("key");
+            $filter->ilike('key');
         });
     }
 
@@ -58,24 +58,24 @@ class SubjectConfigController extends AdminCommonController
      */
     protected function formOption(Form $form)
     {
-        $form->select("type")
+        $form->select('type')
             ->options(SubjectConfig::TYPE)
-            ->default("private");
+            ->default('private');
 
-        $form->displayE("show_default_key", "预设的一些key")
+        $form->displayE('show_default_key', '预设的一些key')
             ->with(function ($values) {
                 $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
-                foreach (config("app.subject_config_key") as $key => $value) {
-                    $html .= "<tr><th>$value</th><th>$key</th></tr>";
-//                   $html.=' <tr>'.$value.":".$key."</tr>";
+                foreach (config('other.subject_config_key') as $key => $value) {
+                    $html .= '<tr><th>$value</th><th>$key</th></tr>';
+//                   $html.=' <tr>'.$value.':'.$key.'</tr>';
                 }
 
-                return $html . "</table>";
+                return $html . '</table>';
             });
 
-        $form->text("key");
+        $form->text('key');
 
-        $form->textarea("value")->rows(15);
-        $form->textarea("remark");
+        $form->textarea('value')->rows(15);
+        $form->textarea('remark');
     }
 }
