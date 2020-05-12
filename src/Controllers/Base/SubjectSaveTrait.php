@@ -5,10 +5,6 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
-use Mallto\Admin\AdminUtils;
-use Mallto\Admin\Data\Administrator;
-use Mallto\Admin\Data\Permission;
-use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
 use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -100,66 +96,66 @@ trait SubjectSaveTrait
     }
 
 
-    /**
-     *
-     * 创建主体的时候自动创建该主体的管理员角色
-     *
-     * 同时赋予该主体的已购权限
-     * 更新是也跟随更新
-     *
-     * @param $form
-     */
-    protected function createOrUpdateAdminRole($form)
-    {
-        $uuid = $form->uuid ?? $form->model()->uuid;
-        if ($uuid) {
-            $subjectId = $form->model()->id;
-            $name = $form->model()->name;
-
-            //创建角色
-            $adminRole = Role::firstOrCreate([
-                "subject_id" => $subjectId,
-                "slug"       => "admin",
-            ], [
-                "name" => $name . "管理员",
-            ]);
-
-            //给角色分配权限
-            if ($form->permissions) {
-                $permissionIds = $form->permissions;
-
-                //提交过来的数组id,有一个null总是,过滤掉
-                $permissionIds = array_filter($permissionIds, function ($value) {
-                    if ( ! is_null($value)) {
-                        return $value;
-                    }
-                });
-
-                //$permissionIds添加上base权限
-                $basePermissions = Permission::where("common", true)
-                    ->pluck("id")
-                    ->toArray();
-
-                $permissionIds = array_merge($permissionIds, $basePermissions);
-
-                //把subject的已购权限分配到该主体的管理员账号上
-                $adminRole->permissions()->sync($permissionIds);
-
-                AdminUtils::clearMenuCache();
-            }
-
-            if ( ! Administrator::where("subject_id", $subjectId)
-                ->exists()) {
-                $adminUser = Administrator::firstOrCreate([
-                    "subject_id"     => $subjectId,
-                    "adminable_id"   => $subjectId,
-                    "adminable_type" => "subject",
-                    "username"       => implode("", pinyin($name)),
-                    "name"           => $name . "管理",
-                    "password"       => bcrypt(implode("", pinyin($name))),
-                ]);
-                $adminUser->roles()->sync($adminRole->id);
-            }
-        }
-    }
+    ///**
+    // *
+    // * 创建主体的时候自动创建该主体的管理员角色
+    // *
+    // * 同时赋予该主体的已购权限
+    // * 更新是也跟随更新
+    // *
+    // * @param $form
+    // */
+    //protected function createOrUpdateAdminRole($form)
+    //{
+    //    $uuid = $form->uuid ?? $form->model()->uuid;
+    //    if ($uuid) {
+    //        $subjectId = $form->model()->id;
+    //        $name = $form->model()->name;
+    //
+    //        //创建角色
+    //        $adminRole = Role::firstOrCreate([
+    //            "subject_id" => $subjectId,
+    //            "slug"       => "admin",
+    //        ], [
+    //            "name" => $name . "管理员",
+    //        ]);
+    //
+    //        //给角色分配权限
+    //        if ($form->permissions) {
+    //            $permissionIds = $form->permissions;
+    //
+    //            //提交过来的数组id,有一个null总是,过滤掉
+    //            $permissionIds = array_filter($permissionIds, function ($value) {
+    //                if ( ! is_null($value)) {
+    //                    return $value;
+    //                }
+    //            });
+    //
+    //            //$permissionIds添加上base权限
+    //            $basePermissions = Permission::where("common", true)
+    //                ->pluck("id")
+    //                ->toArray();
+    //
+    //            $permissionIds = array_merge($permissionIds, $basePermissions);
+    //
+    //            //把subject的已购权限分配到该主体的管理员账号上
+    //            $adminRole->permissions()->sync($permissionIds);
+    //
+    //            AdminUtils::clearMenuCache();
+    //        }
+    //
+    //        if ( ! Administrator::where("subject_id", $subjectId)
+    //            ->exists()) {
+    //            $adminUser = Administrator::firstOrCreate([
+    //                "subject_id"     => $subjectId,
+    //                "adminable_id"   => $subjectId,
+    //                "adminable_type" => "subject",
+    //                "username"       => implode("", pinyin($name)),
+    //                "name"           => $name . "管理",
+    //                "password"       => bcrypt(implode("", pinyin($name))),
+    //            ]);
+    //            $adminUser->roles()->sync($adminRole->id);
+    //        }
+    //    }
+    //}
 }
