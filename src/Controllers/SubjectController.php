@@ -7,21 +7,23 @@ namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
-use Encore\Admin\Form\EmbeddedForm;
+use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Cache;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Controllers\Base\SubjectConfigTrait;
 use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
 use Mallto\Admin\Data\Menu;
-use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
-use Mallto\Tool\Data\Tag;
 
 class SubjectController extends AdminCommonController
 {
 
-    use SubjectSaveTrait;
+    use SubjectSaveTrait, SubjectConfigTrait;
 
 
     /**
@@ -89,11 +91,16 @@ class SubjectController extends AdminCommonController
      */
     protected function defaultFormOption(Form $form)
     {
+
+
         $form = $form->tab('基本信息', function ($form) {
 
             $form->displayE('id');
 
             $form->text('name')->rules('required');
+
+            $this->basicInfoExtend($form);
+
             $this->formSubject($form);
             $this->formAdminUser($form);
 
@@ -101,51 +108,60 @@ class SubjectController extends AdminCommonController
             $form->displayE('updated_at', trans('admin.updated_at'));
         });
 
-        $form = $form->tab('配置项', function ($form) {
+        $form->tab('配置项', function ($form) {
             $form->embeds('open_extra_config', '', function ($form) {
-                $this->openConfigBasic($form);
+                $this->subjectOwnerExtraConfigByJson($form);
             });
         });
 
-        $form = $form->tab('系统配置(owner)', function (Form $form) {
-            $this->systemConfigBasic($form);
+        $this->subjectOwnerExtend($form);
 
-            if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->textarea('extra_config');
+        if (AdminUtils::isOwner()) {
 
-                //不能调用systemConfigExtraConfigBasic,避免引入该库的项目在extra_config增加了自己的配置,
-                //但是没有复写subjectController,就会导致自己加的读取不出来
+            $form->tab('主体基本配置(owner)', function ($form) {
+                //主体基本配置(owner)
+                $this->systemConfigBasic($form);
+            });
 
-//                $form->embeds('extra_config', '其他配置', function (EmbeddedForm $form) {
-//                    $this->systemConfigExtraConfigBasic($form);
-//                });
-            }
+            $form->tab('主体配置(owner)', function ($form) {
+                $this->projectOwnerConfig($form);
 
-        })->tab('系统参数(owner)', function ($form) {
-            if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->hasMany('subjectconfigs', '', function (Form\NestedForm $form) {
-                    $form->select('type')
-                        ->options(SubjectConfig::TYPE);
-                    $form->text('key');
-                    $form->text('value');
-                    $form->text('remark');
-                });
-            }
-        });
+            });
+
+            //主体动态参数(owner)
+            $this->systemDynamicConfig($form);
+        }
 
         $form->saving(function ($form) {
-            $adminUser = Admin::user();
-
-            $this->saving($adminUser, $form);
+            $this->formSaving($form);
         });
 
         $form->saved(function ($form) {
-            $this->createOrUpdateAdminRole($form);
+            $this->formSaved($form);
+
         });
     }
 
 
-    protected function openConfigBasic(EmbeddedForm $form)
+    /**
+     * 基本信息扩展
+     *
+     * @param $form
+     */
+    protected function basicInfoExtend($form)
+    {
+
+    }
+
+
+    /**
+     * 动态属性列扩展,开放给主体拥有者可以编辑的
+     *
+     * 一个json字段保存
+     *
+     * @param $form
+     */
+    protected function subjectOwnerExtraConfigByJson($form)
     {
         $form->multipleSelect(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU, '快捷访问菜单')
             ->help('顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单')
@@ -154,78 +170,68 @@ class SubjectController extends AdminCommonController
 
 
     /**
-     * 数据有有对应字段的配置项目
+     * 主体拥有者扩展tab
+     * 可以新建tab
      *
      * @param $form
      */
-    protected function systemConfigBasic($form)
+    protected function subjectOwnerExtend(Form $form)
     {
-        //父级主体和已购模块只能父级设置,自己可以看,不能改
-        $current = Subject::find($this->currentId);
-        $parent = null;
-        if ($current) {
-            $parent = Subject::find($current->parent_id);
-        }
 
-        $form->select('parent_id', '父级主体')->options(function () use ($parent) {
-            if ($this->id == 1) {
-                $arr = Subject::pluck('name', 'id');
-                array_add($arr, 0, '项目开发商');
-            } else {
-                //返回自己有权限查看的和自己已经配置的
-                $arr = Subject::dynamicData()->pluck('name', 'id');
-                if ($parent) {
-                    array_add($arr, $parent->id, $parent->name);
-                }
-            }
-
-            return $arr;
-        })->rules('required');
-
-        if (\Mallto\Admin\AdminUtils::isOwner()) {
-            if ($this->currentId) {
-                $form->displayE('sms_count', '消费短信数');
-            }
-            $form->text('uuid', '主体唯一标识');
-            $form->text('wechat_uuid', '微信授权标识');
-            $form->switch('base', '总部');
-
-            $permissions = Permission::
-//            where('parent_id', 0)
-            where('common', false)
-                ->orderby('order')
-                ->get();
-
-            $form->checkbox('permissions', '已购模块')
-                ->options(Permission::selectOptions($permissions->toArray(),
-                    false, false))
-                ->stacked();
-
-
-        }
     }
 
 
     /**
-     * //todo 优化配置逻辑,如果其他库有自定义的参数,且没有调用覆盖这个配置就会读取不出来,
-     * 因为这个subjectcontroller中是写死的这几个配置
+     * 项目拥有者可以配置的
+     */
+    protected function projectOwnerConfig($form)
+    {
+        $form->textarea('extra_config');
+    }
+
+
+    /**
+     * 主体动态配置,项目拥有者可以配置
      *
-     * 系统配置中的json格式保存的配置项
+     * 一对多表保存
      *
      * @param $form
+     * @param $adminUser
      */
-    protected function systemConfigExtraConfigBasic(EmbeddedForm $form)
+    protected function systemDynamicConfig($form)
     {
-        $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, '管理端微信服务uuid')
-            ->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
-有的项目管理端单独使用一个公众号,所以需要配置单独的uuid');
+        $form->tab('主体动态参数(owner)', function ($form) {
+            $form->html('<h4>主要用来配置api接口地址和appKey和secret等</h4>');
+            if (AdminUtils::isOwner()) {
+                $form->hasMany('subjectconfigs', '', function (NestedForm $form) {
+                    $form->select('type')
+                        ->options(SubjectConfig::TYPE);
+                    $form->text('key');
+                    $form->text('value');
+                    $form->text('remark');
+                });
+            }
+        });
+    }
 
-        $form->text(SubjectConfigConstants::OWNER_CONFIG_SMS_SIGN, '短信签名');
 
-        $form->text(SubjectConfigConstants::OWNER_CONFIG_SMS_TEMPLATE_CODE, '短信验证码模板号');
+    protected function formSaving($form)
+    {
+        $adminUser = Admin::user();
 
-        $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')
-            ->options(Tag::TYPE);
+        $this->saving($adminUser, $form);
+    }
+
+
+    protected function formSaved($form)
+    {
+        $adminUser = Admin::user();
+
+        Cache::forget('speedy_' . $adminUser->id);
+
+        AdminUtils::forgetSubject($form->model()->id);
+
+        event(new SubjectSaved($form->model()));
     }
 
 

@@ -10,10 +10,13 @@ use Doctrine\DBAL\Types\FloatType;
 use Doctrine\DBAL\Types\Type;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
+use Mallto\Admin\Listeners\CreateAdminRole;
+use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\Middleware\Pjax;
 
 class ServiceProvider extends BaseServiceProvider
@@ -62,6 +65,15 @@ class ServiceProvider extends BaseServiceProvider
         ],
     ];
 
+    /**
+     * The event handler mappings for the application.
+     *
+     * @var array
+     */
+    protected $listen = [
+        SubjectSaved::class => [ CreateAdminRole::class ],
+    ];
+
 
     /**
      * Boot the service provider.
@@ -92,6 +104,8 @@ class ServiceProvider extends BaseServiceProvider
         $this->customMorphMap();
 
         $this->adminBootstrap();
+        $this->registerEventListeners();
+
 
     }
 
@@ -214,6 +228,27 @@ class ServiceProvider extends BaseServiceProvider
             Admin::js('vendor/laravel-adminE/echarts/echarts.min.js');
             Admin::js('https://file.easy.mall-to.com/js/walden.js');
         });
+    }
+
+
+    protected function registerEventListeners()
+    {
+        foreach ($this->listens() as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                Event::listen($event, $listener);
+            }
+        }
+    }
+
+
+    /**
+     * Get the events and handlers.
+     *
+     * @return array
+     */
+    public function listens()
+    {
+        return $this->listen;
     }
 
 }
