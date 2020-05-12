@@ -231,7 +231,7 @@ class SubjectController extends AdminCommonController
 
         AdminUtils::forgetSubject($form->model()->id);
 
-        event(new SubjectSaved($form->model()));
+        event(new SubjectSaved($form->model()->id));
     }
 
 
