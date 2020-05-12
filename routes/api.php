@@ -34,7 +34,10 @@ Route::group($attributes, function ($router) {
 
         //这个路由不能用resource,因为还有个路由是subject/config会冲突
         Route::get('subject', 'SubjectController@index');
-        Route::get('subject_config', 'SubjectConfigController@config');
+        //主体动态配置
+        Route::get('subject/config', 'SubjectConfigController@index');
+        //前端初始化配置
+        Route::get('front_init_config', 'SubjectFrontConfigController@config');
 
         /**
          * 需要经过签名校验

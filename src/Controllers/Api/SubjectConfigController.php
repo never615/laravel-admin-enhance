@@ -1,50 +1,35 @@
 <?php
 /**
- * Copyright (c) 2020. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
+ * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
 namespace Mallto\Admin\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Mallto\Admin\Data\SubjectConfig;
-use Mallto\Admin\SubjectConfigConstants;
+use Illuminate\Http\Request;
 use Mallto\Admin\SubjectUtils;
 
 /**
+ * Created by PhpStorm.
  * User: never615 <never615.com>
- * Date: 2020/2/14
- * Time: 4:37 下午
+ * Date: 2018/11/5
+ * Time: 下午3:35
  */
 class SubjectConfigController extends Controller
 {
 
-    /**
-     * 根据uuid获取主体详情
-     *
-     * @param $uuid
-     *
-     * @return array
-     */
-    public function config()
+    public function index(Request $request)
     {
+        $this->validate($request, [
+            "name" => "required",
+        ]);
+
+        $queryName = $request->name;
+
         $subject = SubjectUtils::getSubject();
 
-        $frontConfigs = SubjectConfig::where(
-            [
-                'subject_id' => $subject->id,
-                'type' => 'front',
-            ]
-        )->pluck('value','key')->toArray();
-
-        return [
-            'name'               => $subject->name,
-            'wechat_uuid'        => $subject->wechat_uuid ?? $subject->uuid,
-            'tenant_wechat_uuid' => SubjectUtils::getConfigByOwner(
-                SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, $subject),
-            'front_configs'      => $frontConfigs,
-        ];
-
-
+        //判断参数是否是主体动态配置中的公共请求参数
+        return SubjectUtils::getDynamicPublicKeyConfigByOwner($queryName, $subject);
     }
 
 }
