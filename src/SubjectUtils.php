@@ -135,7 +135,7 @@ class SubjectUtils
     /**
      * 获取可以动态设置key的配置项
      *
-     * 公开配置
+     * 公开配置,包含public和front
      *
      * 只有owner可以编辑
      *
@@ -164,7 +164,7 @@ class SubjectUtils
 
         $subjectConfig = $subject->subjectConfigs()
             ->where("key", $key)
-            ->where("type", "public")
+            ->whereIn("type", [ 'public', 'front' ])
             ->first();
 
         if ( ! $subjectConfig) {

@@ -60,7 +60,8 @@ class SubjectConfigController extends AdminCommonController
     {
         $form->select('type')
             ->options(SubjectConfig::TYPE)
-            ->default('private');
+            ->default('private')
+            ->help('front类型的配置会前端请求的主体初始化配置接口一起返回');
 
         $form->displayE('show_default_key', '预设的一些key')
             ->with(function ($values) {
