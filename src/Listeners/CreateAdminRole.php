@@ -43,14 +43,21 @@ class CreateAdminRole implements ShouldQueue
      * 同时赋予该主体的已购权限
      * 更新是也跟随更新
      *
-     * @param $form
+     * @param $subject
      */
-    protected function createOrUpdateAdminRole($form)
+    protected function createOrUpdateAdminRole($subject)
     {
-        $uuid = $form->uuid ?? $form->model()->uuid;
+        $uuid = $subject->uuid;
         if ($uuid) {
-            $subjectId = $form->model()->id;
-            $name = $form->model()->name;
+            $subjectId = $subject->id;
+            $name = $subject->name;
+
+            if (Role::where([
+                'subject_id' => $subjectId,
+                'slug'       => 'admin',
+            ])->exists()) {
+                return;
+            }
 
             //创建角色
             $adminRole = Role::firstOrCreate([
@@ -61,8 +68,8 @@ class CreateAdminRole implements ShouldQueue
             ]);
 
             //给角色分配权限
-            if ($form->permissions) {
-                $permissionIds = $form->permissions;
+            if ($subject->permissions) {
+                $permissionIds = $subject->permissions;
 
                 //提交过来的数组id,有一个null总是,过滤掉
                 $permissionIds = array_filter($permissionIds, function ($value) {
