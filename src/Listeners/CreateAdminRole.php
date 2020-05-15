@@ -26,7 +26,7 @@ class CreateAdminRole implements ShouldQueue
      *
      * @var string|null
      */
-    public $queue = 'high';
+    public $queue = 'mid';
 
 
     public function handle(SubjectSaved $subjectSaved)

@@ -46,12 +46,6 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
      */
     public $timeout = 3600;
 
-    /**
-     * The number of times the job may be attempted.
-     *
-     * @var int
-     */
-    public $tries = 3;
 
     /**
      * @var
@@ -92,6 +86,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
      * Execute the job.
      *
      * @return void
+     * @throws \ReflectionException
      */
     public function handle()
     {
@@ -199,6 +194,7 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
     /**
      * {@inheritdoc}
+     * @throws \ReflectionException
      */
     public function export()
     {

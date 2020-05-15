@@ -23,7 +23,7 @@ class ImportFileJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 10800;
+    public $timeout = 3600*3;
 
     /**
      * The number of times the job may be attempted.
