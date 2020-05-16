@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Mallto\Admin\SubjectUtils;
 
 /**
+ *
  * Created by PhpStorm.
  * User: never615 <never615.com>
  * Date: 2018/11/5
@@ -18,6 +19,13 @@ use Mallto\Admin\SubjectUtils;
 class SubjectConfigController extends Controller
 {
 
+    /**
+     * 根据key请求动态配置
+     * @param Request $request
+     *
+     * @return mixed|null
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function index(Request $request)
     {
         $this->validate($request, [
