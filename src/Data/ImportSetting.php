@@ -55,7 +55,7 @@ class ImportSetting extends BaseModel
         if (!AdminUtils::isOwner()) {
             $ids = SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_IMPORT_MODULE);
             if ($ids) {
-                $query = $query->whereIn("id", $ids);
+                $query = $query->whereIn($this->selectId, $ids);
             }
         }
 
