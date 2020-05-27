@@ -5,9 +5,7 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Mallto\Admin\Data\Traits\BaseModel;
-
 
 class ImportRecord extends BaseModel
 {
@@ -24,6 +22,7 @@ class ImportRecord extends BaseModel
     protected $casts = [
         'extra' => 'array',
     ];
+
 
     public function setting()
     {

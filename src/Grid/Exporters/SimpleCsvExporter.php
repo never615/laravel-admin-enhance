@@ -3,7 +3,6 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-
 namespace Mallto\Admin\Grid\Exporters;
 
 /**
@@ -40,7 +39,8 @@ abstract class SimpleCsvExporter extends CsvExporter
      *
      * 这一步就是对即将到放入表格中的数据最后的加工
      *
-     * @param  array $records ,orm查询结果经过array_dot后得到$records数组
+     * @param array $records ,orm查询结果经过array_dot后得到$records数组
+     *
      * @return array
      */
     public function customData($records)
@@ -48,7 +48,6 @@ abstract class SimpleCsvExporter extends CsvExporter
         $records = array_map(function ($record) {
             return $this->mapper($record);
         }, $records);
-
 
         //此方法必须调用
         return $this->forget($records, $this->forgetKeys(),
@@ -62,9 +61,11 @@ abstract class SimpleCsvExporter extends CsvExporter
      * 加工数据的时候要注意,每一个record输出时key的数量应该是相等的
      *
      * @param array $record
+     *
      * @return array $record,需要返回处理后的$record
      */
     public abstract function mapper($record);
+
 
     /**
      * 返回要移除的key
@@ -75,11 +76,13 @@ abstract class SimpleCsvExporter extends CsvExporter
      * 也可以使用member.name移除关联模型的指定字段
      *
      *
-     * 默认移除了一些字段参见  @var $this->defaultForgetKeys
+     * 默认移除了一些字段参见  @return array
      *
-     * @return array
+     * @var $this ->defaultForgetKeys
+     *
      */
     public abstract function forgetKeys();
+
 
     /**
      * 返回要保留的key
@@ -89,6 +92,5 @@ abstract class SimpleCsvExporter extends CsvExporter
      * @return array
      */
     public abstract function remainKeys();
-
 
 }

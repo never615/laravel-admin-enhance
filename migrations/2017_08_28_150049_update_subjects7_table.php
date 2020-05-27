@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateSubjects7Table extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -19,6 +20,7 @@ class UpdateSubjects7Table extends Migration
             $table->json("extra_config")->nullable()->comment("额外的配置");
         });
     }
+
 
     /**
      * Reverse the migrations.

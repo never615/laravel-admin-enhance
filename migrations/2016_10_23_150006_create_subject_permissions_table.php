@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateSubjectPermissionsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -26,6 +27,7 @@ class CreateSubjectPermissionsTable extends Migration
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

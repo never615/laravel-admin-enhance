@@ -10,13 +10,18 @@ use Doctrine\DBAL\Types\FloatType;
 use Doctrine\DBAL\Types\Type;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
+use Mallto\Admin\Listeners\CreateAdminRole;
+use Mallto\Admin\Listeners\Events\SubjectSaved;
+use Mallto\Admin\Middleware\Pjax;
 
 class ServiceProvider extends BaseServiceProvider
 {
+
     /**
      * @var array
      */
@@ -36,6 +41,7 @@ class ServiceProvider extends BaseServiceProvider
         'admin.auth'             => \Mallto\Admin\Middleware\Authenticate::class,
         'adminE.auto_permission' => \Mallto\Admin\Middleware\AutoPermissionMiddleware::class,
         'adminE.log'             => \Mallto\Admin\Middleware\OperationLog::class,
+        'adminE.pjax'            => Pjax::class,
     ];
 
     /**
@@ -44,6 +50,28 @@ class ServiceProvider extends BaseServiceProvider
      * @var array
      */
     protected $middlewareGroups = [
+        'adminE'      => [
+            'admin.auth',
+            'adminE.pjax',
+            'admin.bootstrap',
+            'adminE.auto_permission',
+            'adminE.log',
+        ],
+        'adminE_base' => [
+            'admin.auth',
+            'adminE.pjax',
+            'admin.bootstrap',
+            'adminE.log',
+        ],
+    ];
+
+    /**
+     * The event handler mappings for the application.
+     *
+     * @var array
+     */
+    protected $listen = [
+        SubjectSaved::class => [ CreateAdminRole::class ],
     ];
 
 
@@ -55,30 +83,32 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-            $this->publishes([__DIR__.'/../resources/config' => config_path()],
+            $this->publishes([ __DIR__ . '/../resources/config' => config_path() ],
                 'laravel-admin-enhance-config');
-            $this->publishes([__DIR__.'/../resources/assets' => public_path('vendor/laravel-adminE')],
+            $this->publishes([ __DIR__ . '/../resources/assets' => public_path('vendor/laravel-adminE') ],
                 'laravel-admin-enhance-assets');
 
-
             //发布view覆盖laravel-admin的view
-            $this->publishes([__DIR__.'/../resources/admin/views' => resource_path('views/vendor/admin')],
+            $this->publishes([ __DIR__ . '/../resources/admin/views' => resource_path('views/vendor/admin') ],
                 'laravel-admin-enhance-views');
             //发布assets覆盖laravel-admin的assets
 //            $this->publishes([__DIR__.'/../resources/admin/assets' => public_path('vendor/laravel-admin')],
 //                'laravel-admin-enhance-assets');
         }
 
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'adminE');
-        $this->loadMigrationsFrom(__DIR__.'/../migrations');
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
-        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'adminE');
+        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
 
         $this->customMorphMap();
 
         $this->adminBootstrap();
+        $this->registerEventListeners();
+
 
     }
+
 
     /**
      * Register the service provider.
@@ -91,13 +121,12 @@ class ServiceProvider extends BaseServiceProvider
 
         $this->commands($this->commands);
 
-
         $this->app->bind(
             AdminUserUsecase::class,
             AdminUserUsecaseImpl::class
         );
 
-        if (!Type::hasType('double')) {
+        if ( ! Type::hasType('double')) {
             try {
                 Type::addType('double', FloatType::class);
             } catch (DBALException $e) {
@@ -143,7 +172,8 @@ class ServiceProvider extends BaseServiceProvider
             //表单文件上传控件:支持直传文件到七牛,目前支持单文件
             \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);
             //表单文件上传控件:支持直传文件到七牛,目前支持多文件
-            \Encore\Admin\Form::extend('qiniuMultipleFile', \Mallto\Admin\Form\Field\QiniuMultipleFile::class);
+            \Encore\Admin\Form::extend('qiniuMultipleFile',
+                \Mallto\Admin\Form\Field\QiniuMultipleFile::class);
             //表单按钮控件:laravel-admin的button有bug,此为修复版本
             \Encore\Admin\Form::extend('buttonE', \Mallto\Admin\Form\Field\Button::class);
             //表单文件上传控件:支持上传文件到七牛的私有空间
@@ -172,16 +202,20 @@ class ServiceProvider extends BaseServiceProvider
             //表格url控件:支持显示url二维码,和一键复制url
             \Encore\Admin\Grid\Column::extend("urlWrapper", \Mallto\Admin\Grid\Displayers\UrlWrapper::class);
             //表格数字格式化控件:支持格式化数字到指定位数
-            \Encore\Admin\Grid\Column::extend("numberFormat", \Mallto\Admin\Grid\Displayers\NumberFomart::class);
+            \Encore\Admin\Grid\Column::extend("numberFormat",
+                \Mallto\Admin\Grid\Displayers\NumberFomart::class);
             //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("switchE", \Mallto\Admin\Grid\Displayers\SwitchDisplay::class);
+            //表格switch控件:在laravel-admin switch的基础上,增加了对错误信息展示的处理，和修改弹窗确认
+            \Encore\Admin\Grid\Column::extend("switchAlert",
+                \Mallto\Admin\Grid\Displayers\SwitchAlertDisplay::class);
             //select:在laravel-admin select,增加了对错误信息展示的处理
             \Encore\Admin\Grid\Column::extend("selectE", \Mallto\Admin\Grid\Displayers\Select::class);
             //表格link控件:在laravel-admin的link的基础上,支持回调方法,可以获取当前操作的数据对象
             \Encore\Admin\Grid\Column::extend("linkE", \Mallto\Admin\Grid\Displayers\Link::class);
 
-
             Admin::js('vendor/laravel-adminE/clipboard/clipboard.min.js');
+            Admin::js('vendor/laravel-adminE/admin_init.js');
             Admin::js('vendor/laravel-adminE/common.js');
             Admin::js('vendor/laravel-adminE/layer-v3.0.3/layer/layer.js');
             Admin::js('vendor/laravel-adminE/notify/notify.js');
@@ -196,5 +230,25 @@ class ServiceProvider extends BaseServiceProvider
         });
     }
 
+
+    protected function registerEventListeners()
+    {
+        foreach ($this->listens() as $event => $listeners) {
+            foreach ($listeners as $listener) {
+                Event::listen($event, $listener);
+            }
+        }
+    }
+
+
+    /**
+     * Get the events and handlers.
+     *
+     * @return array
+     */
+    public function listens()
+    {
+        return $this->listen;
+    }
 
 }

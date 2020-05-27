@@ -5,16 +5,15 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Mallto\Admin\Data\Traits\DynamicData;
 
 class Role extends \Encore\Admin\Auth\Database\Role
 {
+
     use DynamicData;
 
     protected $fillable = [];
 
     protected $guarded = [];
-
 
 }

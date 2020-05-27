@@ -10,6 +10,7 @@ use Encore\Admin\Grid\Tools\AbstractTool;
 
 class BackButton extends AbstractTool
 {
+
     /**
      * Render CreateButton.
      *
@@ -19,7 +20,6 @@ class BackButton extends AbstractTool
     {
         $new = trans('admin.back');
 
-
         $script = <<<'EOT'
 $('.table-history-back').on('click', function (event) {
     event.preventDefault();
@@ -28,7 +28,6 @@ $('.table-history-back').on('click', function (event) {
 EOT;
 
         Admin::script($script);
-
 
         return <<<EOT
 

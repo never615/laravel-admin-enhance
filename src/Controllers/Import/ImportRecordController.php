@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers\Import;
 
-
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -16,7 +15,6 @@ use Mallto\Admin\Data\ImportSetting;
 use Mallto\Admin\Jobs\ImportFileJob;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Utils\UrlUtils;
-
 
 /**
  * 导入记录
@@ -37,6 +35,7 @@ class ImportRecordController extends AdminCommonController
         return '数据导入';
     }
 
+
     /**
      * 获取这个模块的Model
      *
@@ -46,6 +45,7 @@ class ImportRecordController extends AdminCommonController
     {
         return ImportRecord::class;
     }
+
 
     protected function gridOption(Grid $grid)
     {
@@ -64,6 +64,7 @@ class ImportRecordController extends AdminCommonController
             $actions->disableView();
         });
     }
+
 
     protected function formOption(Form $form)
     {
@@ -118,22 +119,19 @@ class ImportRecordController extends AdminCommonController
                     ->options(ImportSetting::selectSourceDataBySubject());
             }
 
-
             $form->filePrivate('file_url', '文件')
                 ->options([
                     'allowedPreviewTypes'   => [],
-                    'allowedFileExtensions' => ['xls', 'xlsx'],
+                    'allowedFileExtensions' => [ 'xls', 'xlsx' ],
                 ])
                 ->rules('required')
-                ->move(Admin::user()->id.'/import_file')
+                ->move(Admin::user()->id . '/import_file')
                 ->help('导入文件只能保留一个工作表<br>文件名只能是字母加数字');
-
 
             $this->formExtraConfig($form);
 
             $form->textarea('remark');
         }
-
 
         $form->saving(function ($form) {
             if ($this->currentId) {
@@ -141,11 +139,11 @@ class ImportRecordController extends AdminCommonController
             }
         });
 
-
         $form->saved(function ($form) {
             dispatch(new ImportFileJob($form->model()->id));
         });
     }
+
 
     /**
      * 额外的导入配置
@@ -158,6 +156,5 @@ class ImportRecordController extends AdminCommonController
 //
 //        });
     }
-
 
 }

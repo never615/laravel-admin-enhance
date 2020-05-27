@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateSubjectConfigsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -28,6 +29,7 @@ class CreateSubjectConfigsTable extends Migration
         });
     }
 
+
     /**
      * Reverse the migrations.
      *
@@ -36,7 +38,6 @@ class CreateSubjectConfigsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('subject_configs');
-
 
 
     }

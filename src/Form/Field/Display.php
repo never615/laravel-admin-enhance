@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 
 /**
@@ -24,7 +23,7 @@ class Display extends Field
      */
     protected function shouldRender(): bool
     {
-        if (!$this->display) {
+        if ( ! $this->display) {
             return false;
         }
 

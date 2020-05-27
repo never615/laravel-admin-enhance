@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers;
 
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mallto\Admin\Data\Administrator;
@@ -23,31 +22,34 @@ use Mallto\User\Domain\WechatUsecase;
  */
 class AdminBindWechatController extends Controller
 {
+
     use OpenidCheckTrait;
+
 
     public function bindWechat(Request $request, WechatUsecase $wechatUsecase)
     {
         $encryOpenid = $request->openid;
         $openid = $this->decryptOpenid($encryOpenid);
 
-
         $waiteBindAdminUser = Administrator::find($request->admin_user_id);
-        if (!$waiteBindAdminUser) {
+        if ( ! $waiteBindAdminUser) {
             throw new ResourceException("无效请求");
         }
 
-        $subjecct = $waiteBindAdminUser->subject;
-        $wechatUserInfo = $wechatUsecase->getUserInfo(SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-            $subjecct, $subjecct->uuid), $openid);
+        $subject = $waiteBindAdminUser->subject;
 
-        if (!$wechatUserInfo) {
+        $wechatUserInfo = $wechatUsecase->getUserInfo(
+            SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject),
+            $openid);
+
+        if ( ! $wechatUserInfo) {
             throw new ResourceException("未找到相应微信用户");
         }
 
         if ($waiteBindAdminUser->openid) {
-            throw new ResourceException("当前账号(".$waiteBindAdminUser->username.")已经绑定其他微信,如果想重新绑定,需要先解绑微信");
+            throw new ResourceException("当前账号(" . $waiteBindAdminUser->username . ")已经绑定其他微信,如果想重新绑定,需要先解绑微信");
         }
-
 
         //检查并移除该微信的其他账号绑定关系
         Administrator::where("subject_id", $waiteBindAdminUser->subject_id)

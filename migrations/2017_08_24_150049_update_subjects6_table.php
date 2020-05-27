@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateSubjects6Table extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -19,6 +20,7 @@ class UpdateSubjects6Table extends Migration
             $table->boolean("base")->default(false)->comment("是否是总部");
         });
     }
+
 
     /**
      * Reverse the migrations.

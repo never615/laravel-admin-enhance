@@ -2,7 +2,6 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +9,9 @@ use Mallto\Admin\Traits\ModelTree;
 
 class Permission extends Model
 {
+
     use ModelTree, AdminBuilder;
+
 //    protected $fillable = [];
 
     protected $guarded = [];
@@ -31,9 +32,9 @@ class Permission extends Model
 
         $this->setTitleColumn("name");
 
-
         parent::__construct($attributes);
     }
+
 
     /**
      * 获取拥有该权限的全部主体
@@ -44,6 +45,7 @@ class Permission extends Model
     {
         return $this->belongsToMany(Subject::class, "subject_permissions", 'permission_id', 'subject_id');
     }
+
 
     /**
      * Permission belongs to many roles.
@@ -59,6 +61,7 @@ class Permission extends Model
         return $this->belongsToMany($relatedModel, $pivotTable, 'permission_id', 'role_id');
     }
 
+
     /**
      * 查询对应权限的所有子权限
      *
@@ -68,11 +71,10 @@ class Permission extends Model
      */
     public function subPermissions()
     {
-        return Permission::where("path", "like", "%.".$this->id.".%")
+        return Permission::where("path", "like", "%." . $this->id . ".%")
             ->orWhere("id", $this->id)
             ->get()
             ->toArray();
-
 
 //        $temps = \DB::select("with recursive tab as (
 //                   select * from admin_permissions where id = $this->id
@@ -85,6 +87,7 @@ class Permission extends Model
 
     }
 
+
     /**
      * 获取该权限的所有长辈权限
      *
@@ -94,9 +97,9 @@ class Permission extends Model
      */
     public function elderPermissions()
     {
-        if (!empty($this->path)) {
+        if ( ! empty($this->path)) {
             $parentIds = explode(".", trim($this->path, "."));
-            if (!empty($parentIds)) {
+            if ( ! empty($parentIds)) {
                 return Permission::whereIn("id", $parentIds)
                     ->get();
             }

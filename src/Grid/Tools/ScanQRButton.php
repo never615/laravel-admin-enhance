@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Grid\Tools;
 
-
 use Encore\Admin\Grid\Tools\AbstractTool;
 
 /**
@@ -29,6 +28,7 @@ class ScanQRButton extends AbstractTool
     {
         return $this->view;
     }
+
 
     /**
      * Render Export button.

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
-
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Administrator;
@@ -35,6 +34,7 @@ trait AdminUserTrait
                 });
         }
     }
+
 
     /**
      * 自动设置adminUser

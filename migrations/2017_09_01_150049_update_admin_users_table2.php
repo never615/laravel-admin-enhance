@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 class UpdateAdminUsersTable2 extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -19,6 +20,7 @@ class UpdateAdminUsersTable2 extends Migration
             $table->json("manager_subject_ids")->nullable()->comment("管理的主体数据范围");
         });
     }
+
 
     /**
      * Reverse the migrations.

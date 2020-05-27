@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateImportSettingsAddModuleHandler extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -23,6 +24,7 @@ class UpdateImportSettingsAddModuleHandler extends Migration
             $table->text("module_handler")->nullable()->comment("导入任务处理类");
         });
     }
+
 
     /**
      * Reverse the migrations.

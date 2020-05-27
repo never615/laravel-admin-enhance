@@ -23,14 +23,16 @@ use Maatwebsite\Excel\Events\BeforeSheet;
  * Time: 7:52 下午
  */
 class BaseImport implements WithChunkReading, WithValidation,
-    WithHeadingRow, WithEvents, SkipsOnError, SkipsOnFailure
+                            WithHeadingRow, WithEvents, SkipsOnError, SkipsOnFailure
 {
+
     use Importable, SkipsFailures, SkipsErrors;
 
     /**
      * @var BaseImportHandler
      */
     public $importHandler;
+
     public $importRecord;
 
 
@@ -83,6 +85,7 @@ class BaseImport implements WithChunkReading, WithValidation,
         return 1000;
     }
 
+
     /**
      * @return int
      */
@@ -90,6 +93,5 @@ class BaseImport implements WithChunkReading, WithValidation,
     {
         return 1000;
     }
-
 
 }

@@ -5,19 +5,17 @@
 
 namespace Mallto\Admin\Data;
 
-
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Traits\BaseModel;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Mall\SubjectConfigConstants;
 
-
 class ImportSetting extends BaseModel
 {
 
-
     public $selectName = "name";
+
     public $selectId = "module_slug";
 
 
@@ -37,7 +35,7 @@ class ImportSetting extends BaseModel
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
 
 
@@ -52,7 +50,7 @@ class ImportSetting extends BaseModel
     {
         $query = $query->selectSourceDatas2();
 
-        if (!AdminUtils::isOwner()) {
+        if ( ! AdminUtils::isOwner()) {
             $ids = SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_IMPORT_MODULE);
             if ($ids) {
                 $query = $query->whereIn($this->selectId, $ids);
@@ -67,6 +65,7 @@ class ImportSetting extends BaseModel
      * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
      *
      * @param $query
+     *
      * @return mixed
      */
     public function scopeSelectSourceDatas2($query)

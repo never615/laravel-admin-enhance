@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data\Traits;
 
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\SubjectUtils;
@@ -19,10 +18,10 @@ use Request;
  */
 abstract class BaseModel2 extends Model
 {
+
     use DynamicData, SelectSource;
 
-
-    protected $hidden = ['deleted_at'];
+    protected $hidden = [ 'deleted_at' ];
 
     protected $guarded = [];
 
@@ -34,7 +33,9 @@ abstract class BaseModel2 extends Model
      * 而form->saving方法是在调用下面方法之前调用的
      *
      * @desc 新建对象时自动加subject_id
+     *
      * @param array $options
+     *
      * @return bool
      */
     public function save(array $options = [])
@@ -42,7 +43,7 @@ abstract class BaseModel2 extends Model
         if (Request::header("mode") == "api") {
             $tableHasSubjectId = Schema::hasColumn($this->getTable(), 'subject_id');
             $attrsHasSubjectId = empty($this->attributes['subject_id']);
-            if ($tableHasSubjectId && !$this->exists && $attrsHasSubjectId) {
+            if ($tableHasSubjectId && ! $this->exists && $attrsHasSubjectId) {
                 $this->attributes['subject_id'] = SubjectUtils::getSubjectId();
             }
         }
@@ -59,7 +60,7 @@ abstract class BaseModel2 extends Model
     public function newEloquentBuilder($query)
     {
         if (Request::header("mode") == "api") {
-            if (Schema::hasColumn($this->getTable(), 'subject_id') && !Schema::hasColumn($this->getTable(),
+            if (Schema::hasColumn($this->getTable(), 'subject_id') && ! Schema::hasColumn($this->getTable(),
                     'top_subject_id')
             ) {
                 $subjectId = SubjectUtils::getSubjectId();
@@ -81,8 +82,9 @@ abstract class BaseModel2 extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
+
 
     public function getImageAttribute($value)
     {
@@ -94,8 +96,9 @@ abstract class BaseModel2 extends Model
             return $value;
         }
 
-        return config("app.file_url_prefix").$value;
+        return config("app.file_url_prefix") . $value;
     }
+
 
     public function setImagesAttribute($values)
     {
@@ -109,6 +112,7 @@ abstract class BaseModel2 extends Model
         $this->attributes['images'] = $values;
     }
 
+
     public function getImagesAttribute($value)
     {
         $values = json_decode($value);
@@ -118,7 +122,7 @@ abstract class BaseModel2 extends Model
                 if (starts_with($value, "http")) {
                     $values[$key] = $value;
                 } else {
-                    $values[$key] = config("app.file_url_prefix").$value;
+                    $values[$key] = config("app.file_url_prefix") . $value;
                 }
             }
         } else {

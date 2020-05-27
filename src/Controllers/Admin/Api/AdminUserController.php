@@ -3,7 +3,7 @@
  * Copyright (c) 2018. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
  */
 
-namespace Mallto\Admin\Controllers\Api;
+namespace Mallto\Admin\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +18,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class AdminUserController extends Controller
 {
+
     public function index()
     {
         $adminUser = Auth::guard("admin_api")->user();

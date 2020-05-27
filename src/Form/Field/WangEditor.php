@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 use Encore\Admin\Form\NestedForm;
 
@@ -20,7 +19,6 @@ class WangEditor extends Field
 
     protected $menuOption;
 
-
     protected static $css = [
         '/vendor/laravel-adminE/wangEditor-2.1.23/dist/css/wangEditor.min.css',
     ];
@@ -31,13 +29,14 @@ class WangEditor extends Field
         '/vendor/laravel-adminE/wangEditor-2.1.23/dist/js/wangEditor.min.js',
     ];
 
+
     /**
      * WangEditor constructor.
      *
      */
     public function __construct($column, $arguments = [])
     {
-        $this->domian = rtrim(config("filesystems.disks.qiniu.domain"), '/').'/';
+        $this->domian = rtrim(config("filesystems.disks.qiniu.domain"), '/') . '/';
         $this->menuOption = config("admin.editor_menu");
         parent::__construct($column, $arguments);
     }
@@ -104,6 +103,7 @@ EOT;
 
         return '';
     }
+
 
     private function getUploadScript()
     {

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -14,6 +13,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait QiniuUploadField
 {
+
     /**
      * Upload directory.
      *
@@ -47,6 +47,7 @@ trait QiniuUploadField
      */
     protected $removable = false;
 
+
     /**
      * Initialize the storage instance.
      *
@@ -56,6 +57,7 @@ trait QiniuUploadField
     {
         $this->disk(config('admin.upload.disk'));
     }
+
 
     /**
      * Set default options form image field.
@@ -71,7 +73,7 @@ trait QiniuUploadField
             'showRemove'           => false,
             'showUpload'           => false,
 //            'initialCaption'       => $this->initialCaption($this->value),
-            'deleteExtraData' => [
+            'deleteExtraData'      => [
                 $this->formatName($this->column) => static::FILE_DELETE_FLAG,
                 static::FILE_DELETE_FLAG         => '',
                 '_token'                         => csrf_token(),
@@ -80,11 +82,12 @@ trait QiniuUploadField
         ];
 
         if ($this->form instanceof Form) {
-            $defaultOptions['deleteUrl'] = $this->form->resource().'/'.$this->form->model()->getKey();
+            $defaultOptions['deleteUrl'] = $this->form->resource() . '/' . $this->form->model()->getKey();
         }
 
         $this->options($defaultOptions);
     }
+
 
     /**
      * Set preview options form image field.
@@ -93,7 +96,7 @@ trait QiniuUploadField
      */
     protected function setupPreviewOptions()
     {
-        if (!$this->removable) {
+        if ( ! $this->removable) {
             return;
         }
 
@@ -102,6 +105,7 @@ trait QiniuUploadField
             'initialPreviewConfig' => $this->initialPreviewConfig(),
         ]);
     }
+
 
     /**
      * Allow use to remove file.
@@ -114,6 +118,7 @@ trait QiniuUploadField
 
         return $this;
     }
+
 
     /**
      * Set options for file-upload plugin.
@@ -129,6 +134,7 @@ trait QiniuUploadField
         return $this;
     }
 
+
     /**
      * Set disk for storage.
      *
@@ -138,7 +144,7 @@ trait QiniuUploadField
      */
     public function disk($disk)
     {
-        if (!array_key_exists($disk, config('filesystems.disks'))) {
+        if ( ! array_key_exists($disk, config('filesystems.disks'))) {
             $error = new MessageBag([
                 'title'   => 'Config error.',
                 'message' => "Disk [$disk] not configured, please add a disk config in `config/filesystems.php`.",
@@ -151,6 +157,7 @@ trait QiniuUploadField
 
         return $this;
     }
+
 
     /**
      * Specify the directory and name for upload file.
@@ -169,6 +176,7 @@ trait QiniuUploadField
         return $this;
     }
 
+
     /**
      * Specify the directory upload file.
      *
@@ -184,6 +192,7 @@ trait QiniuUploadField
 
         return $this;
     }
+
 
     /**
      * Set name of store name.
@@ -201,6 +210,7 @@ trait QiniuUploadField
         return $this;
     }
 
+
     /**
      * Use unique name for store upload file.
      *
@@ -212,6 +222,7 @@ trait QiniuUploadField
 
         return $this;
     }
+
 
     /**
      * Get store name of upload file.
@@ -237,6 +248,7 @@ trait QiniuUploadField
         return $file->getClientOriginalName();
     }
 
+
     /**
      * Get directory for store file.
      *
@@ -250,6 +262,7 @@ trait QiniuUploadField
 
         return $this->directory ?: $this->defaultDirectory();
     }
+
 
     /**
      * Upload file and delete original file.
@@ -265,6 +278,7 @@ trait QiniuUploadField
         return $this->storage->putFileAs($this->getDirectory(), $file, $this->name);
     }
 
+
     /**
      * If name already exists, rename it.
      *
@@ -278,6 +292,7 @@ trait QiniuUploadField
             $this->name = $this->generateUniqueName($file);
         }
     }
+
 
     /**
      * Get file visit url.
@@ -295,6 +310,7 @@ trait QiniuUploadField
         return Storage::disk(config('admin.upload.disk'))->url($path);
     }
 
+
     /**
      * Generate a unique name for uploaded file.
      *
@@ -304,8 +320,9 @@ trait QiniuUploadField
      */
     protected function generateUniqueName(UploadedFile $file)
     {
-        return md5(uniqid()).'.'.$file->getClientOriginalExtension();
+        return md5(uniqid()) . '.' . $file->getClientOriginalExtension();
     }
+
 
     /**
      * Destroy original files.

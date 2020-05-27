@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class CreateSubjectsTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -31,6 +32,7 @@ class CreateSubjectsTable extends Migration
             $table->unique("uuid");
         });
     }
+
 
     /**
      * Reverse the migrations.

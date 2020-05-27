@@ -26,6 +26,7 @@ class ArrayBaseImport extends BaseImport implements ToArray
      */
     private $validator;
 
+
     /**
      * ArrayBaseImport constructor.
      *
@@ -40,8 +41,10 @@ class ArrayBaseImport extends BaseImport implements ToArray
         parent::__construct($importRecord, $importHandler);
     }
 
+
     /**
      * @param array $rows
+     *
      * @throws \Maatwebsite\Excel\Validators\ValidationException
      */
     public function array(array $rows)
@@ -54,13 +57,11 @@ class ArrayBaseImport extends BaseImport implements ToArray
             }
         }
 
-
         try {
             $this->importHandler->dataHandler($this->importRecord, $rows);
         } catch (Throwable $e) {
             $this->onError($e);
         }
     }
-
 
 }

@@ -5,11 +5,11 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 
 class QiniuMultipleFile extends Field\MultipleFile
 {
+
     protected $view = 'adminE::form.qiniu_multiplefile';
 
 
@@ -28,13 +28,11 @@ class QiniuMultipleFile extends Field\MultipleFile
             return $this->destroy(request(static::FILE_DELETE_FLAG));
         }
 
-
-        if (!is_null($filePaths)) {
+        if ( ! is_null($filePaths)) {
             $filePaths = explode(",", $filePaths);
         } else {
             $filePaths = [];
         }
-
 
         $result = array_merge($this->original(), $filePaths);
 
@@ -62,6 +60,7 @@ class QiniuMultipleFile extends Field\MultipleFile
         return $config;
     }
 
+
     /**
      * Render file upload field.
      *
@@ -74,15 +73,14 @@ class QiniuMultipleFile extends Field\MultipleFile
 //        $this->options(['overwriteInitial' => true]);
         $this->setupDefaultOptions();
 
-        if (!empty($this->value)) {
-            $this->options(['initialPreview' => $this->preview()]);
-            $this->options(['initialPreviewConfig' => $this->initialPreviewConfig()]);
+        if ( ! empty($this->value)) {
+            $this->options([ 'initialPreview' => $this->preview() ]);
+            $this->options([ 'initialPreviewConfig' => $this->initialPreviewConfig() ]);
 
             $this->setupPreviewOptions();
         }
 
         $options = json_encode($this->options);
-
 
         $this->script = <<<EOT
 

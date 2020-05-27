@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateAdminUserGroupUsersTable extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -24,6 +25,7 @@ class CreateAdminUserGroupUsersTable extends Migration
             $table->foreign('group_id')->references('id')->on('admin_user_groups')->onDelete('CASCADE');
         });
     }
+
 
     /**
      * Reverse the migrations.

@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Form\Field;
 
-
 use Encore\Admin\Form\Field;
 
 /**
@@ -32,7 +31,6 @@ class QiniuFile extends Field\File
             return $this->destroy();
         }
 
-
         if ($filePath && is_string($filePath)) {
             $paths = explode($filePath, "/");
             $this->name = array_last($paths);
@@ -40,11 +38,9 @@ class QiniuFile extends Field\File
             $this->name = $filePath;
         }
 
-
         $this->destroy();
 
         return $filePath;
     }
-
 
 }

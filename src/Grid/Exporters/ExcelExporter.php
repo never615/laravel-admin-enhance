@@ -23,7 +23,9 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 abstract class ExcelExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
 {
+
     use ExporterTrait;
+
 
     /**
      * {@inheritdoc}
@@ -32,7 +34,6 @@ abstract class ExcelExporter extends \Encore\Admin\Grid\Exporters\AbstractExport
     {
         $tableName = $this->getTable();
         $fileName = $this->getFileName();
-
 
         Excel::create($fileName, function ($excel) use ($tableName) {
 
@@ -59,6 +60,5 @@ abstract class ExcelExporter extends \Encore\Admin\Grid\Exporters\AbstractExport
 
         exit;
     }
-
 
 }

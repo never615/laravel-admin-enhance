@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Seeder;
 
-
 use Illuminate\Database\Seeder;
 use Mallto\Admin\Seeder\Menu\AdminManagerMenuSeeder;
 use Mallto\Admin\Seeder\Menu\AdminUserGroupMenuSeeder;
@@ -15,6 +14,7 @@ use Mallto\Admin\Seeder\Menu\SystemManagerMenuSeeder;
 
 class MenuTablesSeeder extends Seeder
 {
+
     /**
      * Run the database seeds.
      *

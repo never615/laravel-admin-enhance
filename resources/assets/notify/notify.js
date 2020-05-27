@@ -5,16 +5,16 @@ window.notify = function () {
     'use strict';
     // 设置基本样式
     var isShadow = true,
-        fontSizeSmall = '18px',
-        fontSizeBig = '24px',
-        delay = 0.3,
-        alertSuccess = '#2ecc71',
-        alertDanger = '#e74c3c',
-        alertWarning = '#f39c12',
-        alertInfo = '#3498db',
-        alertWrapId = 'notifyWrap',
-        alertContentId = 'notifyContent',
-        alertTextId = 'notifyText';
+            fontSizeSmall = '18px',
+            fontSizeBig = '24px',
+            delay = 0.3,
+            alertSuccess = '#2ecc71',
+            alertDanger = '#e74c3c',
+            alertWarning = '#f39c12',
+            alertInfo = '#3498db',
+            alertWrapId = 'notifyWrap',
+            alertContentId = 'notifyContent',
+            alertTextId = 'notifyText';
     // 创建提示元素
     var alertWrap = document.createElement('div');
     alertWrap.id = alertWrapId;
@@ -57,11 +57,11 @@ window.notify = function () {
     alertContent.appendChild(alertText);
     document.body.appendChild(alertWrap);
     var height = 0,
-        isShow = false,
-        timeout0,
-        timeout1,
-        timeout2,
-        clickedCounter = 0;
+            isShow = false,
+            timeout0,
+            timeout1,
+            timeout2,
+            clickedCounter = 0;
 
     function alert(type, message, time) {
         clickedCounter++;

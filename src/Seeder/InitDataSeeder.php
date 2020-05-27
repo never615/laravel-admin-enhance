@@ -2,14 +2,14 @@
 
 namespace Mallto\Admin\Seeder;
 
-
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Auth\Database\Role;
-use Mallto\Admin\Data\Subject;
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Data\Subject;
 
 class InitDataSeeder extends Seeder
 {
+
     /**
      * Run the database seeds.
      *
@@ -25,16 +25,16 @@ class InitDataSeeder extends Seeder
         /**
          * --------------------   Subject create  -------------------------
          */
-        $项目管理Subject=Subject::create([
+        $项目管理Subject = Subject::create([
             'name' => "项目管理方",
         ]);
 
-        $招商Subject=Subject::create([
+        $招商Subject = Subject::create([
             'name'      => "招商集团",
             "parent_id" => $项目管理Subject->id,
         ]);
 
-        $蛇口Subject=Subject::create([
+        $蛇口Subject = Subject::create([
             'name'      => "蛇口花园城",
             "parent_id" => $招商Subject->id,
         ]);
@@ -89,7 +89,6 @@ class InitDataSeeder extends Seeder
             "adminable_id"   => $蛇口Subject->id,
             "adminable_type" => "subject",
         ]);
-
 
         // add role to user.
         $mallto->roles()->save($ownerRole);

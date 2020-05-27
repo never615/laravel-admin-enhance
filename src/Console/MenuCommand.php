@@ -5,13 +5,12 @@
 
 namespace Mallto\Admin\Console;
 
-
 use Illuminate\Console\Command;
-use Mallto\Admin\Seeder\PermissionTablesSeeder;
 use Mallto\Admin\Seeder\TablesSeeder;
 
 class MenuCommand extends Command
 {
+
     /**
      * The console command name.
      *
@@ -33,6 +32,7 @@ class MenuCommand extends Command
      */
     protected $directory = '';
 
+
     /**
      * Execute the console command.
      *
@@ -40,7 +40,7 @@ class MenuCommand extends Command
      */
     public function handle()
     {
-        $this->call('db:seed', ['--class' => TablesSeeder::class]);
+        $this->call('db:seed', [ '--class' => TablesSeeder::class ]);
     }
 
 }

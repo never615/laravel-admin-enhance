@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class UpdateAdminUsersAddStatus extends Migration
 {
+
     /**
      * Run the migrations.
      *
@@ -23,6 +24,7 @@ class UpdateAdminUsersAddStatus extends Migration
             $table->string("status")->default("normal");
         });
     }
+
 
     /**
      * Reverse the migrations.

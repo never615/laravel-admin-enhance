@@ -11,6 +11,7 @@ use Encore\Admin\Form\NestedForm;
  */
 class HasMany extends Field\HasMany
 {
+
     /**
      * Setup tab template script.
      *

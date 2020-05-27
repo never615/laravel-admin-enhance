@@ -29,17 +29,19 @@ class SubjectConfigController extends AdminCommonController
         return SubjectConfig::class;
     }
 
+
     protected function gridOption(Grid $grid)
     {
         $grid->key()->display(function ($value) {
-            return config("app.subject_config_key")[$value] ?? $value;
+            return config('other.subject_config_key')[$value] ?? $value;
         });
-        $grid->value()->limit(100);
+        $grid->value()->limit(50);
 
         $grid->filter(function (Grid\Filter $filter) {
-            $filter->ilike("key");
+            $filter->ilike('key');
         });
     }
+
 
     /**
      * 需要实现的form设置
@@ -51,28 +53,29 @@ class SubjectConfigController extends AdminCommonController
      * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
      * @param Form $form
+     *
      * @return mixed
      */
     protected function formOption(Form $form)
     {
-        $form->select("type")
+        $form->select('type')
             ->options(SubjectConfig::TYPE)
-            ->default("private");
+            ->default('private')
+            ->help('front类型的配置会前端请求的主体初始化配置接口一起返回');
 
-        $form->displayE("show_default_key","预设的一些key")
-            ->with(function($values){
-                $html='<table border="1"><tr><th>说明</th><th>key</th></tr>';
-               foreach (config("app.subject_config_key") as $key=>$value){
-                   $html.="<tr><th>$value</th><th>$key</th></tr>";
-//                   $html.=' <tr>'.$value.":".$key."</tr>";
-               }
+        $form->displayE('show_default_key', '预设的一些key')
+            ->with(function ($values) {
+                $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
+                foreach (config('other.subject_config_key') as $key => $value) {
+                    $html .= "<tr><th>$value</th><th>$key</th></tr>";
+                }
 
-               return $html."</table>";
+                return $html . '</table>';
             });
 
-        $form->text("key");
+        $form->text('key');
 
-        $form->textarea("value")->rows(15);
-        $form->textarea("remark");
+        $form->textarea('value')->rows(15);
+        $form->textarea('remark');
     }
 }

@@ -5,30 +5,6 @@
 
 ;(function ($, window) {
 
-    //------------ X-editable初始化-------------
-    $.fn.editable.defaults.error = function (response, newValue) {
-        if (response.responseJSON && response.responseJSON.error) {
-            return response.responseJSON.error;
-        } else {
-            if (response.responseJSON.errors) {
-                var msg = "";
-                $.each(response.responseJSON.errors, function (k, v) {
-                    msg += v + "\n";
-                });
-                return msg;
-            } else {
-                return response.statusText + ":" + response.status
-            }
-        }
-    };
-
-    // $.fn.editable.defaults.emptytext = "空";
-    //turn to inline mode
-//     $.fn.editable.defaults.mode = 'inline';
-//     $.fn.editable.defaults.ajaxOptions = {type: "PUT"};
-
-//------------ X-editable初始化 结束-------------
-
     /**
      * 封装ajax请求
      * @param url
@@ -36,8 +12,9 @@
      * @param data1
      * @param successCallBack
      * @param async
+     * @param dataType
      */
-    window.doAjax = function (url, type, data1, successCallBack, async) {
+    window.doAjax = function (url, type, data1, successCallBack, async, dataType) {
         // NProgress.start();
         var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
 
@@ -45,11 +22,11 @@
             type: type || 'POST',
             url: url,
             async: async || true,
-            dataType: "json",
+            dataType: dataType || "json",
             // data: data + "&iddd=" + Math.random(),
             data: Object.assign({}, {iddd: Math.random()}, data1),
             headers: {
-                'X-CSRF-TOKEN': LA.token,
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 'REQUEST-TYPE': 'WEB'
             },
             success: function (data) {
@@ -101,7 +78,19 @@
             success: function (data) {
                 // NProgress.done();
                 layer.close(loadIndex);
-                successHandler(data, successCallBack);
+
+                //处理后端异常信息
+                if (typeof data === 'object') {
+                    if (data.status === true) {
+                        swal(data.message, '', 'success');
+                    } else if (data.status === false) {
+                        swal(data.message, '', 'error');
+                    } else {
+                        successHandler(data, successCallBack);
+                    }
+                } else {
+                    successHandler(data, successCallBack);
+                }
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 // NProgress.done();
@@ -157,6 +146,7 @@
             });
         }
         layer.closeAll();
+
         notify.alert(3, msg, 5);
     };
 
