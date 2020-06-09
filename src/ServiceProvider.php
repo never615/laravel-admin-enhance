@@ -15,6 +15,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
+use Mallto\Admin\Grid\Exporters\SimpleCsvExporter;
 use Mallto\Admin\Listeners\CreateAdminRole;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\Middleware\Pjax;
