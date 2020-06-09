@@ -81,9 +81,9 @@ abstract class AdminCommonController extends AdminController
      */
     public function index(Content $content)
     {
-        $grid = $this->grid();
         if (config('admin.swoole') && request(Exporter::$queryName)) {
-            return $grid->handleExportRequest();
+            $grid = $this->grid();
+            return $grid->handleExportRequest(true);
         }
 
         return $content

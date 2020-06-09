@@ -33,6 +33,13 @@ abstract class SimpleCsvExporter extends CsvExporter
      */
     protected $ignore2Array = [];
 
+    /**
+     * 是否使用$this->remainKeys()返回的key的顺序重新排序数据
+     *
+     * @var bool
+     */
+    protected $sortKey = false;
+
 
     /**
      * 自定义数据处理
@@ -46,12 +53,46 @@ abstract class SimpleCsvExporter extends CsvExporter
     public function customData($records)
     {
         $records = array_map(function ($record) {
-            return $this->mapper($record);
+            $record = $this->mapper($record);
+
+            $newRecord = [];
+            if ($this->sortKey) {
+                if ( ! empty($remainKeys = $this->remainKeys())) {
+                    foreach ($remainKeys as $key) {
+                        $newRecord[$key] = $record[$key];
+                    }
+                }
+            }
+
+            return ! empty($newRecord) ? $newRecord : $record;
         }, $records);
 
         //此方法必须调用
         return $this->forget($records, $this->forgetKeys(),
             $this->remainKeys(), $this->forgetKeysDefault);
+    }
+
+
+    /**
+     * @param            $records
+     *
+     * @param            $tableName
+     *
+     * @return array
+     */
+    public function getHeaderRowFromRecords($records, $tableName): array
+    {
+
+        if ( ! empty($this->remainKeys())) {
+            return $this->remainKeys();
+        }
+        $titles = collect(array_first($records))->keys()->map(
+            function ($key) use ($tableName) {
+                return admin_translate($key, $tableName);
+            }
+        );
+
+        return $titles->toArray();
     }
 
 
