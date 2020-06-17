@@ -34,11 +34,11 @@ abstract class SimpleCsvExporter extends CsvExporter
     protected $ignore2Array = [];
 
     /**
-     * 是否使用$this->remainKeys()返回的key的顺序重新排序数据
+     * 是否使用$this->remainKeys()返回的key的顺序作为csv header的顺序
      *
      * @var bool
      */
-    protected $sortKey = false;
+    protected $useRemainKeySort = false;
 
 
     /**
@@ -56,11 +56,9 @@ abstract class SimpleCsvExporter extends CsvExporter
             $record = $this->mapper($record);
 
             $newRecord = [];
-            if ($this->sortKey) {
-                if ( ! empty($remainKeys = $this->remainKeys())) {
-                    foreach ($remainKeys as $key) {
-                        $newRecord[$key] = $record[$key];
-                    }
+            if ( ! empty($remainKeys = $this->remainKeys())) {
+                foreach ($remainKeys as $key) {
+                    $newRecord[$key] = $record[$key];
                 }
             }
 
@@ -83,16 +81,21 @@ abstract class SimpleCsvExporter extends CsvExporter
     public function getHeaderRowFromRecords($records, $tableName): array
     {
 
-        if ( ! empty($this->remainKeys())) {
-            return $this->remainKeys();
+        if ( ! empty($this->remainKeys()) && $this->useRemainKeySort) {
+            $remainKeys = $this->remainKeys();
+
+            return array_map(function ($value) use ($tableName) {
+                return admin_translate($value, $tableName);
+
+            }, $remainKeys);
         }
-        $titles = collect(array_first($records))->keys()->map(
+
+        return collect(array_first($records))->keys()->map(
             function ($key) use ($tableName) {
                 return admin_translate($key, $tableName);
             }
-        );
+        )->toArray();
 
-        return $titles->toArray();
     }
 
 
