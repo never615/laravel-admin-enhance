@@ -18,6 +18,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\Data\Permission;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -47,6 +48,10 @@ class AutoPermissionMiddleware
         $adminUser = Auth::guard("admin")->user();
         if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
+        }
+
+        if ( ! $adminUser) {
+            throw new PermissionDeniedException('未登录');
         }
 
         $currentRouteName = $request->route()->getName();
