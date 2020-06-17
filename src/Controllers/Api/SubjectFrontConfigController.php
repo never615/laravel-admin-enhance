@@ -41,7 +41,12 @@ class SubjectFrontConfigController extends Controller
             'wechat_uuid'        => $subject->wechat_uuid ?? $subject->uuid,
             'tenant_wechat_uuid' => SubjectUtils::getConfigByOwner(
                 SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, $subject),
-            'front_configs'      => $frontConfigs,
+
+            'front_configs' => array_merge([
+                'cdn_backend_domain' => SubjectUtils::getDynamicKeyConfigByOwner('cdn_backend_domain',
+                    $subject->id,
+                    config('other.cdn_url') ?? config('app.url')),
+            ], $frontConfigs),
         ];
 
     }
