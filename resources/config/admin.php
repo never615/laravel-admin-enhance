@@ -62,7 +62,7 @@ return [
 
         'namespace' => 'App\\Admin\\Controllers',
 
-        'middleware' => [ 'web', 'adminE' ],
+        'middleware' => ['web', 'adminE'],
     ],
 
     /*
@@ -143,6 +143,7 @@ return [
         'excepts'     => [
             'auth/login',
             'auth/logout',
+            '_handle_action_',
         ],
     ],
 
@@ -215,20 +216,11 @@ return [
     'operation_log'             => [
         'enable'          => true,
 
+
         /*
          * Only logging allowed methods in the list
          */
-        'allowed_methods' => [
-            'GET',
-            'HEAD',
-            'POST',
-            'PUT',
-            'DELETE',
-            'CONNECT',
-            'OPTIONS',
-            'TRACE',
-            'PATCH',
-        ],
+        'allowed_methods' => ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH'],
 
         /*
          * Routes that will not log to database.
@@ -303,7 +295,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout'                    => [ 'sidebar-mini' ],
+    'layout'                    => ['sidebar-mini','sidebar-collapse'],
 
     /*
     |--------------------------------------------------------------------------
@@ -384,13 +376,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | The global Grid action display class.
+    |--------------------------------------------------------------------------
+    */
+    'grid_action_class' => \Encore\Admin\Grid\Displayers\DropdownActions::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Extension Directory
     |--------------------------------------------------------------------------
     |
     | When you use command `php artisan admin:extend` to generate extensions,
     | the extension files will be generated in this directory.
     */
-    'extension_dir'             => app_path('../packages'),
+    'extension_dir'             => app_path('Admin/Extensions'),
+    //'extension_dir'             => app_path('../packages'),
 
     /*
     |--------------------------------------------------------------------------
@@ -413,6 +413,7 @@ return [
             ],
         ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -469,6 +470,7 @@ return [
         'fullscreen',
     ],
 
+
     /*
      * 角色名字
      */
@@ -485,5 +487,7 @@ return [
     | This version number set will appear in the page footer.
     |
     */
-    'version'     => env('APP_VERSION'),
+    'version'                   => env('APP_VERSION'),
+
+//    'grid_action_class' => \Encore\Admin\Grid\Displayers\DropdownActions::class,
 ];
