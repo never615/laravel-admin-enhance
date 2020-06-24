@@ -55,13 +55,9 @@ class SystemManagerMenuSeeder extends Seeder
             'subject_configs.index', $systemManagerMenu->id,
             $order++, '主体配置', 'fa-assistive-listening');
 
-        $pay = $this->updateOrCreate(
-            'pay_configs', $systemManagerMenu->id,
-            $order++, '支付设置', 'fa-money');
-
         $this->updateOrCreate(
-            'union_pay.index', $pay->id,
-            $order++, '银联支付配置', 'fa-money');
+            'subject_settings.index', $systemManagerMenu->id,
+            $order++, '主体配置', 'fa-server');
     }
 
 }
