@@ -24,5 +24,6 @@ class ImportPermissionsSeeder extends Seeder
     {
         $this->createPermissions("导入配置", "import_settings");
         $this->createPermissions("数据导入", "import_records", true, 0, false);
+        $this->createPermissions('主体配置', 'subject_settings', true, 0, false);
     }
 }
