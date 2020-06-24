@@ -57,7 +57,7 @@ class SystemManagerMenuSeeder extends Seeder
 
         $this->updateOrCreate(
             'subject_settings.index', $systemManagerMenu->id,
-            $order++, '主体配置', 'fa-server');
+            $order++, '项目配置', 'fa-server');
     }
 
 }
