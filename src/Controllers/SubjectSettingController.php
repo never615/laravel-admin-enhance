@@ -6,13 +6,10 @@
 namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Form;
-use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
-use Mallto\Mall\Constants;
-use Mallto\Mall\SubjectSettingConstants;
 
 /**
  * Class SubjectSettingController
@@ -60,56 +57,56 @@ class SubjectSettingController extends AdminCommonController
     protected function defaultFormOption(Form $form)
     {
         $form->tab('银联闪付配置', function (Form $form) {
-            $form->embeds('union_pay_setting', '', function (EmbeddedForm $form) {
-                $form->select(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_DRIVER, '网关')
-                    ->rules('required')
-                    ->options(Constants::UNION_PAY_DRIVER);
+            $form->select('driver', '网关')
+                ->rules('required')
+                ->options(SubjectSetting::UNION_PAY_DRIVER);
 
-                $form->text(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_MER_ID, '商户号')
-                    ->rules('required');
+            $form->select('cert_version', '证书版本')
+                ->rules('required')
+                ->options(SubjectSetting::UNION_PAY_CERT_VERSION);
 
-                $form->filePrivate(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_PRIVATE_CERT_PATH,
-                    '商户私钥证书')
-                    ->rules('required')
-                    ->options([
-                        'allowedPreviewTypes'   => [],
-                        'allowedFileExtensions' => [ 'pfx' ],
-                    ])
-                    ->move('union_pay');
+            $form->text('mer_id', '商户号')
+                ->rules('required');
 
-                $form->text(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_CERT_DIR, '商户公钥证书目录')
-                    ->rules('required');
+            $form->filePrivate('private_cert_path', '商户私钥证书')
+                ->rules('required')
+                ->options([
+                    'allowedPreviewTypes'   => [],
+                    'allowedFileExtensions' => [ 'pfx' ],
+                ])
+                ->move('union_pay');
 
-                $form->filePrivate(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_ENC_CERT_PATH, '商户敏感加密证书')
-                    ->rules('required')
-                    ->options([
-                        'allowedPreviewTypes'   => [],
-                        'allowedFileExtensions' => [ 'cer' ],
-                    ])
-                    ->move('union_pay');
-                $form->filePrivate(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_MIDDLE_CERT_PATH,
-                    '商户中级证书')
-                    ->rules('required')
-                    ->options([
-                        'allowedPreviewTypes'   => [],
-                        'allowedFileExtensions' => [ 'cer' ],
-                    ])
-                    ->move('union_pay');
-                $form->filePrivate(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_ROOT_CERT_PATH, '商户根证书')
-                    ->rules('required')
-                    ->options([
-                        'allowedPreviewTypes'   => [],
-                        'allowedFileExtensions' => [ 'cer' ],
-                    ])
-                    ->move('union_pay');
+            $form->text('cert_dir', '商户公钥证书目录')
+                ->rules('required');
 
-                $form->text(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_CERT_PASSWORD, '商户私钥密码')
-                    ->rules('required');
-                $form->url(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_NOTIFY_URL, '支付后接收回调地址')
-                    ->rules('required');
-                $form->url(SubjectSettingConstants::OWNER_SETTING_UNION_PAY_RETURN_URL, '支付后返回页面地址')
-                    ->rules('required');
-            });
+            $form->filePrivate('enc_cert_path', '商户敏感加密证书')
+                ->rules('required')
+                ->options([
+                    'allowedPreviewTypes'   => [],
+                    'allowedFileExtensions' => [ 'cer' ],
+                ])
+                ->move('union_pay');
+            $form->filePrivate('middle_cert_path', '商户中级证书')
+                ->rules('required')
+                ->options([
+                    'allowedPreviewTypes'   => [],
+                    'allowedFileExtensions' => [ 'cer' ],
+                ])
+                ->move('union_pay');
+            $form->filePrivate('root_cert_path', '商户根证书')
+                ->rules('required')
+                ->options([
+                    'allowedPreviewTypes'   => [],
+                    'allowedFileExtensions' => [ 'cer' ],
+                ])
+                ->move('union_pay');
+
+            $form->text('cert_password', '商户私钥密码')
+                ->rules('required');
+            $form->text('return_url', '支付后接收回调地址')
+                ->rules('required');
+            $form->text('notify_url', '支付后返回页面地址')
+                ->rules('required');
 
             $this->formSubject($form);
             if ($this->currentId) {
