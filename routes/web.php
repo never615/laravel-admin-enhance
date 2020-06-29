@@ -98,7 +98,6 @@ Route::group([
                 //主体配置管理
                 $router->resource('subject_configs', 'SubjectConfigController');
 
-
                 //文件导入模块
                 $router->resource('import_settings', 'Import\ImportSettingController');
                 //导入记录
