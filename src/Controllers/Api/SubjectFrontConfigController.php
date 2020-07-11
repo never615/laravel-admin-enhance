@@ -36,7 +36,7 @@ class SubjectFrontConfigController extends Controller
             ]
         )->pluck('value', 'key')->toArray();
 
-        if (config('app.env') == 'integration') {
+        if (config('app.env') === 'integration') {
             $cdnBackendDomain = config('app.url');
         } else {
             $cdnBackendDomain = SubjectUtils::getDynamicKeyConfigByOwner('cdn_backend_domain',
@@ -50,9 +50,9 @@ class SubjectFrontConfigController extends Controller
             'tenant_wechat_uuid' => SubjectUtils::getConfigByOwner(
                 SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, $subject),
 
-            'front_configs' => array_merge([
+            'front_configs' => array_merge($frontConfigs, [
                 'cdn_backend_domain' => $cdnBackendDomain,
-            ], $frontConfigs),
+            ]),
         ];
 
     }
