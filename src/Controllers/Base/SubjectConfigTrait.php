@@ -5,12 +5,10 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
+use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
-use Encore\Admin\Form\NestedForm;
-use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Subject;
-use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\Tag;
 
@@ -23,19 +21,16 @@ use Mallto\Tool\Data\Tag;
 trait SubjectConfigTrait
 {
 
-
-
-
     /**
-     * 这里的配置在数据表创建了对应的列
+     * 主体基本配置(owner,项目拥有者可以编辑,如mallto)
      *
-     * 主体基本配置(owner)
+     * 包含一些系统的基本配置
      *
-     * 都是一些系统的基本配置
+     * @param Form $form
      *
-     * @param $form
+     * @return mixed
      */
-    protected function systemConfigBasic($form)
+    protected function systemConfigBasic(Form $form)
     {
         //父级主体和已购模块只能父级设置,自己可以看,不能改
         $current = Subject::find($this->currentId);
@@ -103,8 +98,5 @@ trait SubjectConfigTrait
         $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')
             ->options(Tag::TYPE);
     }
-
-
-
 
 }
