@@ -49,6 +49,6 @@ class VerificationCoupon extends RowAction
      */
     public function display($value)
     {
-        return "<button style='background-color: #00c0ef; border-color:#00acd6; border-radius:3px; color: white' >核销</button>";
+        return "<button style='color: #333333' >核销</button>";
     }
 }
