@@ -16,7 +16,7 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Controllers\Base\SubjectConfigTrait;
 use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
 use Mallto\Admin\Data\Menu;
-use Mallto\Admin\Data\Subject;
+use Mallto\Mall\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
