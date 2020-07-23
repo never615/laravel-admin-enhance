@@ -15,6 +15,30 @@ use Mallto\Admin\Data\Menu;
 class AdminE
 {
 
+    /**
+     *
+     *
+     * @var array
+     */
+    public $extendSubjectConfigClass = [];
+
+
+    public function extendSubjectConfigClass($class)
+    {
+        $this->extendSubjectConfigClass[] = $class;
+        $this->extendSubjectConfigClass = array_unique($this->extendSubjectConfigClass);
+    }
+
+
+    public function getSubjectConfigClass()
+    {
+        return $this->extendSubjectConfigClass;
+    }
+
+
+    /**
+     * 顶部快捷访问初始化
+     */
     public function quickAccess()
     {
         $adminUser = Admin::user();
