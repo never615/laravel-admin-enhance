@@ -18,6 +18,7 @@ use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
 use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\Tag;
@@ -96,7 +97,8 @@ class SubjectController extends AdminCommonController
     protected function defaultFormOption(Form $form)
     {
         //初始化其他库添加的subject配置
-        $subjectConfigExpands = config('other.subject_config_expands',[]);
+        //$subjectConfigExpands = config('other.subject_config_expands', []);
+        $subjectConfigExpands = AdminE::getSubjectConfigClass();
 
         foreach ($subjectConfigExpands as $subjectConfigExpand) {
             $this->subjectConfigExpandObjs[] = app($subjectConfigExpand);
