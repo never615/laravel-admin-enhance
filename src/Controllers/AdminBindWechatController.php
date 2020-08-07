@@ -25,7 +25,6 @@ class AdminBindWechatController extends Controller
 
     use OpenidCheckTrait;
 
-
     public function bindWechat(Request $request, WechatUsecase $wechatUsecase)
     {
         $encryOpenid = $request->openid;
@@ -39,8 +38,9 @@ class AdminBindWechatController extends Controller
         $subject = $waiteBindAdminUser->subject;
 
         $wechatUserInfo = $wechatUsecase->getUserInfo(
-            SubjectUtils::getConfigByOwner(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-                $subject),
+            SubjectUtils::getConfigByOwner(
+                SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                $subject, $subject->uuid),
             $openid);
 
         if ( ! $wechatUserInfo) {
