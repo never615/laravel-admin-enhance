@@ -26,7 +26,6 @@ class AdminBindWechatController extends Controller
 
     use OpenidCheckTrait;
 
-
     public function bindWechat(Request $request, WechatUsecase $wechatUsecase)
     {
         //获取微信回调的参数
