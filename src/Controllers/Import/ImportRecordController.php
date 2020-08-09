@@ -122,7 +122,7 @@ class ImportRecordController extends AdminCommonController
             $form->filePrivate('file_url', '文件')
                 ->options([
                     'allowedPreviewTypes'   => [],
-                    'allowedFileExtensions' => [ 'xls', 'xlsx' ],
+                    'allowedFileExtensions' => [ 'xls', 'xlsx', 'csv' ],
                 ])
                 ->rules('required')
                 ->move(Admin::user()->id . '/import_file')
