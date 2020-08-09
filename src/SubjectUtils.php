@@ -248,7 +248,7 @@ class SubjectUtils
      *
      * @param null $app
      *
-     * @return Subject|null|static
+     * @return Subject|static
      */
     public static function getSubject($app = null)
     {

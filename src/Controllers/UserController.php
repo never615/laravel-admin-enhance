@@ -273,49 +273,83 @@ class UserController extends AdminCommonController
 
             $currentAdminUser = Administrator::find($this->currentId);
             if ($currentAdminUser) {
-                $qrcodeHelp = "";
-                if ($currentAdminUser->openid) {
-                    $qrcodeHelp = "已绑定微信,绑定的用户微信昵称为:" . ($currentAdminUser->openid["nickname"] ?? "未知");
-                } else {
-                    $qrcodeHelp = "未绑定微信,扫码可绑定(一个微信只能绑定一个管理账号,微信绑定新的管理账号后,微信的旧的绑定关系会失效)";
-                }
+
                 $form->qrcode("qrcode", "扫码绑定微信")
-                    ->qrcodeUrl($this->getBindWechatUrl($this->currentId))
-                    ->help($qrcodeHelp);
+                    ->qrcodeUrl($this->getBindWechatUrl($this->currentId));
 
-                $form->buttonE("unbind_wechat", "解绑微信")
-                    ->on("click", function () use ($currentAdminUser) {
-                        $uuid = $currentAdminUser->subject->uuid;
-
-                        return <<<EOT
-        var loadIndex = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
-                        
-        $.ajax({
-            type: 'GET',
-            url: '/admin/admin_unbind_wechat',
-            dataType: "json",
-            data: {iddd: Math.random(),id:{$currentAdminUser->id}},
-            headers: {
-                'REQUEST-TYPE': 'WEB',
-                'Accept': 'application/json',
-                'UUID': '{$uuid}'
-            },
-            success: function (data) {
-                layer.close(loadIndex);
-                toastr.success("解绑成功");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layer.close(loadIndex);
-                errorHandler(XMLHttpRequest);
-            }
-        });                        
-EOT;
-                    });
-
+                $form->embeds('show_wechat_user', '当前绑定的微信用户', function ($form) use ($currentAdminUser) {
+                    $form->html($this->showBindWechatUser($currentAdminUser));
+                });
             }
 
             $form->divider();
         }
     }
 
+
+    /**
+     * 查看当前绑定的微信用户
+     */
+    public function showBindWechatUser($currentAdminUser)
+    {
+        $openid = $currentAdminUser->openid;
+        $uuid = $currentAdminUser->subject->uuid;
+
+        $script = <<<SCRIPT
+ $(".unbind_wechat").click(function () {
+    var loadIndex = layer.load(0, {
+        shade: false
+    }); //0代表加载的风格，支持0-2
+
+    $.ajax({
+        type: 'GET',
+        url: '/admin/admin_unbind_wechat',
+        dataType: "json",
+        data: {
+            iddd: Math.random(),
+            id: {$currentAdminUser->id},
+            openid: this.value,
+        },
+        headers: {
+            'REQUEST-TYPE': 'WEB',
+            'Accept': 'application/json',
+            'UUID': '{$uuid}'
+        },
+        success: function (data) {
+            layer.close(loadIndex);
+            toastr.success("解绑成功");
+            setTimeout(window.location.reload(),3000);
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            layer.close(loadIndex);
+            errorHandler(XMLHttpRequest);
+        }
+    });
+});
+SCRIPT;
+        \Encore\Admin\Admin::script($script);
+
+        $html = null;
+        if ($openid) {
+            foreach ($openid as $wechatOpenid => $userInfo) {
+                $nickname = $userInfo['nickname'] ?? '未知昵称';
+                $userOpenid = $userInfo['openid'] ?? '';
+                $html .= "<tr><td>$nickname</td><td>$userOpenid</td><td><button type='button' class='btn btn-danger unbind_wechat' value=$userOpenid>解除绑定</button></td></tr>";
+            }
+        } else {
+            $html = "<tr><td>当前未绑定任何微信用户</td></tr>";
+        }
+
+        return <<<HTML
+<table class="table table-striped">
+    <tr>
+        <td>微信用户昵称</td>
+        <td>微信用户openid</td>
+        <td>解绑微信</td>
+    </tr>
+    $html
+</table>
+<hr />
+HTML;
+    }
 }

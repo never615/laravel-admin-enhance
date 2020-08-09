@@ -63,9 +63,9 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     {
         $class = config('auth.providers.admin_users.model');
 
-        $adminUser = $class::with([ 'adminable' ])
-            ->where('subject_id', $subjectId)
-            ->where('openid->openid', $openid)
+        $adminUser = $class::with([ "adminable" ])
+            ->where("subject_id", $subjectId)
+            ->where("openid->" . $openid . "->openid", $openid)
             ->first();
         if ( ! $adminUser) {
             //管理端账户不存在
@@ -101,8 +101,14 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      */
     public function getOpenid($adminUser)
     {
-        if ( ! empty($adminUser->openid['openid'])) {
-            return $adminUser->openid['openid'];
+        if ( ! empty($adminUser->openid)) {
+            //todo 目前暂时返回一个绑定的openid，需要优化支持推送多个微信绑定用户模板消息
+            $openid = null;
+            foreach ($adminUser->openid as $key => $value) {
+                $openid = $key;
+            }
+
+            return $openid;
         } else {
             $user = User::where('mobile', $adminUser->mobile)
                 ->where('subject_id', $adminUser->subject_id)

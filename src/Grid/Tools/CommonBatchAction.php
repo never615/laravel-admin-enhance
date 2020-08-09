@@ -42,6 +42,16 @@ class CommonBatchAction extends BatchAction
      */
     private $column;
 
+    /**
+     * @var string
+     */
+    protected $swalTitle;
+
+    /**
+     * @var boolean
+     */
+    protected $isSwal;
+
 
     /**
      * CommonBatchAction constructor.
@@ -49,18 +59,27 @@ class CommonBatchAction extends BatchAction
      * @param string $url    请求地址
      * @param string $action 动作标识,用来区分不同的提交
      * @param string $column 要修改的字段
+     * @param bool   $isSwal 是否弹窗
+     * @param string $title  弹窗标题
      */
-    public function __construct($url, $action = "", $column = "")
+    public function __construct($url, $action = "", $column = "", $isSwal = false, $swalTitle = "是否进行批量处理")
     {
         $this->url = $url;
         $this->action = $action;
         $this->column = $column;
+        $this->isSwal = $isSwal;
+        $this->swalTitle = $swalTitle;
     }
 
 
     public function script()
     {
         $tempUrl = "";
+        $isSwal = '';
+        if ($this->isSwal) {
+            $isSwal = 'true';
+        }
+
         if (starts_with($this->url, "http")) {
             $tempUrl = $this->url;
         } else {
@@ -75,6 +94,32 @@ $('{$this->getElementClass()}').on('click', function() {
         if (ids.length < 1) {
             sweetAlert("最少需要选择一个条目");
         }else{
+            if ("{$isSwal}") {
+                swal({
+                    title: "{$this->swalTitle}",
+                    confirmButtonText: "确认",
+                    showLoaderOnConfirm: true,
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确认",
+                    cancelButtonText: "取消"
+                }).then(function (result) {
+                    if (result.value) {
+                        doAjax("{$tempUrl}", "POST", {
+                                _token: LA.token,
+                                ids: ids,
+                                action: '{$this->action}',
+                                type: 'action',
+                                column:'{$this->column}'
+                            }, function (data) {
+                                console.log("response");
+                                layer.msg('操作成功', {icon: 1});
+                                $.pjax.reload('#pjax-container');
+                            });
+                    }
+                });
+            } else {
                 doAjax("{$tempUrl}", "POST", {
                     _token: LA.token,
                     ids: ids,
@@ -83,13 +128,11 @@ $('{$this->getElementClass()}').on('click', function() {
                     column:'{$this->column}'
                 }, function (data) {
                     console.log("response");
-                
                     layer.msg('操作成功', {icon: 1});
                     $.pjax.reload('#pjax-container');
                 });
+            }
         }
-
-                
 });
 EOT;
 

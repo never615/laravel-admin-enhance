@@ -3,42 +3,40 @@
 namespace Mallto\Admin\Grid\Actions;
 
 use Encore\Admin\Actions\RowAction;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Mallto\Mall\Data\UserCoupon;
 use Mallto\Mall\Domain\VerificationUsecase;
-use Mallto\Mall\Exception\ExchangeCodeNotFoundException;
 
 class VerificationCoupon extends RowAction
 {
 
     /**
-     * 在页面点击这一列的图表之后，发送请求到后端的handle方法执行
-     *
      * @param UserCoupon $userCoupon
+     * @param            $request
      *
      * @return \Encore\Admin\Actions\Response
      */
-    public function handle(UserCoupon $userCoupon)
+    public function handle(UserCoupon $userCoupon, Request $request)
     {
         $verificationUsecase = app(VerificationUsecase::class);
 
-        try {
-            $verificationUsecase->getByCode($userCoupon->exchange_code, true);
-        } catch (\Exception $exception) {
-            throw new ExchangeCodeNotFoundException('该记录未找到！');
-        }
+        $adminUser = Auth::guard("admin")->user();
 
-        $verificationUsecase->verify($userCoupon->exchange_code);
+        $verificationUsecase->verify($userCoupon->exchange_code, $adminUser, 'admin', false,
+            $request->verify_count);
 
         return $this->response()->success('核销成功')->refresh();
     }
 
 
     /**
-     * 弹窗
+     * swal2需要弹出的表单内容
      */
-    public function dialog()
+    public function form()
     {
-        $this->confirm('确定核销该卡券？');
+        $this->integer('verify_count', '请输入核销数量')->default(1)->rules("required")->style('text-align',
+            'center')->help('请输入该核销码剩余核销次数以内的数字！');
     }
 
 
@@ -51,6 +49,6 @@ class VerificationCoupon extends RowAction
      */
     public function display($value)
     {
-        return "<button style='background-color: #00c0ef; border-color:#00acd6; border-radius:3px; color: white' >核销</button>";
+        return "<button style='color: #333333' >核销</button>";
     }
 }
