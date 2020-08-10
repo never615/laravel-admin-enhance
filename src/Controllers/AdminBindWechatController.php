@@ -82,8 +82,7 @@ class AdminBindWechatController extends Controller
     {
         $adminUser = Administrator::find($request->id);
 
-        $adminUser->openid = Arr::except($adminUser->openid, $request->openid);
-
+        $adminUser->openid = null;
         $adminUser->save();
 
         return response()->nocontent();

@@ -31,7 +31,7 @@ class ImportButton extends AbstractTool
      */
     public function __construct($moduleSlug = null, $url = "/admin/import_records/create")
     {
-        $this->moduleSlug = $moduleSlug;
+        $this->moduleSlug = urlencode($moduleSlug);
         $this->url = $url;
     }
 

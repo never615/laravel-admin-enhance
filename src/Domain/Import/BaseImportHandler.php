@@ -89,8 +89,12 @@ abstract class BaseImportHandler
                 '文件名不能包含特殊字符,只能是字母/数字/-_');
         }
 
+        $moduleSlug = $importRecord->module_slug;
+        if (str_contains($moduleSlug, '\\')) {
+            $moduleSlug = array_last(explode('\\', $moduleSlug));
+        }
         //保存到服务器本地临时目录,便于读取文件
-        $tempFileName = $importRecord->subject_id . '_' . $importRecord->module_slug . '_' . $importRecord->created_at . '.' . $ext;
+        $tempFileName = $importRecord->subject_id . '_' . $moduleSlug . '_' . $importRecord->created_at . '.' . $ext;
         Storage::disk('local')->put('tmp/import_file/' . $tempFileName, $contents);
         $path = storage_path('app/tmp/import_file/' . $tempFileName);
 
@@ -101,11 +105,12 @@ abstract class BaseImportHandler
         $importKeys = (new HeadingRowImport)->toArray($path);
         $importKeys = $importKeys[0][0];
 
-        foreach ($importKeys as $key => $importKey) {
-            if ($importKey) {
-                $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
-            }
-        }
+        //\Log::debug($importKeys);
+        //foreach ($importKeys as $key => $importKey) {
+            //if ($importKey) {
+            //    $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
+            //}
+        //}
 
         $expectKeys = $this->getExpectKeys();
 
