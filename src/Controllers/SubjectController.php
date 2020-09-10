@@ -74,6 +74,9 @@ class SubjectController extends AdminCommonController
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
+
+            $filter->equal('parent_id', '父级')
+                ->select(Subject::dynamicData()->pluck('name', 'id'));
         });
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
@@ -128,12 +131,14 @@ class SubjectController extends AdminCommonController
 
         $this->subjectOwnerExtend($form);
 
-        if (AdminUtils::isOwner()) {
+        if (\Mallto\Admin\AdminUtils::isOwner() || config('other.subject_parent_config')) {
             $form->tab('主体基本配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->systemConfigBasic($form);
             });
+        }
 
+        if (AdminUtils::isOwner()) {
             $form->tab('主体配置(owner)', function ($form) {
                 //extra_config保存,如数据库直接增加字段保存的停车系统和extra_config保存的订单系统等
                 $this->projectOwnerConfig($form);
