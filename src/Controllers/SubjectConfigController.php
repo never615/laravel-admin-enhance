@@ -32,6 +32,8 @@ class SubjectConfigController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
+        $grid->type();
+
         $grid->key()->display(function ($value) {
             return config('other.subject_config_key')[$value] ?? $value;
         });
