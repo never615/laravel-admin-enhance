@@ -24,8 +24,8 @@ class UpdateRolesTable extends Migration
 
             $table->text("describe")->nullable();
 
-            $table->dropUnique([ "slug" ]);
-            $table->dropUnique([ "name" ]);
+            //$table->dropUnique([ "slug" ]);
+            //$table->dropUnique([ "name" ]);
 
             //索引
             $table->index([ 'subject_id' ]);
