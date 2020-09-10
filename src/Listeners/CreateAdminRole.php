@@ -55,6 +55,36 @@ class CreateAdminRole implements ShouldQueue
             'subject_id' => $subjectId,
             'slug'       => 'admin',
         ])->exists()) {
+            $adminRole = Role::query()
+                ->where([
+                    'subject_id' => $subjectId,
+                    'slug'       => 'admin',
+                ])->firstOrFail();
+
+            //给角色分配权限
+            if ($subject->permissions) {
+                $permissionIds = $subject->permissions->pluck('id')->toArray();
+
+                //提交过来的数组id,有一个null总是,过滤掉
+                $permissionIds = array_filter($permissionIds, function ($value) {
+                    if ( ! is_null($value)) {
+                        return $value;
+                    }
+                });
+
+                //$permissionIds添加上base权限
+                $basePermissions = Permission::where('common', true)
+                    ->pluck('id')
+                    ->toArray();
+
+                $permissionIds = array_merge($permissionIds, $basePermissions);
+
+                //把subject的已购权限分配到该主体的管理员账号上
+                $adminRole->permissions()->sync($permissionIds);
+
+                AdminUtils::clearMenuCache();
+            }
+
             return;
         }
 
