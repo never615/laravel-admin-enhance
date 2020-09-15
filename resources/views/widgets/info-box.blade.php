@@ -14,9 +14,12 @@
             <i class="fa fa-arrow-circle-right"></i>
         </a>
     @else
-        <a href="javascript:volid(0);" class="small-box-footer">
-                暂无更多&nbsp;
-            <i class="fa fa-arrow-circle-right"></i>
-        </a>
+        <div class="small-box-footer">
+            <i class="fa"></i>
+        </div>
+        {{--        <a href="javascript:volid(0);" class="small-box-footer">--}}
+        {{--                暂无更多&nbsp;--}}
+        {{--            <i class="fa fa-arrow-circle-right"></i>--}}
+        {{--        </a>--}}
     @endif
 </div>
