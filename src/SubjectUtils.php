@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
@@ -103,6 +104,16 @@ class SubjectUtils
      */
     public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
     {
+        $value = null;
+
+        if ($subjectId) {
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
+        }
+
+        if ($value) {
+            return $value;
+        }
+
         if ( ! $subjectId) {
             try {
                 $subjectId = self::getSubjectId();
@@ -111,7 +122,6 @@ class SubjectUtils
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
-
                 }
             }
         }
@@ -128,7 +138,10 @@ class SubjectUtils
             }
         }
 
-        return $subjectConfig->value ?? $default;
+        $value = $subjectConfig->value ?? $default;
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 600);
+
+        return $value;
     }
 
 
@@ -149,6 +162,16 @@ class SubjectUtils
      */
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
+        $value = null;
+
+        if ($subject) {
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subject->id);
+        }
+
+        if ($value) {
+            return $value;
+        }
+
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
@@ -175,7 +198,10 @@ class SubjectUtils
             }
         }
 
-        return $subjectConfig->value;
+        $value = $subjectConfig->value;
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 600);
+
+        return $value;
     }
 
 
@@ -260,26 +286,36 @@ class SubjectUtils
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Subject::where("uuid", $uuid)->first();
-            if ($subject) {
-                return $subject;
-            } else {
-                $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-                    $uuid)
-                    ->first();
-                if ($subject) {
-                    return $subject;
+            $subject = Cache::get('sub_uuid' . $uuid);
+            if ( ! $subject) {
+                $subject = Subject::where("uuid", $uuid)->first();
+                if ( ! $subject) {
+                    $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                        $uuid)
+                        ->first();
                 }
             }
         }
 
-        //按照管理端请求的方式,尝试获取subject
-        $user = \Admin::user();
-        if ($user) {
-            $subject = $user->subject;
-            if ($subject) {
-                return $subject;
+        if ( ! $subject) {
+            //按照管理端请求的方式,尝试获取subject
+
+            $user = \Admin::user();
+            if ($user) {
+                $subject = Cache::get('sub_admin_user_' . $user->id);
+                if ( ! $subject) {
+                    $subject = $user->subject;
+
+                    Cache::put('sub_admin_user_' . $user->id, $subject, 300);
+                }
             }
+        } else {
+            Cache::put('sub_uuid' . $subject->uuid, $subject, 600);
+            Cache::put('sub_uuid' . $subject->extra_config['uuid'], $subject, 600);
+        }
+
+        if ($subject) {
+            return $subject;
         }
 
         throw new HttpException(422, "uuid参数错误:" . $uuid);
