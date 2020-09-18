@@ -77,8 +77,8 @@ class SubjectUtils
                 if (isset($default)) {
                     return $default;
                 } else {
+                    \Log::warning($exception);
                     throw new SubjectNotFoundException("主体未找到");
-
                 }
             }
         }
@@ -278,6 +278,7 @@ class SubjectUtils
      */
     public static function getSubject($app = null)
     {
+        $subject = null;
         //按照接口请求的方式,尝试获取subject
         try {
             $uuid = self::getUUID($app);
