@@ -389,7 +389,6 @@
      * @param id
      * @param url
      * @param type
-     * @param dataType
      * @param width
      * @constructor
      */
