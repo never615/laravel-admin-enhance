@@ -383,4 +383,40 @@
     }
 
 
+    /**
+     * 封装select2组件
+     *
+     * @param id
+     * @param url
+     * @param type
+     * @param dataType
+     * @param width
+     * @constructor
+     */
+    window.Select2 = function (id, url, type, dataType, width) {
+        $("#" + id).select2({
+            ajax: {
+                type: type || 'POST',
+                url: url,
+                dataType: dataType || "json",
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            escapeMarkup: function (markup) { return markup; },
+            minimumInputLength: 1,
+            width: width,
+        });
+    };
+
+
 })(jQuery, window);
