@@ -393,29 +393,37 @@
      * @param width
      * @constructor
      */
-    window.Select2 = function (id, url, type, dataType, width) {
-        $("#" + id).select2({
-            ajax: {
-                type: type || 'POST',
-                url: url,
-                dataType: dataType || "json",
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                    };
+    window.Select2 = function (id, url, type, width) {
+        if (url) {
+            $("#" + id).select2({
+                ajax: {
+                    type: type || 'POST',
+                    url: url,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    cache: true
                 },
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
+                escapeMarkup: function (markup) {
+                    return markup;
                 },
-                cache: true
-            },
-            escapeMarkup: function (markup) { return markup; },
-            minimumInputLength: 1,
-            width: width,
-        });
+                minimumInputLength: 1,
+                width: width,
+            });
+        } else {
+            $("#" + id).select2({
+                width: width,
+            });
+        }
     };
 
 
