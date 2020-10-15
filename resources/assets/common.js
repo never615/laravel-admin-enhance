@@ -380,7 +380,7 @@
             relUrl = relUrl.split("?")[0];
         }
         return relUrl;
-    }
+    };
 
 
     /**
@@ -390,37 +390,61 @@
      * @param url
      * @param type
      * @param width
+     * @param load
+     * @param defaultValue
      * @constructor
      */
-    window.Select2 = function (id, url, type, width) {
+    window.Select2 = function (id, url, type, width, load = true, defaultValue = true) {
         if (url) {
-            $("#" + id).select2({
-                ajax: {
-                    type: type || 'POST',
-                    url: url,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term,
-                        };
+            if (load) {
+                $("#" + id).select2({
+                    ajax: {
+                        type: type || 'POST',
+                        url: url,
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data
+                            };
+                        },
+                        cache: true
                     },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
+                    escapeMarkup: function (markup) {
+                        return markup;
                     },
-                    cache: true
-                },
-                escapeMarkup: function (markup) {
-                    return markup;
-                },
-                minimumInputLength: 1,
-                width: width,
-            });
+                    minimumInputLength: 1,
+                    allowClear: true,
+                    placeholder: '请输入关键字或空格进行检索',
+                    width: width,
+                });
+            } else {
+                doAjax(url, type, '', function (data) {
+                    $("#" + id).select2({
+                        data: data,
+                        escapeMarkup: function (markup) {
+                            return markup;
+                        },
+                        width: width,
+                        allowClear: true,
+                        placeholder: {id: '', text: "请选择"}
+                    });
+                });
+
+                if (!defaultValue) {
+                    $("#" + id).append($("<option>", {value: '', text: '全部'}));
+                }
+            }
         } else {
             $("#" + id).select2({
                 width: width,
+                allowClear: true,
+                placeholder: {id: '', text: "请选择"}
             });
         }
     };
