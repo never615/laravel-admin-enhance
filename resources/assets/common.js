@@ -437,7 +437,7 @@
                 });
 
                 if (!defaultValue) {
-                    $("#" + id).append($("<option>", {value: '', text: '全部'}));
+                    $("#" + id).append($("<option style='display: none'>", {value: '',id: '', text: '请选择'}));
                 }
             }
         } else {
