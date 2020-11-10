@@ -33,9 +33,11 @@ trait SelectSource
 
         if ($isOwner) {
             return static::dynamicData()
-                ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id");
+                ->select(DB::raw("name||'-'||subject_id as name,id"))->pluck("name", "id")
+                ->toArray();
         } else {
-            return static::dynamicData()->pluck("name", "id");
+            return static::dynamicData()->pluck("name", "id")
+                ->toArray();
         }
     }
 
@@ -56,7 +58,8 @@ trait SelectSource
     public function scopeSelectSourceDatas($query)
     {
         return $query->selectSourceDatas2()
-            ->pluck($this->selectName, $this->selectId);
+            ->pluck($this->selectName, $this->selectId)
+            ->toArray();
     }
 
 
