@@ -35,7 +35,7 @@ class SwitchAlertDisplay extends \Encore\Admin\Grid\Displayers\SwitchDisplay
         $confirmButtonText = '确认',
         $cancelButtonText = '取消'
     ) {
-        $this->updateStates($states);
+        $this->overrideStates($states);
 
         $name = $this->column->getName();
 
