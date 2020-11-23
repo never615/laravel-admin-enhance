@@ -35,6 +35,7 @@ class Subject extends Model
     protected $casts = [
         'extra_config'      => 'array',
         'open_extra_config' => 'array',
+        'park_notify_third' => 'array',
     ];
 
     protected $guarded = [
