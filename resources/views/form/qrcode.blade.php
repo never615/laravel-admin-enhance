@@ -8,7 +8,7 @@
 
         <input type="hidden" name="{{$name}}"/>
 
-        <a class="btn btn-default btn-sm grid-qrcode" data-content="{{$qrcodeUrl}}" data-toggle='popover' tabindex='0'>
+        <a class="btn btn-default btn-sm grid-qrcode" data-html="true" data-content="{{$qrcodeUrl}}" data-toggle='popover' tabindex='0'>
             <i class="fa fa-qrcode"></i> 点击显示/关闭
         </a>
 
