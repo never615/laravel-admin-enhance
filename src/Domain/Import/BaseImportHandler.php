@@ -116,6 +116,9 @@ abstract class BaseImportHandler
 
         if (array_diff($expectKeys, $importKeys) || array_diff($importKeys, $expectKeys)) {
             $this->updateRecordStatus($importRecord, 'failure', '列名错误,请对照导入模板检查');
+            \Log::warning($expectKeys);
+            \Log::warning($importKeys);
+
 
             return false;
         }
