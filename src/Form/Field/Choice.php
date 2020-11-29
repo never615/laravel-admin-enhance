@@ -112,7 +112,7 @@ EOT;
 
         $this->options = array_filter($this->options);
 
-        return parent::render()->with([
+        return parent::fieldRender([
             'options'  => $this->options,
             'selects'  => $this->selects,
             'dataUrls' => $this->dataUrls,

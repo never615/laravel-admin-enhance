@@ -51,11 +51,9 @@ class QRcode extends Field
      */
     public function render()
     {
-        $this->fieldRender([
+        return parent::fieldRender([
             'qrcodeUrl' => $this->getQrcodeUrl(),
         ]);
-
-        return parent::render();
     }
 
 }
