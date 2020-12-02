@@ -10,7 +10,8 @@ use Mallto\Tool\Utils\LogUtils;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
- * 第三方服务异常
+ * 项目拥有者必须要配置的没配置的,调用该异常,会有短信报警
+ *
  * Class PermissionDeniedException
  *
  * @package App\Exceptions
