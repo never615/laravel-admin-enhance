@@ -39,6 +39,9 @@ Route::group($attributes, function ($router) {
         //前端初始化配置
         Route::get('front_init_config', 'SubjectFrontConfigController@config');
 
+        //NearestSubjectController
+        Route::get('nearest_subject', 'NearestSubjectController@index');
+
         /**
          * 需要经过签名校验
          */
