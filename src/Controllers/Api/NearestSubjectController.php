@@ -30,8 +30,8 @@ class NearestSubjectController extends Controller
     public function index(Request $request)
     {
         $this->validate($request, [
-            'longitude',
-            'latitude',
+            'longitude' => 'required',
+            'latitude'  => 'required',
         ]);
 
         $longitude = $request->get('longitude');
