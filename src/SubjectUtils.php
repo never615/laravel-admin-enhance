@@ -5,15 +5,12 @@
 
 namespace Mallto\Admin;
 
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Mallto\Tool\Exception\HttpException;
 
 /**
  * 工具类
@@ -85,9 +82,10 @@ class SubjectUtils
                     if (isset($default)) {
                         return $default;
                     } else {
+                        \Log::warning($exception);
                         throw new SubjectNotFoundException("主体未找到");
-
                     }
+
                 }
             }
         }
@@ -120,12 +118,19 @@ class SubjectUtils
      *
      * @return mixed|null
      */
-    public
-    static function getDynamicKeyConfigByOwner(
-        $key,
-        $subjectId = null,
-        $default = null
-    ) {
+
+    public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
+    {
+        $value = null;
+
+        if ($subjectId) {
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
+        }
+
+        if ($value) {
+            return $value;
+        }
+
         if ( ! $subjectId) {
             try {
                 $subjectId = self::getSubjectId();
@@ -134,7 +139,6 @@ class SubjectUtils
                     return $default;
                 } else {
                     throw new SubjectNotFoundException("主体未找到");
-
                 }
             }
         }
@@ -151,7 +155,10 @@ class SubjectUtils
             }
         }
 
-        return $subjectConfig->value ?? $default;
+        $value = $subjectConfig->value ?? $default;
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 600);
+
+        return $value;
     }
 
 
@@ -170,12 +177,19 @@ class SubjectUtils
      *
      * @return mixed|null
      */
-    public
-    static function getDynamicPublicKeyConfigByOwner(
-        $key,
-        $subject = null,
-        $default = null
-    ) {
+
+    public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
+    {
+        $value = null;
+
+        if ($subject) {
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subject->id);
+        }
+
+        if ($value) {
+            return $value;
+        }
+
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
@@ -202,7 +216,10 @@ class SubjectUtils
             }
         }
 
-        return $subjectConfig->value;
+        $value = $subjectConfig->value;
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 600);
+
+        return $value;
     }
 
 
@@ -223,7 +240,7 @@ class SubjectUtils
                 $uuid = $app['request']->get("uuid");
             }
         } else {
-            $uuid = Request::header("UUID");
+            $uuid = \Request::header("UUID");
             if (is_null($uuid)) {
                 $uuid = \Request::input("uuid");
             }
@@ -249,7 +266,7 @@ class SubjectUtils
     public
     static function getUUIDNoException()
     {
-        $uuid = Request::header("UUID");
+        $uuid = \Request::header("UUID");
         if (is_null($uuid)) {
             $uuid = \Request::input("uuid");
         }
@@ -282,62 +299,15 @@ class SubjectUtils
      * @param null $uuid
      *
      * @return mixed
+     * @deprecated
+     *
      */
     public
     static function getCacheSubject(
         $uuid = null
     ) {
-        if ( ! $uuid) {
-            //按照接口请求的方式,尝试获取subject
-            try {
-                $uuid = self::getUUID();
-            } catch (HttpException $e) {
-                $uuid = null;
-            }
-        }
+        return self::getSubject(null, $uuid);
 
-        if ( ! is_null($uuid)) {
-            try {
-                $subjectJsonStr = Cache::get('sub_uuid_' . $uuid);
-                if ($subjectJsonStr) {
-
-                    $subject = (object) json_decode($subjectJsonStr, true);
-                    if ($subject && $subject->uuid) {
-                        return $subject;
-                    }
-                }
-            } catch (\Exception $exception) {
-                \Log::error('从缓存获取subject error');
-                \Log::warning($exception);
-            }
-
-            $subject = Subject::where("uuid", $uuid)->first();
-            if ($subject) {
-                $subject = $subject->toArray();
-                Cache::put('sub_uuid_' . $uuid, json_encode($subject), Carbon::now()->endOfDay());
-
-                return (object) $subject;
-            } else {
-                //正式环境wechat_uuir和项目uuid一致,所以这里暂时不加缓存
-                $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-                    $uuid)
-                    ->first();
-                if ($subject) {
-                    return $subject;
-                }
-            }
-        }
-
-        //按照管理端请求的方式,尝试获取subject
-        $user = \Admin::user();
-        if ($user) {
-            $subject = $user->subject;
-            if ($subject) {
-                return $subject;
-            }
-        }
-
-        throw new HttpException(422, "uuid参数错误:" . $uuid);
     }
 
 
@@ -355,34 +325,50 @@ class SubjectUtils
         $app = null,
         $uuid = null
     ) {
+
+        $subject = null;
+
         //按照接口请求的方式,尝试获取subject
-        try {
-            $uuid = self::getUUID($app);
-        } catch (HttpException $e) {
-            $uuid = null;
+        if ( ! $uuid) {
+            try {
+                $uuid = self::getUUID($app);
+            } catch (HttpException $e) {
+                $uuid = null;
+            }
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Subject::where("uuid", $uuid)->first();
-            if ($subject) {
-                return $subject;
-            } else {
-                $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
-                    $uuid)
-                    ->first();
-                if ($subject) {
-                    return $subject;
+            $subject = Cache::get('sub_uuid' . $uuid);
+            if ( ! $subject) {
+                $subject = Subject::where("uuid", $uuid)->first();
+                if ( ! $subject) {
+                    $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                        $uuid)
+                        ->first();
                 }
             }
         }
 
-        //按照管理端请求的方式,尝试获取subject
-        $user = \Admin::user();
-        if ($user) {
-            $subject = $user->subject;
-            if ($subject) {
-                return $subject;
+        if ( ! $subject) {
+            //按照管理端请求的方式,尝试获取subject
+
+            $user = \Admin::user();
+            if ($user) {
+                $subject = Cache::get('sub_admin_user_' . $user->id);
+                if ( ! $subject) {
+                    $subject = $user->subject;
+
+                    Cache::put('sub_admin_user_' . $user->id, $subject, 300);
+                }
             }
+        } else {
+            Cache::put('sub_uuid' . $subject->uuid, $subject, 600);
+            Cache::put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                $subject, 600);
+        }
+
+        if ($subject) {
+            return $subject;
         }
 
         throw new HttpException(422, "uuid参数错误:" . $uuid);

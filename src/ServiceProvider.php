@@ -13,12 +13,14 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
-use Mallto\Admin\Grid\Exporters\SimpleCsvExporter;
 use Mallto\Admin\Listeners\CreateAdminRole;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\Middleware\Pjax;
+use Mallto\Admin\Observers\SubjectConfigObserver;
+use Mallto\Admin\Observers\SubjectObserver;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -239,6 +241,9 @@ class ServiceProvider extends BaseServiceProvider
                 Event::listen($event, $listener);
             }
         }
+
+        Subject::observe(SubjectObserver::class);
+        SubjectConfig::observe(SubjectConfigObserver::class);
     }
 
 
