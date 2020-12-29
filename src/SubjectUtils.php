@@ -5,6 +5,8 @@
 
 namespace Mallto\Admin;
 
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
@@ -61,30 +63,47 @@ class SubjectUtils
      *
      * 对应主体管理的系统配置(owner)tab
      *
+     * 传入$subjectId参数可以优先直接使用缓存查询
+     *
      * @param      $key
      * @param null $default
      * @param null $subject
+     * @param null $subjectId
      *
      * @return null
      */
-    public static function getConfigBySubjectOwner($key, $default = null, $subject = null)
+    public static function getConfigBySubjectOwner($key, $default = null, $subject = null, $subjectId = null)
     {
-        if ( ! $subject) {
-            try {
-                $subject = self::getSubject();
-            } catch (\Exception $exception) {
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    throw new SubjectNotFoundException("主体未找到");
+        if ( ! $subjectId) {
+            if ($subject) {
+                $subjectId = $subject->id;
+            } else {
+                try {
+                    $subject = self::getSubject();
+                    $subjectId = $subject->id;
+                } catch (\Exception $exception) {
+                    if (isset($default)) {
+                        return $default;
+                    } else {
+                        throw new SubjectNotFoundException("主体未找到");
 
+                    }
                 }
             }
         }
 
-        $extraConfig = $subject->open_extra_config ?: [];
+        $value = Cache::get('c_s_o_' . $subjectId);
+        if ( ! $value) {
+            if ( ! $subject) {
+                $subject = Subject::query()->findOrFail($subjectId);
+            }
 
-        return array_get($extraConfig, $key) ?: $default;
+            $extraConfig = $subject->open_extra_config ?: [];
+
+            $value = array_get($extraConfig, $key) ?: $default;
+        }
+
+        return $value;
     }
 
 
@@ -101,8 +120,12 @@ class SubjectUtils
      *
      * @return mixed|null
      */
-    public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
-    {
+    public
+    static function getDynamicKeyConfigByOwner(
+        $key,
+        $subjectId = null,
+        $default = null
+    ) {
         if ( ! $subjectId) {
             try {
                 $subjectId = self::getSubjectId();
@@ -147,8 +170,12 @@ class SubjectUtils
      *
      * @return mixed|null
      */
-    public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
-    {
+    public
+    static function getDynamicPublicKeyConfigByOwner(
+        $key,
+        $subject = null,
+        $default = null
+    ) {
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
@@ -186,8 +213,10 @@ class SubjectUtils
      *
      * @return mixed
      */
-    public static function getUUID($app = null)
-    {
+    public
+    static function getUUID(
+        $app = null
+    ) {
         if ($app) {
             $uuid = $app['request']->header("UUID");
             if (is_null($uuid)) {
@@ -217,7 +246,8 @@ class SubjectUtils
      *
      * @return mixed
      */
-    public static function getUUIDNoException()
+    public
+    static function getUUIDNoException()
     {
         $uuid = Request::header("UUID");
         if (is_null($uuid)) {
@@ -237,9 +267,77 @@ class SubjectUtils
      *
      * @return mixed
      */
-    public static function getSubjectId()
+    public
+    static function getSubjectId()
     {
-        return self::getSubject()->id;
+        return self::getCacheSubject()->id;
+    }
+
+
+    /**
+     * 获取缓存的subject,如有
+     *
+     * 该subject不具备orm功能
+     *
+     * @param null $uuid
+     *
+     * @return mixed
+     */
+    public
+    static function getCacheSubject(
+        $uuid = null
+    ) {
+        if ( ! $uuid) {
+            //按照接口请求的方式,尝试获取subject
+            try {
+                $uuid = self::getUUID();
+            } catch (HttpException $e) {
+                $uuid = null;
+            }
+        }
+
+        if ( ! is_null($uuid)) {
+            try {
+                $subjectJsonStr = Cache::get('sub_uuid_' . $uuid);
+                if ($subjectJsonStr) {
+
+                    $subject = (object) json_decode($subjectJsonStr, true);
+                    if ($subject && $subject->uuid) {
+                        return $subject;
+                    }
+                }
+            } catch (\Exception $exception) {
+                \Log::error('从缓存获取subject error');
+                \Log::warning($exception);
+            }
+
+            $subject = Subject::where("uuid", $uuid)->first();
+            if ($subject) {
+                $subject = $subject->toArray();
+                Cache::put('sub_uuid_' . $uuid, json_encode($subject), Carbon::now()->endOfDay());
+
+                return (object) $subject;
+            } else {
+                //正式环境wechat_uuir和项目uuid一致,所以这里暂时不加缓存
+                $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
+                    $uuid)
+                    ->first();
+                if ($subject) {
+                    return $subject;
+                }
+            }
+        }
+
+        //按照管理端请求的方式,尝试获取subject
+        $user = \Admin::user();
+        if ($user) {
+            $subject = $user->subject;
+            if ($subject) {
+                return $subject;
+            }
+        }
+
+        throw new HttpException(422, "uuid参数错误:" . $uuid);
     }
 
 
@@ -248,10 +346,15 @@ class SubjectUtils
      *
      * @param null $app
      *
+     * @param null $uuid
+     *
      * @return Subject|static
      */
-    public static function getSubject($app = null)
-    {
+    public
+    static function getSubject(
+        $app = null,
+        $uuid = null
+    ) {
         //按照接口请求的方式,尝试获取subject
         try {
             $uuid = self::getUUID($app);
