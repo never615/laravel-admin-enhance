@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
@@ -43,7 +44,7 @@ class SubjectUtils
                 if (isset($default)) {
                     return $default;
                 } else {
-                    throw new SubjectNotFoundException("主体未找到");
+                    throw new SubjectNotFoundException("主体未找到 getConfigByOwner");
 
                 }
             }
@@ -83,7 +84,7 @@ class SubjectUtils
                         return $default;
                     } else {
                         \Log::warning($exception);
-                        throw new SubjectNotFoundException("主体未找到");
+                        throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner");
                     }
 
                 }
@@ -98,10 +99,13 @@ class SubjectUtils
 
             $extraConfig = $subject->open_extra_config ?: [];
 
-            $value = array_get($extraConfig, $key) ?: $default;
+            $value = array_get($extraConfig, $key) ?: null;
+            if ($value) {
+                Cache::put('c_s_o_' . $subjectId, $value, Carbon::now()->endOfDay());
+            }
         }
 
-        return $value;
+        return $value ?? $default;
     }
 
 
@@ -138,7 +142,7 @@ class SubjectUtils
                 if (isset($default)) {
                     return $default;
                 } else {
-                    throw new SubjectNotFoundException("主体未找到");
+                    throw new SubjectNotFoundException("主体未找到 getDynamicKeyConfigByOwner");
                 }
             }
         }
@@ -197,7 +201,7 @@ class SubjectUtils
                 if (isset($default)) {
                     return $default;
                 } else {
-                    throw new SubjectNotFoundException("主体未找到");
+                    throw new SubjectNotFoundException("主体未找到 getDynamicPublicKeyConfigByOwner");
 
                 }
             }
