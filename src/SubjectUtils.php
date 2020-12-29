@@ -84,7 +84,7 @@ class SubjectUtils
                         return $default;
                     } else {
                         \Log::warning($exception);
-                        throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner");
+                        throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner:" . $key);
                     }
 
                 }
