@@ -103,7 +103,7 @@ class SubjectUtils
 
             $value = array_get($extraConfig, $key) ?: null;
             if ($value) {
-                Cache::put('c_s_o_' . $subjectId . '_$key', $value, Carbon::now()->endOfDay());
+                Cache::put('c_s_o_' . $subjectId . '_' . $key, $value, Carbon::now()->endOfDay());
             }
         }
 
