@@ -83,15 +83,17 @@ class SubjectUtils
                     if (isset($default)) {
                         return $default;
                     } else {
-                        \Log::warning($exception);
-                        throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner:" . $key);
+                        throw $exception;
+                        //\Log::warning($exception);
+                        //\Log::warning(new \Exception());
+                        //throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner:" . $key);
                     }
 
                 }
             }
         }
 
-        $value = Cache::get('c_s_o_' . $subjectId);
+        $value = Cache::get('c_s_o_' . $subjectId . '_' . $key);
         if ( ! $value) {
             if ( ! $subject) {
                 $subject = Subject::query()->findOrFail($subjectId);
@@ -101,7 +103,7 @@ class SubjectUtils
 
             $value = array_get($extraConfig, $key) ?: null;
             if ($value) {
-                Cache::put('c_s_o_' . $subjectId, $value, Carbon::now()->endOfDay());
+                Cache::put('c_s_o_' . $subjectId . '_$key', $value, Carbon::now()->endOfDay());
             }
         }
 
