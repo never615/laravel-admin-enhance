@@ -18,8 +18,8 @@ class SubjectObserver
     public function updated(Subject $subject)
     {
         //处理刷新缓存
-        Cache::put('sub_uuid' . $subject->uuid, $subject, 600);
-        Cache::put('sub_uuid' . $subject->extra_config['uuid'], $subject, 600);
+        Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 600);
+        Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject, 600);
     }
 
 }

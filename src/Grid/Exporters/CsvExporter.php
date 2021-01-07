@@ -63,10 +63,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
     public function export()
     {
         if ( ! ini_get('safe_mode')) {
-            \Log::warning('not safe_mode');
             set_time_limit(60 * 60 * 5);
-        }else{
-            \Log::warning('safe_mode');
         }
 
         $tableName = $this->getTable();

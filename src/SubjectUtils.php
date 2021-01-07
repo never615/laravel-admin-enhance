@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin;
 
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\Subject;
@@ -40,7 +41,7 @@ class SubjectUtils
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
@@ -59,6 +60,8 @@ class SubjectUtils
     /**
      * 获取只有主体拥有者才能编辑的配置项
      *
+     * open_extra_config 字段中保存的数据
+     *
      * 对应主体管理的系统配置(owner)tab
      *
      * 传入$subjectId参数可以优先直接使用缓存查询
@@ -69,6 +72,7 @@ class SubjectUtils
      * @param null $subjectId
      *
      * @return null
+     * @throws Exception
      */
     public static function getConfigBySubjectOwner($key, $default = null, $subject = null, $subjectId = null)
     {
@@ -79,7 +83,7 @@ class SubjectUtils
                 try {
                     $subject = self::getSubject();
                     $subjectId = $subject->id;
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     if (isset($default)) {
                         return $default;
                     } else {
@@ -93,7 +97,7 @@ class SubjectUtils
             }
         }
 
-        $value = Cache::get('c_s_o_' . $subjectId . '_' . $key);
+        $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
         if ( ! $value) {
             if ( ! $subject) {
                 $subject = Subject::query()->findOrFail($subjectId);
@@ -103,7 +107,8 @@ class SubjectUtils
 
             $value = array_get($extraConfig, $key) ?: null;
             if ($value) {
-                Cache::put('c_s_o_' . $subjectId . '_' . $key, $value, Carbon::now()->endOfDay());
+                Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
+                    Carbon::now()->endOfDay());
             }
         }
 
@@ -118,11 +123,14 @@ class SubjectUtils
      *
      * 对应主体管理的最后一个tab,即:系统参数(owner)
      *
+     * 对应subject_configs表
+     *
      * @param      $key
      * @param null $subjectId
      * @param null $default
      *
      * @return mixed|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
 
     public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
@@ -130,7 +138,7 @@ class SubjectUtils
         $value = null;
 
         if ($subjectId) {
-            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
         }
 
         if ($value) {
@@ -140,7 +148,7 @@ class SubjectUtils
         if ( ! $subjectId) {
             try {
                 $subjectId = self::getSubjectId();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
@@ -162,7 +170,7 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value ?? $default;
-        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 600);
 
         return $value;
     }
@@ -189,7 +197,7 @@ class SubjectUtils
         $value = null;
 
         if ($subject) {
-            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subject->id);
+            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subject->id);
         }
 
         if ($value) {
@@ -199,7 +207,7 @@ class SubjectUtils
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
@@ -223,7 +231,7 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value;
-        Cache::put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 600);
 
         return $value;
     }
@@ -344,7 +352,7 @@ class SubjectUtils
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Cache::get('sub_uuid' . $uuid);
+            $subject = Cache::store('memory')->get('sub_uuid' . $uuid);
             if ( ! $subject) {
                 $subject = Subject::where("uuid", $uuid)->first();
                 if ( ! $subject) {
@@ -360,16 +368,16 @@ class SubjectUtils
 
             $user = \Admin::user();
             if ($user) {
-                $subject = Cache::get('sub_admin_user_' . $user->id);
+                $subject = Cache::store('memory')->get('sub_admin_user_' . $user->id);
                 if ( ! $subject) {
                     $subject = $user->subject;
 
-                    Cache::put('sub_admin_user_' . $user->id, $subject, 300);
+                    Cache::store('memory')->put('sub_admin_user_' . $user->id, $subject, 300);
                 }
             }
         } else {
-            Cache::put('sub_uuid' . $subject->uuid, $subject, 600);
-            Cache::put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 600);
+            Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
                 $subject, 600);
         }
 

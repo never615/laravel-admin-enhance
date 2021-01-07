@@ -6,6 +6,7 @@
 namespace Mallto\Admin;
 
 use Encore\Admin\Facades\Admin;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Data\Menu;
 
@@ -49,7 +50,7 @@ class AdminE
                 return;
             }
 
-            $speedy = \Illuminate\Support\Facades\Cache::get("speedy_" . $adminUser->id);
+            $speedy = Cache::get("speedy_" . $adminUser->id);
             if ( ! $speedy) {
                 $speedy = [];
 
