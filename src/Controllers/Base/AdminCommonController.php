@@ -83,6 +83,7 @@ abstract class AdminCommonController extends AdminController
     {
         if (config('admin.swoole') && request(Exporter::$queryName)) {
             $grid = $this->grid();
+
             return $grid->handleExportRequest(true);
         }
 
