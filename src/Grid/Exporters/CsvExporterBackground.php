@@ -41,7 +41,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
      *
      * @var array
      */
-    public $defaultForgetKeys = [
+    protected $defaultForgetKeys = [
         "images",
         "image",
         "icon",
@@ -59,7 +59,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
      *
      * @var array
      */
-    public $ignore2Array = [];
+    protected $ignore2Array = [];
 
 
     /**

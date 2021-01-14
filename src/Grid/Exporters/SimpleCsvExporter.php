@@ -24,21 +24,21 @@ abstract class SimpleCsvExporter extends CsvExporterBackground
      *
      * @var bool
      */
-    public $forgetKeysDefault = true;
+    protected $forgetKeysDefault = true;
 
     /**
      * 一般,当数据库字段保存的是json数据时,需要在此设置该字段忽略,避免json数据被错误转换(被array_dot()转成一维数组)
      *
      * @var array
      */
-    public $ignore2Array = [];
+    protected $ignore2Array = [];
 
     /**
      * 是否使用$this->remainKeys()返回的key的顺序作为csv header的顺序
      *
      * @var bool
      */
-    public $useRemainKeySort = false;
+    protected $useRemainKeySort = false;
 
 
     /**
