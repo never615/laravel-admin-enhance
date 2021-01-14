@@ -105,7 +105,12 @@ trait AdminDataFilterTrait
      */
     protected function indexFilterDataBySubject($grid)
     {
-        $adminUser = Admin::user();
+        if ( ! $this->adminUser) {
+            $adminUser = Admin::user();
+            $this->adminUser = $adminUser;
+        } else {
+            $adminUser = $this->adminUser;
+        }
 
         if ( ! $adminUser->isOwner()) {
             //过滤数据展示使用
@@ -167,7 +172,12 @@ trait AdminDataFilterTrait
             throw new HttpException(422, "记录不存在或已经删除");
         }
 
-        $adminUser = Admin::user();
+        if ( ! $this->adminUser) {
+            $adminUser = Admin::user();
+            $this->adminUser = $adminUser;
+        } else {
+            $adminUser = $this->adminUser;
+        }
 
         //过滤数据:只能查看自己主体或者子主体的数据;项目拥有者可以查看全部
         if ( ! $adminUser->isOwner()) {

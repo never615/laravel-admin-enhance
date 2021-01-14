@@ -85,7 +85,13 @@ trait AdminSubjectTrait
             ! \Mallto\Admin\AdminUtils::isOwner()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
-            $subject = Admin::user()->subject;
+            if ( ! $this->adminUser) {
+                $adminUser = Admin::user();
+                $this->adminUser = $adminUser;
+            } else {
+                $adminUser = $this->adminUser;
+            }
+            $subject = $adminUser->subject;
             $baseSubject = $subject->baseSubject();
             if ($baseSubject && $baseSubject->base) {
                 $form->subject_id = $baseSubject->id;

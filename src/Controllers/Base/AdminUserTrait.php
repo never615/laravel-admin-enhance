@@ -45,7 +45,12 @@ trait AdminUserTrait
     protected function autoAdminUserSaving($form)
     {
         if (Schema::hasColumn($this->tableName, "admin_user_id")) {
-            $adminUser = Admin::user();
+            if ( ! $this->adminUser) {
+                $adminUser = Admin::user();
+                $this->adminUser = $adminUser;
+            } else {
+                $adminUser = $this->adminUser;
+            }
             $form->model()->admin_user_id = $adminUser->id;
         }
 

@@ -9,6 +9,8 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\Data\Report;
 
 /**
@@ -61,17 +63,39 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
 
     /**
+     * 是否在队列任务中运行
+     */
+    public function isRunInQueue()
+    {
+        return request()->header('mode') === 'queue';
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function export()
     {
-        if ( ! ini_get('safe_mode')) {
-            set_time_limit(60 * 60 * 5);
-        }
+        //\Log::debug(json_encode(request()->header()));
 
         $tableName = $this->getTable();
 
         $fileName = $this->getFileName(".csv");
+
+        //区分是队列任务还是直接导出
+        if ($this->isRunInQueue()) {
+            //后台导出
+
+            //\Log::debug('后台导出');
+
+            $this->backgroundExport($tableName, $fileName);
+
+            return;
+        }
+
+        if ( ! ini_get('safe_mode')) {
+            set_time_limit(60 * 60 * 5);
+        }
 
         $count = $this->getQuery()->count();
 
@@ -92,7 +116,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
             //\Log::debug($row['file'] . ':' . $row['line'] . '行,调用方法:' . $row['function']);
         }
 
-        if ($count <= 3) {
+        if ($count <= 3000) {
             $headers = [
                 'Content-Encoding'    => 'UTF-8',
                 'Content-Type'        => 'text/csv;charset=UTF-8',
@@ -101,48 +125,9 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
             $response = response()->streamDownload(function () use ($tableName) {
                 $handle = fopen('php://output', 'w');
-                fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
-                $titles = [];
+                $this->chunkForWrite($handle, $tableName);
 
-                $this->chunk(function (Collection $records) use (&$titles, $handle, $tableName) {
-                    //\Log::debug($records);
-
-                    if ($records && count($records) > 0) {
-                        //fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
-
-                        //todo 优化,减少多次循环的逻辑
-                        $records = $records->map(function (Model $record) {
-                            //多维数组转成以小数点连接的以为数据,对应有关联对象的数据需要这样处理
-                            //但是有的数据自己本身有json类型的数据字段,需要排除这样处理
-
-                            //todo 代码自动处理这一逻辑,检查record的属性是否是关联对象,如果不是且是数组
-                            //todo 则自动加入到ignore2Array中,排除转换
-
-                            return array_dot2($record->toArray(), $this->ignore2Array);
-                        });
-                        $records = $records->toArray();
-
-                        $records = $this->customData($records);
-
-                        if (empty($titles)) {
-                            $titles = $this->getHeaderRowFromRecords($records, $tableName);
-
-                            // Add CSV headers
-                            fputcsv($handle, $titles);
-                            unset($titles);
-                        }
-
-                        foreach ($records as $record) {
-                            if ($record) {
-                                fputcsv($handle, $this->getFormattedRecord($record));
-                            }
-                        }
-                    }
-                }, 200);
-
-                // Close the output stream
-                fclose($handle);
             }, $fileName, $headers);
 
             if ( ! config("admin.swoole")) {
@@ -155,10 +140,62 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
             //导出数量过大,使用后台导出,然后在报表中心进行下载
             return $this->alertForExporterJob($controllerClass, $tableName, $fileName);
         }
-
     }
 
 
+    /**
+     * 后台导出逻辑
+     *
+     * @param $tableName
+     * @param $fileName
+     */
+    public function backgroundExport($tableName, $fileName)
+    {
+        $reportId = request()->header('report');
+
+        //调用导出代码的的导出类
+        //$exporterClass = new ReflectionClass($exporterClassName);
+        //$exporterInstance = $exporterClass->newInstanceArgs([ $grid ]); // 相当于实例化Person 类
+
+        //写文件
+        $savePath = 'public/exports';
+        if ( ! Storage::exists($savePath)) {
+            Storage::makeDirectory($savePath);
+        }
+
+        $report = Report::query()->find($reportId);
+
+        $handle = fopen(storage_path('app/public/exports') . "/" . $report->name, "a");
+
+        $this->chunkForWrite($handle, $tableName);
+
+        //上传文件到七牛
+        $disk = Storage::disk("qiniu_private");
+
+        $filePath = public_path('storage/exports/' . $report->name);
+//            \Log::info($filePath);
+
+        $disk->put(config("app.unique") . '/' . config("app.env") . '/exports/' . $report->name,
+            fopen($filePath, 'r+')); //分段上传文件。建议大文件>10Mb使用。
+
+        $report->update([
+            "finish" => true,
+            "status" => Report::FINISH,
+        ]);
+
+        Log::info("导出完成");
+    }
+
+
+    /**
+     * 后台导出对话框交互逻辑
+     *
+     * @param $controllerClass
+     * @param $tableName
+     * @param $fileName
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function alertForExporterJob($controllerClass, $tableName, $fileName)
     {
         $adminUser = Admin::user();
@@ -187,16 +224,12 @@ EOT;
                 "admin_user_id" => $adminUser->id,
             ]);
 
-            //$this->grid->build();
-
             $job = new ExporterJob(
                 $controllerClass,
-                get_class($this),
-                $tableName,
                 request()->all(),
-                $subjectId,
                 $report->id,
-                $adminUser->id);
+                $adminUser->id
+            );
 
             dispatch($job);
 
@@ -210,11 +243,66 @@ EOT;
             if ( ! config("admin.swoole")) {
                 exit();
             } else {
+                //throw new ResourceException('111');
                 return redirect('/admin/reports');
             }
-            //exit();
-            //return redirect('/admin/reports');
         }
+    }
+
+
+    /**
+     * chunk 写入逻辑
+     *
+     * @param $handle
+     * @param $tableName
+     */
+    public function chunkForWrite($handle, $tableName)
+    {
+        fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
+
+        $titles = [];
+        $this->chunk(function (Collection $records) use (
+            &$titles,
+            $handle,
+            $tableName
+        ) {
+            //\Log::debug($records);
+            if ($records && count($records) > 0) {
+                //fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
+
+                //todo 优化,减少多次循环的逻辑
+                $records = $records->map(function (Model $record) {
+                    //多维数组转成以小数点连接的以为数据,对应有关联对象的数据需要这样处理
+                    //但是有的数据自己本身有json类型的数据字段,需要排除这样处理
+
+                    //todo 代码自动处理这一逻辑,检查record的属性是否是关联对象,如果不是且是数组
+                    //todo 则自动加入到ignore2Array中,排除转换
+
+                    return array_dot2($record->toArray(), $this->ignore2Array);
+                });
+                $records = $records->toArray();
+
+                $records = $this->customData($records);
+
+                if (empty($titles)) {
+                    $titles = $this->getHeaderRowFromRecords($records, $tableName);
+
+                    // Add CSV headers
+                    fputcsv($handle, $titles);
+                    unset($titles);
+                }
+
+                foreach ($records as $record) {
+                    if ($record) {
+                        fputcsv($handle, $this->getFormattedRecord($record));
+                    }
+                }
+            }
+
+        }, 200);
+
+        // Close the output stream
+        fclose($handle);
     }
 
 

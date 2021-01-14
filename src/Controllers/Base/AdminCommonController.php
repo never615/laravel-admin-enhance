@@ -59,6 +59,8 @@ abstract class AdminCommonController extends AdminController
      */
     protected $tableName;
 
+    public $adminUser;
+
     /**
      * 数据查看模式:
      * 1.根据账号的所属的subject和数据的subject动态显示
