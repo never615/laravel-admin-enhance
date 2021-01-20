@@ -171,6 +171,7 @@ class ServiceProvider extends BaseServiceProvider
 
     protected function adminBootstrap()
     {
+
         Admin::booting(function () {
             //表单文件上传控件:支持直传文件到七牛,目前支持单文件
             \Encore\Admin\Form::extend('qiniuFile', \Mallto\Admin\Form\Field\QiniuFile::class);

@@ -59,7 +59,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
      *
      * @var array
      */
-    protected $ignore2Array = [];
+    public $ignore2Array = [];
 
 
     /**

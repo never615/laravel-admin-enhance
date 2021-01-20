@@ -54,7 +54,7 @@ class CsvExporter extends \Encore\Admin\Grid\Exporters\AbstractExporter
      *
      * @var array
      */
-    protected $ignore2Array = [];
+    public $ignore2Array = [];
 
 
     /**

@@ -31,7 +31,7 @@ abstract class SimpleCsvExporter extends CsvExporterBackground
      *
      * @var array
      */
-    protected $ignore2Array = [];
+    public $ignore2Array = [];
 
     /**
      * 是否使用$this->remainKeys()返回的key的顺序作为csv header的顺序
