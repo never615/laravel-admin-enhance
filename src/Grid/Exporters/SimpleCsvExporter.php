@@ -16,7 +16,7 @@ namespace Mallto\Admin\Grid\Exporters;
  * Date: 19/03/2019
  * Time: 8:35 PM
  */
-abstract class SimpleCsvExporter extends CsvExporterBackground
+abstract class SimpleCsvExporter extends CsvExporter
 {
 
     /**
