@@ -14,6 +14,9 @@ use Mallto\Admin\Data\Report;
 class ReportController extends AdminCommonController
 {
 
+    protected $closeGridUpdatedAt = false;
+
+
     /**
      * 获取这个模块的标题
      *
@@ -21,7 +24,7 @@ class ReportController extends AdminCommonController
      */
     protected function getHeaderTitle()
     {
-        return "大数据报表";
+        return "数据报表";
     }
 
 
@@ -70,7 +73,6 @@ EOT;
         $grid->subject()->name("主体");
         $grid->adminUser()->name("创建人");
         $grid->desc();
-        $grid->created_at();
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableEdit();
