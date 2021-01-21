@@ -76,7 +76,8 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
      */
     public function export()
     {
-        //\Log::debug(json_encode(request()->header()));
+        //删除排序
+        request()->query->remove('_sort');
 
         $tableName = $this->getTable();
 
@@ -258,9 +259,6 @@ EOT;
      */
     public function chunkForWrite($handle, $tableName)
     {
-        //删除排序
-        request()->query->remove('_sort');
-
         fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
         $titles = [];
