@@ -258,6 +258,9 @@ EOT;
      */
     public function chunkForWrite($handle, $tableName)
     {
+        //删除排序
+        request()->query->remove('_sort');
+
         fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
         $titles = [];
