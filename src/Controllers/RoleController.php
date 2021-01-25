@@ -57,6 +57,10 @@ class RoleController extends AdminCommonController
             }
             $actions->disableView();
         });
+
+        $grid->filter(function (Grid\Filter $filter) {
+            $filter->ilike('name', '角色名');
+        });
     }
 
 
@@ -107,8 +111,8 @@ class RoleController extends AdminCommonController
             if ($form->slug == config('admin.roles.owner')) {
                 throw new HttpException(403, '没有权限创建标识为owner的角色');
             }
-            if ( ! \Mallto\Admin\AdminUtils::isOwner() && $form->model()->slug == 'admin') {
-                Throw new ResourceException('非项目拥有者不能编辑该角色');
+            if ( ! AdminUtils::isOwner() && $form->model()->slug == 'admin') {
+                throw new ResourceException('非项目拥有者不能编辑该角色');
             }
             $this->slugSavingCheck($form);
         });
