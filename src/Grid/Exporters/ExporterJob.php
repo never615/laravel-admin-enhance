@@ -114,4 +114,21 @@ class ExporterJob implements ShouldQueue
         }
     }
 
+
+    /**
+     * The job failed to process.
+     *
+     * @param \Exception $e
+     */
+    public function failed(\Exception $e)
+    {
+        Log::error("导出失败");
+        Log::warning($e);
+
+        $this->report->update([
+            "finish" => true,
+            "status" => Report::ERROR,
+        ]);
+    }
+
 }

@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\Data\Report;
+use Mallto\Tool\Exception\ResourceException;
 
 /**
  * csv 导出
@@ -117,7 +118,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
             //\Log::debug($row['file'] . ':' . $row['line'] . '行,调用方法:' . $row['function']);
         }
 
-        if ($count <= 3000) {
+        if ($count <= 2000) {
             $headers = [
                 'Content-Encoding'    => 'UTF-8',
                 'Content-Type'        => 'text/csv;charset=UTF-8',

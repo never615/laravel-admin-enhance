@@ -17,7 +17,7 @@ class Report extends Model
     const NOT_START = "任务未开始";
     const IN_PROGRESS = "任务进行中";
     const FINISH = "已完成";
-    const ERROR = "任务失败:";
+    const ERROR = "任务失败";
 
 //    protected $fillable = [
 //        'id',
