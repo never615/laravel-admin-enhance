@@ -392,9 +392,10 @@
      * @param width
      * @param load
      * @param defaultValue
+     * @param userId
      * @constructor
      */
-    window.Select2 = function (id, url, type, width, load = true, defaultValue = true) {
+    window.Select2 = function (id, url, type, width, load = true, defaultValue = true, userId = null) {
         if (url) {
             if (load) {
                 $("#" + id).select2({
@@ -404,9 +405,16 @@
                         dataType: 'json',
                         delay: 250,
                         data: function (params) {
-                            return {
-                                q: params.term,
-                            };
+                            if (userId) {
+                                return {
+                                    q: params.term,
+                                    user_id: userId,
+                                };
+                            } else {
+                                return {
+                                    q: params.term,
+                                };
+                            }
                         },
                         processResults: function (data) {
                             return {
