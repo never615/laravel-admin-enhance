@@ -5,3 +5,12 @@
 我们作为项目拥有者,登录可以看到所有商城的数据及内容.
 
 具体参见[Wiki](https://github.com/never615/laravel-admin-enhance/wiki)
+
+
+```
+需要添加下列代码到 ./app/Admin/bootstrap.php 中
+\Mallto\Admin\Facades\AdminE::quickAccess();
+\Mallto\Admin\Facades\AdminE::adminBootstrap();
+
+
+```

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getSubjectConfigClass()
  * @method static void extendSubjectConfigClass($class)
  * @method static void quickAccess()
+ * @method static void adminBootstrap()
  * @method static void extend($name, $class)
  * @method static void menu()
  * @method static void registerAuthRoutes(\Closure $builder)
