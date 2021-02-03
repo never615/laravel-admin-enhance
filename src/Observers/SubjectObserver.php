@@ -19,7 +19,9 @@ class SubjectObserver
     {
         //处理刷新缓存
         Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 600);
-        Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject, 600);
+        if (isset($subject->extra_config['uuid'])) {
+            Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject, 600);
+        }
     }
 
 }
