@@ -7,6 +7,7 @@ namespace Mallto\Admin\Grid\Exporters;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Bus\Queueable;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -90,7 +91,23 @@ class ExporterJob implements ShouldQueue
 
             //调用导出代码的controller
             $controllerClass = new ReflectionClass($controllerClassName); // 建立 Person这个类的反射类
-            $controllerInstance = $controllerClass->newInstance(); // 相当于实例化Person 类
+
+            //拿到当前导出类的构造函数
+            $constructor = $controllerClass->getConstructor();
+
+            //如果没有构造函数，正常走
+            if (is_null($constructor)) {
+                //相当于实例化Person 类
+                $controllerInstance = $controllerClass->newInstance();
+            } else {
+                //构造函数依赖的参数
+                $dependencies = $constructor->getParameters();
+                //根据参数返回实例
+                $instances = $this->getDependencies($dependencies);
+                //传参并实例化
+                $controllerInstance = $controllerClass->newInstanceArgs($instances);
+            }
+
             $adminUser = Administrator::query()->find($this->adminUserId);
             //\Log::debug($adminUser);
             Admin::setUser($adminUser);
@@ -129,6 +146,26 @@ class ExporterJob implements ShouldQueue
             "finish" => true,
             "status" => Report::ERROR,
         ]);
+    }
+
+
+    /**
+     * 解析构造函数
+     *
+     * @param $params
+     *
+     * @return array
+     */
+    public function getDependencies($params)
+    {
+        $dependencies = [];
+        $container = new Container();
+
+        foreach ($params as $param) {
+            $dependencies[] = $container->make($param->getClass()->name);
+        }
+
+        return $dependencies;
     }
 
 }
