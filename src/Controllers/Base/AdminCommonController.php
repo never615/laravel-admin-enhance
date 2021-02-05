@@ -39,6 +39,13 @@ abstract class AdminCommonController extends AdminController
     protected $closeGridUpdatedAt = true;
 
     /**
+     * 是否显示列表页的id
+     *
+     * @var bool
+     */
+    protected $showGridId = false;
+
+    /**
      * 默认的过滤器是否显示
      *
      * @var bool
@@ -215,7 +222,11 @@ abstract class AdminCommonController extends AdminController
         $isOwner = AdminUtils::isOwner();
 
         if ( ! $isOwner) {
-            $filter->disableIdFilter();
+            if ($this->showGridId) {
+                $grid->id('ID')->sortable();
+            } else {
+                $filter->disableIdFilter();
+            }
         } else {
             $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
