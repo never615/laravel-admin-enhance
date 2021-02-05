@@ -52,7 +52,9 @@ trait AdminSubjectTrait
             if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $form->selectE("subject_id", "主体")
                     ->options(
-                        Subject::whereNotNull("uuid")->pluck("name", "id")
+                        Subject::whereNotNull("uuid")
+                            ->orderBy('id', 'desc')
+                            ->pluck("name", "id")
                     )
                     ->rules("required");
             } else {
