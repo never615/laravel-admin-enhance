@@ -3,11 +3,14 @@
 namespace Mallto\Admin\Facades;
 
 use Illuminate\Support\Facades\Facade;
+
 /**
  * Class AdminE.
  *
  * @method static array getSubjectConfigClass()
  * @method static void extendSubjectConfigClass($class)
+ * @method static array getSelectSourceClass()
+ * @method static void  extendSelectSourceClass
  * @method static void quickAccess()
  * @method static void adminBootstrap()
  * @method static void extend($name, $class)
@@ -18,7 +21,6 @@ use Illuminate\Support\Facades\Facade;
  */
 class AdminE extends Facade
 {
-
 
     protected static function getFacadeAccessor()
     {

@@ -17,11 +17,20 @@ class AdminE
 {
 
     /**
+     * 主体配置类
      *
+     * 每个库都可以扩展自己的主体配置
+     */
+    public $extendSubjectConfigClass = [];
+
+    /**
+     * select source 类
+     *
+     * 每个库都可以扩展自己的select source
      *
      * @var array
      */
-    public $extendSubjectConfigClass = [];
+    public $extendSelectSourceClass = [];
 
 
     public function extendSubjectConfigClass($class)
@@ -34,6 +43,19 @@ class AdminE
     public function getSubjectConfigClass()
     {
         return $this->extendSubjectConfigClass;
+    }
+
+
+    public function extendSelectSourceClass($class)
+    {
+        $this->extendSelectSourceClass[] = $class;
+        $this->extendSelectSourceClass = array_unique($this->extendSelectSourceClass);
+    }
+
+
+    public function getSelectSourceClass()
+    {
+        return $this->extendSelectSourceClass;
     }
 
 
