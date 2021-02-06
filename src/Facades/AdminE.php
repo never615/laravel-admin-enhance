@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array getSubjectConfigClass()
  * @method static void extendSubjectConfigClass($class)
  * @method static array getSelectSourceClass()
- * @method static void  extendSelectSourceClass
+ * @method static void  extendSelectSourceClass($class)
  * @method static void quickAccess()
  * @method static void adminBootstrap()
  * @method static void extend($name, $class)
