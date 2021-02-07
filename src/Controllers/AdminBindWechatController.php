@@ -26,6 +26,14 @@ class AdminBindWechatController extends Controller
 
     use OpenidCheckTrait;
 
+    /**
+     * 绑定微信
+     *
+     * @param Request       $request
+     * @param WechatUsecase $wechatUsecase
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
+     */
     public function bindWechat(Request $request, WechatUsecase $wechatUsecase)
     {
         //获取微信回调的参数
@@ -82,11 +90,19 @@ class AdminBindWechatController extends Controller
     }
 
 
+    /**
+     * 解绑微信
+     *
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function unbindWechat(Request $request)
     {
+        $openid = $request->openid;
         $adminUser = Administrator::find($request->id);
 
-        $adminUser->openid = null;
+        $adminUser->openid = Arr::except($adminUser->openid, $openid);
         $adminUser->save();
 
         return response()->nocontent();
