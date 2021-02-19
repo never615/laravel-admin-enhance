@@ -8,6 +8,7 @@ namespace Mallto\Admin\Data\Traits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
+use Mallto\Tool\Utils\AppUtils;
 
 /**
  * Created by PhpStorm.
@@ -81,5 +82,22 @@ trait SelectSource
             return $query->dynamicData()
                 ->selectBySubject();
         }
+    }
+
+
+    /**
+     * 排除则
+     *
+     * @param array $arr
+     */
+    public static function scopeArrayNoTest($arr = [], $except = [ 'test', 'other' ])
+    {
+        $except = array_merge([ 'test', 'other' ], $except);
+
+        if (AppUtils::isProduction()) {
+            return array_except($arr, $except);
+        }
+
+        return $arr;
     }
 }
