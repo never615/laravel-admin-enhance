@@ -91,22 +91,23 @@ class ExporterJob implements ShouldQueue
 
             //调用导出代码的controller
             $controllerClass = new ReflectionClass($controllerClassName); // 建立 Person这个类的反射类
+            $controllerInstance = app($controllerClassName);
 
-            //拿到当前导出类的构造函数
-            $constructor = $controllerClass->getConstructor();
-
-            //如果没有构造函数，正常走
-            if (is_null($constructor)) {
-                //相当于实例化Person 类
-                $controllerInstance = $controllerClass->newInstance();
-            } else {
-                //构造函数依赖的参数
-                $dependencies = $constructor->getParameters();
-                //根据参数返回实例
-                $instances = $this->getDependencies($dependencies);
-                //传参并实例化
-                $controllerInstance = $controllerClass->newInstanceArgs($instances);
-            }
+            ////拿到当前导出类的构造函数
+            //$constructor = $controllerClass->getConstructor();
+            //
+            ////如果没有构造函数，正常走
+            //if (is_null($constructor)) {
+            //    //相当于实例化Person 类
+            //    $controllerInstance = $controllerClass->newInstance();
+            //} else {
+            //    //构造函数依赖的参数
+            //    $dependencies = $constructor->getParameters();
+            //    //根据参数返回实例
+            //    $instances = $this->getDependencies($dependencies);
+            //    //传参并实例化
+            //    $controllerInstance = $controllerClass->newInstanceArgs($instances);
+            //}
 
             $adminUser = Administrator::query()->find($this->adminUserId);
             //\Log::debug($adminUser);
