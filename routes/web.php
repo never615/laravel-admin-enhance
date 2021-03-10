@@ -95,8 +95,13 @@ Route::group([
                 $router->resource('uploads', 'UploadController');
                 $router->resource('videos', 'VideoController');
 
-                //主体配置管理
+                //主体配置管理: 动态配置
                 $router->resource('subject_configs', 'SubjectConfigController');
+
+
+                //主体配置管理:一个表中的一行数据配置一个主体
+                Route::resource('subject_settings', 'SubjectSettingController');
+
 
                 //文件导入模块
                 $router->resource('import_settings', 'Import\ImportSettingController');

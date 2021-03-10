@@ -24,6 +24,15 @@ class AdminE
     public $extendSubjectConfigClass = [];
 
     /**
+     * 主体设置类:用来替代$extendSubjectConfigClass 的方案,
+     * 因为$extendSubjectConfigClass的配置很多都在subjects表,
+     * 导致subject越来越打
+     *
+     * 每个库都可以扩展自己的主体配置
+     */
+    public $extendSubjectSettingClass = [];
+
+    /**
      * select source 类
      *
      * 每个库都可以扩展自己的select source
@@ -31,6 +40,19 @@ class AdminE
      * @var array
      */
     public $extendSelectSourceClass = [];
+
+
+    public function extendSubjectSettingClass($class)
+    {
+        $this->extendSubjectSettingClass[] = $class;
+        $this->extendSubjectSettingClass = array_unique($this->extendSubjectSettingClass);
+    }
+
+
+    public function getSubjectSettingClass()
+    {
+        return $this->extendSubjectSettingClass;
+    }
 
 
     public function extendSubjectConfigClass($class)

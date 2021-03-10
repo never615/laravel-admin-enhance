@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Facade;
  *
  * @method static array getSubjectConfigClass()
  * @method static void extendSubjectConfigClass($class)
+ * @method static array getSubjectSettingClass()
+ * @method static void extendSubjectSettingClass($class)
  * @method static array getSelectSourceClass()
  * @method static void  extendSelectSourceClass($class)
  * @method static void quickAccess()
