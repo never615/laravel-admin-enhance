@@ -10,5 +10,8 @@ use Mallto\Admin\Data\Traits\BaseModel;
 class SubjectSetting extends BaseModel
 {
 
-    protected $guarded = [];
+    public $casts = [
+        'front_column'     => 'json',
+        'file_type_column' => 'json',
+    ];
 }

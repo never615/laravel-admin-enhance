@@ -8,6 +8,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
@@ -63,6 +64,16 @@ class SubjectSettingController extends AdminCommonController
     protected function defaultFormOption(Form $form)
     {
         $form->tab('基本配置', function (Form $form) {
+
+            $form->multipleSelect('front_column', '前端可以请求的列')
+                ->options(array_combine(Schema::getColumnListing('subject_settings'),
+                    Schema::getColumnListing('subject_settings')))
+                ->help('配置在这里前端才有权限请求');
+            $form->multipleSelect('file_type_column', '文件类型的列')
+                ->options(array_combine(Schema::getColumnListing('subject_settings'),
+                    Schema::getColumnListing('subject_settings')))
+                ->help('配置在这里的列前端请求的时候会自动加文件前缀');
+
             $this->formSubject($form);
             $this->formAdminUser($form);
             $form->displayE('created_at', trans('admin.created_at'));
