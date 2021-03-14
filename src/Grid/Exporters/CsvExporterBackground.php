@@ -309,9 +309,10 @@ EOT;
 
                     if ( ! $nowReport->now_total) {
                         $nowReport->now_total = 200;
+                    }else{
+                        $nowReport->now_total += 200;
                     }
 
-                    $nowReport->now_total += 200;
                     $nowReport->now_percentage = round($nowReport->now_total / $nowReport->export_total, 2);
 
                     $nowReport->save();
