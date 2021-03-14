@@ -54,6 +54,20 @@ class ReportController extends AdminCommonController
             return $finish == true ? "是" : "否";
         });
 
+        $grid->column('now_percentage', '当前导出进度')
+            ->display(function ($value) {
+                if ($this->status === '任务失败') {
+                    return $value;
+                }
+
+                if ($this->status === '已完成') {
+                    return 100;
+                }
+
+                return $value * 100;
+            })
+            ->progressBar($style = 'primary', $size = 'sm', $max = 100);
+
         //$url = $disk->privateDownloadUrl('folder/my_file.txt');
         $grid->status();
         $grid->column("download")->display(function () {
