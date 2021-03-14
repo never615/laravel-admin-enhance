@@ -303,8 +303,12 @@ EOT;
 
                 if ( ! empty($report)) {
                     $nowReport = $report->refresh();
-                    if ($nowReport->export_total) {
+                    if ( ! $nowReport->export_total) {
                         $nowReport->export_total = $this->getQuery()->count('id');
+                    }
+
+                    if ( ! $nowReport->now_total) {
+                        $nowReport->now_total = 200;
                     }
 
                     $nowReport->now_total += 200;
