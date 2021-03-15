@@ -12,7 +12,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\Data\Report;
-use Mallto\Tool\Exception\ResourceException;
 
 /**
  * csv 导出
@@ -169,7 +168,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
         $handle = fopen(storage_path('app/public/exports') . "/" . $report->name, "a");
 
-        $this->chunkForWrite($handle, $tableName);
+        $this->chunkForWrite($handle, $tableName, $report);
 
         //上传文件到七牛
         $disk = Storage::disk("qiniu_private");
@@ -257,8 +256,9 @@ EOT;
      *
      * @param $handle
      * @param $tableName
+     * @param $report
      */
-    public function chunkForWrite($handle, $tableName)
+    public function chunkForWrite($handle, $tableName, $report = null)
     {
         fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
@@ -266,7 +266,8 @@ EOT;
         $this->chunk(function (Collection $records) use (
             &$titles,
             $handle,
-            $tableName
+            $tableName,
+            $report
         ) {
             //\Log::debug($records);
             if ($records && count($records) > 0) {
@@ -298,6 +299,23 @@ EOT;
                     if ($record) {
                         fputcsv($handle, $this->getFormattedRecord($record));
                     }
+                }
+
+                if ( ! empty($report)) {
+                    $nowReport = $report->refresh();
+                    if ( ! $nowReport->export_total) {
+                        $nowReport->export_total = $this->getQuery()->count('id');
+                    }
+
+                    if ( ! $nowReport->now_total) {
+                        $nowReport->now_total = 200;
+                    }else{
+                        $nowReport->now_total += 200;
+                    }
+
+                    $nowReport->now_percentage = round($nowReport->now_total / $nowReport->export_total, 2);
+
+                    $nowReport->save();
                 }
             }
 
