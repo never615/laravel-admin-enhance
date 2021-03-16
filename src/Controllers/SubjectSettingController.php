@@ -5,20 +5,30 @@
 
 namespace Mallto\Admin\Controllers;
 
-use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Facades\AdminE;
+use Mallto\Tool\Exception\ResourceException;
 
 /**
  * Class SubjectSettingController.
  */
 class SubjectSettingController extends AdminCommonController
 {
+
+    /**
+     * 其他库添加的扩展配置
+     *
+     * @var array
+     */
+    public $expandSettingHandlers = [];
+
 
     protected function title()
     {
@@ -39,15 +49,8 @@ class SubjectSettingController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
+
     }
-
-
-    /**
-     * 其他库添加的扩展配置
-     *
-     * @var array
-     */
-    public $expandSettingHandlers = [];
 
 
     /**
@@ -59,41 +62,80 @@ class SubjectSettingController extends AdminCommonController
      *
      * 如果需要分开实现create和edit表单可以通过$this->currentId来区分
      *
+     * @param Form $form
+     *
      * @return mixed
      */
     protected function defaultFormOption(Form $form)
     {
-        $form->tab('基本配置', function (Form $form) {
-
-            $form->multipleSelect('front_column', '前端可以请求的列')
-                ->options(array_combine(Schema::getColumnListing('subject_settings'),
-                    Schema::getColumnListing('subject_settings')))
-                ->help('配置在这里前端才有权限请求');
-            $form->multipleSelect('file_type_column', '文件类型的列')
-                ->options(array_combine(Schema::getColumnListing('subject_settings'),
-                    Schema::getColumnListing('subject_settings')))
-                ->help('配置在这里的列前端请求的时候会自动加文件前缀');
-
-            $this->formSubject($form);
-            $this->formAdminUser($form);
-            $form->displayE('created_at', trans('admin.created_at'));
-            $form->displayE('updated_at', trans('admin.updated_at'));
-        });
+        $adminUser = AdminUtils::getCurrentAdminUser();
 
         //初始化其他库添加的subject配置对象
         $subjectSettingExpands = AdminE::getSubjectSettingClass();
 
-        foreach ($subjectSettingExpands as $subjectSettingExpand) {
-            $expandSettingHandler = app($subjectSettingExpand);
+        foreach ($subjectSettingExpands as $expandSettingHandler) {
+            $expandSettingHandler = app($expandSettingHandler);
             $this->expandSettingHandlers[] = $expandSettingHandler;
-
-            $expandSettingHandler->extend($form, $this->currentId);
         }
 
-        $form->saving(function ($form) {
+        if (AdminUtils::isOwner()) {
+            $form->tab('基本配置', function (Form $form) {
+
+                $form->multipleSelect('front_column', '前端可以请求的列')
+                    ->options(array_combine(Schema::getColumnListing('subject_settings'),
+                        Schema::getColumnListing('subject_settings')))
+                    ->help('配置在这里或者public中的字段前端才有权限请求');
+
+                $form->multipleSelect('file_type_column', '文件类型的列')
+                    ->options(array_combine(Schema::getColumnListing('subject_settings'),
+                        Schema::getColumnListing('subject_settings')))
+                    ->help('配置在这里的列前端请求的时候会自动加文件前缀,或者字段名包含image');
+
+                $this->formSubject($form);
+                $this->formAdminUser($form);
+                $form->displayE('created_at', trans('admin.created_at'));
+                $form->displayE('updated_at', trans('admin.updated_at'));
+            });
+        }
+
+        //主体拥有者可以自己配置的
+        $form->tab('配置', function (Form $form) use ($adminUser) {
+            $form->embeds('subject_owner_configs', '', function (Form\EmbeddedForm $form) use ($adminUser) {
+                //动态属性列扩展,开放给主体拥有者可以编辑的
+                foreach ($this->expandSettingHandlers as $subjectSettingExpand) {
+                    $subjectSettingExpand->subjectOwnerConfig($form, $this->currentId, $adminUser);
+                }
+            });
+        });
+
+        if (AdminUtils::isOwner()) {
+            $form->tab('public配置', function (Form $form) use ($adminUser) {
+                $form->embeds('public_configs', '', function (Form\EmbeddedForm $form) use ($adminUser) {
+                    //动态属性列扩展,开放给主体拥有者可以编辑的
+                    foreach ($this->expandSettingHandlers as $expandSettingHandler) {
+                        $expandSettingHandler->publicConfig($form, $this->currentId, $adminUser);
+                    }
+                });
+            });
+
+            $form->tab('private配置', function (Form $form) use ($adminUser) {
+                $form->embeds('private_configs', '', function (Form\EmbeddedForm $form) use ($adminUser) {
+                    //动态属性列扩展,开放给主体拥有者可以编辑的
+                    foreach ($this->expandSettingHandlers as $expandSettingHandler) {
+                        $expandSettingHandler->privateConfig($form, $this->currentId, $adminUser);
+                    }
+                });
+            });
+
+            foreach ($this->expandSettingHandlers as $expandSettingHandler) {
+                $expandSettingHandler->extend($form, $this->currentId, $adminUser);
+            }
+        }
+
+        $form->saving(function (Form $form) use ($adminUser) {
+
             $this->autoSubjectSaving($form);
             $this->autoAdminUserSaving($form);
-            $adminUser = Admin::user();
 
             if ( ! $this->currentId) {
                 $subjectSettingExists = SubjectSetting::query()
@@ -110,13 +152,78 @@ class SubjectSettingController extends AdminCommonController
             }
         });
 
-        $form->saved(function ($form) {
-            $adminUser = Admin::user();
-
+        $form->saved(function ($form) use ($adminUser) {
             foreach ($this->expandSettingHandlers as $expandSettingHandler) {
                 $expandSettingHandler->formSaved($form, $adminUser);
             }
+
+            //重复key检查
+            $this->repeatCheck($form);
+
+            $this->clearCache($form);
         });
+    }
+
+
+    /**
+     * 重复key检查
+     *
+     * @param Form $form
+     */
+    private function repeatCheck(Form $form)
+    {
+        $publicConfigsKeys = array_keys($form->model()->public_configs ?? []);
+        $privateConfigsKeys = array_keys($form->model()->private_configs ?? []);
+        $subjectOwnerConfigsKeys = array_keys($form->model()->subject_owner_configs ?? []);
+
+        $columnKeys = array_keys(array_except($form->model()->toArray(), [
+            'public_configs',
+            'private_configs',
+            'subject_owner_configs',
+        ]));
+
+        $keys = array_merge($publicConfigsKeys, $privateConfigsKeys, $subjectOwnerConfigsKeys, $columnKeys);
+
+        //\Log::debug($keys);
+        // 获取去掉重复数据的数组
+        $uniqueArr = array_unique($keys);
+        // 获取重复数据的数组
+        $repeatArr = array_diff_assoc($keys, $uniqueArr);
+
+        if (count($repeatArr) > 0) {
+            throw new ResourceException('有重复key,需手动还原数据库重复数据,请检查key:' . json_encode(array_values($repeatArr)));
+        }
+    }
+
+
+    /**
+     * 清理缓存
+     *
+     * @param $form
+     */
+    private function clearCache($form)
+    {
+        $requestAll = request()->all();
+        $requestAll = array_except($requestAll, [
+            'front_column',
+            'file_type_column',
+            'subject_id',
+            '_token',
+            'after-save',
+            '_method',
+        ]);
+
+        foreach ($requestAll as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $key2 => $value2) {
+                    Cache::store('memory')
+                        ->forget('s_s' . $form->subject_id . '_' . $key2);
+                }
+            } else {
+                Cache::store('memory')
+                    ->forget('s_s' . $form->subject_id . '_' . $key);
+            }
+        }
     }
 
 
@@ -131,7 +238,9 @@ class SubjectSettingController extends AdminCommonController
      *
      * @return mixed
      */
-    protected function formOption(Form $form)
-    {
+    protected
+    function formOption(
+        Form $form
+    ) {
     }
 }

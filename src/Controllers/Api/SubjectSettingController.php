@@ -5,11 +5,11 @@
 
 namespace Mallto\Admin\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Mallto\Admin\Data\SubjectSetting;
-use Mallto\Admin\Exception\SubjectNotFoundException;
+use Mallto\Admin\SubjectSettingUtils;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Exception\NotSettingBySubjectOwnerException;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
 /**
@@ -17,7 +17,7 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  *
  * @package Mallto\Mall\Controller\Api
  */
-class SubjectSettingController extends \Mallto\Admin\Controllers\Api\SubjectConfigController
+class SubjectSettingController extends Controller
 {
 
     /**
@@ -33,6 +33,7 @@ class SubjectSettingController extends \Mallto\Admin\Controllers\Api\SubjectConf
         ]);
 
         $queryName = $request->name;
+        $queryNames = explode(',', $queryName);
 
         $subject = SubjectUtils::getSubject();
 
@@ -40,55 +41,28 @@ class SubjectSettingController extends \Mallto\Admin\Controllers\Api\SubjectConf
             ->where('subject_id', $subject->id)
             ->firstOrFail();
 
-        //是否在可请求的key中
-        if ( ! in_array($queryName, $subjectSetting->front_column)) {
-            throw new PermissionDeniedException('权限拒绝');
-        }
+        $result = [];
 
-        $value = self::getDynamicSubjectSetting($queryName, $subject);
-
-        if (in_array($request->name, $subjectSetting->file_type_column)) {
-            $value = config("app.file_url_prefix") . $value;
-        }
-
-        return [ $queryName => $value ];
-    }
-
-
-    /**
-     * 获取相关主体的项目配置
-     *
-     * @param      $key
-     * @param null $subject
-     * @param null $default
-     *
-     * @return mixed|null
-     */
-    public static function getDynamicSubjectSetting($key, $subject = null, $default = null)
-    {
-        if ( ! $subject) {
-            if (isset($default)) {
-                return $default;
-            } else {
-                throw new SubjectNotFoundException("主体未找到 getDynamicSubjectSetting");
+        foreach ($queryNames as $queryName) {
+            //是否在可请求的key中
+            if ( ! in_array($queryName, $subjectSetting->front_column)
+                && ! in_array($queryName, $subjectSetting->public)) {
+                throw new PermissionDeniedException('权限拒绝:' . $queryName);
             }
-        }
 
-        $subjectSetting = SubjectSetting::query()
-            ->where('subject_id', $subject->id)
-            ->first();
+            $value = SubjectSettingUtils::getSubjectSetting($queryName, $subject);
 
-        $value = $subjectSetting->$key ?? null;
-
-        if (is_null($value)) {
-            if ($default) {
-                return $default;
-            } else {
-                throw new NotSettingBySubjectOwnerException($key . "未配置," . $subject->id);
+            if (in_array($request->name, $subjectSetting->file_type_column)) {
+                $value = config("app.file_url_prefix") . $value;
             }
+
+            if (str_contains($value, 'image')) {
+                $value = config("app.file_url_prefix") . $value;
+            }
+            $result[$queryName] = $value;
         }
 
-        return $value;
+        return $result;
     }
 
 }

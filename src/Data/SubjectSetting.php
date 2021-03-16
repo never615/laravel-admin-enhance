@@ -11,7 +11,10 @@ class SubjectSetting extends BaseModel
 {
 
     public $casts = [
-        'front_column'     => 'json',
-        'file_type_column' => 'json',
+        'front_column'          => 'json',
+        'file_type_column'      => 'json',
+        'public_configs'        => 'json',
+        'private_config'        => 'json',
+        'subject_owner_configs' => 'json',
     ];
 }

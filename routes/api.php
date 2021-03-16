@@ -36,6 +36,10 @@ Route::group($attributes, function ($router) {
         Route::get('subject', 'SubjectController@index');
         //主体动态配置
         Route::get('subject/config', 'SubjectConfigController@index');
+
+        //项目配置
+        Route::get('subject/setting', 'SubjectSettingController@index');
+
         //前端初始化配置
         Route::get('front_init_config', 'SubjectFrontConfigController@config');
 

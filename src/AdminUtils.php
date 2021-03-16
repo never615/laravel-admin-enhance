@@ -26,8 +26,14 @@ class AdminUtils
     public static function getLoginUserData()
     {
         $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
+        if ($adminUser) {
+            $adminUser = unserialize($adminUser);
+        }
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
+        if ($currentSubject) {
+            $currentSubject = unserialize($currentSubject);
+        }
 
         if ($isOwner === null || ! $currentSubject || ! $adminUser) {
             $adminUser = Admin::user();
@@ -37,10 +43,11 @@ class AdminUtils
                 $currentSubject = $adminUser->subject;
 
                 session([
-                    CacheConstants::SESSION_ADMIN_USER      => array_except($adminUser->toArray(),
-                        [ "roles", "subject" ]),
+                    //CacheConstants::SESSION_ADMIN_USER      => array_except($adminUser->toArray(),
+                    //    [ "roles", "subject" ]),
+                    CacheConstants::SESSION_ADMIN_USER      => serialize($adminUser),
                     CacheConstants::SESSION_IS_OWNER        => ($adminUser->isOwner() ? 1 : 0),
-                    CacheConstants::SESSION_CURRENT_SUBJECT => $adminUser->subject->toArray(),
+                    CacheConstants::SESSION_CURRENT_SUBJECT => serialize($adminUser->subject),
                 ]);
             }
         }
@@ -48,7 +55,7 @@ class AdminUtils
 //        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
 //        \Log::debug(session(CacheConstants::SESSION_CURRENT_SUBJECT));
 
-        return [ (object) $adminUser, $isOwner, (object) $currentSubject ];
+        return [ $adminUser, $isOwner, $currentSubject ];
     }
 
 
@@ -75,10 +82,12 @@ class AdminUtils
     public static function getCurrentAdminUser()
     {
         $currentAdminUser = session(CacheConstants::SESSION_ADMIN_USER);
+        if ($currentAdminUser) {
+            $currentAdminUser = unserialize($currentAdminUser);
+        }
+
         if ( ! $currentAdminUser) {
             [ $currentAdminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
-        } else {
-            $currentAdminUser = (object) $currentAdminUser;
         }
 
 //        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
@@ -94,10 +103,12 @@ class AdminUtils
     public static function getCurrentSubject()
     {
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
+        if ($currentSubject) {
+            $currentSubject = unserialize($currentSubject);
+        }
+
         if ( ! $currentSubject) {
             [ $currentAdminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
-        } else {
-            $currentSubject = (object) $currentSubject;
         }
 
         return $currentSubject;
