@@ -27,12 +27,22 @@ class AdminUtils
     {
         $adminUser = session(CacheConstants::SESSION_ADMIN_USER);
         if ($adminUser) {
-            $adminUser = unserialize($adminUser);
+            if (is_array($adminUser)) {
+                //兼容旧数据
+                $adminUser = null;
+            } else {
+                $adminUser = unserialize($adminUser);
+            }
         }
         $isOwner = session(CacheConstants::SESSION_IS_OWNER);
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
         if ($currentSubject) {
-            $currentSubject = unserialize($currentSubject);
+            if (is_array($currentSubject)) {
+                //兼容旧数据
+                $currentSubject = null;
+            } else {
+                $currentSubject = unserialize($currentSubject);
+            }
         }
 
         if ($isOwner === null || ! $currentSubject || ! $adminUser) {
@@ -83,7 +93,12 @@ class AdminUtils
     {
         $currentAdminUser = session(CacheConstants::SESSION_ADMIN_USER);
         if ($currentAdminUser) {
-            $currentAdminUser = unserialize($currentAdminUser);
+            if (is_array($currentAdminUser)) {
+                //兼容旧数据
+                $currentAdminUser = null;
+            } else {
+                $currentAdminUser = unserialize($currentAdminUser);
+            }
         }
 
         if ( ! $currentAdminUser) {
@@ -104,7 +119,12 @@ class AdminUtils
     {
         $currentSubject = session(CacheConstants::SESSION_CURRENT_SUBJECT);
         if ($currentSubject) {
-            $currentSubject = unserialize($currentSubject);
+            if (is_array($currentSubject)) {
+                //兼容旧数据
+                $currentSubject = null;
+            } else {
+                $currentSubject = unserialize($currentSubject);
+            }
         }
 
         if ( ! $currentSubject) {
