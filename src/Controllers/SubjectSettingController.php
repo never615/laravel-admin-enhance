@@ -6,11 +6,13 @@
 namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Form;
+use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Facades\AdminE;
@@ -130,6 +132,16 @@ class SubjectSettingController extends AdminCommonController
             foreach ($this->expandSettingHandlers as $expandSettingHandler) {
                 $expandSettingHandler->extend($form, $this->currentId, $adminUser);
             }
+
+            $form->tab('动态配置', function ($form) {
+                $form->hasMany('subjectconfigs', '', function (NestedForm $form) {
+                    $form->select('type')
+                        ->options(SubjectConfig::TYPE);
+                    $form->text('key');
+                    $form->text('value');
+                    $form->text('remark');
+                });
+            });
         }
 
         $form->saving(function (Form $form) use ($adminUser) {

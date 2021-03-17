@@ -17,4 +17,11 @@ class SubjectSetting extends BaseModel
         'private_config'        => 'json',
         'subject_owner_configs' => 'json',
     ];
+
+
+    public function subjectConfigs()
+    {
+        return $this->hasMany(SubjectConfig::class, 'subject_id', 'subject_id');
+    }
+
 }

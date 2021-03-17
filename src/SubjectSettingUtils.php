@@ -48,6 +48,7 @@ class SubjectSettingUtils
         $value = Cache::store('memory')->get('s_s' . $subjectId . '_' . $key);
         if ( ! isset($value) || is_null($value)) {
             $subjectSetting = SubjectSetting::query()
+                ->select([ $key, 'public_configs', 'private_configs', 'subject_owner_configs' ])
                 ->where('subject_id', $subject->id)
                 ->first();
 
