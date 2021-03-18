@@ -13,7 +13,6 @@ namespace Mallto\Admin\Data\Traits;
  */
 
 use Illuminate\Support\Facades\Schema;
-use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectUtils;
 
 /**
@@ -65,12 +64,6 @@ trait DynamicData
 
             $query->whereIn('subject_id', $ids)->orderBy('id');
         }
-    }
-
-
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
     }
 
 }

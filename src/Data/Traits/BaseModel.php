@@ -8,6 +8,8 @@ namespace Mallto\Admin\Data\Traits;
 use Illuminate\Database\Eloquent\Model;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\SubjectSetting;
 
 /**
  * Created by PhpStorm.
@@ -27,6 +29,18 @@ abstract class BaseModel extends Model
     protected $casts = [
         'images' => 'array',
     ];
+
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+
+    public function subjectSetting()
+    {
+        return $this->belongsTo(SubjectSetting::class, 'subject_id', 'subject_id');
+    }
 
 
     public function getIconAttribute($value)
