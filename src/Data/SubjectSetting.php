@@ -18,13 +18,6 @@ class SubjectSetting extends BaseModel
         'subject_owner_configs' => 'json',
     ];
 
-    const ALLOW_PAY_TYPE = [
-        'wechat_pay' => '微信支付',
-        'union_pay'  => '银联支付',
-        'ali_pay'    => '支付宝支付',
-    ];
-
-
     public function subjectConfigs()
     {
         return $this->hasMany(SubjectConfig::class, 'subject_id', 'subject_id');
