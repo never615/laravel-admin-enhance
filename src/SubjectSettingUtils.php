@@ -77,4 +77,50 @@ class SubjectSettingUtils
 
         throw new NotSettingBySubjectOwnerException($key . "未配置," . $subject->id);
     }
+
+
+    /**
+     * 获取当前主体可用的支付类型
+     *
+     * @param null  $subject
+     * @param array $default
+     *
+     * @return array|mixed
+     */
+    public static function getSubjectAllowPayType($subject = null, $default = [])
+    {
+        if ( ! $subject) {
+            try {
+                $subject = SubjectUtils::getSubject();
+            } catch (\Exception $exception) {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    throw new SubjectNotFoundException("主体未找到 subject setting");
+
+                }
+            }
+        }
+
+        $subjectSetting = SubjectSetting::query()
+            ->where('subject_id', $subject->id)
+            ->firstOrFail();
+
+        $subjectAllowPayType = json_decode1($subjectSetting->allow_pay_type) ?? [];
+        $allAllowPayType = SubjectSetting::ALLOW_PAY_TYPE;
+
+        $payType = [];
+
+        if (empty($subjectAllowPayType)) {
+            return $default;
+        }
+
+        foreach ($subjectAllowPayType as $key => $value) {
+            if (array_key_exists($value, $allAllowPayType)) {
+                $payType[$value] = $allAllowPayType[$value];
+            }
+        }
+
+        return $payType;
+    }
 }
