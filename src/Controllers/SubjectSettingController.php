@@ -129,10 +129,6 @@ class SubjectSettingController extends AdminCommonController
                 });
             });
 
-            foreach ($this->expandSettingHandlers as $expandSettingHandler) {
-                $expandSettingHandler->extend($form, $this->currentId, $adminUser);
-            }
-
             $form->tab('动态配置', function ($form) {
                 $form->hasMany('subjectconfigs', '', function (NestedForm $form) {
                     $form->select('type')
@@ -142,6 +138,11 @@ class SubjectSettingController extends AdminCommonController
                     $form->text('remark');
                 });
             });
+        }
+
+        //这个模块的是否只有项目拥有者看到由具体添加者控制
+        foreach ($this->expandSettingHandlers as $expandSettingHandler) {
+            $expandSettingHandler->extend($form, $this->currentId, $adminUser);
         }
 
         $form->saving(function (Form $form) use ($adminUser) {
