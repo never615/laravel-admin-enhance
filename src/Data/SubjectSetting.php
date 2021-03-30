@@ -16,7 +16,6 @@ class SubjectSetting extends BaseModel
         'public_configs'        => 'json',
         'private_config'        => 'json',
         'subject_owner_configs' => 'json',
-        'allow_pay_type'        => 'json',
     ];
 
     public function subjectConfigs()
