@@ -5,9 +5,11 @@
 
 namespace Mallto\Admin\Controllers;
 
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Support\Facades\Storage;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Report;
 
@@ -47,6 +49,16 @@ class ReportController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
+        $adminUser = Admin::user();
+
+        if ( ! AdminUtils::isOwner()) {
+            $tables = $adminUser->allPermissions()->pluck('slug')->toArray();
+
+            $otherTables = [ 'users' ];
+
+            $grid->model()->whereIn('table_name', array_merge($otherTables, $tables));
+        }
+
         $grid->disableCreateButton();
         $grid->disableExport();
         $grid->name();
