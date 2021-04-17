@@ -377,8 +377,10 @@ class SubjectUtils
             }
         } else {
             Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 600);
-            Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
-                $subject, 600);
+            if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
+                Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                    $subject, 600);
+            }
         }
 
         if ($subject) {
