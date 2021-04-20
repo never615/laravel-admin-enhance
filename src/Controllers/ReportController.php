@@ -57,8 +57,14 @@ class ReportController extends AdminCommonController
             foreach ($tables as $key => $table) {
                 $tablesExplode = explode('.', $table);
 
-                if (count($tablesExplode) > 1) {
+                if (count($tablesExplode) > 1 && ($tablesExplode[1] == 'export')) {
                     $tables[$key] = $tablesExplode[0];
+                } elseif (count($tablesExplode) > 1 && ($tablesExplode[1] != 'export')) {
+                    unset($tables[$key]);
+                } else {
+                    if ( ! $adminUser->can($tablesExplode[0] . '.export')) {
+                        unset($tables[$key]);
+                    }
                 }
             }
 
