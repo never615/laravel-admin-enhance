@@ -54,7 +54,21 @@ class ReportController extends AdminCommonController
         if ( ! AdminUtils::isOwner()) {
             $tables = $adminUser->allPermissions()->pluck('slug')->toArray();
 
-            $otherTables = [ 'users' ];
+            foreach ($tables as $key => $table) {
+                $tablesExplode = explode('.', $table);
+
+                if (count($tablesExplode) > 1) {
+                    $tables[$key] = $tablesExplode[0];
+                }
+            }
+
+            if ($adminUser->can('member_vip_status_records.export')) {
+                $otherTables = [ 'member_vip_pay_records' ];
+            }
+
+            if ($adminUser->can('members.export')) {
+                $otherTables = [ 'users' ];
+            }
 
             $grid->model()->whereIn('table_name', array_merge($otherTables, $tables));
         }
