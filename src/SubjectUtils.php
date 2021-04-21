@@ -13,6 +13,7 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
 use Mallto\Tool\Exception\HttpException;
+use Mallto\Tool\Utils\LogUtils;
 
 /**
  * 工具类
@@ -30,14 +31,24 @@ class SubjectUtils
      * 对应主体管理的"配置项"tab
      *
      *
-     * @param string $key 参见 SubjectConfigConstants::class
-     * @param null   $default
-     * @param null   $subject
+     * @param string      $key 参见 SubjectConfigConstants::class
+     * @param null        $default
+     * @param Subject|int $subject
      *
      * @return null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function getConfigByOwner($key, $subject = null, $default = null)
     {
+        if ($subject && is_numeric($subject)) {
+            $value = Cache::store('memory')->get('c_s_ec_' . $subject . '_' . $key);
+            if ($value) {
+                return $value;
+            } else {
+                $subject = Subject::query()->findOrFail($subject);
+            }
+        }
+
         if ( ! $subject) {
             try {
                 $subject = self::getSubject();
@@ -50,15 +61,29 @@ class SubjectUtils
                 }
             }
         }
+        $subjectId = $subject->id;
+        $value = Cache::store('memory')->get('c_s_ec_' . $subjectId . '_' . $key);
+        if ( ! $value) {
+            $extraConfig = $subject->extra_config ?: [];
 
-        $extraConfig = $subject->extra_config ?: [];
+            $value = array_get($extraConfig, $key) ?: null;
+            if ($value) {
+                Cache::store('memory')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
+                    Carbon::now()->endOfDay());
+            }
+        }
 
-        return array_get($extraConfig, $key) ?: $default;
+        $value = $value ?? $default;
+        if (is_null($value) || empty($value)) {
+            LogUtils::notConfigLogByOwner("getConfigByOwner 有参数未配置:" . $key);
+        }
+
+        return $value;
     }
 
 
     /**
-     * 获取只有主体拥有者才能编辑的配置项
+     * 获取只有主体拥有者才能编辑的配置项:能传subject参数优先传subject
      *
      * open_extra_config 字段中保存的数据
      *
@@ -66,43 +91,39 @@ class SubjectUtils
      *
      * 传入$subjectId参数可以优先直接使用缓存查询
      *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
-     * @param null $subjectId
+     * @param             $key
+     * @param Subject|int $subject subject or subject_id
+     * @param null        $default
      *
      * @return null
-     * @throws Exception
+     * @throws Exception|\Psr\SimpleCache\InvalidArgumentException
      */
-    public static function getConfigBySubjectOwner($key, $default = null, $subject = null, $subjectId = null)
+    public static function getConfigBySubjectOwner($key, $subject = null, $default = null)
     {
-        if ( ! $subjectId) {
-            if ($subject) {
-                $subjectId = $subject->id;
+        if ($subject && is_numeric($subject)) {
+            $value = Cache::store('memory')->get('c_s_o_' . $subject . '_' . $key);
+            if ($value) {
+                return $value;
             } else {
-                try {
-                    $subject = self::getSubject();
-                    $subjectId = $subject->id;
-                } catch (Exception $exception) {
-                    if (isset($default)) {
-                        return $default;
-                    } else {
-                        throw $exception;
-                        //\Log::warning($exception);
-                        //\Log::warning(new \Exception());
-                        //throw new SubjectNotFoundException("主体未找到 getConfigBySubjectOwner:" . $key);
-                    }
-
+                $subject = Subject::query()->findOrFail($subject);
+            }
+        } else {
+            try {
+                $subject = self::getSubject();
+                $subjectId = $subject->id;
+            } catch (Exception $exception) {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    throw $exception;
                 }
             }
         }
 
+        $subjectId = $subject->id;
+
         $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
         if ( ! $value) {
-            if ( ! $subject) {
-                $subject = Subject::query()->findOrFail($subjectId);
-            }
-
             $extraConfig = $subject->open_extra_config ?: [];
 
             $value = array_get($extraConfig, $key) ?: null;
@@ -112,7 +133,12 @@ class SubjectUtils
             }
         }
 
-        return $value ?? $default;
+        $value = $value ?? $default;
+        if (is_null($value)) {
+            LogUtils::notConfigLogByOwner("getConfigBySubjectOwner 有参数未配置:" . $key);
+        }
+
+        return $value;
     }
 
 
@@ -170,14 +196,14 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value ?? $default;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 3600);
 
         return $value;
     }
 
 
     /**
-     * 获取可以动态设置key的配置项
+     * 获取可以动态设置key的配置项,保存在subject_configs表中
      *
      * 公开配置,包含public和front
      *
@@ -185,15 +211,20 @@ class SubjectUtils
      *
      * 对应主体管理的最后一个tab,即:系统参数(owner)
      *
-     * @param      $key
-     * @param null $default
-     * @param null $subject
+     * @param             $key
+     * @param null        $default
+     * @param Subject|int $subject
      *
      * @return mixed|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
 
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
+        if ($subject && is_numeric($subject)) {
+            $subject = Subject::query()->findOrFail($subject);
+        }
+
         $value = null;
 
         if ($subject) {
@@ -231,7 +262,7 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 3600);
 
         return $value;
     }
@@ -332,7 +363,8 @@ class SubjectUtils
      *
      * @param null $uuid
      *
-     * @return Subject|static
+     * @return Subject
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public
     static function getSubject(
@@ -376,10 +408,10 @@ class SubjectUtils
                 }
             }
         } else {
-            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 600);
+            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 3600);
             if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
                 Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
-                    $subject, 600);
+                    $subject, 3600);
             }
         }
 
