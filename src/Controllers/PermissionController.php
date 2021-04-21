@@ -7,10 +7,13 @@ namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Exporter;
 use Encore\Admin\Tree;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Permission;
+use Mallto\Admin\Data\Role;
+use Mallto\Admin\Domain\Export\AdminPermissionExporter;
 
 class PermissionController extends AdminCommonController
 {
@@ -39,6 +42,33 @@ class PermissionController extends AdminCommonController
 
     protected function grid()
     {
+        if (request('_export_') == 'all') {
+            $grid = new Grid(new Permission());
+
+            if (request('role_id')) {
+                $role = Role::query()->findOrFail(request('role_id'));
+
+                $subPermissions = [];
+                foreach ($role->permissions as $permission) {
+                    $temps = $permission->subPermissions();
+
+                    $subPermissions[] = $permission->toArray()['slug'];
+
+                    if ( ! empty($temps)) {
+                        foreach ($temps as $temp) {
+                            $subPermissions[] = $temp['slug'];
+                        }
+                    }
+                }
+            }
+
+            $grid->model()->whereIn('slug', $subPermissions);
+
+            $grid->disablePagination();
+
+            return (new Exporter($grid))->resolve(new AdminPermissionExporter())->withScope('all')->export();
+        }
+
         return Permission::tree(function (Tree $tree) {
             $tree->branch(function ($branch) {
                 $payload = "<strong>{$branch['name']}</strong>";

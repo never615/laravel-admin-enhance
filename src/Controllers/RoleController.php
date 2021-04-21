@@ -58,6 +58,17 @@ class RoleController extends AdminCommonController
             $actions->disableView();
         });
 
+        $grid->column('down', '角色权限')->display(function ($value) {
+            return "<button type='button' class='btn btn-sm btn-twitte'>
+            <i class='fa fa-download'></i>
+            <span>导出角色权限</span>
+    </button>";
+        })->linkE(function () {
+            if ($this->row->id) {
+                return '/admin/auth/permissions?_export_=all&role_id=' . $this->row->id;
+            }
+        });
+
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name', '角色名');
         });
@@ -68,7 +79,7 @@ class RoleController extends AdminCommonController
     {
 //        if (\Mallto\Admin\AdminUtils::isOwner()) {
 //            $form->text('slug', trans('admin.slug'))
-//                ->help("不填写会自动生成,建议不填写");
+//                ->help('不填写会自动生成,建议不填写');
 //        }
 
         $form->text('name', trans('admin.name'))
@@ -82,27 +93,27 @@ class RoleController extends AdminCommonController
             ->options(function () use ($that) {
                 $subjectId = Admin::user()->subject_id;
                 if ($subjectId == 1) {
-                    $permissions = Permission::orderBy("order")->get()->toArray();
+                    $permissions = Permission::orderBy('order')->get()->toArray();
                 } else {
                     $permissionsTemp = Subject::find($subjectId)
                         ->permissions()
-                        ->orderBy("order")
+                        ->orderBy('order')
                         ->get();
 
                     //主体拥有的权限需要加上那几个公共功能模块的权限
                     $permissionsTemp = $permissionsTemp->merge(
-                        Permission::where("common", true)->get()
+                        Permission::where('common', true)->get()
                     );
                     $permissions = $that->withSubPermissions($permissionsTemp);
                 }
 
                 //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
                 return Permission::selectOptions($permissions, false, false,
-                    (isset($permissionsTemp) ? array_unique($permissionsTemp->pluck("parent_id")->toArray()) : 0));
+                    (isset($permissionsTemp) ? array_unique($permissionsTemp->pluck('parent_id')->toArray()) : 0));
             })
 //            ->settings([
-//                "selectorMinimalHeight"   => 500,
-//                "preserveSelectionOnMove" => false,
+//                'selectorMinimalHeight'   => 500,
+//                'preserveSelectionOnMove' => false,
 //            ])
             ->stacked()
             ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
