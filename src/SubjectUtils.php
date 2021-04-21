@@ -13,7 +13,6 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Exception\SubjectNotFoundException;
 use Mallto\Tool\Exception\HttpException;
-use Mallto\Tool\Utils\LogUtils;
 
 /**
  * 工具类
@@ -75,7 +74,7 @@ class SubjectUtils
 
         $value = $value ?? $default;
         if (is_null($value) || empty($value)) {
-            LogUtils::notConfigLogByOwner("getConfigByOwner 有参数未配置:" . $key);
+            \Log::warning("getConfigByOwner 有参数未配置:" . $key);
         }
 
         return $value;
@@ -135,7 +134,7 @@ class SubjectUtils
 
         $value = $value ?? $default;
         if (is_null($value)) {
-            LogUtils::notConfigLogByOwner("getConfigBySubjectOwner 有参数未配置:" . $key);
+            \Log::warning("getConfigBySubjectOwner 有参数未配置:" . $key);
         }
 
         return $value;
@@ -196,7 +195,8 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value ?? $default;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value, 3600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+            Carbon::now()->endOfDay());
 
         return $value;
     }
@@ -262,7 +262,8 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value, 3600);
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value,
+            Carbon::now()->endOfDay());
 
         return $value;
     }
@@ -408,10 +409,10 @@ class SubjectUtils
                 }
             }
         } else {
-            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 3600);
+            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
             if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
                 Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
-                    $subject, 3600);
+                    $subject, Carbon::now()->endOfDay());
             }
         }
 

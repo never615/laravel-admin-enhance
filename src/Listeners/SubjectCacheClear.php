@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\Subject;
@@ -36,16 +37,17 @@ class SubjectCacheClear implements ShouldQueue
         //处理刷新缓存
 
         //1. 清理subject缓存
-        Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, 3600);
+        Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
         if (isset($subject->extra_config['uuid'])) {
-            Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject, 3600);
+            Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject,
+                Carbon::now()->endOfDay());
         }
 
         //2. 清理subject的open_extra_config缓存
         Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
 
         //3. 清理extra_config
-        //Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
+        Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
 
     }
 

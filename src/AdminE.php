@@ -89,21 +89,22 @@ class AdminE
         $adminUser = Admin::user();
 
         if ($adminUser) {
-            $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
-            if ( ! $menuIds) {
-                return;
-            }
+            //$menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
+            //if ( ! $menuIds) {
+            //    return;
+            //}
 
             $speedy = Cache::get("speedy_" . $adminUser->id);
             if ( ! $speedy) {
                 $speedy = [];
 
                 //读取对应主体中的快捷访问菜单配置
-                //$menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
+                $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
 
-                //if ( ! $menuIds) {
-                //    return;
-                //}
+                if ( ! $menuIds) {
+                    return;
+                }
+
                 $menus = Menu::find($menuIds);
 
                 foreach ($menus as $menu) {
