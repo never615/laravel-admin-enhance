@@ -19,7 +19,7 @@ class SubjectConfigObserver
     {
         //处理刷新缓存
         Cache::store('memory')->put('sub_dyna_conf_' . $subjectConfig->key . '_' . $subjectConfig->subject_id,
-            $subjectConfig->value, 600);
+            $subjectConfig->value, 3600);
     }
 
 }

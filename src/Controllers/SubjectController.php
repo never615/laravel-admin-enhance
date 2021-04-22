@@ -12,6 +12,7 @@ use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\AdminUtils;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Controllers\Base\SubjectConfigTrait;
 use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
@@ -275,9 +276,10 @@ class SubjectController extends AdminCommonController
     {
         $adminUser = Admin::user();
 
+        //clear 顶部菜单的缓存
         Cache::forget('speedy_' . $adminUser->id);
 
-        AdminUtils::forgetSubject($form->model()->id);
+        CacheUtils::forgetSubject($form->model()->id);
 
         event(new SubjectSaved($form->model()->id));
 

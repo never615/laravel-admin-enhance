@@ -17,9 +17,9 @@ use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
 use Mallto\Admin\Listeners\CreateAdminRole;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
+use Mallto\Admin\Listeners\SubjectCacheClear;
 use Mallto\Admin\Middleware\Pjax;
 use Mallto\Admin\Observers\SubjectConfigObserver;
-use Mallto\Admin\Observers\SubjectObserver;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -73,7 +73,10 @@ class ServiceProvider extends BaseServiceProvider
      * @var array
      */
     protected $listen = [
-        SubjectSaved::class => [ CreateAdminRole::class ],
+        SubjectSaved::class => [
+            CreateAdminRole::class,
+            SubjectCacheClear::class,
+        ],
     ];
 
 
@@ -241,7 +244,6 @@ class ServiceProvider extends BaseServiceProvider
             }
         }
 
-        Subject::observe(SubjectObserver::class);
         SubjectConfig::observe(SubjectConfigObserver::class);
     }
 
