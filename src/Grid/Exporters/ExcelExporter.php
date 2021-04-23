@@ -39,7 +39,7 @@ abstract class ExcelExporter extends \Encore\Admin\Grid\Exporters\AbstractExport
 
             $excel->sheet('sheet1', function ($sheet) use ($tableName) {
                 $sheet->setAutoSize(true);
-                $this->chunk(function (Collection $records) use (&$titles, $tableName, $sheet) {
+                $this->chunkById(function (Collection $records) use (&$titles, $tableName, $sheet) {
                     $records = $this->customData($records);
 
                     if (empty($titles)) {

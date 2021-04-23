@@ -263,7 +263,7 @@ EOT;
         fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 
         $titles = [];
-        $this->chunk(function (Collection $records) use (
+        $this->chunkById(function (Collection $records) use (
             &$titles,
             $handle,
             $tableName,
