@@ -52,18 +52,15 @@ class ReportController extends AdminCommonController
         $adminUser = Admin::user();
 
         if ( ! AdminUtils::isOwner()) {
-            $tables = $adminUser->allPermissions()->pluck('slug')->toArray();
+            $permissions = $adminUser->roles()->with('permissions')->get()->pluck('permissions')->flatten();
 
-            foreach ($tables as $key => $table) {
-                $tablesExplode = explode('.', $table);
+            $tables = [];
+            foreach ($permissions as $permission) {
+                foreach ($permission->subPermissions() as $subPermission) {
+                    $tablesExplode = explode('.', $subPermission['slug']);
 
-                if (count($tablesExplode) > 1 && ($tablesExplode[1] == 'export')) {
-                    $tables[$key] = $tablesExplode[0];
-                } elseif (count($tablesExplode) > 1 && ($tablesExplode[1] != 'export')) {
-                    unset($tables[$key]);
-                } else {
-                    if ( ! $adminUser->can($tablesExplode[0] . '.export')) {
-                        unset($tables[$key]);
+                    if (count($tablesExplode) > 1 && ($tablesExplode[1] == 'export')) {
+                        $tables[] = $tablesExplode[0];
                     }
                 }
             }
