@@ -58,16 +58,18 @@ class RoleController extends AdminCommonController
             $actions->disableView();
         });
 
-        $grid->column('down', '角色权限')->display(function ($value) {
-            return "<button type='button' class='btn btn-sm btn-twitte'>
+        if (AdminUtils::isOwner()) {
+            $grid->column('down', '角色权限')->display(function ($value) {
+                return "<button type='button' class='btn btn-sm btn-twitte'>
             <i class='fa fa-download'></i>
             <span>导出角色权限</span>
     </button>";
-        })->linkE(function () {
-            if ($this->row->id) {
-                return '/admin/auth/permissions?_export_=all&role_id=' . $this->row->id;
-            }
-        });
+            })->linkE(function () {
+                if ($this->row->id) {
+                    return '/admin/auth/permissions?_export_=all&role_id=' . $this->row->id;
+                }
+            });
+        }
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name', '角色名');
