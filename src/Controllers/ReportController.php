@@ -65,12 +65,14 @@ class ReportController extends AdminCommonController
                 }
             }
 
+            $otherTables = [];
+
             if ($adminUser->can('member_vip_status_records.export')) {
-                $otherTables = [ 'member_vip_pay_records' ];
+                $otherTables[] = 'member_vip_pay_records';
             }
 
             if ($adminUser->can('members.export')) {
-                $otherTables = [ 'users' ];
+                $otherTables[] = 'users';
             }
 
             $grid->model()->whereIn('table_name', array_merge($otherTables, $tables));
