@@ -45,14 +45,14 @@ class SubjectSettingController extends Controller
 
         foreach ($queryNames as $queryName) {
             //是否在可请求的key中
-            if ( ! in_array($queryName, $subjectSetting->front_column ?? null)
-                && ! in_array($queryName, $subjectSetting->public_configs ?? null)) {
+            if ( ! in_array($queryName, $subjectSetting->front_column ?? [])
+                && ! in_array($queryName, $subjectSetting->public_configs ?? [])) {
                 throw new PermissionDeniedException('权限拒绝:' . $queryName);
             }
 
             $value = SubjectSettingUtils::getSubjectSetting($queryName, $subject);
 
-            if (in_array($request->name, $subjectSetting->file_type_column ?? null)) {
+            if (in_array($request->name, $subjectSetting->file_type_column ?? [])) {
                 $value = config("app.file_url_prefix") . $value;
             }
 
