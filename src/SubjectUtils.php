@@ -65,7 +65,8 @@ class SubjectUtils
         if ( ! $value) {
             $extraConfig = $subject->extra_config ?: [];
 
-            $value = array_get($extraConfig, $key) ?: null;
+            $value = array_get($extraConfig, $key);
+            $value = is_null($value) ? null : $value;
             if ($value) {
                 Cache::store('memory')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
                     Carbon::now()->endOfDay());
@@ -125,7 +126,8 @@ class SubjectUtils
         if ( ! $value) {
             $extraConfig = $subject->open_extra_config ?: [];
 
-            $value = array_get($extraConfig, $key) ?: null;
+            $value = array_get($extraConfig, $key);
+            $value = is_null($value) ? null : $value;
             if ($value) {
                 Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
                     Carbon::now()->endOfDay());
