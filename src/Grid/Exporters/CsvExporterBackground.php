@@ -51,6 +51,18 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
         "subject_id",
     ];
 
+
+    /**
+     * 默认保留的key
+     *
+     * @var array
+     */
+    protected $defaultRemainKeys = [
+        'user_id',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * 只支持数据库字段是json类型的在此设置.
      *
