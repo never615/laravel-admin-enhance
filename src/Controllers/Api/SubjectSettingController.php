@@ -56,9 +56,9 @@ class SubjectSettingController extends Controller
                 $value = config("app.file_url_prefix") . $value;
             }
 
-            if (str_contains($value, 'image')) {
-                $value = config("app.file_url_prefix") . $value;
-            }
+            //if (str_contains($value, 'image')) {
+            //    $value = config("app.file_url_prefix") . $value;
+            //}
             $result[$queryName] = $value;
         }
 
