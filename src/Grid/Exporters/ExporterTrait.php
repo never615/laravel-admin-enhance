@@ -126,7 +126,6 @@ trait ExporterTrait
     {
         if ($default) {
             $keys = array_merge($this->defaultForgetKeys, (array) $keys);
-            $remainKeys = array_merge($this->defaultRemainKeys, (array) $keys);
         }
 
         if ($remainKeys && count($remainKeys) > 0) {
