@@ -31,7 +31,14 @@ class ExporterJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 3600 * 24;
+    public $timeout = 3600 * 12;
+
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 1;
 
     protected $inputs;
 
