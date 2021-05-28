@@ -135,9 +135,9 @@ class SubjectUtils
         }
 
         $value = $value ?? $default;
-        if (is_null($value)) {
-            \Log::warning("getConfigBySubjectOwner 有参数未配置:" . $key);
-        }
+        //if (is_null($value)) {
+        //    \Log::warning("getConfigBySubjectOwner 有参数未配置:" . $key);
+        //}
 
         return $value;
     }
