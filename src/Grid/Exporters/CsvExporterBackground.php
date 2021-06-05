@@ -228,7 +228,8 @@ EOT;
             $job = new ExporterJob(
                 $controllerClass,
                 request()->all(),
-                $report->id,
+                //$report->id,
+                $report,
                 $adminUser->id
             );
 
@@ -309,7 +310,7 @@ EOT;
 
                     if ( ! $nowReport->now_total) {
                         $nowReport->now_total = 200;
-                    }else{
+                    } else {
                         $nowReport->now_total += 200;
                     }
 

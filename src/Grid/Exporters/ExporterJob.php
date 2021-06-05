@@ -65,11 +65,13 @@ class ExporterJob implements ShouldQueue
     public function __construct(
         $controllerClass,
         $inputs,
-        $reportId,
+        //$reportId,
+        $report,
         $adminUserId
     ) {
         $this->inputs = $inputs;
-        $this->report = Report::find($reportId);
+        //$this->report = Report::find($reportId);
+        $this->report = $report;
         $this->adminUserId = $adminUserId;
         $this->controllerClass = $controllerClass;
     }
