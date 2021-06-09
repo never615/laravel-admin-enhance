@@ -7,6 +7,7 @@ namespace Mallto\Admin\Grid\Exporters;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -303,7 +304,13 @@ EOT;
                 }
 
                 if ( ! empty($report)) {
-                    $nowReport = $report->refresh();
+                    try {
+                        $nowReport = $report->refresh();
+                    } catch (ModelNotFoundException $modelNotFoundException) {
+                        fclose($handle);
+
+                        return;
+                    }
                     if ( ! $nowReport->export_total) {
                         $nowReport->export_total = $this->getQuery()->count('id');
                     }
