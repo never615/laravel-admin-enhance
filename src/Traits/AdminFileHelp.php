@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Traits;
 
+use Encore\Admin\Form;
 use Mallto\Admin\Controllers\Base\QiniuToken;
 
 /**
@@ -86,6 +87,9 @@ trait  AdminFileHelp
             ->sortable()
             ->removable()
             ->uniqueName()
+            ->validator(function ($callback) {
+                return false;
+            })
             ->move("$tableName/$columnName/" . $this->currentId);
     }
 
