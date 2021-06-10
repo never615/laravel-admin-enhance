@@ -118,7 +118,7 @@ trait ExporterTrait
      * @param array        $records
      * @param array|string $keys       ,需要移除的字段,
      * @param              $remainKeys ,设置此字段,会忽略keys的设置
-     * @param bool         $default    true,是否默认移除一些字段
+     * @param bool         $default    true,是否默认移除或保留一些字段
      *
      * @return array
      */
