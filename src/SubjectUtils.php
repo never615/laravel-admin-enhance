@@ -29,6 +29,8 @@ class SubjectUtils
      *
      * 对应主体管理的"配置项"tab
      *
+     * 保存在 extra_config 中
+     *
      *
      * @param string      $key 参见 SubjectConfigConstants::class
      * @param null        $default
@@ -100,18 +102,19 @@ class SubjectUtils
      */
     public static function getConfigBySubjectOwner($key, $subject = null, $default = null)
     {
-        if ($subject && is_numeric($subject)) {
-            $value = Cache::store('memory')->get('c_s_o_' . $subject . '_' . $key);
-            if ($value) {
-                return $value;
+        if ($subject) {
+            if (is_numeric($subject)) {
+                $subjectId = $subject;
+                $subject = null;
             } else {
-                $subject = Subject::query()->findOrFail($subject);
+                $subjectId = $subject->id;
             }
         } else {
             try {
                 $subject = self::getSubject();
                 $subjectId = $subject->id;
             } catch (Exception $exception) {
+                \Log::error($exception);
                 if (isset($default)) {
                     return $default;
                 } else {
@@ -120,24 +123,27 @@ class SubjectUtils
             }
         }
 
-        $subjectId = $subject->id;
-
-        $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
-        if ( ! $value) {
-            $extraConfig = $subject->open_extra_config ?: [];
-
-            $value = array_get($extraConfig, $key);
-            $value = is_null($value) ? null : $value;
+        if ($subjectId) {
+            $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
             if ($value) {
-                Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
-                    Carbon::now()->endOfDay());
+                return $value;
             }
         }
 
+        if ( ! $subject) {
+            $subject = Subject::query()->findOrFail($subjectId);
+        }
+
+        $extraConfig = $subject->open_extra_config ?: [];
+
+        $value = array_get($extraConfig, $key);
+        $value = is_null($value) ? null : $value;
+        if ($value) {
+            Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
+                Carbon::now()->endOfDay());
+        }
+
         $value = $value ?? $default;
-        //if (is_null($value)) {
-        //    \Log::warning("getConfigBySubjectOwner 有参数未配置:" . $key);
-        //}
 
         return $value;
     }

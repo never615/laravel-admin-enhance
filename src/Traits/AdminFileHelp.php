@@ -18,7 +18,6 @@ trait  AdminFileHelp
 
     use QiniuToken;
 
-
     /**
      * 直传对象存储的多图控件
      *
@@ -107,7 +106,7 @@ trait  AdminFileHelp
         $help = "建议尺寸500x500"
     ) {
         $form->image($columnName, $displayName)
-            ->help("图片最大不能超过2M<br>" . $help)
+            ->help("图片最大不能超过2M." . $help)
             ->options([
                 'maxFileSize'     => '2048',
                 "msgSizeTooLarge" => '文件 "{name}" ({size} KB) 超过了允许上传的最大限制: {maxSize} KB!',
