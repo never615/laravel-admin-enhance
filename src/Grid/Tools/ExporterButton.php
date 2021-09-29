@@ -48,10 +48,17 @@ class ExporterButton extends AbstractTool
     protected function script()
     {
         return <<<EOT
-    $('.mt-grid-refresh').on("click",function(){
-        window.open("{$this->url}",'_blank');
-    });
-EOT;
+            $('.mt-grid-refresh').on("click",function(){
+                var url = '';
+                var str = window.location.href;
+                var num=str.indexOf("&")
+                if(num != -1)
+                {
+                  url=str.substr(num+1);
+                }
+                window.open("{$this->url}"+'?'+url,'_blank');
+            });
+        EOT;
     }
 
 
