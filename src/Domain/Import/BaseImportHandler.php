@@ -160,9 +160,9 @@ abstract class BaseImportHandler
 
                 $tempMsg = implode('/', $failureErrors);
 
-                $tempLine = $line + 1;
+                //$tempLine = $line + 1;
 
-                $errorMsg .= "第$tempLine 行,$tempMsg \n";
+                $errorMsg .= "第$line 行,$tempMsg \n";
             }
 
             foreach ($errors as $error) {
