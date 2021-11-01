@@ -42,11 +42,11 @@ trait SubjectConfigTrait
         $form->select('parent_id', '父级主体')
             ->options(function () use ($parent) {
                 if ($this->id == 1) {
-                    $arr = Subject::pluck('name', 'id');
+                    $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
                     array_add($arr, 0, '项目开发商');
                 } else {
                     //返回自己有权限查看的和自己已经配置的
-                    $arr = Subject::dynamicData()->pluck('name', 'id');
+                    $arr = Subject::dynamicData()->orderBy('id')->pluck('name', 'id');
                     if ($parent) {
                         array_add($arr, $parent->id, $parent->name);
                     }
