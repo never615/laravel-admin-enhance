@@ -96,7 +96,8 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
         }
 
         if ( ! ini_get('safe_mode')) {
-            set_time_limit(60 * 60 * 5);
+            set_time_limit(60 * 60 * 24);
+            ini_set("memory_limit", "512M");
         }
 
         $count = $this->getQuery()->count();
