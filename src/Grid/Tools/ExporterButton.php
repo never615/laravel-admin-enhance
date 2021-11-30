@@ -49,14 +49,17 @@ class ExporterButton extends AbstractTool
     {
         return <<<EOT
             $('.mt-grid-refresh').on("click",function(){
-                var url = '';
-                var str = window.location.href;
-                var num=str.indexOf("&")
-                if(num != -1)
-                {
-                  url=str.substr(num+1);
+                var r =confirm('确认导出会员信息吗?');
+                if(r==true){
+                    var url = '';
+                    var str = window.location.href;
+                    var num=str.indexOf("&")
+                    if(num != -1)
+                    {
+                      url=str.substr(num+1);
+                    }
+                    window.open("{$this->url}"+'?'+url,'_blank');
                 }
-                window.open("{$this->url}"+'?'+url,'_blank');
             });
         EOT;
     }
