@@ -66,7 +66,7 @@ class InitDataSeeder extends Seeder
         $mallto = Administrator::create([
             'username'       => 'mallto',
             'password'       => bcrypt('mallto'),
-            'name'           => '深圳墨兔管理',
+            'name'           => '系统管理',
             "subject_id"     => $项目管理Subject->id,
             "adminable_id"   => $项目管理Subject->id,
             "adminable_type" => "subject",

@@ -25,7 +25,7 @@ class CreateSubjectsTable extends Migration
             $table->string('logo')->nullable()->comment('logo');
             $table->text('description')->nullable()->comment('描述');
             $table->string("uuid")->nullable()
-                ->comment("商城的唯一标识,墨兔所有的主体的包括不同项目均拥有唯一一个uuir");
+                ->comment("商城的唯一标识,MT所有的主体的包括不同项目均拥有唯一一个uuir");
 
             $table->timestamps();
             $table->softDeletes();
