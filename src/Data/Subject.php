@@ -54,9 +54,13 @@ class Subject extends Model
 
         if ($isOwner) {
             return static::dynamicData()
-                ->select(DB::raw("name||'-主体id:'||id as name,id"))->pluck("name", "id");
+                ->select(DB::raw("name||'-主体id:'||id as name,id"))
+                //->orderBy('created_at', 'desc')
+                ->pluck("name", "id");
         } else {
-            return static::dynamicData()->pluck("name", "id");
+            return static::dynamicData()
+                //->orderBy('created_at', 'desc')
+                ->pluck("name", "id");
         }
     }
 
@@ -146,7 +150,8 @@ class Subject extends Model
         }
 
         //3.限定查询范围为所有子主体
-        $query->whereIn('id', $tempSubjectIds);
+        $query->whereIn('id', $tempSubjectIds)
+            ->orderBy('id', 'desc');
     }
 
 
