@@ -72,7 +72,7 @@ class SubjectUtils
 
         $subject = Subject::query()->findOrFail($subjectId);
 
-        $extraConfig = $subject->open_extra_config ?: [];
+        $extraConfig = $subject->extra_config ?: [];
 
         $value = array_get($extraConfig, $key);
         if ( ! is_null($value)) {
