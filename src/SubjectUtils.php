@@ -41,6 +41,8 @@ class SubjectUtils
      */
     public static function getConfigByOwner($key, $subject = null, $default = null)
     {
+        $subjectId = null;
+
         if ($subject) {
             if (is_numeric($subject)) {
                 $subjectId = $subject;
@@ -102,6 +104,7 @@ class SubjectUtils
      */
     public static function getConfigBySubjectOwner($key, $subject = null, $default = null)
     {
+        $subjectId = null;
         if ($subject) {
             if (is_numeric($subject)) {
                 $subjectId = $subject;
@@ -163,6 +166,8 @@ class SubjectUtils
      */
     public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
     {
+        $subjectId = null;
+
         if ($subject) {
             if (is_numeric($subject)) {
                 $subjectId = $subject;
@@ -229,6 +234,8 @@ class SubjectUtils
      */
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
+        $subjectId = null;
+
         if ($subject) {
             if (is_numeric($subject)) {
                 $subjectId = $subject;
