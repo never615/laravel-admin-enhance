@@ -204,12 +204,12 @@ class SubjectUtils
             if (isset($default)) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key . "未配置," . $subject->id);
+                throw new SubjectConfigException($key . "未配置," . $subjectId);
             }
         }
 
         $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value,
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -273,12 +273,12 @@ class SubjectUtils
             if (isset($default)) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key . "未配置," . $subject->id);
+                throw new SubjectConfigException($key . "未配置," . $subjectId);
             }
         }
 
         $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value,
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
         return $value;
