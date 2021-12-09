@@ -41,46 +41,46 @@ class SubjectUtils
      */
     public static function getConfigByOwner($key, $subject = null, $default = null)
     {
-        if ($subject && is_numeric($subject)) {
-            $value = Cache::store('memory')->get('c_s_ec_' . $subject . '_' . $key);
-            if ($value) {
-                return $value;
+        if ($subject) {
+            if (is_numeric($subject)) {
+                $subjectId = $subject;
             } else {
-                $subject = Subject::query()->findOrFail($subject);
+                $subjectId = $subject->id;
             }
         }
 
-        if ( ! $subject) {
+        if ($subjectId) {
+            $value = Cache::store('memory')->get('c_s_ec_' . $subjectId . '_' . $key);
+            if ( ! is_null($value)) {
+                return $value;
+            }
+        } else {
             try {
-                $subject = self::getSubject();
+                $subjectId = self::getSubjectId();
             } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
-                    throw new SubjectNotFoundException("主体未找到 getConfigByOwner");
-
+                    \Log::error('主体未找到');
+                    \Log::warning($exception);
+                    throw $exception;
                 }
             }
         }
-        $subjectId = $subject->id;
-        $value = Cache::store('memory')->get('c_s_ec_' . $subjectId . '_' . $key);
-        if ( ! $value) {
-            $extraConfig = $subject->extra_config ?: [];
 
-            $value = array_get($extraConfig, $key);
-            $value = is_null($value) ? null : $value;
-            if ($value) {
-                Cache::store('memory')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
-                    Carbon::now()->endOfDay());
-            }
+        $subject = Subject::query()->findOrFail($subjectId);
+
+        $extraConfig = $subject->open_extra_config ?: [];
+
+        $value = array_get($extraConfig, $key);
+        if ( ! is_null($value)) {
+            Cache::store('memory')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
+                Carbon::now()->endOfDay());
+
+            return $value;
+        } else {
+            return $default;
         }
-
-        $value = $value ?? $default;
-        //if (is_null($value) || empty($value)) {
-        //    \Log::warning("getConfigByOwner 有参数未配置:" . $key);
-        //}
-
-        return $value;
     }
 
 
@@ -105,47 +105,43 @@ class SubjectUtils
         if ($subject) {
             if (is_numeric($subject)) {
                 $subjectId = $subject;
-                $subject = null;
             } else {
                 $subjectId = $subject->id;
-            }
-        } else {
-            try {
-                $subject = self::getSubject();
-                $subjectId = $subject->id;
-            } catch (Exception $exception) {
-                \Log::error($exception);
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    throw $exception;
-                }
             }
         }
 
         if ($subjectId) {
             $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
-            if ($value) {
+            if ( ! is_null($value)) {
                 return $value;
+            }
+        } else {
+            try {
+                $subjectId = self::getSubjectId();
+            } catch (Exception $exception) {
+                if (isset($default)) {
+                    return $default;
+                } else {
+                    \Log::error('主体未找到');
+                    \Log::warning($exception);
+                    throw $exception;
+                }
             }
         }
 
-        if ( ! $subject) {
-            $subject = Subject::query()->findOrFail($subjectId);
-        }
+        $subject = Subject::query()->findOrFail($subjectId);
 
         $extraConfig = $subject->open_extra_config ?: [];
 
         $value = array_get($extraConfig, $key);
-        $value = is_null($value) ? null : $value;
-        if ($value) {
+        if ( ! is_null($value)) {
             Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
                 Carbon::now()->endOfDay());
+
+            return $value;
+        } else {
+            return $default;
         }
-
-        $value = $value ?? $default;
-
-        return $value;
     }
 
 
@@ -158,52 +154,57 @@ class SubjectUtils
      *
      * 对应subject_configs表
      *
-     * @param      $key
-     * @param null $subjectId
-     * @param null $default
+     * @param             $key
+     * @param Subject|int $subjectId or $subject
+     * @param null        $default
      *
      * @return mixed|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-
-    public static function getDynamicKeyConfigByOwner($key, $subjectId = null, $default = null)
+    public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
     {
-        $value = null;
+        if ($subject) {
+            if (is_numeric($subject)) {
+                $subjectId = $subject;
+            } else {
+                $subjectId = $subject->id;
+            }
+        }
 
         if ($subjectId) {
             $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-        }
-
-        if ($value) {
-            return $value;
-        }
-
-        if ( ! $subjectId) {
+            if ( ! is_null($value)) {
+                return $value;
+            }
+        } else {
             try {
                 $subjectId = self::getSubjectId();
             } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
-                    throw new SubjectNotFoundException("主体未找到 getDynamicKeyConfigByOwner");
+                    \Log::error('主体未找到 getDynami');
+                    \Log::warning($exception);
+                    throw new SubjectNotFoundException("主体未找到 getDynamicPublicKeyConfigByOwner");
                 }
             }
         }
 
+        //缓存中没有查到，查数据库
         $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
             ->where("key", $key)
             ->first();
 
         if ( ! $subjectConfig) {
-            if ($default) {
+            if (isset($default)) {
                 return $default;
             } else {
-                throw new SubjectConfigException($key . "未配置," . $subjectId);
+                throw new SubjectConfigException($key . "未配置," . $subject->id);
             }
         }
 
-        $value = $subjectConfig->value ?? $default;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+        $value = $subjectConfig->value;
+        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subject->id, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -226,43 +227,43 @@ class SubjectUtils
      * @return mixed|null
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
-
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
-        if ($subject && is_numeric($subject)) {
-            $subject = Subject::query()->findOrFail($subject);
-        }
-
-        $value = null;
-
         if ($subject) {
-            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subject->id);
+            if (is_numeric($subject)) {
+                $subjectId = $subject;
+            } else {
+                $subjectId = $subject->id;
+            }
         }
 
-        if ($value) {
-            return $value;
-        }
-
-        if ( ! $subject) {
+        if ($subjectId) {
+            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            if ( ! is_null($value)) {
+                return $value;
+            }
+        } else {
             try {
-                $subject = self::getSubject();
+                $subjectId = self::getSubjectId();
             } catch (Exception $exception) {
                 if (isset($default)) {
                     return $default;
                 } else {
+                    \Log::error('主体未找到 getDynami');
+                    \Log::warning($exception);
                     throw new SubjectNotFoundException("主体未找到 getDynamicPublicKeyConfigByOwner");
-
                 }
             }
         }
 
-        $subjectConfig = $subject->subjectConfigs()
-            ->where("key", $key)
+        //缓存中没有查到，查数据库
+        $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
             ->whereIn("type", [ 'public', 'front' ])
+            ->where("key", $key)
             ->first();
 
         if ( ! $subjectConfig) {
-            if ($default) {
+            if (isset($default)) {
                 return $default;
             } else {
                 throw new SubjectConfigException($key . "未配置," . $subject->id);
