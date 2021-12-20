@@ -100,11 +100,11 @@
                 <div class="col-xs-8">
                     @if(config('admin.auth.remember'))
                         <div class="checkbox icheck">
-                            <label>
-                                <input type="checkbox" name="remember"
-                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>
-                                {{ trans('admin.remember_me') }}
-                            </label>
+{{--                            <label>--}}
+{{--                                <input type="checkbox" name="remember"--}}
+{{--                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>--}}
+{{--                                {{ trans('admin.remember_me') }}--}}
+{{--                            </label>--}}
                             <label>
                                 <a style="color: #666" id="switch-mode" onclick="switchMode()">
                                     <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
