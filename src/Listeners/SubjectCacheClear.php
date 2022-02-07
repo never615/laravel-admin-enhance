@@ -43,11 +43,13 @@ class SubjectCacheClear implements ShouldQueue
                 Carbon::now()->endOfDay());
         }
 
-        //2. 清理subject的open_extra_config缓存
-        Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
+        if (config('cache.default') == 'redis') {
+            //2. 清理subject的open_extra_config缓存
+            Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
 
-        //3. 清理extra_config
-        Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
+            //3. 清理extra_config
+            Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
+        }
 
     }
 

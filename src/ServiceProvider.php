@@ -111,7 +111,7 @@ class ServiceProvider extends BaseServiceProvider
         //$this->adminBootstrap();
         $this->registerEventListeners();
 
-
+        app('url')->forceRootUrl(env('APP_URL'));
     }
 
 
