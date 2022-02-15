@@ -66,6 +66,7 @@ class SubjectConfigController extends AdminCommonController
             ->help('front类型的配置会前端请求的主体初始化配置接口一起返回');
 
         $form->displayE('show_default_key', '预设的一些key')
+            ->setDisplay(true)
             ->with(function ($values) {
                 $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
                 foreach (config('other.subject_config_key') as $key => $value) {

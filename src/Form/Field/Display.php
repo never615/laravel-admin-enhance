@@ -17,14 +17,20 @@ class Display extends Field
 {
 
     /**
+     * @var bool
+     */
+    protected $display = false;
+
+
+    /**
      * If this field should render.
      *
      * @return bool
      */
     protected function shouldRender(): bool
     {
-        if ( ! $this->display) {
-            return false;
+        if ($this->display) {
+            return true;
         }
 
         if ($this->form && $this->form->model()->getKey()) {
