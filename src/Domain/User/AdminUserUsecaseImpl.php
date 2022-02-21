@@ -6,7 +6,8 @@
 namespace Mallto\Admin\Domain\User;
 
 use Illuminate\Support\Facades\Hash;
-use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Data\Traits\PermissionHelp;
+use Mallto\Admin\Domain\Permission\PermissionUsecase;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 
@@ -19,20 +20,52 @@ use Mallto\User\Data\User;
 class AdminUserUsecaseImpl implements AdminUserUsecase
 {
 
+    use PermissionHelp;
+
+    /**
+     * @var PermissionUsecase
+     */
+    private $permissionUsecase;
+
+
+    /**
+     * AdminUserUsecaseImpl constructor.
+     *
+     * @param PermissionUsecase $permissionUsecase
+     */
+    public function __construct(PermissionUsecase $permissionUsecase)
+    {
+        $this->permissionUsecase = $permissionUsecase;
+    }
+
+
     /**
      * 返回给前端的用户信息
      *
-     * @param      $adminUser
-     * @param bool $addToken
+     * @param          $adminUser
+     * @param bool     $addToken
+     * @param string[] $permission
      *
      * @return mixed
      */
-    public function getReturnUserInfo($adminUser, $addToken = true)
+    public function getReturnUserInfo($adminUser, $addToken = true, $permission = [ 'admin_api_manager' ])
     {
         $adminable = $adminUser->adminable;
         if ($addToken) {
             $token = $adminUser->createToken('admin_api');
             $adminUser->token = $token->accessToken;
+        }
+
+        $permissions = [];
+
+        if ( ! empty($permission)) {
+            foreach ($permission as $item) {
+                $tempPermissions = $this->permissionUsecase->getUserPermissionForModule($adminUser,
+                    $item);
+                if ($tempPermissions) {
+                    $permissions = array_merge($permissions, $tempPermissions);
+                }
+            }
         }
 
         return array_merge($adminUser->only([
@@ -41,12 +74,13 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             'username',
             'adminable_type',
             'adminable_id',
-            'token',
         ]), [
-            'adminable' => $adminable->only([
+            'adminable'   => $adminable->only([
                 'name',
             ]),
-            'uuid'      => $adminable->uuid,
+            'uuid'        => $adminable->uuid,
+            "token"       => $token->accessToken,
+            "permissions" => $permissions,
         ]);
     }
 

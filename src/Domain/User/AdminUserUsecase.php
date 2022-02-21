@@ -17,12 +17,13 @@ interface AdminUserUsecase
     /**
      * 返回给前端的用户信息
      *
-     * @param      $adminUser
-     * @param bool $addToken
+     * @param          $adminUser
+     * @param bool     $addToken
+     * @param string[] $permission
      *
      * @return mixed
      */
-    public function getReturnUserInfo($adminUser, $addToken = true);
+    public function getReturnUserInfo($adminUser, $addToken = true, $permission = [ 'admin_api_manager' ]);
 
 
     /**
