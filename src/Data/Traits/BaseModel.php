@@ -78,7 +78,6 @@ abstract class BaseModel extends Model
         } else {
             return $url . '?imageView2/0/interlace/1/q/75|imageslim';
         }
-
     }
 
 
