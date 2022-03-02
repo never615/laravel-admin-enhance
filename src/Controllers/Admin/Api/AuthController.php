@@ -136,6 +136,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        $permissons = $request->permissions;
+
+        $permissons = $permissons ? explode(',', $permissons) : ['admin_api_manager'];
+
         $adminUser = $this->adminUserUsecase->getUserByUsernameAndPassword($request->username,
             $request->password);
 
@@ -143,7 +147,7 @@ class AuthController extends Controller
             throw new ResourceException('账号密码错误或账号不存在');
         }
 
-        return $this->beforeReturnUser($adminUser);
+        return $this->beforeReturnUser($adminUser, $permissons);
     }
 
 
@@ -154,7 +158,7 @@ class AuthController extends Controller
      *
      * @return mixed
      */
-    private function beforeReturnUser($adminUser)
+    private function beforeReturnUser($adminUser, $permission = [ 'admin_api_manager' ])
     {
         //检查账号是否被禁用
         if ($adminUser->status == 'forbidden') {
@@ -163,7 +167,7 @@ class AuthController extends Controller
 
         $adminUserUsecase = app(AdminUserUsecase::class);
 
-        return $adminUserUsecase->getReturnUserInfo($adminUser, true);
+        return $adminUserUsecase->getReturnUserInfo($adminUser, true, $permission);
     }
 
 
