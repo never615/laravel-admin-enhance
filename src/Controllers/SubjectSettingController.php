@@ -113,7 +113,7 @@ class SubjectSettingController extends AdminCommonController
         if (AdminUtils::isOwner()) {
             $form->tab('public配置', function (Form $form) use ($adminUser) {
                 $form->embeds('public_configs', '', function (Form\EmbeddedForm $form) use ($adminUser) {
-                    //动态属性列扩展,开放给主体拥有者可以编辑的
+                    //动态属性列扩展，前段可以通过接口请求
                     foreach ($this->expandSettingHandlers as $expandSettingHandler) {
                         $expandSettingHandler->publicConfig($form, $this->currentId, $adminUser);
                     }
@@ -122,7 +122,7 @@ class SubjectSettingController extends AdminCommonController
 
             $form->tab('private配置', function (Form $form) use ($adminUser) {
                 $form->embeds('private_configs', '', function (Form\EmbeddedForm $form) use ($adminUser) {
-                    //动态属性列扩展,开放给主体拥有者可以编辑的
+                    //动态属性列扩展
                     foreach ($this->expandSettingHandlers as $expandSettingHandler) {
                         $expandSettingHandler->privateConfig($form, $this->currentId, $adminUser);
                     }

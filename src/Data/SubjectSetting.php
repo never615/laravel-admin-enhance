@@ -14,10 +14,11 @@ class SubjectSetting extends BaseModel
         'front_column'          => 'json',
         'file_type_column'      => 'json',
         'public_configs'        => 'json',
-        'private_configs'        => 'json',
+        'private_configs'       => 'json',
         'subject_owner_configs' => 'json',
         'allow_pay_type'        => 'json',
     ];
+
 
     public function subjectConfigs()
     {
