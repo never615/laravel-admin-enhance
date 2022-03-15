@@ -23,6 +23,6 @@ class SubjectConfigException extends HttpException
     {
         LogUtils::notConfigLogByOwner($message ?: "有参数未配置");
 
-        parent::__construct(403, $message ?: "有参数未配置", $previous, $headers, $code);
+        parent::__construct(422, $message ?: "有参数未配置", $previous, $headers, $code);
     }
 }

@@ -7,10 +7,12 @@ namespace Mallto\Admin\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\SubjectSetting;
-use Mallto\Admin\SubjectSettingUtils;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Tool\Exception\ResourceException;
 
 /**
  * Class SubjectSettingController
@@ -32,10 +34,18 @@ class SubjectSettingController extends Controller
             'name' => 'required',
         ]);
 
-        $queryName = $request->name;
-        $queryNames = explode(',', $queryName);
+        $requestQueryName = $request->name;
+
+        $queryNames = explode(',', $requestQueryName);
 
         $subject = SubjectUtils::getSubject();
+
+        $cacheKey = SubjectSetting::getCacheKey($subject->id);
+        $result = Cache::get($cacheKey . $requestQueryName);
+
+        if ($result) {
+            return $result;
+        }
 
         $subjectSetting = SubjectSetting::query()
             ->where('subject_id', $subject->id)
@@ -45,14 +55,22 @@ class SubjectSettingController extends Controller
 
         foreach ($queryNames as $queryName) {
             //是否在可请求的key中
-            if ( ! in_array($queryName, $subjectSetting->front_column ?? [])
-                && ! in_array($queryName, $subjectSetting->public_configs ?? [])) {
-                throw new PermissionDeniedException('权限拒绝:' . $queryName);
+            if (in_array($queryName, $subjectSetting->front_column ?? [])) {
+                $value = $subjectSetting->$queryName;
+            } else {
+                $value = $subjectSetting->public_configs[$queryName] ?? null;
+                if (is_null($value)) {
+                    $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject);
+                }
             }
 
-            $value = SubjectSettingUtils::getSubjectSetting($queryName, $subject);
+            if ( ! $value) {
+                throw new ResourceException($queryName . '不存在或权限拒绝');
+            }
 
-            if (in_array($request->name, $subjectSetting->file_type_column ?? [])) {
+
+
+            if (in_array($queryName, $subjectSetting->file_type_column ?? [])) {
                 $value = config("app.file_url_prefix") . $value;
             }
 
@@ -61,6 +79,8 @@ class SubjectSettingController extends Controller
             //}
             $result[$queryName] = $value;
         }
+
+        Cache::put($cacheKey . $requestQueryName, $result, Carbon::now()->addMinutes(10));
 
         return $result;
     }

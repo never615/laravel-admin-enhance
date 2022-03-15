@@ -8,7 +8,6 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Form;
 use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -17,6 +16,7 @@ use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Tool\Exception\ResourceException;
+use Mallto\Tool\Utils\CacheUtils;
 
 /**
  * Class SubjectSettingController.
@@ -82,16 +82,16 @@ class SubjectSettingController extends AdminCommonController
 
         if (AdminUtils::isOwner()) {
             $form->tab('基本配置', function (Form $form) {
-
                 $form->multipleSelect('front_column', '前端可以请求的列')
                     ->options(array_combine(Schema::getColumnListing('subject_settings'),
                         Schema::getColumnListing('subject_settings')))
-                    ->help('配置在这里或者public中的字段前端才有权限请求');
+                    ->help('配置在这里key或者public配置中的字段或者动态配置中的前端、公共配置前端才有权限请求');
 
                 $form->multipleSelect('file_type_column', '文件类型的列')
                     ->options(array_combine(Schema::getColumnListing('subject_settings'),
                         Schema::getColumnListing('subject_settings')))
-                    ->help('配置在这里的列前端请求的时候会自动加文件前缀,或者字段名包含image');
+                    //->help('配置在这里的列前端请求的时候会自动加文件前缀,或者字段名包含image');
+                    ->help('配置在这里的列前端请求的时候会自动加文件前缀');
 
                 $this->formSubject($form);
                 $this->formAdminUser($form);
@@ -216,27 +216,29 @@ class SubjectSettingController extends AdminCommonController
      */
     private function clearCache($form)
     {
-        $requestAll = request()->all();
-        $requestAll = array_except($requestAll, [
-            'front_column',
-            'file_type_column',
-            'subject_id',
-            '_token',
-            'after-save',
-            '_method',
-        ]);
+        CacheUtils::clear(SubjectSetting::getCacheKey($form->subject_id));
 
-        foreach ($requestAll as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $key2 => $value2) {
-                    Cache::store('memory')
-                        ->forget('s_s' . $form->subject_id . '_' . $key2);
-                }
-            } else {
-                Cache::store('memory')
-                    ->forget('s_s' . $form->subject_id . '_' . $key);
-            }
-        }
+        //$requestAll = request()->all();
+        //$requestAll = array_except($requestAll, [
+        //    'front_column',
+        //    'file_type_column',
+        //    'subject_id',
+        //    '_token',
+        //    'after-save',
+        //    '_method',
+        //]);
+        //
+        //foreach ($requestAll as $key => $value) {
+        //    if (is_array($value)) {
+        //        foreach ($value as $key2 => $value2) {
+        //            Cache::store('memory')
+        //                ->forget(SubjectSetting::getCacheKey($form->subject_id) . $key2);
+        //        }
+        //    } else {
+        //        Cache::store('memory')
+        //            ->forget(SubjectSetting::getCacheKey($form->subject_id) . $key);
+        //    }
+        //}
     }
 
 
