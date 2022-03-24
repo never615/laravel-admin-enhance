@@ -18,7 +18,10 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\Data\Permission;
+use Mallto\Admin\SubjectUtils;
+use Mallto\Tool\Exception\HttpException;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Tool\Exception\ResourceException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -52,6 +55,19 @@ class AutoPermissionMiddleware
 
         if ( ! $adminUser) {
             throw new PermissionDeniedException('未登录');
+        }
+
+        $subjectId = null;
+        try {
+            $subjectId = SubjectUtils::getSubjectId();
+        } catch (HttpException $httpException) {
+
+        }
+
+        if ($subjectId) {
+            if ($adminUser->subject_id != $subjectId) {
+                throw new ResourceException("登录账号没有权限请求该项目，adminUser subject与UUID不符");
+            }
         }
 
         $currentRouteName = $request->route()->getName();

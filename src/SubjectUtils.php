@@ -7,6 +7,7 @@ namespace Mallto\Admin;
 
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
@@ -310,6 +311,10 @@ class SubjectUtils
 
         if (empty($uuid) && \Admin::user()) {
             $uuid = \Admin::user()->subject->uuid;
+        }
+
+        if (empty($uuid) && $adminUser = Auth::guard("admin_api")->user()) {
+            $uuid = $adminUser->subject->uuid;
         }
 
         if (empty($uuid)) {
