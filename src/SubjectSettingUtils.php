@@ -71,11 +71,12 @@ class SubjectSettingUtils
                 } else {
                     $value = $subjectSetting['public_configs'][$key]
                         ?? $subjectSetting['private_configs'][$key]
-                        ?? $subjectSetting['subject_owner_configs'][$key];
+                        ?? $subjectSetting['subject_owner_configs'][$key]
+                        ?? null;
                 }
             }
 
-            if ( ! is_null($value && ! empty($value))) {
+            if ( ! is_null($value)) {
                 Cache::store('memory')
                     ->put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
                         Carbon::now()->endOfDay());
