@@ -65,7 +65,7 @@ class AutoPermissionMiddleware
         }
 
         if ($subjectId) {
-            if ($adminUser->subject_id != $subjectId) {
+            if ( ! $adminUser->isOwner() && $adminUser->subject_id != $subjectId) {
                 throw new ResourceException("登录账号没有权限请求该项目，adminUser subject与UUID不符");
             }
         }
