@@ -44,7 +44,17 @@ class OperationLog extends LogOperation
                 $adminUser = Auth::guard("admin_api")->user();
             }
         } catch (\Exception $exception) {
-
+            \Log::warning('OperationLog');
+            \Log::warning($exception);
+            try {
+                $adminUser = Auth::guard("admin_api")->user();
+            } catch (\Exception $exception) {
+                \Log::warning('OperationLog2');
+                \Log::warning($exception);
+            }
+        }
+        if ( ! $adminUser) {
+            return $next($request);
         }
 
         $ip = 0;

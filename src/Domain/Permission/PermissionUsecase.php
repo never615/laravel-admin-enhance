@@ -16,6 +16,7 @@ use Mallto\Admin\Data\Permission;
 class PermissionUsecase
 {
 
+
     /**
      * 获取用户 某一权限的所有子权限
      *
