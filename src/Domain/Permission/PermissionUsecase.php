@@ -46,11 +46,11 @@ class PermissionUsecase
         $parentPermissionIds = "('{" . $parentPermissionIds . "}')";
 
         return Permission::query()
-            ->whereHas('roles', function ($query) use ($adminUser) {
-                $query->whereHas('administrators', function ($query) use ($adminUser) {
-                    $query->where('id', $adminUser->id);
-                });
-            })
+            //->whereHas('roles', function ($query) use ($adminUser) {
+            //    $query->whereHas('administrators', function ($query) use ($adminUser) {
+            //        $query->where('id', $adminUser->id);
+            //    });
+            //})
             ->whereRaw("path like any $parentPermissionIds")
             //->select("id", "name", "slug", "path")
             ->select("id", "name", "slug")
