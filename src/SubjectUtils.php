@@ -313,7 +313,9 @@ class SubjectUtils
             $uuid = \Admin::user()->subject->uuid;
         }
 
-        if (empty($uuid) && $adminUser = Auth::guard("admin_api")->user()) {
+        if (empty($uuid)
+            && ! empty(config('auth.guards.admin_api'))
+            && $adminUser = Auth::guard("admin_api")->user()) {
             $uuid = $adminUser->subject->uuid;
         }
 
