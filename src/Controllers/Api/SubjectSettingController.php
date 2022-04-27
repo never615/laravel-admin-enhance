@@ -10,8 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\SubjectSetting;
+use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 
 /**
@@ -60,15 +60,17 @@ class SubjectSettingController extends Controller
             } else {
                 $value = $subjectSetting->public_configs[$queryName] ?? null;
                 if (is_null($value)) {
-                    $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject);
+                    try {
+                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject);
+                    } catch (SubjectConfigException $subjectConfigException) {
+                        return null;
+                    }
                 }
             }
 
             if ( ! $value) {
                 throw new ResourceException($queryName . '不存在或权限拒绝');
             }
-
-
 
             if (in_array($queryName, $subjectSetting->file_type_column ?? [])) {
                 $value = config("app.file_url_prefix") . $value;
