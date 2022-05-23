@@ -27,6 +27,7 @@ class InitDataSeeder extends Seeder
          */
         $项目管理Subject = Subject::create([
             'name' => "项目管理方",
+            'uuid' => 999,
         ]);
 
         $招商Subject = Subject::create([

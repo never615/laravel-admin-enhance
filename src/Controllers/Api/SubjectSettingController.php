@@ -61,7 +61,10 @@ class SubjectSettingController extends Controller
                 $value = $subjectSetting->public_configs[$queryName] ?? null;
                 if (is_null($value)) {
                     try {
-                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject);
+                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject, 'default');
+                        if ($value === 'default') {
+                            return null;
+                        }
                     } catch (SubjectConfigException $subjectConfigException) {
                         return null;
                     }
