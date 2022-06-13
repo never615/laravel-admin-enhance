@@ -446,4 +446,37 @@ class SubjectUtils
         throw new HttpException(422, "uuid参数错误:" . $uuid);
     }
 
+
+    /**
+     * 获取当前主体 通过第三方项目标识
+     *
+     * @param null $app
+     *
+     * @param null $uuid
+     *
+     * @return Subject
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public
+    static function getSubjectByThirdProjectId(
+        $thirdProjectId
+    ) {
+        $subject = null;
+
+        $subject = Cache::store('memory')->get('sub_proj_id' . $thirdProjectId);
+        if ( ! $subject) {
+            $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
+            if ($subject) {
+                Cache::store('memory')
+                    ->put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
+            }
+        }
+
+        if ($subject) {
+            return $subject;
+        }
+
+        throw new HttpException(422, "第三方项目标识找不到对应项目:" . $thirdProjectId);
+    }
+
 }

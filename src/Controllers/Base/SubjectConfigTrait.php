@@ -62,8 +62,11 @@ trait SubjectConfigTrait
             $form->text('uuid', '主体唯一标识');
             $form->text('wechat_uuid', '微信授权标识');
             $form->switch('base', '总部');
+
+            $form->text('third_part_mall_id', '第三方项目标识');
         }
     }
+
 
     /**
      * 已购模块配置(owner,项目拥有者可以编辑,如mallto)
@@ -86,6 +89,7 @@ trait SubjectConfigTrait
                 ->stacked();
         }
     }
+
 
     /**
      * 系统配置中的json格式保存的配置项
