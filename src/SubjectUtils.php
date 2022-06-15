@@ -417,6 +417,10 @@ class SubjectUtils
                         ->first();
                 }
             }
+
+            if ( ! $subject) {
+                throw new HttpException(422, "uuid参数错误:" . $uuid);
+            }
         }
 
         if ( ! $subject) {
