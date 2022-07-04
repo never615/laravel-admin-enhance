@@ -27,6 +27,7 @@ Route::group([
 ], function ($router) {
 
     $router->post('auth/login', 'AuthController@postLogin');
+    $router->get('auth/yzm', 'AuthController@captcha');
 
     Route::group([
         'middleware' => [ 'requestCheck' ],

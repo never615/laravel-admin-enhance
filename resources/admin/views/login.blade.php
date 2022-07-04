@@ -37,7 +37,7 @@
     <div class="login-box-body">
         <p class="login-box-msg">{{ trans('admin.login') }}</p>
 
-        <form action="{{ admin_url('auth/login') }}" method="post">
+        <form action="{{ admin_url('auth/login') }}" method="post" id="form_submit">
             <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
 
                 @if($errors->has('username'))
@@ -78,10 +78,9 @@
                 @endif
                 <div id="verify-password1" style="position: relative">
                     <input type="password" class="form-control" placeholder="{{ trans('admin.password') }}"
-                           name="password" value="{{ old('password') }}">
+                           name="password" value="{{ old('password') }}" id="password">
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
-
                 @if($errors->has('verify_number'))
                     @foreach($errors->get('verify_number') as $message)
                         <label class="control-label" for="inputError" style="color: #dd4b39"><i
@@ -91,20 +90,35 @@
                 @endif
                 <div id="verify-number1" style="display: none;">
                     <input type="text" class="form-control" style="width: 225px;float: left " placeholder="请输入验证码"
-                           name="verify_number">
+                           name="verify_number" id="verify_number">
                     <input type="button" id="send-sms" style="height: 34px; width: 95px" onclick="sendmsg()"
                            value="发送验证码">
                 </div>
             </div>
+            <!-- 在这里添加代码  start-->
+            <div class="row">
+                <div class="form-group has-feedback {!! !$errors->has('captcha') ?: 'has-error' !!}">
+                    @if($errors->has('captcha'))
+                        @foreach($errors->get('captcha') as $message)
+                            <label class="control-label" for="inputError" style="margin-left: 15px"><i
+                                    class="fa fa-times-circle-o">{{$message}}</i></label></br>
+                        @endforeach
+                    @endif
+                    <input type="text" class="form-control" style="display: inline;width: 55%; margin-left: 15px"
+                           placeholder="{{ trans('admin.captcha') }}" name="captcha" id="captcha">
+                    <img class="captcha" src="{{ captcha_src('admin') }}">
+                </div>
+            </div>
+            <!-- 在这里添加代码  end-->
             <div class="row">
                 <div class="col-xs-8">
                     @if(config('admin.auth.remember'))
                         <div class="checkbox icheck">
-{{--                            <label>--}}
-{{--                                <input type="checkbox" name="remember"--}}
-{{--                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>--}}
-{{--                                {{ trans('admin.remember_me') }}--}}
-{{--                            </label>--}}
+                            {{--                            <label>--}}
+                            {{--                                <input type="checkbox" name="remember"--}}
+                            {{--                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>--}}
+                            {{--                                {{ trans('admin.remember_me') }}--}}
+                            {{--                            </label>--}}
                             <label>
                                 <a style="color: #666" id="switch-mode" onclick="switchMode()">
                                     <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
@@ -122,7 +136,8 @@
                 <!-- /.col -->
                 <div class="col-xs-4">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat">{{ trans('admin.login') }}</button>
+                    <button type="button" class="btn btn-primary btn-block btn-flat"
+                            onclick="checkform_login()">{{ trans('admin.login') }}</button>
                 </div>
                 <!-- /.col -->
             </div>
@@ -145,6 +160,62 @@
 <script src="{{ admin_asset("vendor/laravel-adminE/layer-v3.0.3/layer/layer.js")}}"></script>
 
 <script src="{{ admin_asset("vendor/laravel-adminE/notify/notify.js")}}"></script>
+
+<script src="{{ admin_asset("vendor/laravel-adminE/crypto-js.min.js")}}"></script>
+
+<script type="text/javascript">
+    $(function () {
+        var url = $('img').attr('src');
+        $('img').click(function () {
+            $(this).attr('src', url + Math.random())
+        });
+    });
+
+    function checkform_login() {
+        var display = $('#switch-mode').css('display');
+        if (display != 'none') {
+            if ($("#username").val() == "") {
+                $("#username").focus();
+                alert("请输入您的账号！")
+                return false
+            } else if ($("#password").val() == "") {
+                $("#password").focus();
+                alert("请输入您的密码！")
+                return false
+            }else {
+                var password = $("#password").val();
+                if(password.length < 20)
+                {
+                    $("#password").val(js_encrypt($("#password").val()))
+                }
+
+            }
+        }else{
+            if ($("#mobile").val() == "") {
+                $("#mobile").focus();
+                alert("请输入您的手机号！")
+                return false
+            } else if ($("#verify_number").val() == "") {
+                $("#verify_number").focus();
+                alert("请输入手机验证码！")
+                return false
+            }
+        }
+        $("#form_submit").submit();
+    }
+
+    function js_encrypt() {
+        text = $('#password').val();
+        var key = CryptoJS.enc.Latin1.parse('1E390CMD585LLS4S');
+        var iv = CryptoJS.enc.Latin1.parse('1104432290129056');
+        var encrypted = CryptoJS.AES.encrypt(text, key, {
+            iv: iv,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        }).toString();
+        return encrypted;
+    }
+</script>
 <script>
     var page_type = "{{ json_encode($errors->get('mobile')) }}";
 
