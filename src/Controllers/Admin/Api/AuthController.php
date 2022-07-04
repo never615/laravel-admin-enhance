@@ -148,8 +148,8 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        //测试环境,开发环境不进行验证
-        if ( ! in_array(config('app.env'), [ 'test', 'integration' ])) {
+        //验证预发布/正式环境
+        if (in_array(config('app.env'), [ 'staging', 'production' ])) {
             //验证验证码对不对
             $capthca = $request->input('captcha');
             $captchaKey = $request->input('captcha_key');
