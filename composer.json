@@ -14,7 +14,8 @@
     ],
     "require": {
         "php": ">=7.0",
-        "laravel/framework": ">=5.8"
+        "laravel/framework": ">=5.8",
+        "mews/captcha": "^3.2"
     },
     "autoload": {
         "psr-4": {
