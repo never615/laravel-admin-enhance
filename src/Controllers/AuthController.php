@@ -3,7 +3,9 @@
 namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Controllers\AuthController as BaseAuthController;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Mallto\Mall\Data\AdminUser;
 use Mallto\Tool\Exception\ResourceException;
@@ -11,6 +13,19 @@ use Mallto\User\Domain\SmsUsecase;
 
 class AuthController extends BaseAuthController
 {
+
+    use ThrottlesLogins;
+
+    /**
+     * 最多错误次数
+     */
+    protected $maxAttempts = 5;
+
+    /**
+     * 账号锁定分钟
+     */
+    protected $decayMinutes = 5;
+
 
     /**
      * 手机号登录方式
@@ -75,15 +90,64 @@ class AuthController extends BaseAuthController
 
         $this->loginValidator($request->all())->validate();
 
-        $credentials = $request->only([ $this->username(), 'password' ]);
-        $remember = $request->get('remember', false);
+        $seconds = $this->limiter()->availableIn(
+            $this->throttleKey($request)
+        );
 
+        if (method_exists($this, 'hasTooManyLoginAttempts') &&
+            $this->hasTooManyLoginAttempts($request)
+        ) {
+            return back()->withInput()->withErrors([
+                $this->username() => [ Lang::get('auth.throttle', [ 'seconds' => $seconds ]) ],
+            ]);
+        }
+
+        $credentials = $request->only([ $this->username(), 'password', 'captcha' ]);
+
+        //验证预发布/正式环境
+        if (in_array(config('app.env'), [ 'staging', 'production' ])) {
+            $validator = Validator::make($credentials, [
+                'captcha' => 'required|captcha',
+            ], [ 'captcha.captcha' => '验证码不匹配' ]);
+
+            if ($validator->fails()) {
+                return back()->withInput()->withErrors($validator);
+            }
+        }
+
+        unset($credentials['captcha']);
+
+        if (strlen($credentials['password']) >= 20) {
+            $key = "1E390CMD585LLS4S"; //与JS端的KEY一致
+            $iv = "1104432290129056"; //这个也是要与JS中的IV一致
+            $credentials['password'] = openssl_decrypt(base64_decode($credentials['password']), "AES-128-CBC",
+                $key, OPENSSL_RAW_DATA, $iv);
+        }
+
+        $remember = $request->get('remember', false);
         if ($this->guard()->attempt($credentials, $remember)) {
-            return $this->sendLoginResponse($request);
+            $res = $this->sendLoginResponse($request);
+
+            $this->clearLoginAttempts($request);
+
+            return $res;
+        }
+
+        $this->incrementLoginAttempts($request);
+        //错误次数
+        $num = $this->limiter()->attempts($this->throttleKey($request));
+        //剩余次数
+        $s_num = $this->maxAttempts - $num;
+
+        $errorLog = $this->getFailedLoginMessage() . '，' . Lang::get('auth.throttle_snum',
+                [ 's_num' => $s_num ]);
+
+        if ($s_num == 0) {
+            $errorLog = "太多次尝试登入, 请在 $seconds 秒再次尝试.";
         }
 
         return back()->withInput()->withErrors([
-            $this->username() => $this->getFailedLoginMessage(),
+            $this->username() => $errorLog,
             'login_page'      => 'password',
         ]);
     }
@@ -101,6 +165,7 @@ class AuthController extends BaseAuthController
         return Validator::make($data, [
             'mobile'        => 'required',
             'verify_number' => 'required',
+            'captcha'       => 'required',
         ]);
     }
 
