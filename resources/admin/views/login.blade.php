@@ -106,7 +106,7 @@
                     @endif
                     <input type="text" class="form-control" style="display: inline;width: 55%; margin-left: 15px"
                            placeholder="{{ trans('admin.captcha') }}" name="captcha" id="captcha">
-                    <img class="captcha" src="{{ captcha_src('admin') }}">
+                    <img class="captcha" src="{{ captcha_src('default') }}">
                 </div>
             </div>
             <!-- 在这里添加代码  end-->
