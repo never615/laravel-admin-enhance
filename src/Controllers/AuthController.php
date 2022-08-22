@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
-use Mallto\Mall\Data\AdminUser;
+use Mallto\Admin\Data\Administrator;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\SmsUsecase;
 
@@ -51,7 +51,7 @@ class AuthController extends BaseAuthController
 
         $this->loginSmsValidator($request->all())->validate();
 
-        $adminUser = Adminuser::query()->where('mobile', $request->mobile)->first();
+        $adminUser = Administrator::query()->where('mobile', $request->mobile)->first();
 
         $sms = app(SmsUsecase::class);
 
@@ -187,11 +187,11 @@ class AuthController extends BaseAuthController
 
         $mobile = $request->mobile;
 
-        $count = AdminUser::query()
+        $count = Administrator::query()
             ->where('mobile', $mobile)
             ->count();
 
-        $user = AdminUser::query()
+        $user = Administrator::query()
             ->where('mobile', $mobile)
             ->orderBy('id')
             ->first();
