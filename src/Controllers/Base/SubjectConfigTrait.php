@@ -79,15 +79,14 @@ trait SubjectConfigTrait
      */
     protected function purchasedModuleConfig(Form $form)
     {
-        if (\Mallto\Admin\AdminUtils::isOwner()) {
-            $permissions = Permission::where('common', false)
-                ->orderby('order')
-                ->get();
-            $form->checkbox('permissions', '已购模块')
-                ->options(Permission::selectOptions($permissions->toArray(),
-                    false, false))
-                ->stacked();
-        }
+        $permissions = Permission::where('common', false)
+            ->orderby('order')
+            ->get();
+
+        $form->checkbox('permissions', '已购模块')
+            ->options(Permission::selectOptions($permissions->toArray(),
+                false, false))
+            ->stacked();
     }
 
 

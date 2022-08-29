@@ -133,14 +133,19 @@ class SubjectController extends AdminCommonController
 
         $this->subjectOwnerExtend($form);
 
-        if (\Mallto\Admin\AdminUtils::isOwner() || config('other.subject_parent_config')) {
+        if (
+            \Mallto\Admin\AdminUtils::isOwner()
+            || \Mallto\Admin\AdminUtils::isBase()
+            || config('other.subject_parent_config')
+        ) {
             $form->tab('主体基本配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->systemConfigBasic($form);
             });
         }
 
-        if (\Mallto\Admin\AdminUtils::isOwner() || config('other.subject_parent_config')) {
+        if (\Mallto\Admin\AdminUtils::isOwner()
+            || config('other.subject_parent_config')) {
             $form->tab('已购模块配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->purchasedModuleConfig($form);
