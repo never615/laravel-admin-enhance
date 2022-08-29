@@ -23,6 +23,7 @@ use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\Tag;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 class SubjectController extends AdminCommonController
 {
@@ -292,6 +293,15 @@ class SubjectController extends AdminCommonController
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->formSaved($form, $adminUser);
+        }
+
+        if ($adminUser && ! $adminUser->isOwner()) {
+            if (
+                ($form->third_part_mall_id && $form->third_part_mall_id != $form->model()->third_part_mall_id) ||
+                ($form->uuid && $form->uuid != $form->model()->uuid)
+            ) {
+                throw new PermissionDeniedException('没有权限修改,请联系墨兔管理修改');
+            }
         }
     }
 
