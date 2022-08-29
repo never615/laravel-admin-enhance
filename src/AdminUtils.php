@@ -87,6 +87,19 @@ class AdminUtils
 
 
     /**
+     * 判断当前登录用户是否是总部
+     *
+     * @return \Illuminate\Session\SessionManager|\Illuminate\Session\Store|mixed
+     */
+    public static function isBase()
+    {
+        [ $adminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
+
+        return $currentSubject->base;
+    }
+
+
+    /**
      * 获取当前管理端登录管理用户
      */
     public static function getCurrentAdminUser()

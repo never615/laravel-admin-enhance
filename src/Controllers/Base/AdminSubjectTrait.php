@@ -9,6 +9,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\SubjectUtils;
 
 /**
  * 处理subject的显示和自动保存
@@ -52,12 +53,24 @@ trait AdminSubjectTrait
             if (\Mallto\Admin\AdminUtils::isOwner()) {
                 $form->selectE("subject_id", "主体")
                     ->options(
-                        Subject::whereNotNull("uuid")
-                            ->orderBy('id', 'desc')
+                        Subject::orderBy('id', 'desc')
                             ->pluck("name", "id")
                     )
                     ->rules("required");
-            } else {
+            } elseif (AdminUtils::isBase()) {
+                //1.获取当前登录账户属于哪一个主体
+                $currentSubject = SubjectUtils::getSubject();
+                //2.获取当前主体的所有子主体
+                $ids = $currentSubject->getChildrenSubject();
+
+                $form->selectE("subject_id", "主体")
+                    ->options(
+                        Subject::orderBy('id', 'desc')
+                            ->whereIn('id', $ids)
+                            ->pluck("name", "id")
+                    )
+                    ->rules("required");
+
 //                $form->displayE("subject.name", "主体");
 //                $form->hideFieldsByCreate("subject.name");
             }
