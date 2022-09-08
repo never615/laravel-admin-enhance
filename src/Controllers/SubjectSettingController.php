@@ -8,6 +8,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Form;
 use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -15,6 +16,7 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\Facades\AdminE;
+use Mallto\Tool\Domain\App\ClearCacheUsecase;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\CacheUtils;
 
@@ -216,29 +218,15 @@ class SubjectSettingController extends AdminCommonController
      */
     private function clearCache($form)
     {
-        CacheUtils::clear(SubjectSetting::getCacheKey($form->subject_id));
+        Cache::forget(SubjectSetting::getCacheKey($form->subject_id));
 
-        //$requestAll = request()->all();
-        //$requestAll = array_except($requestAll, [
-        //    'front_column',
-        //    'file_type_column',
-        //    'subject_id',
-        //    '_token',
-        //    'after-save',
-        //    '_method',
-        //]);
-        //
-        //foreach ($requestAll as $key => $value) {
-        //    if (is_array($value)) {
-        //        foreach ($value as $key2 => $value2) {
-        //            Cache::store('memory')
-        //                ->forget(SubjectSetting::getCacheKey($form->subject_id) . $key2);
-        //        }
-        //    } else {
-        //        Cache::store('memory')
-        //            ->forget(SubjectSetting::getCacheKey($form->subject_id) . $key);
-        //    }
-        //}
+        $prefix = '';
+
+        $clearCacheUsecase = app(ClearCacheUsecase::class);
+        $clearCacheUsecase->clearCache(true, $prefix);
+
+        //        Artisan::call('cache:clear');
+        //        Artisan::call('cache:clear remote_redis');
     }
 
 

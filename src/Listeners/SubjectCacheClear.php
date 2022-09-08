@@ -37,9 +37,9 @@ class SubjectCacheClear implements ShouldQueue
         //处理刷新缓存
 
         //1. 清理subject缓存
-        Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+        Cache::put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
         if (isset($subject->extra_config['uuid'])) {
-            Cache::store('memory')->put('sub_uuid' . $subject->extra_config['uuid'], $subject,
+            Cache::put('sub_uuid' . $subject->extra_config['uuid'], $subject,
                 Carbon::now()->endOfDay());
         }
 

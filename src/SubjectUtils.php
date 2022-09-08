@@ -53,7 +53,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::store('memory')->get('c_s_ec_' . $subjectId . '_' . $key);
+            $value = Cache::get('c_s_ec_' . $subjectId . '_' . $key);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -77,7 +77,7 @@ class SubjectUtils
 
         $value = array_get($extraConfig, $key);
         if ( ! is_null($value)) {
-            Cache::store('memory')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
+            Cache::put('c_s_ec_' . $subjectId . '_' . $key, $value,
                 Carbon::now()->endOfDay());
 
             return $value;
@@ -115,7 +115,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::store('memory')->get('c_s_o_' . $subjectId . '_' . $key);
+            $value = Cache::get('c_s_o_' . $subjectId . '_' . $key);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -139,7 +139,7 @@ class SubjectUtils
 
         $value = array_get($extraConfig, $key);
         if ( ! is_null($value)) {
-            Cache::store('memory')->put('c_s_o_' . $subjectId . '_' . $key, $value,
+            Cache::put('c_s_o_' . $subjectId . '_' . $key, $value,
                 Carbon::now()->endOfDay());
 
             return $value;
@@ -158,12 +158,11 @@ class SubjectUtils
      *
      * 对应subject_configs表
      *
-     * @param             $key
-     * @param Subject|int $subjectId or $subject
-     * @param null        $default
+     * @param                  $key
+     * @param null             $subject
+     * @param null             $default
      *
      * @return mixed|null
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
     {
@@ -178,22 +177,12 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
             if ( ! is_null($value)) {
                 return $value;
             }
         } else {
-            try {
-                $subjectId = self::getSubjectId();
-            } catch (Exception $exception) {
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    \Log::error('主体未找到 getDynami');
-                    \Log::warning($exception);
-                    throw new SubjectNotFoundException("主体未找到 getDynamicPublicKeyConfigByOwner");
-                }
-            }
+            $subjectId = self::getSubjectId();
         }
 
         //缓存中没有查到，查数据库
@@ -201,19 +190,25 @@ class SubjectUtils
             ->where("key", $key)
             ->first();
 
-        if ( ! $subjectConfig) {
-            if (isset($default)) {
-                return $default;
-            } else {
-                throw new SubjectConfigException($key . "未配置," . $subjectId);
-            }
+        if ($subjectConfig) {
+            $value = $subjectConfig->value;
         }
 
-        $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+        if ( ! is_null($value)) {
+            Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+                Carbon::now()->endOfDay());
+
+            return $value;
+        }
+
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, '',
             Carbon::now()->endOfDay());
 
-        return $value;
+        if ( ! is_null($default)) {
+            return $default;
+        }
+
+        throw new SubjectConfigException($key . "未配置," . $subjectId);
     }
 
 
@@ -246,7 +241,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::store('memory')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -279,7 +274,7 @@ class SubjectUtils
         }
 
         $value = $subjectConfig->value;
-        Cache::store('memory')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -408,7 +403,7 @@ class SubjectUtils
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Cache::store('memory')->get('sub_uuid' . $uuid);
+            $subject = Cache::get('sub_uuid' . $uuid);
             if ( ! $subject) {
                 $subject = Subject::where("uuid", $uuid)->first();
                 if ( ! $subject) {
@@ -428,17 +423,17 @@ class SubjectUtils
 
             $user = \Admin::user();
             if ($user) {
-                $subject = Cache::store('memory')->get('sub_admin_user_' . $user->id);
+                $subject = Cache::get('sub_admin_user_' . $user->id);
                 if ( ! $subject) {
                     $subject = $user->subject;
 
-                    Cache::store('memory')->put('sub_admin_user_' . $user->id, $subject, 300);
+                    Cache::put('sub_admin_user_' . $user->id, $subject, 300);
                 }
             }
         } else {
-            Cache::store('memory')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+            Cache::put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
             if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
-                Cache::store('memory')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                Cache::put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
                     $subject, Carbon::now()->endOfDay());
             }
         }
@@ -467,12 +462,11 @@ class SubjectUtils
     ) {
         $subject = null;
 
-        $subject = Cache::store('memory')->get('sub_proj_id' . $thirdProjectId);
+        $subject = Cache::get('sub_proj_id' . $thirdProjectId);
         if ( ! $subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
             if ($subject) {
-                Cache::store('memory')
-                    ->put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
+                Cache::put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
             }
         }
 

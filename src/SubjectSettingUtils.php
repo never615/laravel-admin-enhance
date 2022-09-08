@@ -28,6 +28,7 @@ class SubjectSettingUtils
      * @param null $default
      *
      * @return mixed|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public static function getSubjectSetting($key, $subject = null, $default = null)
     {
@@ -50,7 +51,7 @@ class SubjectSettingUtils
             $subjectId = $subject->id;
         }
 
-        $value = Cache::store('memory')->get(SubjectSetting::getCacheKey($subjectId) . $key);
+        $value = Cache::get(SubjectSetting::getCacheKey($subjectId) . $key);
         if ( ! isset($value) || is_null($value)) {
             if (Schema::hasColumn('subject_settings', $key)) {
                 $subjectSetting = SubjectSetting::query()
@@ -64,7 +65,6 @@ class SubjectSettingUtils
                     ->first();
             }
 
-            $value = null;
             if ($subjectSetting) {
                 if (Schema::hasColumn('subject_settings', $key)) {
                     $value = $subjectSetting->$key;
@@ -77,13 +77,15 @@ class SubjectSettingUtils
             }
 
             if ( ! is_null($value)) {
-                Cache::store('memory')
-                    ->put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
-                        Carbon::now()->endOfDay());
-
-                return $value;
+                Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
+                    Carbon::now()->endOfDay());
+            } else {
+                Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, '',
+                    Carbon::now()->endOfDay());
             }
-        } else {
+        }
+
+        if ( ! is_null($value)) {
             return $value;
         }
 
