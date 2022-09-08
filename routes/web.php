@@ -87,8 +87,8 @@ Route::group([
                 $router->resource('auth/permissions', '\Mallto\Admin\Controllers\PermissionController');
                 $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController',
                     [ 'except' => [ 'create' ] ]);
-                $router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
-                    [ 'only' => [ 'index', 'destroy' ] ]);
+                //$router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
+                //    [ 'only' => [ 'index', 'destroy' ] ]);
 
                 $router->resource('subjects', 'SubjectController');
 
@@ -111,6 +111,9 @@ Route::group([
 
                 //账户分组
                 Route::resource('admin_user_groups', 'AdminUserGroupController');
+                //操作日志字典
+                Route::resource("operation_log_dictionarys", '\Mallto\Admin\Controllers\Admin\OperationLogDictionaryController');
+                Route::resource("auth/logs", '\Mallto\Admin\Controllers\Admin\OperationLogController');
             });
         });
 

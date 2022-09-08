@@ -54,6 +54,9 @@ class SystemManagerMenuSeeder extends Seeder
         $this->updateOrCreate(
             'subject_configs.index', $systemManagerMenu->id,
             $order++, '主体配置', 'fa-assistive-listening');
+
+        $this->updateOrCreate(
+            "operation_log_dictionarys.index", $systemManagerMenu->id, $order++, "操作日志字典", "fa-line-chart");
     }
 
 }
