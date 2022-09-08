@@ -52,7 +52,7 @@ class SubjectSettingUtils
         }
 
         $value = Cache::get(SubjectSetting::getCacheKey($subjectId) . $key);
-        if ( ! isset($value) || is_null($value)) {
+        if (is_null($value)) {
             if (Schema::hasColumn('subject_settings', $key)) {
                 $subjectSetting = SubjectSetting::query()
                     ->select([ $key ])
@@ -79,18 +79,22 @@ class SubjectSettingUtils
             if ( ! is_null($value)) {
                 Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
                     Carbon::now()->endOfDay());
+
             } else {
-                Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, '',
-                    Carbon::now()->endOfDay());
+                if ( ! is_null($default)) {
+                    Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, $default,
+                        Carbon::now()->endOfDay());
+                    $value = $default;
+                } else {
+                    Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, '',
+                        Carbon::now()->endOfDay());
+                    $value = '';
+                }
             }
         }
 
         if ( ! is_null($value)) {
             return $value;
-        }
-
-        if ( ! is_null($default)) {
-            return $default;
         }
 
         throw new NotSettingBySubjectOwnerException($key . "未配置," . $subjectId);

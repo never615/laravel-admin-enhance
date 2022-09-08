@@ -8,7 +8,6 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Form;
 use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -218,15 +217,10 @@ class SubjectSettingController extends AdminCommonController
      */
     private function clearCache($form)
     {
-        Cache::forget(SubjectSetting::getCacheKey($form->subject_id));
-
-        $prefix = '';
+        $prefix = SubjectSetting::getCacheKey($form->subject_id);
 
         $clearCacheUsecase = app(ClearCacheUsecase::class);
         $clearCacheUsecase->clearCache(true, $prefix);
-
-        //        Artisan::call('cache:clear');
-        //        Artisan::call('cache:clear remote_redis');
     }
 
 

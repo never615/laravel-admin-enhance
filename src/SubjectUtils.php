@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
-use Mallto\Admin\Exception\SubjectNotFoundException;
 use Mallto\Tool\Exception\HttpException;
 
 /**
@@ -58,17 +57,7 @@ class SubjectUtils
                 return $value;
             }
         } else {
-            try {
-                $subjectId = self::getSubjectId();
-            } catch (Exception $exception) {
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    \Log::error('主体未找到');
-                    \Log::warning($exception);
-                    throw $exception;
-                }
-            }
+            $subjectId = self::getSubjectId();
         }
 
         $subject = Subject::query()->findOrFail($subjectId);
@@ -77,13 +66,17 @@ class SubjectUtils
 
         $value = array_get($extraConfig, $key);
         if ( ! is_null($value)) {
-            Cache::put('c_s_ec_' . $subjectId . '_' . $key, $value,
-                Carbon::now()->endOfDay());
 
-            return $value;
+        } elseif ( ! is_null($default)) {
+            $value = $default;
         } else {
-            return $default;
+            $value = '';
         }
+
+        Cache::put('c_s_ec_' . $subjectId . '_' . $key, $value,
+            Carbon::now()->endOfDay());
+
+        return $value;
     }
 
 
@@ -120,17 +113,8 @@ class SubjectUtils
                 return $value;
             }
         } else {
-            try {
-                $subjectId = self::getSubjectId();
-            } catch (Exception $exception) {
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    \Log::error('主体未找到');
-                    \Log::warning($exception);
-                    throw $exception;
-                }
-            }
+            $subjectId = self::getSubjectId();
+
         }
 
         $subject = Subject::query()->findOrFail($subjectId);
@@ -138,14 +122,19 @@ class SubjectUtils
         $extraConfig = $subject->open_extra_config ?: [];
 
         $value = array_get($extraConfig, $key);
-        if ( ! is_null($value)) {
-            Cache::put('c_s_o_' . $subjectId . '_' . $key, $value,
-                Carbon::now()->endOfDay());
 
-            return $value;
+        if ( ! is_null($value)) {
+
+        } elseif ( ! is_null($default)) {
+            $value = $default;
         } else {
-            return $default;
+            $value = '';
         }
+
+        Cache::put('c_s_o_' . $subjectId . '_' . $key, $value,
+            Carbon::now()->endOfDay());
+
+        return $value;
     }
 
 
@@ -192,23 +181,16 @@ class SubjectUtils
 
         if ($subjectConfig) {
             $value = $subjectConfig->value;
+        } elseif ( ! is_null($default)) {
+            $value = $default;
+        } else {
+            throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        if ( ! is_null($value)) {
-            Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
-                Carbon::now()->endOfDay());
-
-            return $value;
-        }
-
-        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, '',
+        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
-        if ( ! is_null($default)) {
-            return $default;
-        }
-
-        throw new SubjectConfigException($key . "未配置," . $subjectId);
+        return $value;
     }
 
 
@@ -246,17 +228,7 @@ class SubjectUtils
                 return $value;
             }
         } else {
-            try {
-                $subjectId = self::getSubjectId();
-            } catch (Exception $exception) {
-                if (isset($default)) {
-                    return $default;
-                } else {
-                    \Log::error('主体未找到 getDynami');
-                    \Log::warning($exception);
-                    throw new SubjectNotFoundException("主体未找到 getDynamicPublicKeyConfigByOwner");
-                }
-            }
+            $subjectId = self::getSubjectId();
         }
 
         //缓存中没有查到，查数据库
@@ -265,15 +237,14 @@ class SubjectUtils
             ->where("key", $key)
             ->first();
 
-        if ( ! $subjectConfig) {
-            if (isset($default)) {
-                return $default;
-            } else {
-                throw new SubjectConfigException($key . "未配置," . $subjectId);
-            }
+        if ($subjectConfig) {
+            $value = $subjectConfig->value;
+        } elseif ( ! is_null($default)) {
+            $value = $default;
+        } else {
+            throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        $value = $subjectConfig->value;
         Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
@@ -420,7 +391,6 @@ class SubjectUtils
 
         if ( ! $subject) {
             //按照管理端请求的方式,尝试获取subject
-
             $user = \Admin::user();
             if ($user) {
                 $subject = Cache::get('sub_admin_user_' . $user->id);
@@ -460,8 +430,6 @@ class SubjectUtils
     static function getSubjectByThirdProjectId(
         $thirdProjectId
     ) {
-        $subject = null;
-
         $subject = Cache::get('sub_proj_id' . $thirdProjectId);
         if ( ! $subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
