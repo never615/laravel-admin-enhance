@@ -37,20 +37,17 @@ class SubjectCacheClear implements ShouldQueue
         //处理刷新缓存
 
         //1. 清理subject缓存
-        Cache::put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+        Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
         if (isset($subject->extra_config['uuid'])) {
-            Cache::put('sub_uuid' . $subject->extra_config['uuid'], $subject,
+            Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config['uuid'], $subject,
                 Carbon::now()->endOfDay());
         }
 
-        if (config('cache.default') == 'redis') {
-            //2. 清理subject的open_extra_config缓存
-            Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
+        //2. 清理subject的open_extra_config缓存
+        Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
 
-            //3. 清理extra_config
-            Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
-        }
-
+        //3. 清理extra_config
+        Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
     }
 
 }

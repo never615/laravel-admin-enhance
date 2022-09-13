@@ -52,7 +52,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::get('c_s_ec_' . $subjectId . '_' . $key);
+            $value = Cache::store('local_redis')->get('c_s_ec_' . $subjectId . '_' . $key);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -73,7 +73,7 @@ class SubjectUtils
             $value = '';
         }
 
-        Cache::put('c_s_ec_' . $subjectId . '_' . $key, $value,
+        Cache::store('local_redis')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -108,7 +108,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::get('c_s_o_' . $subjectId . '_' . $key);
+            $value = Cache::store('local_redis')->get('c_s_o_' . $subjectId . '_' . $key);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -131,7 +131,7 @@ class SubjectUtils
             $value = '';
         }
 
-        Cache::put('c_s_o_' . $subjectId . '_' . $key, $value,
+        Cache::store('local_redis')->put('c_s_o_' . $subjectId . '_' . $key, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -166,7 +166,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -187,7 +187,7 @@ class SubjectUtils
             throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+        Cache::store('local_redis')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -223,7 +223,7 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            $value = Cache::get('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
             if ( ! is_null($value)) {
                 return $value;
             }
@@ -245,7 +245,7 @@ class SubjectUtils
             throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        Cache::put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
+        Cache::store('local_redis')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
 
         return $value;
@@ -374,7 +374,7 @@ class SubjectUtils
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Cache::get('sub_uuid' . $uuid);
+            $subject = Cache::store('local_redis')->get('sub_uuid' . $uuid);
             if ( ! $subject) {
                 $subject = Subject::where("uuid", $uuid)->first();
                 if ( ! $subject) {
@@ -393,17 +393,17 @@ class SubjectUtils
             //按照管理端请求的方式,尝试获取subject
             $user = \Admin::user();
             if ($user) {
-                $subject = Cache::get('sub_admin_user_' . $user->id);
+                $subject = Cache::store('local_redis')->get('sub_admin_user_' . $user->id);
                 if ( ! $subject) {
                     $subject = $user->subject;
 
-                    Cache::put('sub_admin_user_' . $user->id, $subject, 300);
+                    Cache::store('local_redis')->put('sub_admin_user_' . $user->id, $subject, 300);
                 }
             }
         } else {
-            Cache::put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+            Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
             if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
-                Cache::put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
                     $subject, Carbon::now()->endOfDay());
             }
         }
@@ -430,11 +430,11 @@ class SubjectUtils
     static function getSubjectByThirdProjectId(
         $thirdProjectId
     ) {
-        $subject = Cache::get('sub_proj_id' . $thirdProjectId);
+        $subject = Cache::store('local_redis')->get('sub_proj_id' . $thirdProjectId);
         if ( ! $subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
             if ($subject) {
-                Cache::put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
+                Cache::store('local_redis')->put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
             }
         }
 

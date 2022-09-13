@@ -41,7 +41,7 @@ class SubjectSettingController extends Controller
         $subject = SubjectUtils::getSubject();
 
         $cacheKey = SubjectSetting::getCacheKey($subject->id);
-        $result = Cache::get($cacheKey . $requestQueryName);
+        $result = Cache::store('local_redis')->get($cacheKey . $requestQueryName);
 
         if ($result) {
             return $result;
@@ -85,7 +85,7 @@ class SubjectSettingController extends Controller
             $result[$queryName] = $value;
         }
 
-        Cache::put($cacheKey . $requestQueryName, $result, Carbon::now()->addMinutes(10));
+        Cache::store('local_redis')->put($cacheKey . $requestQueryName, $result, Carbon::now()->addMinutes(10));
 
         return $result;
     }

@@ -51,7 +51,7 @@ class SubjectSettingUtils
             $subjectId = $subject->id;
         }
 
-        $value = Cache::get(SubjectSetting::getCacheKey($subjectId) . $key);
+        $value = Cache::store('local_redis')->get(SubjectSetting::getCacheKey($subjectId) . $key);
         if (is_null($value)) {
             if (Schema::hasColumn('subject_settings', $key)) {
                 $subjectSetting = SubjectSetting::query()
@@ -77,16 +77,16 @@ class SubjectSettingUtils
             }
 
             if ( ! is_null($value)) {
-                Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
+                Cache::store('local_redis')->put(SubjectSetting::getCacheKey($subjectId) . $key, $value,
                     Carbon::now()->endOfDay());
 
             } else {
                 if ( ! is_null($default)) {
-                    Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, $default,
+                    Cache::store('local_redis')->put(SubjectSetting::getCacheKey($subjectId) . $key, $default,
                         Carbon::now()->endOfDay());
                     $value = $default;
                 } else {
-                    Cache::put(SubjectSetting::getCacheKey($subjectId) . $key, '',
+                    Cache::store('local_redis')->put(SubjectSetting::getCacheKey($subjectId) . $key, '',
                         Carbon::now()->endOfDay());
                     $value = '';
                 }
