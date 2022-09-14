@@ -67,6 +67,7 @@ class SubjectConfigController extends AdminCommonController
 
         $form->displayE('show_default_key', '预设的一些key')
             ->setDisplay(true)
+            ->help('<a href="https://wiki.mall-to.com/web/#/44?page_id=904">更多配置见</a>')
             ->with(function ($values) {
                 $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
                 foreach (config('other.subject_config_key') as $key => $value) {
