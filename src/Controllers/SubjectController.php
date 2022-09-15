@@ -234,10 +234,6 @@ class SubjectController extends AdminCommonController
                 ->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
 有的项目管理端单独使用一个公众号,所以需要配置单独的uuid');
 
-            $form->text(SubjectConfigConstants::OWNER_CONFIG_SMS_SIGN, '短信签名');
-
-            $form->text(SubjectConfigConstants::OWNER_CONFIG_SMS_TEMPLATE_CODE, '短信验证码模板号');
-
             $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')
                 ->options(Tag::TYPE);
 
