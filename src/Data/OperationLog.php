@@ -5,8 +5,12 @@
 
 namespace Mallto\Admin\Data;
 
+use Mallto\Admin\Data\Traits\DynamicData;
+
 class OperationLog extends \Encore\Admin\Auth\Database\OperationLog
 {
+
+    use DynamicData;
 
     protected $fillable = [];
 
