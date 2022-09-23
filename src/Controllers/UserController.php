@@ -45,6 +45,7 @@ class UserController extends AdminCommonController
     {
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
+        $grid->mobile()->editable();
         $grid->status("账号状态")
             ->display(function ($value) {
                 return Administrator::STATUS[$value] ?? "";
@@ -56,6 +57,7 @@ class UserController extends AdminCommonController
             $filter->equal("adminable_type", "账号类型")->select(SelectConstants::ADMINABLE_TYPE);
             $filter->ilike("username", trans('admin.username'));
             $filter->ilike("name", trans('admin.name'));
+            $filter->ilike('mobile');
         });
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
@@ -75,6 +77,8 @@ class UserController extends AdminCommonController
             ->rules('required');
 
         $form->text('name', trans('admin.name'))->rules('required');
+
+        $form->text('mobile');
 
         if ($this->currentId) {
             $adminUser = Admin::user();
