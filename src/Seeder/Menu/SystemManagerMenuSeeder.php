@@ -19,7 +19,6 @@ class SystemManagerMenuSeeder extends Seeder
 
     use MenuSeederMaker;
 
-
     /**
      * Run the database seeds.
      *
@@ -57,7 +56,7 @@ class SystemManagerMenuSeeder extends Seeder
 
         // 项目配置
         $this->updateOrCreate(
-            'subject_settings.index', $systemManagerMenu, $order++, '项目配置', 'fa-server');
+            'subject_settings.index', $systemManagerMenu->id, $order++, '项目配置', 'fa-server');
 
         $this->updateOrCreate(
             "operation_log_dictionarys.index", $systemManagerMenu->id, $order++, "操作日志字典", "fa-line-chart");
