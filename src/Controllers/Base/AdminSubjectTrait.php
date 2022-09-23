@@ -97,7 +97,7 @@ trait AdminSubjectTrait
     {
         //不是项目拥有者才自动设置subject_id
         if (Schema::hasColumn($this->tableName, "subject_id") &&
-            ! \Mallto\Admin\AdminUtils::isOwner()) {
+            ! \Mallto\Admin\AdminUtils::isOwner() && ! \Mallto\Admin\AdminUtils::isBase()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
             if ( ! $this->adminUser) {
