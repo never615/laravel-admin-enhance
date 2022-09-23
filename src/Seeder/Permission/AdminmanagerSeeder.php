@@ -10,7 +10,6 @@ class AdminmanagerSeeder extends Seeder
 
     use SeederMaker;
 
-
     /**
      * Run the database seeds.
      *
@@ -67,6 +66,8 @@ class AdminmanagerSeeder extends Seeder
          * ------------------------  操作日志  ---------------------------
          */
         $this->createPermissions('操作日志', 'logs');
+
+        $this->createPermissions('项目配置', 'subject_settings', true, 0, false);
 
 //        $this->createPermissions('文件', 'uploads');
 
