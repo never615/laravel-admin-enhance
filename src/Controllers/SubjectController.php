@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Form\EmbeddedForm;
 use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Tools;
 use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheUtils;
@@ -22,8 +23,10 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
+use Mallto\Admin\Domain\Import\SubjectImport;
 use Mallto\Tool\Data\Tag;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Admin\Grid\Tools\ImportButton;
 
 class SubjectController extends AdminCommonController
 {
@@ -87,7 +90,9 @@ class SubjectController extends AdminCommonController
             }
             $actions->disableView();
         });
-
+        $grid->tools(function (Tools $tools) {
+            $tools->append(new ImportButton(SubjectImport::class));
+        });
     }
 
 
