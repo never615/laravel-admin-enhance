@@ -227,6 +227,12 @@ abstract class AdminCommonController extends AdminController
             } else {
                 $filter->disableIdFilter();
             }
+
+            if (config('other.subject_filter')) {
+                if (Schema::hasColumn($this->tableName, "subject_id")) {
+                    $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
+                }
+            }
         } else {
             $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
