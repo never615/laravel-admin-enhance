@@ -5,12 +5,12 @@
 
 namespace Mallto\Admin\Controllers\Admin;
 
-use Encore\Admin\Auth\Database\OperationLog;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Support\Arr;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Data\OperationLog;
 use Mallto\Admin\Data\OperationLogDictionary;
 
 class OperationLogController extends AdminCommonController
