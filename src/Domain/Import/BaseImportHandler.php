@@ -15,6 +15,7 @@ use Mallto\Tool\Utils\TimeUtils;
 /**
  *
  * 使用laravel-excel处理导入
+ *
  * @link https://docs.laravel-excel.com/3.1/imports/validation.html
  *
  * Created by PhpStorm.
@@ -32,8 +33,11 @@ abstract class BaseImportHandler
      *
      *
      * models:  $rows返回一条数据(array),即导入的一行数据.参考https://docs.laravel-excel.com/3.1/imports/model.html
-     * 中的model()方法,需要返回model. eachRow:
+     * 中的model()方法,需要返回model.
+     *
+     * eachRow:
      * $rows返回一条数据(array),即导入的一行数据.参考:https://docs.laravel-excel.com/3.1/imports/model.html#handling-persistence-on-your-own
+     *
      * array:
      * $rows返回导入的数据的二维数组,数组中每一条子数组表示导入的一行数据.使用参考:https://docs.laravel-excel.com/3.1/imports/collection.html
      *
@@ -107,9 +111,9 @@ abstract class BaseImportHandler
 
         //\Log::debug($importKeys);
         //foreach ($importKeys as $key => $importKey) {
-            //if ($importKey) {
-            //    $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
-            //}
+        //if ($importKey) {
+        //    $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
+        //}
         //}
 
         $expectKeys = $this->getExpectKeys();
@@ -118,7 +122,6 @@ abstract class BaseImportHandler
             $this->updateRecordStatus($importRecord, 'failure', '列名错误,请对照导入模板检查');
             \Log::warning($expectKeys);
             \Log::warning($importKeys);
-
 
             return false;
         }

@@ -26,7 +26,7 @@ class ImportRecord extends BaseModel
 
     public function setting()
     {
-        return $this->belongsTo(ImportSetting::class, "module_slug", "module_slug");
+        return $this->belongsTo(ImportSetting::class, "import_handler", "import_handler");
     }
 
 }

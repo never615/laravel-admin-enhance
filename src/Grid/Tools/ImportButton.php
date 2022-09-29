@@ -14,7 +14,7 @@ class ImportButton extends AbstractTool
     /**
      * @var null|string
      */
-    private $moduleSlug;
+    private $importHandler;
 
     /**
      * @var null
@@ -25,13 +25,12 @@ class ImportButton extends AbstractTool
     /**
      * ImportButton constructor.
      *
-     * @param string $moduleSlug 导入任务处理者标识,默认使用引入按钮的的页面的url最后一段
-     *                           如 `http://xxxx.com/admin/member_cards`中的member_cards
-     * @param null   $url        点击导入按钮跳转到的页面
+     * @param string $importHandler 导入任务处理类
+     * @param string $url           点击导入按钮跳转到的页面
      */
-    public function __construct($moduleSlug = null, $url = "/admin/import_records/create")
+    public function __construct($importHandler, $url = "/admin/import_records/create")
     {
-        $this->moduleSlug = urlencode($moduleSlug);
+        $this->importHandler = urlencode($importHandler);
         $this->url = $url;
     }
 
@@ -44,11 +43,8 @@ class ImportButton extends AbstractTool
         $script = <<<EOF
 $('.table-import').click(function (e) {
     e.preventDefault();
-    var moduleSlug="$this->moduleSlug";
-    var path = window.location.pathname;
-    var paths=path.split("/");
-    var lastPath=paths.pop();
-    window.open("$this->url?module_slug="+(moduleSlug?moduleSlug:lastPath));
+    var importHandler="$this->importHandler";
+    window.open("$this->url?import_handler="+importHandler);
 });
 
 EOF;

@@ -67,7 +67,6 @@ class ImportFileJob implements ShouldQueue
                 $handler = resolve($setting->module_handler);
                 $handler->handle($record);
             } else {
-                $class = ucfirst(str_singular($record->module_slug)) . 'Import';
                 $handler = resolve($record->module_slug);
                 if ($handler) {
                     $handler->handle($record);

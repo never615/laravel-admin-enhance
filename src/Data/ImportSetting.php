@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Data;
 
-use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Traits\BaseModel;
 use Mallto\Admin\SubjectUtils;
@@ -16,12 +15,12 @@ class ImportSetting extends BaseModel
 
     public $selectName = "name";
 
-    public $selectId = "module_slug";
+    public $selectId = "import_handler";
 
 
     public function records()
     {
-        return $this->hasMany(ImportRecord::class, "module_slug", "module_slug");
+        return $this->hasMany(ImportRecord::class, "import_handler", "import_handler");
     }
 
 
@@ -39,13 +38,6 @@ class ImportSetting extends BaseModel
     }
 
 
-    public function scopeSelectSourceDatas($query)
-    {
-        return $query->selectSourceDatas2()
-            ->pluck($this->selectName, $this->selectId);
-    }
-
-
     public function scopeSelectSourceDataBySubject($query)
     {
         $query = $query->selectSourceDatas2();
@@ -59,26 +51,4 @@ class ImportSetting extends BaseModel
 
         return $query->pluck($this->selectName, $this->selectId);
     }
-
-
-    /**
-     * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
-     *
-     * @param $query
-     *
-     * @return mixed
-     */
-    public function scopeSelectSourceDatas2($query)
-    {
-        $isOwner = AdminUtils::isOwner();
-
-        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
-            return $query->dynamicData()
-                ->selectByOwner();
-        } else {
-            return $query->dynamicData()
-                ->selectBySubject();
-        }
-    }
-
 }

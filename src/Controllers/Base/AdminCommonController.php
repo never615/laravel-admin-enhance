@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\AdminFileHelp;
 
 abstract class AdminCommonController extends AdminController
@@ -228,12 +229,24 @@ abstract class AdminCommonController extends AdminController
                 $filter->disableIdFilter();
             }
 
-            if (config('other.subject_filter')) {
-                if (Schema::hasColumn($this->tableName, "subject_id")) {
-                    $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
+            if (Schema::hasColumn($this->tableName, "subject_id")) {
+                //根据当前登录账号所属主体是否有子主体来控制是否显示主体过滤器
+                //1.获取当前登录账户属于哪一个主体
+                $currentSubject = SubjectUtils::getSubject();
+                //2.获取当前主体的所有子主体
+                $ids = $currentSubject->getChildrenSubject();
+
+                if (count($ids) > 1) {
+                    $filter->equal("subject_id", "主体")
+                        ->select(
+                            Subject::orderBy('id', 'desc')
+                                ->whereIn('id', $ids)
+                                ->pluck("name", "id")
+                        );
                 }
             }
         } else {
+            //项目拥有者
             $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
                 $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
