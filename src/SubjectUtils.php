@@ -267,11 +267,17 @@ class SubjectUtils
             $uuid = $app['request']->header("UUID");
             if (is_null($uuid)) {
                 $uuid = $app['request']->get("uuid");
+                if (strlen($uuid) > 10) {
+                    $uuid = null;
+                }
             }
         } else {
             $uuid = \Request::header("UUID");
             if (is_null($uuid)) {
                 $uuid = \Request::input("uuid");
+                if (strlen($uuid) > 10) {
+                    $uuid = null;
+                }
             }
         }
 
@@ -401,7 +407,8 @@ class SubjectUtils
                 }
             }
         } else {
-            Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+            Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject,
+                Carbon::now()->endOfDay());
             if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
                 Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
                     $subject, Carbon::now()->endOfDay());
@@ -434,7 +441,8 @@ class SubjectUtils
         if ( ! $subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
             if ($subject) {
-                Cache::store('local_redis')->put('sub_proj_id' . $thirdProjectId, $subject, Carbon::now()->endOfDay());
+                Cache::store('local_redis')->put('sub_proj_id' . $thirdProjectId, $subject,
+                    Carbon::now()->endOfDay());
             }
         }
 
