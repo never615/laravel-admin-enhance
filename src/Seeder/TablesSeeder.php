@@ -16,5 +16,6 @@ class TablesSeeder extends Seeder
     {
         $menuTablesSeeder->run();
         $permissionTablesSeeder->run();
+        $this->call([ ImportSettingSeeder::class ]);
     }
 }
