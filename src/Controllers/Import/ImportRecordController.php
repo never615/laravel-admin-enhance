@@ -158,7 +158,6 @@ class ImportRecordController extends AdminCommonController
         }
 
         $form->saving(function ($form) {
-            \Log::debug('import_handler_display:' . $form->import_handler_display);
             if ($this->currentId) {
                 throw new PermissionDeniedException('非法提交');
             }

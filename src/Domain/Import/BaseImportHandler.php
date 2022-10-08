@@ -27,9 +27,11 @@ abstract class BaseImportHandler
 {
 
     /**
-     * 导入模式,可选: array and models
+     * 导入模式,可选: array eachRow models
      *
      * 设置不同的模式,则public function dataHandler($importRecord, $rows) 的$rows参数返回不同的数据.
+     *
+     * 推荐优先使用默认的models 模式,可以支持批量插入数据库.
      *
      *
      * models:  $rows返回一条数据(array),即导入的一行数据.参考https://docs.laravel-excel.com/3.1/imports/model.html

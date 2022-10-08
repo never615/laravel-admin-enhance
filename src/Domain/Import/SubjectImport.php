@@ -42,6 +42,7 @@ class  SubjectImport extends BaseImportHandler
         } else {
             $path = $parentSubject->path . $parentSubject->id . ".";
         }
+
         $newSubjcet = Subject::query()->create([
             'parent_id' => $parentSubject->id,
             'name'      => $newRow['主体名称'],

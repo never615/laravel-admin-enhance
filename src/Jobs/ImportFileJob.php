@@ -12,6 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Admin\Data\ImportSetting;
+use Mallto\Tool\Exception\ResourceException;
 
 class ImportFileJob implements ShouldQueue
 {
@@ -61,16 +62,18 @@ class ImportFileJob implements ShouldQueue
         $record = ImportRecord::find($this->id);
 
         if ($record && $record->status == "not_start") {
-            $setting = ImportSetting::where("module_slug", $record->module_slug)
+            $setting = ImportSetting::where("import_handler", $record->import_handler)
                 ->first();
             if ($setting) {
-                $handler = resolve($setting->module_handler);
+                $handler = resolve($setting->import_handler);
                 $handler->handle($record);
             } else {
-                $handler = resolve($record->module_slug);
-                if ($handler) {
-                    $handler->handle($record);
-                }
+                \Log::error("没有找见对应的导入配置,禁止导入:" . $record->import_handler);
+                throw new ResourceException("没有找见对应的导入配置,禁止导入:" . $record->import_handler);
+                //$handler = resolve($record->import_handler);
+                //if ($handler) {
+                //    $handler->handle($record);
+                //}
             }
         }
     }

@@ -5,11 +5,14 @@
 
 namespace Mallto\Admin\Domain\Import;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
+use Mallto\Tool\Exception\ResourceException;
+use Throwable;
 
 /**
  *
@@ -30,7 +33,16 @@ class ModelBaseImport extends BaseImport implements
      */
     public function model(array $row)
     {
-        return $this->importHandler->dataHandler($this->importRecord, $row);
+        //return $this->importHandler->dataHandler($this->importRecord, $row);
+
+        try {
+            return $this->importHandler->dataHandler($this->importRecord, $row);
+        } catch (Throwable $e) {
+            $e = new Exception($e->getMessage(), $e->getCode(), $e->getPrevious());
+            $this->onError($e);
+
+            return null;
+        }
     }
 
 

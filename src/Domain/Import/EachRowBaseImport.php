@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Domain\Import;
 
+use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\OnEachRow;
@@ -61,7 +62,7 @@ class EachRowBaseImport extends BaseImport implements
         try {
             $this->importHandler->dataHandler($this->importRecord, $row);
         } catch (Throwable $e) {
-            $e = new $e("第$rowIndex 行错误:" . $e->getMessage(), $e->getCode(), $e->getPrevious());
+            $e = new Exception("第$rowIndex 行错误:" . $e->getMessage(), $e->getCode(), $e->getPrevious());
             $this->onError($e);
         }
     }
