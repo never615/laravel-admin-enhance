@@ -32,8 +32,6 @@ class ModelBaseImport extends BaseImport implements
      */
     public function model(array $row)
     {
-        //return $this->importHandler->dataHandler($this->importRecord, $row);
-
         try {
             return $this->importHandler->dataHandler($this->importRecord, $row);
         } catch (Throwable $e) {

@@ -51,6 +51,10 @@ class  SubjectImport extends BaseImportHandler
             'name'      => $newRow['主体名称'],
             'path'      => $path,
         ]);
+
+        $newSubjcet->uuid = "1" . sprintf('%06d', $newSubjcet->id);
+        $newSubjcet->save();
+
         event(new SubjectSaved($newSubjcet->id));
     }
 
