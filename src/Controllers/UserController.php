@@ -54,7 +54,7 @@ class UserController extends AdminCommonController
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
 
         $grid->filter(function (Grid\Filter $filter) {
-            $filter->equal("adminable_type", "账号类型")->select(SelectConstants::ADMINABLE_TYPE);
+            //$filter->equal("adminable_type", "账号类型")->select(SelectConstants::ADMINABLE_TYPE);
             $filter->ilike("username", trans('admin.username'));
             $filter->ilike("name", trans('admin.name'));
             $filter->ilike('mobile');
@@ -119,26 +119,26 @@ class UserController extends AdminCommonController
 
         $form->ignore([ 'password_confirmation', 'qrcode', 'unbind_wechat' ]);
 
-        $form->select("adminable_type", "账号类型")
-            ->options(Administrator::ADMINABLE_TYPE)
-            ->rules("required");
+        //$form->select("adminable_type", "账号类型")
+        //    ->options(Administrator::ADMINABLE_TYPE)
+        //    ->rules("required");
 
-        $form->selectE("adminable_id", "账号所属")
-            ->rules("required")
-            ->help("按空格搜索全部")
-            ->options(function ($value) {
-                if ( ! empty($value)) {
-                    switch ($this->adminable_type) {
-                        case 'subject':
-                            $subject = Subject::find($value);
-                            if ($subject) {
-                                return $subject->pluck("name", "id");
-                            }
-                            break;
-                    }
-                }
-            })
-            ->ajaxLoad("adminable_type", data_source_url("ajax_load"));
+        //$form->selectE("adminable_id", "账号所属")
+        //    ->rules("required")
+        //    ->help("按空格搜索全部")
+        //    ->options(function ($value) {
+        //        if ( ! empty($value)) {
+        //            switch ($this->adminable_type) {
+        //                case 'subject':
+        //                    $subject = Subject::find($value);
+        //                    if ($subject) {
+        //                        return $subject->pluck("name", "id");
+        //                    }
+        //                    break;
+        //            }
+        //        }
+        //    })
+        //    ->ajaxLoad("adminable_type", data_source_url("ajax_load"));
 
         $form->multipleSelect('roles', trans('admin.roles'))
             ->options(Role::dynamicData()->get()->pluck('name', 'id'));
