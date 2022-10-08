@@ -33,29 +33,6 @@ trait SubjectConfigTrait
      */
     protected function systemConfigBasic(Form $form)
     {
-        //父级主体和已购模块只能父级设置,自己可以看,不能改
-        $current = Subject::find($this->currentId);
-        $parent = null;
-        if ($current) {
-            $parent = Subject::find($current->parent_id);
-        }
-
-        $form->select('parent_id', '父级主体')
-            ->options(function () use ($parent) {
-                if ($this->id == 1) {
-                    $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
-                    array_add($arr, 0, '项目开发商');
-                } else {
-                    //返回自己有权限查看的和自己已经配置的
-                    $arr = Subject::dynamicData()->orderBy('id')->pluck('name', 'id');
-                    if ($parent) {
-                        array_add($arr, $parent->id, $parent->name);
-                    }
-                }
-
-                return $arr;
-            })->rules('required');
-
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             if ($this->currentId) {
                 $form->displayE('sms_count', '消费短信数');

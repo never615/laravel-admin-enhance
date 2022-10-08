@@ -20,13 +20,13 @@ use Mallto\Admin\Controllers\Base\SubjectSaveTrait;
 use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\Domain\Import\SubjectImport;
 use Mallto\Admin\Facades\AdminE;
+use Mallto\Admin\Grid\Tools\ImportButton;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
-use Mallto\Admin\Domain\Import\SubjectImport;
 use Mallto\Tool\Data\Tag;
 use Mallto\Tool\Exception\PermissionDeniedException;
-use Mallto\Admin\Grid\Tools\ImportButton;
 
 class SubjectController extends AdminCommonController
 {
@@ -120,9 +120,31 @@ class SubjectController extends AdminCommonController
 
             $form->text('name')->rules('required');
 
+            //父级主体和已购模块只能父级设置,自己可以看,不能改
+            $current = Subject::find($this->currentId);
+            $parent = null;
+            if ($current) {
+                $parent = Subject::find($current->parent_id);
+            }
+
+            $form->select('parent_id', '父级主体')
+                ->options(function () use ($parent) {
+                    if ($this->id == 1) {
+                        $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
+                        array_add($arr, 0, '项目开发商');
+                    } else {
+                        //返回自己有权限查看的和自己已经配置的
+                        $arr = Subject::dynamicData()->orderBy('id')->pluck('name', 'id');
+                        if ($parent) {
+                            array_add($arr, $parent->id, $parent->name);
+                        }
+                    }
+
+                    return $arr;
+                })->rules('required');
+
             $this->basicInfoExtend($form);
 
-            $this->formSubject($form);
             $this->formAdminUser($form);
 
             $form->displayE('created_at', trans('admin.created_at'));
@@ -283,11 +305,21 @@ class SubjectController extends AdminCommonController
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->formSaving($form, $adminUser);
         }
+
+
     }
 
 
     protected function formSaved($form)
     {
+        if ( ! $form->model()->uuid) {
+            Subject::query()
+                ->where('id', $form->model()->id)
+                ->update([
+                    'uuid' => "1" . sprintf('%06d', $form->model()->id),
+                ]);
+        }
+
         $adminUser = Admin::user();
 
         //clear 顶部菜单的缓存

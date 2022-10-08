@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Illuminate\Support\Arr;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\OperationLog;
 use Mallto\Admin\Data\OperationLogDictionary;
 
@@ -113,9 +114,11 @@ class OperationLogController extends AdminCommonController
         $grid->filter(function (Grid\Filter $filter) {
             $userModel = config('admin.database.users_model');
 
-            $filter->equal('user_id', 'User')->select($userModel::all()->pluck('name', 'id'));
-            $filter->equal('method')->select(array_combine(OperationLog::$methods, OperationLog::$methods));
-            $filter->like('path');
+            $filter->equal("user_id", "操作人")->select(Administrator::selectSourceDatas());
+
+            $filter->equal('method', '行为')
+                ->select(array_combine(OperationLog::$methods, OperationLog::$methods));
+            $filter->like('path', '请求名称');
             $filter->equal('ip');
         });
     }
