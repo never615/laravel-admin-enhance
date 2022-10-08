@@ -12,6 +12,9 @@ use Mallto\Admin\Listeners\Events\SubjectSaved;
 class  SubjectImport extends BaseImportHandler
 {
 
+    public $importMode = 'eachRow';
+
+
     /**
      * 获取导入文件期望的列名
      *
@@ -37,7 +40,7 @@ class  SubjectImport extends BaseImportHandler
     public function dataHandler($importRecord, $newRow)
     {
         $parentSubject = Subject::query()->where('name', $newRow['上级主体名称'])->first();
-        if (!$parentSubject->path) {
+        if ( ! $parentSubject->path) {
             $path = "." . $parentSubject->id . ".";
         } else {
             $path = $parentSubject->path . $parentSubject->id . ".";
@@ -66,6 +69,7 @@ class  SubjectImport extends BaseImportHandler
         return [
             '主体名称'   => [
                 'required',
+                'unique:subjects,name',
             ],
             '上级主体名称' => [
                 'required',

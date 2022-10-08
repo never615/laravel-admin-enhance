@@ -11,7 +11,6 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Events\BeforeSheet;
-use Mallto\Tool\Exception\ResourceException;
 use Throwable;
 
 /**
