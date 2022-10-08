@@ -8,11 +8,14 @@ namespace Mallto\Admin\Controllers\Import;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Admin\Data\ImportSetting;
+use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Jobs\ImportFileJob;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\Tool\Utils\UrlUtils;
@@ -180,5 +183,44 @@ class ImportRecordController extends AdminCommonController
 ////
 ////        });
 //    }
+
+    /**
+     * form 主体的设置显示
+     *
+     * @param $form
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    protected function formSubject($form)
+    {
+        if (Schema::hasColumn($this->tableName, "subject_id")) {
+            //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
+            if (\Mallto\Admin\AdminUtils::isOwner()) {
+                $form->selectE("subject_id", "主体")
+                    ->options(
+                        Subject::orderBy('id', 'desc')
+                            ->pluck("name", "id")
+                    )
+                    ->rules("required");
+            } elseif (AdminUtils::isBase()) {
+                //1.获取当前登录账户属于哪一个主体
+                $currentSubject = SubjectUtils::getSubject();
+                //2.获取当前主体的所有子主体
+                //$ids = $currentSubject->getChildrenSubject();
+
+                $form->selectE("subject_id", "主体")
+                    ->default($currentSubject->id)
+                    ->options(
+                        Subject::orderBy('id', 'desc')
+                            ->whereIn('id', [ $currentSubject->id ])
+                            ->pluck("name", "id")
+                    )
+                    ->rules("required");
+
+//                $form->displayE("subject.name", "主体");
+//                $form->hideFieldsByCreate("subject.name");
+            }
+        }
+    }
 
 }

@@ -45,6 +45,8 @@ trait AdminSubjectTrait
      * form 主体的设置显示
      *
      * @param $form
+     *
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     protected function formSubject($form)
     {
