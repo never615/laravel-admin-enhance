@@ -98,19 +98,86 @@ if ( ! function_exists('data_source_url')) {
 
 if ( ! function_exists('mt_trans')) {
     /**
-     * @param $key
+     * Now you can add your own translate files for your project.
+     * The "laravel-admin" will search for the translations in these sequence:
+     * A.) admin.modelName.columnName
+     * B.) admin.columnName
+     * C.) Column name with spaces (dots and underscore replaced with spaces)
+     * D.) Fallback
+     * If you have translation A, that will be used, if not then B.
+     * If there is no translation at all:
+     * if exists the fallback D else the C will be the output.
      *
-     * @return array|\Illuminate\Contracts\Translation\Translator|null|string
-     * @deprecated
+     * @param      $modelPath
+     * @param      $column
+     * @param null $fallback
+     *
+     * @return string
      */
-    function mt_trans($key)
+    function mt_trans($column, $modelPath = "", $labelFormat = false, $fallback = null)
     {
-        $temp = "validation.attributes." . $key;
-        if (Lang::has($temp)) {
-            return trans("validation.attributes." . $key);
-        } else {
-            return $key;
+        $modelName = "";
+        if ($modelPath) {
+
+            $nameList = explode('\\', $modelPath);
+            /*
+             * CamelCase model name converted to underscore name version.
+             * ExampleString => example_strinig
+             */
+            $modelName = ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', end($nameList))),
+                '_');
         }
+
+        if (str_contains($column, ".")) {
+            try {
+                $tempKeys = explode(".", $column);
+
+                return admin_translate($tempKeys[1], $tempKeys[0]);
+            } catch (\Exception $exception) {
+                \Log::warning("admin_translate");
+                \Log::warning($exception);
+            }
+        }
+
+        /*
+         * ExampleString with banana => example_string_with_banana
+         */
+        $columnLower = ltrim(strtolower(preg_replace('/[A-Z ]([A-Z](?![a-z]))*/', '_$0', $column)), '_');
+        $columnLower = str_replace(' ', '', $columnLower);
+
+        /*
+         * The possible translate keys in priority order.
+         */
+        $transLateKeys = [
+            'admin2.' . $modelName . '.' . $columnLower,
+            'admin2.' . str_plural($modelName) . '.' . $columnLower,
+            'admin2.' . $columnLower,
+            'admin2.table.' . $columnLower,
+            'validation.attributes.' . $columnLower,
+            'admin.' . $modelName . '.' . $columnLower,
+//            'admin.'.str_plural($modelName).'.'.$columnLower,
+            'admin.' . $columnLower,
+        ];
+
+        $label = null;
+        foreach ($transLateKeys as $key) {
+            if (Lang::has($key, config('other.diy_locale')) && is_string(trans($key, [],
+                    config('other.diy_locale')))) {
+                //if (is_string(trans($key, [], config('other.diy_locale')))) {
+                $label = trans($key, [], config('other.diy_locale'));
+                break;
+            }
+        }
+        if ( ! $label) {
+            if ($labelFormat) {
+                //$label = str_replace(['.', '_'], ' ', $fallback ? $fallback : ucfirst($column));
+                $label = str_replace([ '.', '_' ], ' ', $fallback ? $fallback : $column);
+            } else {
+                $label = $column;
+            }
+        }
+
+        return (string) $label;
     }
 }
 
