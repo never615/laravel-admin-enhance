@@ -40,7 +40,7 @@ class SubjectController extends AdminCommonController
      */
     protected function getHeaderTitle()
     {
-        return '主体';
+        return mt_trans('subjects');
     }
 
 
@@ -127,7 +127,7 @@ class SubjectController extends AdminCommonController
                 $parent = Subject::find($current->parent_id);
             }
 
-            $form->select('parent_id', '父级主体')
+            $form->select('parent_id', '父级' . mt_trans('subjects'))
                 ->options(function () use ($parent) {
                     if ($this->id == 1) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');

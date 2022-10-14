@@ -237,7 +237,7 @@ abstract class AdminCommonController extends AdminController
                 $ids = $currentSubject->getChildrenSubject();
 
                 if (count($ids) > 1) {
-                    $filter->equal("subject_id", "主体")
+                    $filter->equal("subject_id", mt_trans('subjects'))
                         ->select(
                             Subject::orderBy('id', 'desc')
                                 ->whereIn('id', $ids)
@@ -249,7 +249,7 @@ abstract class AdminCommonController extends AdminController
             //项目拥有者
             $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
-                $filter->equal("subject_id", "主体")->select(Subject::selectSourceDate());
+                $filter->equal("subject_id", mt_trans('subjects'))->select(Subject::selectSourceDate());
             }
         }
 
