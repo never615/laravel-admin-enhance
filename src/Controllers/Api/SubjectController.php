@@ -7,7 +7,7 @@ namespace Mallto\Admin\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Mallto\Mall\SubjectConfigConstants;
+use Mallto\Admin\SubjectConfigConstants;
 
 /**
  * User: never615 <never615.com>

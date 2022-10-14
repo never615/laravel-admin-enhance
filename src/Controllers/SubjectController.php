@@ -264,6 +264,11 @@ class SubjectController extends AdminCommonController
             $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')
                 ->options(Tag::TYPE);
 
+            $form->select(
+                SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE,
+                '项目类型')
+                ->options(Subject::PROJECT_TYPE);
+
             foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
                 $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form);
             }

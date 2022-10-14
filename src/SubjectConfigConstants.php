@@ -26,6 +26,9 @@ class SubjectConfigConstants
 
     //主体可导入模块配置
     const OWNER_CONFIG_IMPORT_MODULE = "import_module";
+
+    //项目类型
+    const OWNER_CONFIG_PROJECT_TYPE = 'project_type';
     /**
      * 主体拥有者配置项
      */

@@ -19,6 +19,11 @@ class Subject extends Model
 
     protected $tempBaseSubject;
 
+    const PROJECT_TYPE = [
+        'default' => '普通项目',
+        'map'     => '地图项目',
+    ];
+
 
     /**
      * Subject constructor.
