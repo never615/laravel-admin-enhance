@@ -81,6 +81,12 @@ abstract class AdminCommonController extends AdminController
      */
     protected $dataViewMode = 'dynamic';
 
+    /**
+     * 动态配置批量删除是否开启
+     *
+     * @var bool
+     */
+    protected   $isDisableDelete = false;
 
     /**
      * Index interface.
@@ -253,11 +259,14 @@ abstract class AdminCommonController extends AdminController
             }
         }
 
-        $grid->tools(function (Grid\Tools $tools) {
-            $tools->batch(function (Grid\Tools\BatchActions $actions) {
-                $actions->disableDelete();
+        if(!$this->isDisableDelete)
+        {
+            $grid->tools(function (Grid\Tools $tools) {
+                $tools->batch(function (Grid\Tools\BatchActions $actions) {
+                    $actions->disableDelete();
+                });
             });
-        });
+        }
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableView();
