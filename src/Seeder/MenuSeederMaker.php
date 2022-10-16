@@ -30,13 +30,16 @@ trait MenuSeederMaker
      */
     protected function updateOrCreate($uri, $parentId, $order, $title, $icon, $subTitle = null)
     {
-        $path = "";
-        $parentMenu = Menu::find($parentId);
-        if ($parentMenu) {
-            if ( ! empty($parentMenu->path)) {
-                $path = $parentMenu->path . $parentMenu->id . ".";
-            } else {
-                $path = "." . $parentMenu->id . ".";
+
+        $path = $this->updatePath($parentId);
+
+        $updateChildMenu = true;
+        //如果修改了 parent_id,则修改所有子菜单的 path
+        if ($parentId) {
+            $tempMenu = Menu::query()->where('uri', $uri)
+                ->first();
+            if ($tempMenu && $tempMenu->parent_id != $parentId) {
+                $updateChildMenu = true;
             }
         }
 
@@ -53,9 +56,41 @@ trait MenuSeederMaker
             ]);
         }
 
-        return Menu::updateOrCreate([
+        $menu = Menu::query()->updateOrCreate([
             'uri' => $uri,
-        ], $updateData
-        );
+        ], $updateData);
+
+        if ($updateChildMenu) {
+            Menu::query()
+                ->where('path', 'like', '%.' . $menu->id . '.%')
+                ->chunk(50, function ($menus) {
+                    foreach ($menus as $menu) {
+                        $path = $this->updatePath($menu->parent_id);
+
+                        $menu->path = $path;
+                        $menu->save();
+                    }
+                });
+        }
+
+        return $menu;
+    }
+
+
+    private function updatePath($parentId)
+    {
+        $parentMenu = Menu::find($parentId);
+
+        if ($parentMenu) {
+            if ( ! empty($parentMenu->path)) {
+                $path = $parentMenu->path . $parentMenu->id . ".";
+            } else {
+                $path = "." . $parentMenu->id . ".";
+            }
+        } else {
+            $path = null;
+        }
+
+        return $path;
     }
 }
