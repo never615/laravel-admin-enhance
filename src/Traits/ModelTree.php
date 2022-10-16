@@ -167,14 +167,6 @@ trait ModelTree
         }
 
         foreach ($nodes as $node) {
-            $uri = $node['uri'];
-            $uris = explode('.', $uri);
-            $uri0 = $uris[0];
-            $title = mt_trans($uri0);
-            if ($title != $uri0) {
-                $node['title'] = $title;
-            }
-
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildNestedArray($nodes, $node[$this->getKeyName()]);
 
