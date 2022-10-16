@@ -40,16 +40,22 @@ trait MenuSeederMaker
             }
         }
 
+        $updateData = [
+            'parent_id' => $parentId,
+            'title'     => $title,
+            'icon'      => $icon,
+            "path"      => $path,
+            "sub_title" => $subTitle,
+        ];
+        if ( ! is_null($order)) {
+            $updateData = array_merge($updateData, [
+                'order' => $order,
+            ]);
+        }
+
         return Menu::updateOrCreate([
             'uri' => $uri,
-        ], [
-                'parent_id' => $parentId,
-                'order'     => $order,
-                'title'     => $title,
-                'icon'      => $icon,
-                "path"      => $path,
-                "sub_title" => $subTitle,
-            ]
+        ], $updateData
         );
     }
 }

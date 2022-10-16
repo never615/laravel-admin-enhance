@@ -35,13 +35,6 @@ class AdminmanagerSeeder extends Seeder
          */
         $parentId = $this->createPermissions('账户', 'admins', true, 0, false, true);
 
-        //账号管理权限下增加两个细分权限:1.商户账号禁用权限2.商场账号禁用权限
-        $this->createPermissions('商场账号禁用权限', 'admin_users_subject_forbidden',
-            false, $parentId);
-
-        $this->createPermissions('店铺(租户)账号禁用权限', 'admin_users_shop_forbidden',
-            false, $parentId);
-
         /**
          * ------------------------  角色  ---------------------------
          */

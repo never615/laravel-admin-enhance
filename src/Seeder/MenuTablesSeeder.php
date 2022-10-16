@@ -23,10 +23,12 @@ class MenuTablesSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(AdminManagerMenuSeeder::class);
-        $this->call(DashboardMenuSeeder::class);
-        $this->call(SystemManagerMenuSeeder::class);
-        $this->call(OperationMenuSeeder::class);
+        $this->call([
+            AdminManagerMenuSeeder::class,
+            DashboardMenuSeeder::class,
+            SystemManagerMenuSeeder::class,
+            OperationMenuSeeder::class,
+        ]);
 
     }
 }

@@ -20,9 +20,11 @@ class PermissionTablesSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(ImportPermissionsSeeder::class);
-        $this->call(AdminmanagerSeeder::class);
-        $this->call(AdminUserGroupPermissionSeeder::class);
+        $this->call([
+            ImportPermissionsSeeder::class,
+            AdminmanagerSeeder::class,
+            AdminUserGroupPermissionSeeder::class,
+        ]);
 
     }
 }
