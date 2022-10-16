@@ -7,8 +7,8 @@ namespace Mallto\Admin;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
 use Mallto\Admin\Data\Menu;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * Class Admin.
@@ -109,7 +109,11 @@ class AdminE
 
                 foreach ($menus as $menu) {
                     if ($adminUser->can($menu->uri)) {
-                        $speedy = array_add($speedy, route($menu->uri, [], false), $menu->title);
+                        try {
+                            $speedy = array_add($speedy, route($menu->uri, [], false), $menu->title);
+                        } catch (RouteNotFoundException $exception) {
+
+                        }
                     }
                 }
 
@@ -174,7 +178,6 @@ class AdminE
     //        $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');
     //    });
     //}
-
 
     public function adminBootstrap()
     {
