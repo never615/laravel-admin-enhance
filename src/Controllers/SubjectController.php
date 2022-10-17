@@ -162,7 +162,7 @@ class SubjectController extends AdminCommonController
 
         if (
             \Mallto\Admin\AdminUtils::isOwner()
-            || \Mallto\Admin\AdminUtils::isBase()
+            //|| \Mallto\Admin\AdminUtils::isBase()
             || config('other.subject_parent_config')
         ) {
             $form->tab('主体基本配置(owner)', function ($form) {
