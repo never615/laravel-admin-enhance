@@ -13,10 +13,12 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\OperationLog;
 use Mallto\Admin\Data\OperationLogDictionary;
+use Mallto\Admin\Domain\Export\OperationLogExporter;
 
 class OperationLogController extends AdminCommonController
 {
 
+    protected $isDisableDelete = true;
     /**
      * 获取这个模块的Model
      *
@@ -112,15 +114,13 @@ class OperationLogController extends AdminCommonController
         $grid->disableCreateButton();
 
         $grid->filter(function (Grid\Filter $filter) {
-            $userModel = config('admin.database.users_model');
-
             $filter->equal("user_id", "操作人")->select(Administrator::selectSourceDatas());
-
             $filter->equal('method', '行为')
                 ->select(array_combine(OperationLog::$methods, OperationLog::$methods));
             $filter->like('path', '请求名称');
             $filter->equal('ip');
         });
+        $grid->exporter(new OperationLogExporter());
     }
 
 
