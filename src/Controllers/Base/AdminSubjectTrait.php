@@ -30,7 +30,7 @@ trait AdminSubjectTrait
         if (Schema::hasColumn($this->tableName, "subject_id")) {
             //拥有子主体的主体,在table中显示条目的所属主体
             if (Admin::user()->subject->hasChildrenSubject()) {
-                $grid->subject_id()->sortable()->display(function ($value) {
+                $grid->subject_id(mt_trans('subjects'))->sortable()->display(function ($value) {
 
                     $subject = AdminUtils::getSubject($value);
 
@@ -53,7 +53,7 @@ trait AdminSubjectTrait
         if (Schema::hasColumn($this->tableName, "subject_id")) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->selectE("subject_id", "主体")
+                $form->selectE("subject_id",mt_trans('subjects'))
                     ->options(
                         Subject::orderBy('id', 'desc')
                             ->pluck("name", "id")
@@ -65,7 +65,7 @@ trait AdminSubjectTrait
                 //2.获取当前主体的所有子主体
                 $ids = $currentSubject->getChildrenSubject();
 
-                $form->selectE("subject_id", "主体")
+                $form->selectE("subject_id",mt_trans('subjects'))
                     ->options(
                         Subject::orderBy('id', 'desc')
                             ->whereIn('id', $ids)
