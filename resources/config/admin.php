@@ -129,7 +129,7 @@ return [
         'providers'   => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Mallto\Mall\Data\AdminUser::class,
+                'model'  => Mallto\Admin\Data\Administrator::class,
             ],
         ],
 

@@ -8,7 +8,7 @@ namespace Mallto\Admin\Data;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Traits\BaseModel;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Mall\SubjectConfigConstants;
+use Mallto\Admin\SubjectConfigConstants;
 
 class ImportSetting extends BaseModel
 {

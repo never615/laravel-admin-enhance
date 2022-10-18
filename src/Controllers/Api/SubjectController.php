@@ -7,6 +7,7 @@ namespace Mallto\Admin\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Mallto\Admin\Data\Subject;
 use Mallto\Admin\SubjectConfigConstants;
 
 /**
@@ -26,7 +27,7 @@ class SubjectController extends Controller
     {
         $projectType = $request->get('project_type');
 
-        $query = \Mallto\Mall\Data\Subject::query()
+        $query = Subject::query()
             ->orderBy('created_at', 'desc')
             ->whereNotNull('uuid')
             ->select('name', 'uuid');

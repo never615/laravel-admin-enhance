@@ -94,7 +94,7 @@ class UserController extends AdminCommonController
             }
         }
 
-        $this->formWechatBind($form);
+        //$this->formWechatBind($form);
         $form->image('avatar', trans('admin.avatar'))->removable();
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
         $form->password('password_confirmation', trans('admin.password_confirmation'))

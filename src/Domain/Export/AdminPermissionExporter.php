@@ -6,8 +6,6 @@
 namespace Mallto\Admin\Domain\Export;
 
 use Mallto\Admin\Grid\Exporters\SimpleCsvExporter;
-use Mallto\Mall\Constants;
-use Mallto\Mall\Data\AdminUser;
 
 class AdminPermissionExporter extends SimpleCsvExporter
 {

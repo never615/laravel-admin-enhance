@@ -12,12 +12,9 @@ use Illuminate\Support\Facades\Storage;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Report;
-use Mallto\Mall\Domain\Traits\AdminHelp;
 
 class ReportController extends AdminCommonController
 {
-
-    use AdminHelp;
 
     protected $closeGridUpdatedAt = false;
 
@@ -131,8 +128,8 @@ EOT;
             $actions->disableView();
         });
 
-        $grid->filter(function (Grid\Filter $filter){
-           $this->gridAdminUserFilter($filter);
+        $grid->filter(function (Grid\Filter $filter) {
+            $this->gridAdminUserFilter($filter);
         });
 
 
