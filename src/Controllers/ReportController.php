@@ -128,11 +128,9 @@ EOT;
             $actions->disableView();
         });
 
-        $grid->filter(function (Grid\Filter $filter) {
-            $this->gridAdminUserFilter($filter);
-        });
-
-
+        //$grid->filter(function (Grid\Filter $filter) {
+        //    $this->gridAdminUserFilter($filter);
+        //});
     }
 
 
