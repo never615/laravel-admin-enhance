@@ -9,6 +9,7 @@ use Illuminate\Database\Seeder;
 
 class ImportSettingSeeder extends Seeder
 {
+
     use ImportSettingSeederMaker;
 
     public function run()
@@ -19,7 +20,7 @@ class ImportSettingSeeder extends Seeder
         //主体导入
         $this->UpdateOrCreate('subjects',
             'Mallto\Admin\Domain\Import\SubjectImport',
-            $file_url_prefix . 'subject.xlsx', '主体模块');
+            $file_url_prefix . 'subject.xlsx', mt_trans('subject_id') . '模块');
     }
 
 }
