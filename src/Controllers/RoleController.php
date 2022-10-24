@@ -23,7 +23,6 @@ class RoleController extends AdminCommonController
 
     use PermissionHelp, SlugAutoSave;
 
-
     /**
      * 获取这个模块的标题
      *
@@ -93,19 +92,19 @@ class RoleController extends AdminCommonController
 //        $form->listbox('permissions', trans('admin.permissions'))
         $form->checkbox('permissions', trans('admin.permissions'))
             ->options(function () use ($that) {
-                $subjectId = Admin::user()->subject_id;
-                if ($subjectId == 1) {
+                if (AdminUtils::isOwner()) {
                     $permissions = Permission::orderBy('order')->get()->toArray();
                 } else {
+                    $subjectId = Admin::user()->subject_id;
                     $permissionsTemp = Subject::find($subjectId)
                         ->permissions()
                         ->orderBy('order')
                         ->get();
 
                     //主体拥有的权限需要加上那几个公共功能模块的权限
-                    $permissionsTemp = $permissionsTemp->merge(
-                        Permission::where('common', true)->get()
-                    );
+                    $permissionsTemp = Permission::where('common', true)->get()
+                        ->merge($permissionsTemp);
+
                     $permissions = $that->withSubPermissions($permissionsTemp);
                 }
 
