@@ -80,7 +80,7 @@ class SubjectController extends AdminCommonController
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
 
-            $filter->equal('parent_id', '父级')
+            $filter->equal('parent_id', '归属')
                 ->select(Subject::dynamicData()->pluck('name', 'id'));
         });
 
@@ -127,7 +127,7 @@ class SubjectController extends AdminCommonController
                 $parent = Subject::find($current->parent_id);
             }
 
-            $form->select('parent_id', '父级' . mt_trans('subjects'))
+            $form->select('parent_id', '归属' . mt_trans('subjects'))
                 ->options(function () use ($parent) {
                     if ($this->id == 1) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
