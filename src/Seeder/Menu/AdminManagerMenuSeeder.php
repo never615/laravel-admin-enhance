@@ -45,9 +45,9 @@ class AdminManagerMenuSeeder extends Seeder
             "admin_user_groups.index", $adminManagerMenu->id,
             $order++, "主体管理账户分组", "fa-group");
 
-        $order++;
-
-        $order++;
+        $this->updateOrCreate(
+            'logs.index', $adminManagerMenu->id,
+            $order++, '操作日志', 'fa-history');
 
         $this->updateOrCreate(
             "import_records.index", $adminManagerMenu->id,

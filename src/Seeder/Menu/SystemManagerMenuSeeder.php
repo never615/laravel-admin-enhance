@@ -43,10 +43,6 @@ class SystemManagerMenuSeeder extends Seeder
             $order++, '菜单', 'fa-bars');
 
         $this->updateOrCreate(
-            'logs.index', $systemManagerMenu->id,
-            $order++, '操作日志', 'fa-history');
-
-        $this->updateOrCreate(
             'import_settings.index', $systemManagerMenu->id,
             $order++, '导入配置', 'fa-connectdevelop');
 
