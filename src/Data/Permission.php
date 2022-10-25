@@ -126,4 +126,63 @@ class Permission extends Model
         return new Collection(json_decode(json_encode($temps), true));
     }
 
+
+    /**
+     * Build options of select field in form.
+     *
+     * @param array  $nodes
+     * @param int    $parentId
+     * @param string $prefix
+     *
+     * @param bool   $defaultBlack
+     *
+     * @return array
+     */
+    protected function buildSelectOptions(
+        array $nodes = null,
+        $parentId = 0,
+        $prefix = '',
+        $defaultBlack = true
+    ) {
+        if ($defaultBlack) {
+            $prefix = $prefix ?: str_repeat('&nbsp;', 6);
+        } else {
+            $prefix = $prefix ?: str_repeat('&nbsp;', 2);
+        }
+
+        $options = [];
+
+        if ($nodes === null) {
+            $nodes = $this->allNodes();
+        }
+
+        //\Log::debug(json_encode($nodes));
+
+        $parentId = (array) $parentId;
+
+        foreach ($nodes as $node) {
+            if ($defaultBlack) {
+                $node[$this->titleColumn] = $prefix . '&nbsp;' . $node[$this->titleColumn];
+            }
+
+//            if ($node[$this->parentColumn] == $parentId) {
+            if (in_array($node[$this->parentColumn], $parentId)) {
+                $children = $this->buildSelectOptions($nodes, $node[$this->getKeyName()], $prefix . $prefix);
+
+                if ($children) {
+                    $options[$node[$this->getKeyName()]] = '<b>' . $node[$this->titleColumn] . '</b>';
+                } else {
+                    $options[$node[$this->getKeyName()]] = $node[$this->titleColumn];
+                }
+
+                if ($children) {
+                    $options += $children;
+                }
+
+            }
+        }
+
+        return $options;
+    }
+
 }
