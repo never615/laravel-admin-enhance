@@ -106,7 +106,11 @@ class AutoPermissionMiddleware
         } else {
             //不拥有或者不存在对应权限的路由不能访问,控制面板除外
             //denied
-            throw new AccessDeniedHttpException(trans("errors.permission_denied"));
+            if ($currentRouteName === 'dashboard') {
+                return $next($request);
+            } else {
+                throw new AccessDeniedHttpException(trans("errors.permission_denied"));
+            }
         }
     }
 

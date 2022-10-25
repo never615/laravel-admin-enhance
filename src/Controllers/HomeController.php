@@ -17,7 +17,15 @@ class HomeController extends Controller
         return Admin::content(function (Content $content) {
 
             $content->header('Dashboard');
-            $content->description('敬请期待');
+
+            $user = Admin::user();
+            if ( ! $user->can("dashboard")) {
+                $content->description("没有权限查看dashboard");
+
+                return;
+            } else {
+                $content->description('敬请期待');
+            }
 
         });
     }
