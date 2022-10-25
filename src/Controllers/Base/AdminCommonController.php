@@ -86,7 +86,8 @@ abstract class AdminCommonController extends AdminController
      *
      * @var bool
      */
-    protected   $isDisableDelete = false;
+    protected $isDisableDelete = false;
+
 
     /**
      * Index interface.
@@ -222,6 +223,9 @@ abstract class AdminCommonController extends AdminController
 
     protected function defaultGridOption(Grid $grid)
     {
+        //disableExport需要放在开头,以便于后面子类实现覆盖 disable
+        $grid->disableExport();
+
         $grid->expandFilter();
 
         $filter = $grid->getFilter();
@@ -259,8 +263,7 @@ abstract class AdminCommonController extends AdminController
             }
         }
 
-        if(!$this->isDisableDelete)
-        {
+        if ( ! $this->isDisableDelete) {
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
                     $actions->disableDelete();
@@ -291,6 +294,7 @@ abstract class AdminCommonController extends AdminController
         if ( ! $this->closeGridUpdatedAt) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
+
     }
 
 
