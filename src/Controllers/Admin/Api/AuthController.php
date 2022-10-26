@@ -10,14 +10,11 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Validator;
+use Mallto\Admin\Domain\Traits\AuthValidateTrait;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
-use Mallto\User\Data\User;
-use Mallto\User\Domain\Traits\AuthValidateTrait;
-use Mallto\User\Domain\Traits\OpenidCheckTrait;
 
 /**
  * 管理端账户登录
@@ -34,7 +31,7 @@ use Mallto\User\Domain\Traits\OpenidCheckTrait;
 class AuthController extends Controller
 {
 
-    use AuthValidateTrait, OpenidCheckTrait, ValidatesRequests, ThrottlesLogins;
+    use AuthValidateTrait, ValidatesRequests, ThrottlesLogins;
 
     /**
      * 最多错误次数
@@ -68,7 +65,7 @@ class AuthController extends Controller
      *
      * @param Request $request
      *
-     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|User|null
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
      * @throws \Illuminate\Auth\AuthenticationException
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -76,9 +73,6 @@ class AuthController extends Controller
     {
         switch ($request->header("REQUEST-TYPE")) {
             case 'WECHAT':
-                //校验identifier(实际就是加密过得openid),确保只使用了一次
-//                $request = $this->checkOpenid($request, 'identifier');
-
                 return $this->loginByWechat($request);
                 break;
             default:
