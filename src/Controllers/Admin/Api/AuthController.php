@@ -15,6 +15,7 @@ use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
+use Mallto\User\Domain\Traits\OpenidCheckTrait;
 
 /**
  * 管理端账户登录
@@ -31,7 +32,7 @@ use Mallto\User\Domain\Traits\AuthValidateTrait;
 class AuthController extends Controller
 {
 
-    use AuthValidateTrait, ValidatesRequests, ThrottlesLogins;
+    use AuthValidateTrait, ValidatesRequests, ThrottlesLogins, OpenidCheckTrait;
 
     /**
      * 最多错误次数
