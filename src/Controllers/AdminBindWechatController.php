@@ -12,7 +12,7 @@ use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
-use Mallto\User\Domain\Traits\OpenidCheckTrait;
+use Mallto\User\Domain\OpenidUtils;
 use Mallto\User\Domain\WechatUsecase;
 
 /**
@@ -23,8 +23,6 @@ use Mallto\User\Domain\WechatUsecase;
  */
 class AdminBindWechatController extends Controller
 {
-
-    use OpenidCheckTrait;
 
     /**
      * 绑定微信
@@ -39,7 +37,7 @@ class AdminBindWechatController extends Controller
         //获取微信回调的参数
         $encryOpenid = $request->openid;
         //拿出openid
-        $openid = $this->decryptOpenid($encryOpenid);
+        $openid = OpenidUtils::decryptOpenidAndCheck($encryOpenid);
 
         //查询当前需要绑定的用户
         $waiteBindAdminUser = Administrator::find($request->admin_user_id);
@@ -58,7 +56,6 @@ class AdminBindWechatController extends Controller
                 SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
                 $subject, $subject->uuid),
             $openid);
-
 
         if ( ! $wechatUserInfo) {
             throw new ResourceException("未找到相应微信用户");
@@ -83,7 +80,8 @@ class AdminBindWechatController extends Controller
         }
 
         //绑定
-        $waiteBindAdminUser->openid = Arr::add($waiteBindAdminUser->openid, $openid, $wechatUserInfo->toArray());
+        $waiteBindAdminUser->openid = Arr::add($waiteBindAdminUser->openid, $openid,
+            $wechatUserInfo->toArray());
         $waiteBindAdminUser->save();
 
         echo "<h1>绑定成功</h1>";

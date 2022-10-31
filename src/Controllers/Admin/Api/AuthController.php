@@ -14,8 +14,8 @@ use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
+use Mallto\User\Domain\OpenidUtils;
 use Mallto\User\Domain\Traits\AuthValidateTrait;
-use Mallto\User\Domain\Traits\OpenidCheckTrait;
 
 /**
  * 管理端账户登录
@@ -32,7 +32,7 @@ use Mallto\User\Domain\Traits\OpenidCheckTrait;
 class AuthController extends Controller
 {
 
-    use AuthValidateTrait, ValidatesRequests, ThrottlesLogins, OpenidCheckTrait;
+    use AuthValidateTrait, ValidatesRequests, ThrottlesLogins;
 
     /**
      * 最多错误次数
@@ -111,7 +111,7 @@ class AuthController extends Controller
 
         $subject = SubjectUtils::getSubject();
 
-        $openid = $this->decryptOpenid($request->identifier);
+        $openid = OpenidUtils::decryptOpenidAndCheck($request->identifier);
 
         $adminUser = $this->adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
