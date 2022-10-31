@@ -56,6 +56,9 @@ Route::group([
     'middleware' => [ 'web' ],
 ], function ($router) {
 
+    Route::get('/', 'WelcomeController@index');
+
+
     //todo 这个权限暂时放在这
     Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
     Route::get('admin/admin_unbind_wechat', 'AdminBindWechatController@unbindWechat');
