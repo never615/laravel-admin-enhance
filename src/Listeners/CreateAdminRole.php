@@ -6,7 +6,7 @@
 namespace Mallto\Admin\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Mallto\Admin\AdminUtils;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
@@ -28,12 +28,22 @@ class CreateAdminRole implements ShouldQueue
      */
     public $queue = 'mid';
 
+    /**
+     * 延迟3s 执行,以便其他库在主体创建后修改主体关联的权限
+     *
+     * 处理任务的延迟时间.
+     *
+     * @var int
+     */
+    public $delay = 3;
+
 
     public function handle(SubjectSaved $subjectSaved)
     {
         $subjectId = $subjectSaved->subjectId;
+        $new = $subjectSaved->new;
 
-        $this->createOrUpdateAdminRole($subjectId);
+        $this->createOrUpdateAdminRole($subjectId,$new);
     }
 
 
@@ -46,7 +56,7 @@ class CreateAdminRole implements ShouldQueue
      *
      * @param $subject
      */
-    protected function createOrUpdateAdminRole($subjectId)
+    protected function createOrUpdateAdminRole($subjectId,$new)
     {
         $subject = Subject::find($subjectId);
         $name = $subject->name;
@@ -82,7 +92,7 @@ class CreateAdminRole implements ShouldQueue
                 //把subject的已购权限分配到该主体的管理员账号上
                 $adminRole->permissions()->sync($permissionIds);
 
-                AdminUtils::clearMenuCache();
+                CacheUtils::clearMenuCache();
             }
 
             return;
@@ -117,7 +127,7 @@ class CreateAdminRole implements ShouldQueue
             //把subject的已购权限分配到该主体的管理员账号上
             $adminRole->permissions()->sync($permissionIds);
 
-            AdminUtils::clearMenuCache();
+            CacheUtils::clearMenuCache();
         }
 
         if ( ! Administrator::where('subject_id', $subjectId)

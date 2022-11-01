@@ -332,7 +332,7 @@ class SubjectController extends AdminCommonController
 
         CacheUtils::forgetSubject($form->model()->id);
 
-        event(new SubjectSaved($form->model()->id));
+        event(new SubjectSaved($form->model()->id, ! $this->currentId));
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->formSaved($form, $adminUser);
