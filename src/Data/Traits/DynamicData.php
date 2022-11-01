@@ -62,7 +62,8 @@ trait DynamicData
 
             //3.限定查询范围为所有子主体
 
-            $query->whereIn('subject_id', $ids)->orderBy('id');
+            $query->whereIn('subject_id', $ids)
+                ->orderBy($this->getTable() . '.id', 'desc');
         }
     }
 

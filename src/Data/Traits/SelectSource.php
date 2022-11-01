@@ -5,6 +5,7 @@
 
 namespace Mallto\Admin\Data\Traits;
 
+use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\AdminUtils;
@@ -66,7 +67,8 @@ trait SelectSource
     {
         $isOwner = AdminUtils::isOwner();
 
-        if ($isOwner && Schema::hasColumn($this->getTable(), 'subject_id')) {
+        if (($isOwner || AdminUtils::isBase() || Admin::user()->subject->hasChildrenSubject())
+            && Schema::hasColumn($this->getTable(), 'subject_id')) {
             return $query->dynamicData()
                 ->selectByOwner();
         } else {
@@ -78,14 +80,25 @@ trait SelectSource
 
     public function scopeSelectByOwner($query)
     {
-        return $query->select(\DB::raw("$this->selectName
-        ||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
+
+        $tableName = $this->getTable();
+
+        $tableSelectName = $tableName . '.' . $this->selectName;
+        $tableSelectId = $tableName . '.' . $this->selectId;
+
+        return $query->select(\DB::raw("$tableSelectName
+        ||'-('||subjects.name||')' as $this->selectName,$tableSelectId"))
+            ->join('subjects', 'subjects.id', 'subject_id');
+
+        //return $query->select(\DB::raw("$this->selectName
+        //||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
     }
 
 
     public function scopeSelectBySubject($query)
     {
-        return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
+        return $query->select(\DB::raw("$this->selectName,$this->selectId"));
+        //return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
     }
 
 
