@@ -26,7 +26,9 @@ trait SelectSource
 
     /**
      * @return mixed
-     * @deprecated
+     *
+     *
+     * @deprecated 使用SelectSourceDatas()
      */
     public static function selectSourceDate()
     {
@@ -42,19 +44,6 @@ trait SelectSource
                 ->pluck("name", "id")
                 ->toArray();
         }
-    }
-
-
-    public function scopeSelectByOwner($query)
-    {
-        return $query->select(\DB::raw("$this->selectName
-        ||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
-    }
-
-
-    public function scopeSelectBySubject($query)
-    {
-        return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
     }
 
 
@@ -84,6 +73,19 @@ trait SelectSource
             return $query->dynamicData()
                 ->selectBySubject();
         }
+    }
+
+
+    public function scopeSelectByOwner($query)
+    {
+        return $query->select(\DB::raw("$this->selectName
+        ||'-(主体id:'||subject_id||')' as $this->selectName,$this->selectId"));
+    }
+
+
+    public function scopeSelectBySubject($query)
+    {
+        return $query->select(\DB::raw("$this->selectName as $this->selectName,$this->selectId"));
     }
 
 

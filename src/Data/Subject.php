@@ -53,23 +53,6 @@ class Subject extends Model
     }
 
 
-    public static function selectSourceDate()
-    {
-        $isOwner = AdminUtils::isOwner();
-
-        if ($isOwner) {
-            return static::dynamicData()
-                ->select(DB::raw("name||'-主体id:'||id as name,id"))
-                //->orderBy('created_at', 'desc')
-                ->pluck("name", "id");
-        } else {
-            return static::dynamicData()
-                //->orderBy('created_at', 'desc')
-                ->pluck("name", "id");
-        }
-    }
-
-
     public function getLogoAttribute($value)
     {
         if (empty($value)) {
@@ -121,6 +104,68 @@ class Subject extends Model
     public function permissions()
     {
         return $this->belongsToMany(Permission::class, "subject_permissions", 'subject_id', 'permission_id');
+    }
+
+
+    /**
+     * @return mixed
+     * @deprecated
+     */
+    public static function selectSourceDate()
+    {
+        $isOwner = AdminUtils::isOwner();
+
+        if ($isOwner) {
+            return static::dynamicData()
+                ->select(DB::raw("name||'-主体id:'||id as name,id"))
+                //->orderBy('created_at', 'desc')
+                ->pluck("name", "id");
+        } else {
+            return static::dynamicData()
+                //->orderBy('created_at', 'desc')
+                ->pluck("name", "id");
+        }
+    }
+
+
+    public function scopeSelectSourceDatas($query)
+    {
+        return $query->selectSourceDatas2()
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+
+    /**
+     * 与scopeSelectSourceDatas()相比,返回的是一个查询对象,不是查询结果
+     *
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeSelectSourceDatas2($query)
+    {
+        $isOwner = AdminUtils::isOwner();
+
+        if ($isOwner) {
+            return $query->dynamicData()
+                ->selectByOwner();
+        } else {
+            return $query->dynamicData()
+                ->selectBySubject();
+        }
+    }
+
+
+    public function scopeSelectByOwner($query)
+    {
+        return $query->select(\DB::raw("name||'-(主体id:'||id||')' as name,id"));
+    }
+
+
+    public function scopeSelectBySubject($query)
+    {
+        return $query->select(\DB::raw("name,id"));
     }
 
 

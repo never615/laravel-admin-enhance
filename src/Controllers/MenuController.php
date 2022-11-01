@@ -55,7 +55,7 @@ class MenuController extends AdminCommonController
                     }
 
                     $form->multipleSelect("subjects", "主体")
-                        ->options(Subject::selectSourceDate())
+                        ->options(Subject::selectSourceDatas())
                         ->help("使用该菜单的主体,不设置表示所有主体都可以使用该菜单");
 
                     $form->hidden('_token')->default(csrf_token());
@@ -168,7 +168,7 @@ class MenuController extends AdminCommonController
         }
 
         $form->multipleSelect("subjects", "主体")
-            ->options(Subject::selectSourceDate())
+            ->options(Subject::selectSourceDatas())
             ->help("使用该菜单的主体,不设置表示所有主体都可以使用该菜单");
 
         $form->saving(function ($form) {
