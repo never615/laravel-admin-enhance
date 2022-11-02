@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Tool\Exception\ResourceException;
-use Mallto\User\Domain\SmsUsecase;
+use Mallto\User\Domain\SmsVerifyCodeUsecase;
 
 class AuthController extends BaseAuthController
 {
@@ -53,7 +53,7 @@ class AuthController extends BaseAuthController
 
         $adminUser = Administrator::query()->where('mobile', $request->mobile)->first();
 
-        $sms = app(SmsUsecase::class);
+        $sms = app(SmsVerifyCodeUsecase::class);
 
         try {
             $sms->checkVerifyCode($request->mobile, $request->verify_number, 'admin_sms_login',
@@ -200,13 +200,13 @@ class AuthController extends BaseAuthController
             throw new ResourceException('对不起，该用户未注册管理端');
         }
 
-        $sms = app(SmsUsecase::class);
+        $sms = app(SmsVerifyCodeUsecase::class);
 
         if ($count > 1) {
             \Log::error("当前登录的手机号" . $mobile . "有绑定了多个账号");
         }
 
-        $sms->sendSms($mobile, $user->subject_id, 'admin_sms_login');
+        $sms->sendSmsVerifyCode($mobile, $user->subject_id, 'admin_sms_login');
 
         return response()->noContent();
     }
