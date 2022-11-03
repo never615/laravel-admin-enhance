@@ -9,16 +9,20 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(!is_null($favicon = Admin::favicon()))
         <link rel="shortcut icon" href="{{$favicon}}">
-@endif
+    @endif
 
-<!-- Bootstrap 3.3.5 -->
-    <link rel="stylesheet" href="{{ admin_asset("vendor/laravel-admin/AdminLTE/bootstrap/css/bootstrap.min.css") }}">
+    <!-- Bootstrap 3.3.5 -->
+    <link rel="stylesheet"
+          href="{{ admin_asset("vendor/laravel-admin/AdminLTE/bootstrap/css/bootstrap.min.css") }}">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="{{ admin_asset("vendor/laravel-admin/font-awesome/css/font-awesome.min.css") }}">
+    <link rel="stylesheet"
+          href="{{ admin_asset("vendor/laravel-admin/font-awesome/css/font-awesome.min.css") }}">
     <!-- Theme style -->
-    <link rel="stylesheet" href="{{ admin_asset("vendor/laravel-admin/AdminLTE/dist/css/AdminLTE.min.css") }}">
+    <link rel="stylesheet"
+          href="{{ admin_asset("vendor/laravel-admin/AdminLTE/dist/css/AdminLTE.min.css") }}">
     <!-- iCheck -->
-    <link rel="stylesheet" href="{{ admin_asset("vendor/laravel-admin/AdminLTE/plugins/iCheck/square/blue.css") }}">
+    <link rel="stylesheet"
+          href="{{ admin_asset("vendor/laravel-admin/AdminLTE/plugins/iCheck/square/blue.css") }}">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -42,12 +46,14 @@
 
                 @if($errors->has('username'))
                     @foreach($errors->get('username') as $message)
-                        <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError"><i
+                                class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
                 <div id="verify-password" style="position: relative">
-                    <input type="text" class="form-control" placeholder="{{ trans('admin.username') }}" name="username"
+                    <input type="text" class="form-control" placeholder="{{ trans('admin.username') }}"
+                           name="username"
                            value="{{ old('username') }}" id="username">
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
@@ -72,7 +78,8 @@
 
                 @if($errors->has('password'))
                     @foreach($errors->get('password') as $message)
-                        <label class="control-label" for="inputError"><i class="fa fa-times-circle-o"></i>{{$message}}
+                        <label class="control-label" for="inputError"><i
+                                class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -89,7 +96,8 @@
                     @endforeach
                 @endif
                 <div id="verify-number1" style="display: none;">
-                    <input type="text" class="form-control" style="width: 225px;float: left " placeholder="请输入验证码"
+                    <input type="text" class="form-control" style="width: 225px;float: left "
+                           placeholder="请输入验证码"
                            name="verify_number" id="verify_number">
                     <input type="button" id="send-sms" style="height: 34px; width: 95px" onclick="sendmsg()"
                            value="发送验证码">
@@ -104,7 +112,8 @@
                                     class="fa fa-times-circle-o">{{$message}}</i></label></br>
                         @endforeach
                     @endif
-                    <input type="text" class="form-control" style="display: inline;width: 55%; margin-left: 15px"
+                    <input type="text" class="form-control"
+                           style="display: inline;width: 55%; margin-left: 15px"
                            placeholder="{{ trans('admin.captcha') }}" name="captcha" id="captcha">
                     <img class="captcha" src="{{ captcha_src('default') }}">
                 </div>
@@ -112,26 +121,31 @@
             <!-- 在这里添加代码  end-->
             <div class="row">
                 <div class="col-xs-8">
-                    @if(config('admin.auth.remember'))
-                        <div class="checkbox icheck">
-                            {{--                            <label>--}}
-                            {{--                                <input type="checkbox" name="remember"--}}
-                            {{--                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>--}}
-                            {{--                                {{ trans('admin.remember_me') }}--}}
-                            {{--                            </label>--}}
+                    <div class="checkbox icheck">
+                        @if(config('admin.auth.remember'))
                             <label>
+                                <input type="checkbox" name="remember"
+                                       value="1" {{ (!old('username') || old('remember')) ? 'checked' : '' }}>
+                                {{ trans('admin.remember_me') }}
+                            </label>
+                        @endif
+
+                        <label>
+                            @if(config('admin.auth.mobile_login'))
                                 <a style="color: #666" id="switch-mode" onclick="switchMode()">
                                     <span class="glyphicon glyphicon-phone" aria-hidden="true"></span>
                                     手机号登录
                                 </a>
+                            @endif
 
-                                <a style="color: #666; display: none" id="switch-mode1" onclick="switchMode1()">
-                                    <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                                    账号密码登录
-                                </a>
-                            </label>
-                        </div>
-                    @endif
+                            <a style="color: #666; display: none" id="switch-mode1"
+                               onclick="switchMode1()">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                账号密码登录
+                            </a>
+                        </label>
+                    </div>
+
                 </div>
                 <!-- /.col -->
                 <div class="col-xs-4">
@@ -182,15 +196,14 @@
                 $("#password").focus();
                 alert("请输入您的密码！")
                 return false
-            }else {
+            } else {
                 var password = $("#password").val();
-                if(password.length < 20)
-                {
+                if (password.length < 20) {
                     $("#password").val(js_encrypt($("#password").val()))
                 }
 
             }
-        }else{
+        } else {
             if ($("#mobile").val() == "") {
                 $("#mobile").focus();
                 alert("请输入您的手机号！")
