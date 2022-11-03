@@ -13,6 +13,7 @@ use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Tool\Exception\HttpException;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 /**
  * 工具类
@@ -117,7 +118,11 @@ class SubjectUtils
 
         }
 
-        $subject = Subject::query()->findOrFail($subjectId);
+        $subject = Subject::query()->find($subjectId);
+
+        if ( ! $subject) {
+            throw new PermissionDeniedException('错误的主体 id:' . $subjectId);
+        }
 
         $extraConfig = $subject->open_extra_config ?: [];
 

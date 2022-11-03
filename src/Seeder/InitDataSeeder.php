@@ -26,7 +26,7 @@ class InitDataSeeder extends Seeder
          * --------------------   Subject create  -------------------------
          */
         $项目管理Subject = Subject::create([
-            'name' => "项目管理方",
+            'name' => "项目开发方",
             'uuid' => 999,
         ]);
 
@@ -44,7 +44,7 @@ class InitDataSeeder extends Seeder
          * -----------------------  Role create  --------------------------------
          */
         $ownerRole = Role::create([
-            "name"       => "项目拥有者",
+            "name"       => "开发者",
             "slug"       => "owner",
             "subject_id" => $项目管理Subject->id,
         ]);
@@ -58,7 +58,8 @@ class InitDataSeeder extends Seeder
         //$commonAdminRole = Role::create([
         //    "name"       => "蛇口花园城管理员",
         //    "slug"       => "admin",
-        //    "subject_id" => $蛇口Subject->id,
+        //    "subject_id" => $蛇口
+        //Subject->id,
         //]);
 
         /**
@@ -67,7 +68,7 @@ class InitDataSeeder extends Seeder
         $mallto = Administrator::create([
             'username'       => 'mallto',
             'password'       => bcrypt('mallto'),
-            'name'           => '系统管理',
+            'name'           => '开发人员',
             "subject_id"     => $项目管理Subject->id,
             "adminable_id"   => $项目管理Subject->id,
             "adminable_type" => "subject",

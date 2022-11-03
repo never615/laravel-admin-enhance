@@ -65,7 +65,7 @@ class SubjectController extends AdminCommonController
                 return $subject->name;
             } else {
                 if ($parent_id == 0) {
-                    return '项目开发商';
+                    return '无';
                 } else {
                     return '';
                 }
@@ -131,7 +131,7 @@ class SubjectController extends AdminCommonController
                 ->options(function () use ($parent) {
                     if ($this->id == 1) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
-                        array_add($arr, 0, '项目开发商');
+                        array_add($arr, 0, '无');
                     } else {
                         //返回自己有权限查看的和自己已经配置的
                         $arr = Subject::dynamicData()->orderBy('id')->pluck('name', 'id');
