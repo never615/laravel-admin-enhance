@@ -30,15 +30,15 @@ class InitDataSeeder extends Seeder
             'uuid' => 999,
         ]);
 
-        $招商Subject = Subject::create([
-            'name'      => "招商集团",
-            "parent_id" => $项目管理Subject->id,
-        ]);
-
-        $蛇口Subject = Subject::create([
-            'name'      => "蛇口花园城",
-            "parent_id" => $招商Subject->id,
-        ]);
+        //$招商Subject = Subject::create([
+        //    'name'      => "招商集团",
+        //    "parent_id" => $项目管理Subject->id,
+        //]);
+        //
+        //$蛇口Subject = Subject::create([
+        //    'name'      => "蛇口花园城",
+        //    "parent_id" => $招商Subject->id,
+        //]);
 
         /**
          * -----------------------  Role create  --------------------------------
@@ -49,17 +49,17 @@ class InitDataSeeder extends Seeder
             "subject_id" => $项目管理Subject->id,
         ]);
 
-        $bigAdminRole = Role::create([
-            "name"       => "招商管理员",
-            "slug"       => "admin",
-            "subject_id" => $招商Subject->id,
-        ]);
-
-        $commonAdminRole = Role::create([
-            "name"       => "蛇口花园城管理员",
-            "slug"       => "admin",
-            "subject_id" => $蛇口Subject->id,
-        ]);
+        //$bigAdminRole = Role::create([
+        //    "name"       => "招商管理员",
+        //    "slug"       => "admin",
+        //    "subject_id" => $招商Subject->id,
+        //]);
+        //
+        //$commonAdminRole = Role::create([
+        //    "name"       => "蛇口花园城管理员",
+        //    "slug"       => "admin",
+        //    "subject_id" => $蛇口Subject->id,
+        //]);
 
         /**
          * --------------------------------  Admin_user create   ------------------------------
@@ -73,28 +73,28 @@ class InitDataSeeder extends Seeder
             "adminable_type" => "subject",
         ]);
 
-        $招商 = Administrator::create([
-            'username'       => 'zhaoshang',
-            'password'       => bcrypt('zhaoshang'),
-            'name'           => '招商地产管理',
-            "subject_id"     => $招商Subject->id,
-            "adminable_id"   => $招商Subject->id,
-            "adminable_type" => "subject",
-        ]);
-
-        $gardencity = Administrator::create([
-            'username'       => 'gardencity',
-            'password'       => bcrypt('gardencity'),
-            'name'           => '花园城管理',
-            "subject_id"     => $蛇口Subject->id,
-            "adminable_id"   => $蛇口Subject->id,
-            "adminable_type" => "subject",
-        ]);
+        //$招商 = Administrator::create([
+        //    'username'       => 'zhaoshang',
+        //    'password'       => bcrypt('zhaoshang'),
+        //    'name'           => '招商地产管理',
+        //    "subject_id"     => $招商Subject->id,
+        //    "adminable_id"   => $招商Subject->id,
+        //    "adminable_type" => "subject",
+        //]);
+        //
+        //$gardencity = Administrator::create([
+        //    'username'       => 'gardencity',
+        //    'password'       => bcrypt('gardencity'),
+        //    'name'           => '花园城管理',
+        //    "subject_id"     => $蛇口Subject->id,
+        //    "adminable_id"   => $蛇口Subject->id,
+        //    "adminable_type" => "subject",
+        //]);
 
         // add role to user.
         $mallto->roles()->save($ownerRole);
-        $招商->roles()->save($bigAdminRole);
-        $gardencity->roles()->save($commonAdminRole);
+        //$招商->roles()->save($bigAdminRole);
+        //$gardencity->roles()->save($commonAdminRole);
 
 
     }
