@@ -129,7 +129,8 @@ class SubjectController extends AdminCommonController
 
             $form->select('parent_id', '归属' . mt_trans('subjects'))
                 ->options(function () use ($parent) {
-                    if ($this->id == 1) {
+                    //if ($this->id == 1) {
+                    if (AdminUtils::isOwner()) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
                         array_add($arr, 0, '无');
                     } else {
