@@ -105,21 +105,37 @@ class ReportController extends AdminCommonController
 
         //$url = $disk->privateDownloadUrl('folder/my_file.txt');
         $grid->status();
-        $grid->column("download")->display(function () {
-            if ($this->finish === true) {
-                $disk = Storage::disk("qiniu_private");
-                $url = $disk->privateDownloadUrl(config("app.unique") . '/' . config("app.env") . '/exports/' . $this->name,
-                    60);
 
-                return <<<EOT
+        if (config('admin.upload.disk') === 'admin') {
+            $grid->column("download")->display(function () {
+                if ($this->finish === true) {
+                    $disk = Storage::disk(config('admin.upload.disk'));
+                    $url = $disk->url('/exports/' . $this->name);
+
+                    return <<<EOT
                 <a href="$url" target="_blank">点击下载</a>
 EOT;
-            } else {
-                return "";
-            }
+                } else {
+                    return "";
+                }
+            });
+        } else {
+            $grid->column("download")->display(function () {
+                if ($this->finish === true) {
+                    $disk = Storage::disk("qiniu_private");
+                    $url = $disk->privateDownloadUrl(config("app.unique") . '/' . config("app.env") . '/exports/' . $this->name,
+                        60);
 
-        });
-        $grid->subject()->name("主体");
+                    return <<<EOT
+                <a href="$url" target="_blank">点击下载</a>
+EOT;
+                } else {
+                    return "";
+                }
+            });
+        }
+
+        $grid->subject()->name(mt_trans('subjects'));
         $grid->adminUser()->name("创建人");
         $grid->desc();
 

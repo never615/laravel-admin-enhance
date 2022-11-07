@@ -180,6 +180,8 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
 
         $disk->put(config("app.unique") . '/' . config("app.env") . '/exports/' . $report->name,
             fopen($filePath, 'r+')); //分段上传文件。建议大文件>10Mb使用。
+        //todo 上传到七牛删除本地文件
+
 
         $report->update([
             "finish" => true,

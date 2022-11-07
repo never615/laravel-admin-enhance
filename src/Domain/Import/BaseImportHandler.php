@@ -91,6 +91,7 @@ abstract class BaseImportHandler
         try {
             $contents = file_get_contents($url);
         } catch (ErrorException $errorException) {
+            \Log::warning($errorException->getMessage());
             $this->updateRecordStatus($importRecord, 'failure',
                 '文件名不能包含特殊字符,只能是字母/数字/-_');
         }
