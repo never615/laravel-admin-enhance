@@ -75,7 +75,7 @@ class ReportController extends AdminCommonController
                 $otherTables[] = 'users';
             }
 
-            if ($adminUser->can('orders.export')) {
+            if ($adminUser->can('orders')) {
                 $otherTables[] = 'user_order';//线下交易数据会员导出
             }
 
