@@ -81,6 +81,8 @@ class ImportFileJob implements ShouldQueue
 
     public function failed($exception)
     {
+        \Log::warning('导入任务失败');
+        \Log::warning($exception);
         $record = ImportRecord::find($this->id);
         if ($record && $record->status == "processing") {
             $setting = ImportSetting::where("module_slug", $record->module_slug)

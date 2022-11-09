@@ -144,16 +144,29 @@ class ImportRecordController extends AdminCommonController
                     ->options(ImportSetting::selectSourceDataBySubject());
             }
 
-            $form->filePrivate('file_url', '文件')
-                ->options([
-                    'allowedPreviewTypes'   => [],
-                    'allowedFileExtensions' => [ 'xls', 'xlsx', 'csv' ],
-                ])
-                ->hidePreview()
-                ->uniqueName()
-                ->rules('required')
-                ->move(Admin::user()->id . '/import_file')
-                ->help('导入文件只能保留一个工作表<br>文件名只能是字母加数字');
+            if (config('admin.upload.disk') === 'admin') {
+                $form->file('file_url', '文件')
+                    ->options([
+                        'allowedPreviewTypes'   => [],
+                        'allowedFileExtensions' => [ 'xls', 'xlsx', 'csv' ],
+                    ])
+                    ->hidePreview()
+                    ->uniqueName()
+                    ->rules('required')
+                    ->move(Admin::user()->id . '/import_file')
+                    ->help('导入文件只能保留一个工作表<br>文件名只能是字母加数字');
+            } else {
+                $form->filePrivate('file_url', '文件')
+                    ->options([
+                        'allowedPreviewTypes'   => [],
+                        'allowedFileExtensions' => [ 'xls', 'xlsx', 'csv' ],
+                    ])
+                    ->hidePreview()
+                    ->uniqueName()
+                    ->rules('required')
+                    ->move(Admin::user()->id . '/import_file')
+                    ->help('导入文件只能保留一个工作表<br>文件名只能是字母加数字');
+            }
 
             //$this->formExtraConfig($form);
 

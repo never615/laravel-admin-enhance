@@ -80,10 +80,16 @@ abstract class BaseImportHandler
      */
     public function handle($importRecord)
     {
-        //文件上传到了七牛的私有空间,读取
-        $qiniuPrivate = Storage::disk(config('admin.upload.private_disk'));
+        if (config('admin.upload.disk') === 'admin') {
+            $storage = Storage::disk(config('admin.upload.disk'));
+            $url = $storage->url($importRecord->file_url);
 
-        $url = $qiniuPrivate->privateDownloadUrl($importRecord->file_url);
+        } else {
+            //文件上传到了七牛的私有空间,读取
+            $qiniuPrivate = Storage::disk(config('admin.upload.private_disk'));
+
+            $url = $qiniuPrivate->privateDownloadUrl($importRecord->file_url);
+        }
 
         $fileUrls = explode('.', $importRecord->file_url);
         $ext = array_last($fileUrls);
@@ -257,10 +263,10 @@ abstract class BaseImportHandler
     /**
      * 修改导入任务状态
      *
-     * @param              $importRecord
+     * @param                      $importRecord
      * @param ImportRecord::STATUS $status
-     * @param null         $finishAt
-     * @param null         $failureReason
+     * @param null                 $finishAt
+     * @param null                 $failureReason
      */
     protected function updateRecordStatus(
         $importRecord,
