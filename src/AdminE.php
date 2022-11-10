@@ -238,6 +238,9 @@ class AdminE
 //            Admin::js('https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js');
 //            Admin::js('https://cdnjs.cloudflare.com/ajax/libs/echarts/4.2.1/echarts.min.js');
         Admin::js('vendor/laravel-adminE/echarts/echarts.min.js');
+
+        Admin::js('vendor/laravel-adminE/walden.js');
+
         //Admin::js('https://file.easy.mall-to.com/js/walden.js');
     }
 
