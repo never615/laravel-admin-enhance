@@ -7,7 +7,6 @@ namespace Mallto\Admin\Middleware;
 
 use Closure;
 use Encore\Admin\Facades\Admin;
-use Illuminate\Support\Facades\Auth;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
 class Authenticate
@@ -23,19 +22,23 @@ class Authenticate
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::guard('admin')->guest() && ! $this->shouldPassThrough($request)) {
+        \config([ 'auth.defaults.guard' => 'admin' ]);
+
+        if (Admin::guard()->guest() && ! $this->shouldPassThrough($request)) {
             if ($request->expectsJson()) {
                 return response()
                     ->json([ 'error' => "未授权,请登录" ], 401);
             } else {
-                return redirect()->guest(admin_base_path('auth/login'));
+                $redirectTo = admin_base_path(config('admin.auth.redirect_to', 'auth/login'));
+
+                return redirect()->guest($redirectTo);
             }
         }
 
         $adminUser = Admin::user();
 
         //检查账号是否被禁用
-        if ($adminUser && $adminUser->status == "forbidden") {
+        if ($adminUser && $adminUser->status === "forbidden") {
             Admin::guard()->logout();
 
             $request->session()->invalidate();

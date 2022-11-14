@@ -3,8 +3,10 @@
 namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Controllers\AuthController as BaseAuthController;
+use Encore\Admin\Facades\Admin;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Validator;
 use Mallto\Admin\Data\Administrator;
@@ -209,5 +211,33 @@ class AuthController extends BaseAuthController
         $sms->sendSmsVerifyCode($mobile, $user->subject_id, 'admin_sms_login');
 
         return response()->noContent();
+    }
+
+
+    /**
+     * Send the response after the user was authenticated.
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+        admin_toastr(trans('admin.login_successful'));
+
+        $request->session()->regenerate();
+
+        //如果只允许一个用户登录,则当新用户登录成功后,删除其他用户的权限
+        //暂定使用数据库驱动就默认只允许一个用户登录
+        //$sessionId = session()->getId();
+        if (config('session.driver') === 'database') {
+            //\Log::debug(Admin::guard()->user()->id);
+            DB::table('sessions')
+                ->where('user_id', Admin::guard()->user()->id)
+                ->where('id', '!=', session()->getId())
+                ->delete();
+        }
+
+        return redirect()->intended($this->redirectPath());
     }
 }
