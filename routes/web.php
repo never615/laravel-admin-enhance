@@ -26,7 +26,7 @@ Route::group([
     'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
 ], function ($router) {
 
-    //$router->post('auth/login', 'AuthController@postLogin');
+    $router->post('auth/login', 'AuthController@postLogin');
     $router->get('auth/yzm', 'AuthController@captcha');
 
     Route::group([
