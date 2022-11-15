@@ -101,10 +101,8 @@ Route::group([
                 //主体配置管理: 动态配置
                 $router->resource('subject_configs', 'SubjectConfigController');
 
-
                 //主体配置管理:一个表中的一行数据配置一个主体
                 Route::resource('subject_settings', 'SubjectSettingController');
-
 
                 //文件导入模块
                 $router->resource('import_settings', 'Import\ImportSettingController');
@@ -113,9 +111,18 @@ Route::group([
 
                 //账户分组
                 Route::resource('admin_user_groups', 'AdminUserGroupController');
-                //操作日志字典
-                Route::resource("operation_log_dictionarys", '\Mallto\Admin\Controllers\Admin\OperationLogDictionaryController');
-                Route::resource("auth/logs", '\Mallto\Admin\Controllers\Admin\OperationLogController');
+
+                Route::group([
+                    'namespace' => 'Admin',
+                ], function ($router) {
+
+                    //操作日志字典
+                    Route::resource("operation_log_dictionarys", 'OperationLogDictionaryController');
+                    Route::resource("auth/logs", 'OperationLogController');
+
+                    //登录用户管理
+                    Route::resource("login_users", 'LoginUserController');
+                });
             });
         });
 

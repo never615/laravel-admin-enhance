@@ -67,5 +67,7 @@ class AdminmanagerSeeder extends Seeder
         $this->createPermissions('视频', 'videos');
 
         $this->createPermissions('Dashboard', 'dashboard', false, 0, true);
+
+        $this->createPermissions('在线账号', 'Login_users', false);
     }
 }

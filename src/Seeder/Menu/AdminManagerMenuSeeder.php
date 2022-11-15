@@ -13,7 +13,6 @@ class AdminManagerMenuSeeder extends Seeder
 
     use MenuSeederMaker;
 
-
     /**
      * Run the database seeds.
      *
@@ -65,6 +64,9 @@ class AdminManagerMenuSeeder extends Seeder
             "videos.index", $adminManagerMenu->id,
             $order++, "视频管理", "fa-file-video-o");
 
+        $this->updateOrCreate(
+            "login_users.index", $adminManagerMenu->id,
+            $order++, "在线账号", "fa-users");
 
     }
 }
