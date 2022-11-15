@@ -49,15 +49,14 @@ Route::group([
 
 //----------------------------------------  管理端接口结束  -----------------------------------------------
 
+Route::get('/', 'Mallto\Admin\Controllers\WelcomeController@index');
+
 Admin::routes();
 
 Route::group([
     'namespace'  => 'Mallto\Admin\Controllers',
     'middleware' => [ 'web' ],
 ], function ($router) {
-
-    Route::get('/', 'WelcomeController@index');
-
 
     //todo 这个权限暂时放在这
     Route::get('admin/admin_bind_wechat', 'AdminBindWechatController@bindWechat');
