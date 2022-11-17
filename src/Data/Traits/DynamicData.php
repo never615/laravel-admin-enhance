@@ -13,6 +13,7 @@ namespace Mallto\Admin\Data\Traits;
  */
 
 use Illuminate\Support\Facades\Schema;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\SubjectUtils;
 
 /**
@@ -38,14 +39,17 @@ trait DynamicData
     public function scopeDynamicData($query)
     {
         if (Schema::hasColumn($this->getTable(), 'subject_id')) {
-            //1.获取当前登录账户属于哪一个主体
-            $currentSubject = SubjectUtils::getSubject();
-            //2.获取当前主体的所有子主体
-            $ids = $currentSubject->getChildrenSubject();
+            if (AdminUtils::isOwner()) {
+                $query->orderBy($this->getTable() . '.id', 'desc');
+            } else {
+                //1.获取当前登录账户属于哪一个主体
+                $currentSubject = SubjectUtils::getSubject();
+                //2.获取当前主体的所有子主体
+                $ids = $currentSubject->getChildrenSubject();
 
-            //查询管理账户是否设置了manager_subject_ids暂时用不到,先屏蔽
+                //查询管理账户是否设置了manager_subject_ids暂时用不到,先屏蔽
 
-            //查询管理账户是否设置了manager_subject_ids
+                //查询管理账户是否设置了manager_subject_ids
 //            $managerSubjectIds = $adminUser->manager_subject_ids;
 //            if (!empty($managerSubjectIds)) {
 //                $tempSubject = new Subject();
@@ -60,10 +64,11 @@ trait DynamicData
 //                $ids = array_unique($tempSubjectIds);
 //            }
 
-            //3.限定查询范围为所有子主体
+                //3.限定查询范围为所有子主体
 
-            $query->whereIn('subject_id', $ids)
-                ->orderBy($this->getTable() . '.id', 'desc');
+                $query->whereIn('subject_id', $ids)
+                    ->orderBy($this->getTable() . '.id', 'desc');
+            }
         }
     }
 
