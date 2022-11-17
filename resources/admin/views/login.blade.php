@@ -197,11 +197,7 @@
                 alert("请输入您的密码！")
                 return false
             } else {
-                var password = $("#password").val();
-                if (password.length < 20) {
-                    $("#password").val(js_encrypt($("#password").val()))
-                }
-
+                $("#password").val(js_encrypt($("#password").val()))
             }
         } else {
             if ($("#mobile").val() == "") {
