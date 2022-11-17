@@ -97,9 +97,12 @@ abstract class BaseImportHandler
         try {
             $contents = file_get_contents($url);
         } catch (ErrorException $errorException) {
+            \Log::error('导入获取文件内容失败:' . $url);
             \Log::warning($errorException->getMessage());
             $this->updateRecordStatus($importRecord, 'failure',
                 '文件名不能包含特殊字符,只能是字母/数字/-_');
+
+            return;
         }
 
         $moduleSlug = $importRecord->module_slug;
