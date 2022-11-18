@@ -209,7 +209,7 @@ class ImportRecordController extends AdminCommonController
         if (Schema::hasColumn($this->tableName, "subject_id")) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             if (\Mallto\Admin\AdminUtils::isOwner()) {
-                $form->selectE("subject_id", "主体")
+                $form->selectE("subject_id", mt_trans('subjects'))
                     ->options(
                         Subject::orderBy('id', 'desc')
                             ->pluck("name", "id")
@@ -221,7 +221,7 @@ class ImportRecordController extends AdminCommonController
                 //2.获取当前主体的所有子主体
                 //$ids = $currentSubject->getChildrenSubject();
 
-                $form->selectE("subject_id", "主体")
+                $form->selectE("subject_id", mt_trans('subjects'))
                     ->default($currentSubject->id)
                     ->options(
                         Subject::orderBy('id', 'desc')

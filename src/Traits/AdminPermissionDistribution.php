@@ -21,23 +21,22 @@ trait  AdminPermissionDistribution
     public function createAssignRole($subjectId, $name, $permission = [])
     {
         $adminRole = Role::query()
-            ->where('subject_id', $subjectId)
             ->where('name', $name)
             ->first();
-        if ( ! $adminRole) {
-            //没有则创建角色
-            $adminRole = Role::query()->create(
-                [
-                    'name'       => $name,
-                    'slug'       => implode('-', pinyin($name)),
-                    'subject_id' => $subjectId,
-                ]);
-            if (isset($permission)) {
-                //添加对应权限
-                $createPermission = Permission::query()->whereIn('name', $permission)->pluck('id')->toArray();
-                $adminRole->permissions()->sync($createPermission);
-            }
-        }
+        //if ( ! $adminRole) {
+        //    //没有则创建角色
+        //    $adminRole = Role::query()->create(
+        //        [
+        //            'name'       => $name,
+        //            'slug'       => implode('-', pinyin($name)),
+        //            'subject_id' => $subjectId,
+        //        ]);
+        //    if (isset($permission)) {
+        //        //添加对应权限
+        //        $createPermission = Permission::query()->whereIn('name', $permission)->pluck('id')->toArray();
+        //        $adminRole->permissions()->sync($createPermission);
+        //    }
+        //}
 
         return $adminRole;
     }
