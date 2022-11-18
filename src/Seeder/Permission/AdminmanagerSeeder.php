@@ -68,6 +68,6 @@ class AdminmanagerSeeder extends Seeder
 
         $this->createPermissions('Dashboard', 'dashboard', false, 0, true);
 
-        $this->createPermissions('在线账号', 'Login_users', false);
+        $this->createPermissions('在线账号', 'Login_users');
     }
 }
