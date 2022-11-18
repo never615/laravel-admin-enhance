@@ -107,7 +107,8 @@ class AuthController extends BaseAuthController
         $credentials = $request->only([ $this->username(), 'password', 'captcha' ]);
 
         //验证预发布/正式环境
-        if (in_array(config('app.env'), [ 'staging', 'production' ]) || ! config('app.debug') || config('admin.captcha')) {
+        if (config('admin.captcha') && (in_array(config('app.env'),
+                    [ 'staging', 'production' ]) || ! config('app.debug'))) {
             $validator = Validator::make($credentials, [
                 'captcha' => 'required|captcha',
             ], [ 'captcha.captcha' => '验证码不匹配' ]);
