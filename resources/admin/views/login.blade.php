@@ -104,6 +104,7 @@
                 </div>
             </div>
             <!-- 在这里添加代码  start-->
+            @if(config('admin.captcha'))
             <div class="row">
                 <div class="form-group has-feedback {!! !$errors->has('captcha') ?: 'has-error' !!}">
                     @if($errors->has('captcha'))
@@ -119,6 +120,7 @@
                 </div>
             </div>
             <!-- 在这里添加代码  end-->
+            @endif
             <div class="row">
                 <div class="col-xs-8">
                     <div class="checkbox icheck">
