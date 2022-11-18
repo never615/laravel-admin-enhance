@@ -43,7 +43,9 @@ class CreateAdminRole implements ShouldQueue
         $subjectId = $subjectSaved->subjectId;
         $new = $subjectSaved->new;
 
-        $this->createOrUpdateAdminRole($subjectId,$new);
+        if (config('other.auto_create')) {
+            $this->createOrUpdateAdminRole($subjectId, $new);
+        }
     }
 
 
@@ -56,7 +58,7 @@ class CreateAdminRole implements ShouldQueue
      *
      * @param $subject
      */
-    protected function createOrUpdateAdminRole($subjectId,$new)
+    protected function createOrUpdateAdminRole($subjectId, $new)
     {
         $subject = Subject::find($subjectId);
         $name = $subject->name;
