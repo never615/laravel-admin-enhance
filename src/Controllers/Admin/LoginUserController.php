@@ -21,6 +21,8 @@ use Mallto\Admin\Data\Session;
 class LoginUserController extends AdminCommonController
 {
 
+    protected $dataViewMode = 'all';
+
     /**
      * 表格created_at是否显示
      *

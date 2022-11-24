@@ -41,9 +41,10 @@ class CreateAdminRole implements ShouldQueue
     public function handle(SubjectSaved $subjectSaved)
     {
         $subjectId = $subjectSaved->subjectId;
-        $new = $subjectSaved->new;
+        $new = $subjectSaved->new ?? false;
+        $force = $subjectSaved->force ?? false;
 
-        if (config('other.auto_create')) {
+        if (config('other.auto_create') || $force) {
             $this->createOrUpdateAdminRole($subjectId, $new);
         }
     }

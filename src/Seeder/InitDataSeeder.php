@@ -30,16 +30,6 @@ class InitDataSeeder extends Seeder
             'uuid' => 999,
         ]);
 
-        //$招商Subject = Subject::create([
-        //    'name'      => "招商集团",
-        //    "parent_id" => $项目管理Subject->id,
-        //]);
-        //
-        //$蛇口Subject = Subject::create([
-        //    'name'      => "蛇口花园城",
-        //    "parent_id" => $招商Subject->id,
-        //]);
-
         /**
          * -----------------------  Role create  --------------------------------
          */
@@ -54,7 +44,7 @@ class InitDataSeeder extends Seeder
          */
         $mallto = Administrator::create([
             'username'       => 'system',
-            'password'       => bcrypt('mallto'),
+            'password'       => bcrypt('system'),
             'name'           => '维护人员',
             "subject_id"     => $系统维护Subject->id,
             "adminable_id"   => $系统维护Subject->id,
@@ -62,8 +52,6 @@ class InitDataSeeder extends Seeder
         ]);
         // add role to user.
         $mallto->roles()->save($ownerRole);
-        //$招商->roles()->save($bigAdminRole);
-        //$gardencity->roles()->save($commonAdminRole);
 
     }
 }

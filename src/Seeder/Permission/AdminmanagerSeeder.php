@@ -3,6 +3,7 @@
 namespace Mallto\Admin\Seeder\Permission;
 
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Seeder\SeederMaker;
 
 class AdminmanagerSeeder extends Seeder
@@ -68,6 +69,10 @@ class AdminmanagerSeeder extends Seeder
 
         $this->createPermissions('Dashboard', 'dashboard', false, 0, true);
 
-        $this->createPermissions('在线账号', 'Login_users');
+        Permission::query()
+            ->where('slug','Login_users')
+            ->delete();
+
+        $this->createPermissions('在线账号', 'login_users');
     }
 }
