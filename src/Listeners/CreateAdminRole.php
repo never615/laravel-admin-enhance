@@ -134,6 +134,7 @@ class CreateAdminRole implements ShouldQueue
         }
 
         if ( ! Administrator::where('subject_id', $subjectId)
+            ->where('name', $name . '管理')
             ->exists()) {
             $adminUser = Administrator::firstOrCreate([
                 'subject_id'     => $subjectId,
