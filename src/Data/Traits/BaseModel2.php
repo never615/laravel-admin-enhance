@@ -11,6 +11,8 @@ use Mallto\Admin\SubjectUtils;
 use Request;
 
 /**
+ * @deprecated
+ *
  * Created by PhpStorm.
  * User: never615
  * Date: 21/04/2017
