@@ -70,6 +70,7 @@ class SelectSourceController extends Controller
             $this->selectSourceClassObjes[] = app($selectSourceClass);
         }
 
+        //特别处理主体数据
         if ($key === 'subject' || $key === 'subject_id') {
             if ( ! is_null($id)) {
                 $id = explode(",", $id);
@@ -109,6 +110,8 @@ class SelectSourceController extends Controller
 
 
     /**
+     * ajax load 分页加载数据
+     *
      * 方便下级依赖库添加数据源
      *
      * @param $key
@@ -134,6 +137,8 @@ class SelectSourceController extends Controller
 
 
     /**
+     * load 模式是直接加载全部数据,不过是远程加载
+     *
      * 方便下级依赖库添加数据源
      *
      * @param $q

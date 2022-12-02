@@ -59,7 +59,8 @@ trait AdminSubjectTrait
                             ->pluck("name", "id")
                     )
                     ->rules("required");
-            } elseif (AdminUtils::isBase()) {
+                //} elseif (AdminUtils::isBase()) {
+            } elseif (Admin::user()->subject->hasChildrenSubject()) {
                 //1.获取当前登录账户属于哪一个主体
                 $currentSubject = SubjectUtils::getSubject();
                 //2.获取当前主体的所有子主体
@@ -72,9 +73,6 @@ trait AdminSubjectTrait
                             ->pluck("name", "id")
                     )
                     ->rules("required");
-
-//                $form->displayE("subject.name", "主体");
-//                $form->hideFieldsByCreate("subject.name");
             }
         }
     }
