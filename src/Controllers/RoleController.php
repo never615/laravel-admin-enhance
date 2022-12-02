@@ -121,7 +121,7 @@ class RoleController extends AdminCommonController
                 throw new HttpException(403, '没有权限创建标识为owner的角色');
             }
             if ( ! AdminUtils::isOwner() && $form->model()->slug == 'admin') {
-                throw new ResourceException('非项目拥有者不能编辑该角色');
+                throw new ResourceException('不能编辑默认的管理角色');
             }
             $this->slugSavingCheck($form);
         });
