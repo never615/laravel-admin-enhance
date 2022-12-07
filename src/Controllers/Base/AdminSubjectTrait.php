@@ -97,7 +97,7 @@ trait AdminSubjectTrait
     {
         //不是项目拥有者才自动设置subject_id
         if (Schema::hasColumn($this->tableName, "subject_id") &&
-            ! \Mallto\Admin\AdminUtils::isOwner() && ! \Mallto\Admin\AdminUtils::isBase()) {
+            ! \Mallto\Admin\AdminUtils::isOwner()) {
             //项目拥有者任何时候都可以编辑选择主体,即便是启用了自动设置主体
             //什么账号创建就是谁的总部的
             if ( ! $this->adminUser) {
@@ -107,14 +107,26 @@ trait AdminSubjectTrait
                 $adminUser = $this->adminUser;
             }
             $subject = $adminUser->subject;
-            $baseSubject = $subject->baseSubject();
-            if ($baseSubject && $baseSubject->base) {
-                $form->subject_id = $baseSubject->id;
-                $form->model()->subject_id = $baseSubject->id;
+
+            //有提交 subject_id 则使用提交的
+            if ($form->subject_id && $form->subject_id != $form->model()->subject_id) {
+
             } else {
-                $form->subject_id = $subject->id;
-                $form->model()->subject_id = $subject->id;
+                if ( ! $form->model()->subject_id) {
+                    $form->subject_id = $subject->id;
+                    $form->model()->subject_id = $subject->id;
+                }
             }
+
+            //$subject = $adminUser->subject;
+            //$baseSubject = $subject->baseSubject();
+            //if ($baseSubject && $baseSubject->base) {
+            //    $form->subject_id = $baseSubject->id;
+            //    $form->model()->subject_id = $baseSubject->id;
+            //} else {
+            //    $form->subject_id = $subject->id;
+            //    $form->model()->subject_id = $subject->id;
+            //}
         }
 
     }
