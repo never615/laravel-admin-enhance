@@ -78,6 +78,12 @@ trait SelectSource
     }
 
 
+    /**
+     * owner base 或者有子主体的走这个查询
+     * @param $query
+     *
+     * @return mixed
+     */
     public function scopeSelectByOwner($query)
     {
 
