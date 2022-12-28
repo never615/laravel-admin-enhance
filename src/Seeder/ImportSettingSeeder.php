@@ -21,6 +21,9 @@ class ImportSettingSeeder extends Seeder
         $this->UpdateOrCreate('subjects',
             'Mallto\Admin\Domain\Import\SubjectImport',
             $file_url_prefix . 'subject.xlsx', mt_trans('subject_id') . '模块');
+        $this->UpdateOrCreate('admin_users',
+            'Mallto\Admin\Domain\Import\AdminUserImport',
+            $file_url_prefix . 'admin_user.xlsx', '账号模块');
     }
 
 }

@@ -5,10 +5,13 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Grid\Tools;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
+use Mallto\Admin\Domain\Import\AdminUserImport;
+use Mallto\Admin\Grid\Tools\ImportButton;
 use Mallto\Admin\SelectConstants;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Admin\SubjectUtils;
@@ -66,6 +69,9 @@ class UserController extends AdminCommonController
                 $actions->disableDelete();
             }
             $actions->disableView();
+        });
+        $grid->tools(function (Tools $tools) {
+            $tools->append(new ImportButton(AdminUserImport::class));
         });
     }
 
