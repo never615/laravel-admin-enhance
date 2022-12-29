@@ -25,16 +25,19 @@ class SubjectSaved
 
     public $force;
 
+    public $data;
+
 
     /**
      * @param      $subjectId
      * @param bool $new 是否是新创建
      */
-    public function __construct($subjectId, $new = true, $force = false)
+    public function __construct($subjectId, $new = true, $force = false, $data = [])
     {
         $this->subjectId = $subjectId;
         $this->new = $new;
         $this->force = $force;
+        $this->data = $data;
     }
 
 }
