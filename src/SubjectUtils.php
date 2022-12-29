@@ -286,14 +286,36 @@ class SubjectUtils
             }
         }
 
-        if (empty($uuid) && \Admin::user()) {
-            $uuid = \Admin::user()->subject->uuid;
+        if (empty($uuid) && $adminUser = \Admin::user()) {
+            //$uuid = \Admin::user()->subject->uuid;
+            //按照管理端请求的方式,尝试获取subject
+            //$user = \Admin::user();
+            if ($adminUser) {
+                $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminUser->id);
+                if ( ! $subject) {
+                    $subject = $adminUser->subject;
+
+                    Cache::store('local_redis')->put('sub_admin_user_' . $adminUser->id, $subject, 300);
+                }
+                $uuid = $subject->uuid;
+            }
         }
 
         if (empty($uuid)
             && ! empty(config('auth.guards.admin_api'))
-            && $adminUser = Auth::guard("admin_api")->user()) {
-            $uuid = $adminUser->subject->uuid;
+            && $adminApiUser = Auth::guard("admin_api")->user()) {
+
+            //$uuid = $adminUser->subject->uuid;
+            //$user = \Admin::user();
+            if ($adminApiUser) {
+                $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminApiUser->id);
+                if ( ! $subject) {
+                    $subject = $adminApiUser->subject;
+
+                    Cache::store('local_redis')->put('sub_admin_user_' . $adminApiUser->id, $subject, 300);
+                }
+                $uuid = $subject->uuid;
+            }
         }
 
         if (empty($uuid)) {
@@ -400,25 +422,25 @@ class SubjectUtils
             }
         }
 
-        if ( ! $subject) {
-            //按照管理端请求的方式,尝试获取subject
-            $user = \Admin::user();
-            if ($user) {
-                $subject = Cache::store('local_redis')->get('sub_admin_user_' . $user->id);
-                if ( ! $subject) {
-                    $subject = $user->subject;
-
-                    Cache::store('local_redis')->put('sub_admin_user_' . $user->id, $subject, 300);
-                }
-            }
-        } else {
-            Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject,
-                Carbon::now()->endOfDay());
-            if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
-                Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
-                    $subject, Carbon::now()->endOfDay());
-            }
+        //if ( ! $subject) {
+        //    //按照管理端请求的方式,尝试获取subject
+        //    $user = \Admin::user();
+        //    if ($user) {
+        //        $subject = Cache::store('local_redis')->get('sub_admin_user_' . $user->id);
+        //        if ( ! $subject) {
+        //            $subject = $user->subject;
+        //
+        //            Cache::store('local_redis')->put('sub_admin_user_' . $user->id, $subject, 300);
+        //        }
+        //    }
+        //} else {
+        Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject,
+            Carbon::now()->endOfDay());
+        if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
+            Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                $subject, Carbon::now()->endOfDay());
         }
+        //}
 
         if ($subject) {
             return $subject;
