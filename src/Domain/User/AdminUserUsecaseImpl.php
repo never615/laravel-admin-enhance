@@ -51,6 +51,9 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     public function getReturnUserInfo($adminUser, $addToken = true, $permission = [ 'admin_api_manager' ])
     {
         $adminable = $adminUser->adminable;
+        if ( ! $adminable) {
+            $adminable = $adminUser->subject;
+        }
         if ($addToken) {
             $token = $adminUser->createToken('admin_api');
             $adminUser->token = $token->accessToken;
