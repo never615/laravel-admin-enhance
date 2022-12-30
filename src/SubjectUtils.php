@@ -420,6 +420,8 @@ class SubjectUtils
             if ( ! $subject) {
                 throw new HttpException(422, "uuid参数错误:" . $uuid);
             }
+        } else {
+            throw new HttpException(422, "uuid获取失败");
         }
 
         //if ( ! $subject) {
