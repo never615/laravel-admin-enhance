@@ -375,6 +375,24 @@ class SubjectUtils
     }
 
 
+    public static function getSubjectById($subjectId)
+    {
+        $subject = Cache::store('local_redis')->get('sub_id_' . $subjectId);
+        if ( ! $subject) {
+            $subject = Subject::find($subjectId);
+
+            if ( ! $subject) {
+                throw new HttpException(422, "获取subject 失败,无效的 is:" . $subjectId);
+
+            }
+            Cache::store('local_redis')->put('sub_id_' . $subjectId, $subject);
+        }
+
+        return $subject;
+
+    }
+
+
     /**
      * 获取当前主体
      *
@@ -403,7 +421,7 @@ class SubjectUtils
         }
 
         if ( ! is_null($uuid)) {
-            $subject = Cache::store('local_redis')->get('sub_uuid' . $uuid);
+            $subject = Cache::store('local_redis')->get('sub_uuid_' . $uuid);
             if ( ! $subject) {
                 $subject = Subject::where("uuid", $uuid)->first();
                 if ( ! $subject) {
@@ -450,10 +468,10 @@ class SubjectUtils
             throw new HttpException(422, "获取主体失败:" . $uuid);
         }
 
-        Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject,
+        Cache::store('local_redis')->put('sub_uuid_' . $subject->uuid, $subject,
             Carbon::now()->endOfDay());
         if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
-            Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+            Cache::store('local_redis')->put('sub_uuid_' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
                 $subject, Carbon::now()->endOfDay());
         }
 
