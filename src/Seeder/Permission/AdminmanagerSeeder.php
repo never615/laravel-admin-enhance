@@ -67,10 +67,10 @@ class AdminmanagerSeeder extends Seeder
 
         $this->createPermissions('视频', 'videos');
 
-        $this->createPermissions('Dashboard', 'dashboard', false, 0, true);
+        $this->createPermissions('数据看板', 'dashboard', false, 0, true);
 
         Permission::query()
-            ->where('slug','Login_users')
+            ->where('slug', 'Login_users')
             ->delete();
 
         $this->createPermissions('在线账号', 'login_users');
