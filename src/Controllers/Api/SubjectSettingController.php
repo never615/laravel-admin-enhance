@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Cache;
 use Mallto\Admin\Data\SubjectSetting;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\SubjectUtils;
-use Mallto\Tool\Exception\ResourceException;
 
 /**
  * Class SubjectSettingController
@@ -61,18 +60,21 @@ class SubjectSettingController extends Controller
                 $value = $subjectSetting->public_configs[$queryName] ?? null;
                 if (is_null($value)) {
                     try {
-                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject, 'default');
+                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject,'default');
                         if ($value === 'default') {
-                            return null;
+                            $value = null;
+                            //return null;
                         }
                     } catch (SubjectConfigException $subjectConfigException) {
-                        return null;
+                        $value = null;
+                        //return null;
                     }
                 }
             }
 
             if ( ! $value) {
-                throw new ResourceException($queryName . '不存在或权限拒绝');
+                $value = null;
+                //throw new ResourceException($queryName . '不存在或权限拒绝');
             }
 
             if (in_array($queryName, $subjectSetting->file_type_column ?? [])) {
@@ -82,10 +84,20 @@ class SubjectSettingController extends Controller
             //if (str_contains($value, 'image')) {
             //    $value = config("app.file_url_prefix") . $value;
             //}
+
+            if (in_array($value, [ 'true', 'false' ])) {
+                $value = (bool) $value;
+            }
+
+            if (is_numeric($value)) {
+                $value = (int) $value;
+            }
+
             $result[$queryName] = $value;
         }
 
-        Cache::store('local_redis')->put($cacheKey . $requestQueryName, $result, Carbon::now()->addMinutes(10));
+        Cache::store('local_redis')->put($cacheKey . $requestQueryName, $result,
+            Carbon::now()->addMinutes(10));
 
         return $result;
     }

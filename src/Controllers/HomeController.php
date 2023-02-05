@@ -16,11 +16,11 @@ class HomeController extends Controller
     {
         return Admin::content(function (Content $content) {
 
-            $content->header('Dashboard');
+            $content->header('数据看板');
 
             $user = Admin::user();
             if ( ! $user->can("dashboard")) {
-                $content->description("没有权限查看dashboard");
+                $content->description("没有权限查看数据看板");
 
                 return;
             } else {
