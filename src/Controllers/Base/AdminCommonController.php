@@ -259,7 +259,8 @@ abstract class AdminCommonController extends AdminController
             //项目拥有者
             $grid->id('ID')->sortable();
             if (Schema::hasColumn($this->tableName, "subject_id")) {
-                $filter->equal("subject_id", mt_trans('subjects'))->select(Subject::selectSourceDatas());
+                $filter->equal("subject_id", mt_trans('subjects'))
+                    ->select(Subject::selectSourceDatas());
             }
         }
 

@@ -148,7 +148,9 @@ class Subject extends Model
         $isOwner = AdminUtils::isOwner();
 
         if ($isOwner) {
-            return $query->dynamicData()
+            return $query
+                //->dynamicData()
+                ->orderBy('id', 'desc')
                 ->selectByOwner();
         } else {
             return $query->dynamicData()
