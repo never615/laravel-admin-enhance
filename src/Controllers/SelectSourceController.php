@@ -9,6 +9,7 @@ use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\SubjectUtils;
@@ -61,7 +62,12 @@ class SelectSourceController extends Controller
         }
 
         //查询子主体
-        $childSubjectIds = $subject->getChildrenSubject();
+        if (AdminUtils::isOwner()) {
+            //todo 临时处理,如果以后项目上千的要优化
+            $childSubjectIds=Subject::pluck('id')->toArray();
+        } else {
+            $childSubjectIds = $subject->getChildrenSubject();
+        }
 
         //初始化其他库添加的select source
         $selectSourceClasses = AdminE::getSelectSourceClass();
