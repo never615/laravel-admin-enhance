@@ -9,10 +9,8 @@ use Encore\Admin\Grid\Tools;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Role;
-use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Domain\Import\AdminUserImport;
 use Mallto\Admin\Grid\Tools\ImportButton;
-use Mallto\Admin\SelectConstants;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\ResourceException;
@@ -146,8 +144,14 @@ class UserController extends AdminCommonController
         //    })
         //    ->ajaxLoad("adminable_type", data_source_url("ajax_load"));
 
-        $form->multipleSelect('roles', trans('admin.roles'))
-            ->options(Role::dynamicData()->get()->pluck('name', 'id'));
+        if (Admin::user()->id != $this->currentId) {
+            $form->multipleSelect('roles', trans('admin.roles'))
+                ->options(Role::dynamicData()->get()->pluck('name', 'id'));
+        } else {
+            $form->multipleSelect('roles', trans('admin.roles'))
+                ->options(Role::dynamicData()->get()->pluck('name', 'id'))
+                ->readOnly();
+        }
 
         $form->saving(function (Form $form) {
             //检查账户名称是否已经存在
@@ -287,9 +291,10 @@ class UserController extends AdminCommonController
                 $form->qrcode("qrcode", "扫码绑定微信")
                     ->qrcodeUrl($this->getBindWechatUrl($this->currentId));
 
-                $form->embeds('show_wechat_user', '当前绑定的微信用户', function ($form) use ($currentAdminUser) {
-                    $form->html($this->showBindWechatUser($currentAdminUser));
-                });
+                $form->embeds('show_wechat_user', '当前绑定的微信用户',
+                    function ($form) use ($currentAdminUser) {
+                        $form->html($this->showBindWechatUser($currentAdminUser));
+                    });
             }
 
             $form->divider();
