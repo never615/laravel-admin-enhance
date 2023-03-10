@@ -58,12 +58,15 @@ trait SubjectSaveTrait
                     }
                 }
             }
+
+
+
         }
 
-        //父主体为顶级,即项目拥有者的主体,不能被修改
-        if ($form->model()->parent_id === 0) {
-            $form->parent_id = 0;
-        }
+        ////父主体为顶级,即项目拥有者的主体,不能被修改
+        //if ($form->model()->parent_id === 0) {
+        //    $form->parent_id = 0;
+        //}
 
         //父主体修改检查,不能设置为本身,不能设置为孩子
         if ($form->parent_id && $form->parent_id != $form->model()->parent_id) {
