@@ -434,12 +434,9 @@ class SubjectUtils
             if ( ! $subject) {
                 throw new HttpException(422, "uuid参数错误:" . $uuid);
             }
-        } else {
-            \Log::warning('uuid获取失败:' . $uuid);
-            \Log::warning(\Admin::user());
-            throw new HttpException(422, "uuid获取失败");
         }
 
+        //针对有点项目没有设置 uuid 情况直接获取 subject
         if ( ! $subject && $adminUser = \Admin::user()) {
             //$uuid = \Admin::user()->subject->uuid;
             //按照管理端请求的方式,尝试获取subject
