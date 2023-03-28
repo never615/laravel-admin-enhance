@@ -435,6 +435,8 @@ class SubjectUtils
                 throw new HttpException(422, "uuid参数错误:" . $uuid);
             }
         } else {
+            \Log::warning('uuid获取失败:' . $uuid);
+            \Log::warning(\Admin::user());
             throw new HttpException(422, "uuid获取失败");
         }
 
