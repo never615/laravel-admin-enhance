@@ -23,6 +23,7 @@ use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Domain\Import\SubjectImport;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\Grid\Tools\ImportButton;
+use Mallto\Admin\Jobs\SubjectPathUpdateJob;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\Tag;
@@ -312,7 +313,10 @@ class SubjectController extends AdminCommonController
             $subjectConfigExpandObj->formSaving($form, $adminUser);
         }
 
-
+        if($form->model()->parent_id != $form->parent_id)
+        {
+            dispatch(new SubjectPathUpdateJob($form->model()));
+        }
     }
 
 
