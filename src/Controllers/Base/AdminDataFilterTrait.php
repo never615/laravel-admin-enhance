@@ -90,7 +90,10 @@ trait AdminDataFilterTrait
      */
     protected function destroyFilter($id)
     {
-        $this->formFilterById($id);
+        //批量删除直接return
+        if (strpos($id, ',') !== false) {
+            $this->formFilterById($id);
+        }
     }
 
 
@@ -167,9 +170,6 @@ trait AdminDataFilterTrait
     {
         $model = resolve($this->getModel());
 
-        //兼容批量处理
-        $id = explode(',',$id);
-
         //检查记录是否已经删除
         $obj = $model::find($id);
         if ( ! $obj) {
@@ -224,7 +224,7 @@ trait AdminDataFilterTrait
                     throw new HttpException(403, "没有权限查看");
                 }
             } elseif (Schema::hasColumn($tableName, "subject_id")) {
-                if ( ! $model->whereIn('subject_id', $subjectIds)->whereIn('id', $id)->exists()) {
+                if ( ! $model->whereIn('subject_id', $subjectIds)->where('id', $id)->exists()) {
                     throw new HttpException(403, "没有权限查看");
                 }
             }
