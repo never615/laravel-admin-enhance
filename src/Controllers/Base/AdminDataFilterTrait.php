@@ -159,7 +159,7 @@ trait AdminDataFilterTrait
 
 
     /**
-     * 处理subject纬度阻止没有数据权限的操作
+     * 处理subject维度阻止没有数据权限的操作
      *
      * @param $id
      */

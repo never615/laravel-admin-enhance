@@ -20,6 +20,13 @@ class SubjectConfigController extends AdminCommonController
 {
 
     /**
+     * 动态配置批量删除是否开启
+     *
+     * @var bool
+     */
+    protected $isDisableDelete = true;
+
+    /**
      * 获取这个模块的Model
      *
      * @return mixed
