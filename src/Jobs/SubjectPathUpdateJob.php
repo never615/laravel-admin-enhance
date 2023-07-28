@@ -31,6 +31,8 @@ class SubjectPathUpdateJob implements ShouldQueue
      */
     public $tries = 1;
 
+    public $delay = 3;
+
     /**
      * @var
      */
@@ -60,18 +62,15 @@ class SubjectPathUpdateJob implements ShouldQueue
         $subjectId = $this->subject->id;
         $subject = Subject::query()->find($subjectId);
         $childrenSubject = $subject->getChildrenSubject($subjectId);
-        foreach ($childrenSubject as $childrenSubjectId)
-        {
-            $path = $subject->path.$subjectId.'.';
-            if($childrenSubjectId != $subjectId)
-            {
+        foreach ($childrenSubject as $childrenSubjectId) {
+            $path = $subject->path . $subjectId . '.';
+            if ($childrenSubjectId != $subjectId) {
                 $subordinateSubject = Subject::query()->find($childrenSubjectId);
                 //判断是否是下一级,如果是直接更新,如果不是,拼接path
-                if($subordinateSubject->parent_id != $subjectId)
-                {
+                if ($subordinateSubject->parent_id != $subjectId) {
                     //查询上级,根据上级的path拼接
                     $superiorSubject = Subject::query()->find($subordinateSubject->parent_id);
-                    $path = $superiorSubject->path.$subordinateSubject->parent_id.'.';
+                    $path = $superiorSubject->path . $subordinateSubject->parent_id . '.';
                 }
 
                 $subordinateSubject->path = $path;
