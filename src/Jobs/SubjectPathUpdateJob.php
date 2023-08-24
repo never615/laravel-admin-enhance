@@ -5,7 +5,6 @@
 
 namespace Mallto\Admin\Jobs;
 
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,7 +14,8 @@ use Mallto\Admin\Data\Subject;
 class SubjectPathUpdateJob implements ShouldQueue
 {
 
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+//    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
