@@ -2,6 +2,7 @@
 
 namespace Mallto\Admin\Controllers;
 
+use Carbon\Carbon;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -122,7 +123,7 @@ class UserController extends AdminCommonController
 //            });
 
         $form->ignore([ 'password_confirmation', 'qrcode', 'unbind_wechat' ]);
-
+        $form->hidden('replacement_password_time');
         //$form->select("adminable_type", "账号类型")
         //    ->options(Administrator::ADMINABLE_TYPE)
         //    ->rules("required");
@@ -203,6 +204,7 @@ class UserController extends AdminCommonController
 
             if ($form->password && $form->model() && $form->model()->password != $form->password) {
                 $form->password = bcrypt($form->password);
+                $form->replacement_password_time = Carbon::now()->toDateTimeString();
             }
         });
     }
