@@ -78,8 +78,8 @@ Route::group([
             $router->post('auth/login', 'AuthController@postLogin');
 
             $router->get('auth/logout', '\Encore\Admin\Controllers\AuthController@getLogout');
-            $router->get('auth/setting', '\Encore\Admin\Controllers\AuthController@getSetting');
-            $router->put('auth/setting', '\Encore\Admin\Controllers\AuthController@putSetting');
+            $router->get('auth/setting', 'AuthSettingController@getSetting');
+            $router->put('auth/setting', 'AuthSettingController@putSetting');
 
             Route::get('select_data/{key}', 'SelectSourceController@dataSource');
 
