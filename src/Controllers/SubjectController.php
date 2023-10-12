@@ -76,13 +76,14 @@ class SubjectController extends AdminCommonController
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             $grid->uuid()->editable();
+        } else {
+            $grid->uuid();
         }
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
 
-            $filter->equal('parent_id', '归属')
-                ->select(Subject::dynamicData()->pluck('name', 'id'));
+            $filter->equal('parent_id', '归属')->select(Subject::dynamicData()->pluck('name', 'id'));
         });
 
         $grid->actions(function (Grid\Displayers\Actions $actions) {
@@ -122,21 +123,24 @@ class SubjectController extends AdminCommonController
             $form->text('name')->rules('required');
 
             //父级主体和已购模块只能父级设置,自己可以看,不能改
+            $currentId = $this->currentId;
             $current = Subject::find($this->currentId);
             $parent = null;
             if ($current) {
                 $parent = Subject::find($current->parent_id);
             }
 
-            $form->select('parent_id', '归属' . mt_trans('subjects'))
-                ->options(function () use ($parent) {
+            //存在父级主体或者是创建页面则显示归属
+            if ($parent || ! $this->currentId) {
+                $form->select('parent_id', '归属'.mt_trans('subjects'))->options(function () use ($parent, $currentId) {
                     //if ($this->id == 1) {
                     if (AdminUtils::isOwner()) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
                         array_add($arr, 0, '无');
                     } else {
                         //返回自己有权限查看的和自己已经配置的
-                        $arr = Subject::dynamicData()->orderBy('id')->pluck('name', 'id');
+                        $arr = Subject::dynamicData()->where('id', '!=', $currentId)->orderBy('id')->pluck('name',
+                            'id');
                         if ($parent) {
                             array_add($arr, $parent->id, $parent->name);
                         }
@@ -144,6 +148,7 @@ class SubjectController extends AdminCommonController
 
                     return $arr;
                 })->rules('required');
+            }
 
             $this->basicInfoExtend($form);
 
@@ -162,19 +167,14 @@ class SubjectController extends AdminCommonController
 
         $this->subjectOwnerExtend($form);
 
-        if (
-            \Mallto\Admin\AdminUtils::isOwner()
-            //|| \Mallto\Admin\AdminUtils::isBase()
-            || config('other.subject_parent_config')
-        ) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $form->tab('主体基本配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->systemConfigBasic($form);
             });
         }
 
-        if (\Mallto\Admin\AdminUtils::isOwner()
-            || config('other.subject_parent_config')) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $form->tab('已购模块配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->purchasedModuleConfig($form);
@@ -209,8 +209,14 @@ class SubjectController extends AdminCommonController
      */
     protected function basicInfoExtend($form)
     {
+        if (AdminUtils::isOwner()) {
+            $form->text('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+        } else {
+            $form->displayE('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+        }
+
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->basicInfoExtend($form);
+            $subjectConfigExpandObj->basicInfoExtend($form, $this->currentId);
         }
 
     }
@@ -225,12 +231,11 @@ class SubjectController extends AdminCommonController
      */
     protected function subjectOwnerExtraConfigByJson($form)
     {
-        $form->multipleSelect(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU, '快捷访问菜单')
-            ->help('顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单')
-            ->options(Menu::selectOptions());
+        $form->multipleSelect(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU,
+            '快捷访问菜单')->help('顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单')->options(Menu::selectOptions());
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->subjectOwnerExtraConfigByJson($form);
+            $subjectConfigExpandObj->subjectOwnerExtraConfigByJson($form, $this->currentId);
         }
     }
 
@@ -255,24 +260,20 @@ class SubjectController extends AdminCommonController
     protected function projectOwnerConfig($form)
     {
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->projectOwnerConfig($form);
+            $subjectConfigExpandObj->projectOwnerConfig($form, $this->currentId);
         }
         //$form->textarea('extra_config');
         $form->embeds('extra_config', '其他配置', function (EmbeddedForm $form) {
-            $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, '管理端微信服务uuid')
-                ->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
+            $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, '管理端微信服务uuid')->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
 有的项目管理端单独使用一个公众号,所以需要配置单独的uuid');
 
-            $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')
-                ->options(Tag::TYPE);
+            $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')->options(Tag::TYPE);
 
-            $form->select(
-                SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE,
-                '项目类型')
-                ->options(Subject::PROJECT_TYPE);
+            $form->select(SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE,
+                '项目类型')->options(Subject::PROJECT_TYPE);
 
             foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-                $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form);
+                $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form, $this->currentId);
             }
         });
     }
@@ -292,8 +293,7 @@ class SubjectController extends AdminCommonController
             $form->html('<h4>主要用来配置api接口地址和appKey和secret等</h4>');
             if (AdminUtils::isOwner()) {
                 $form->hasMany('subjectconfigs', '', function (NestedForm $form) {
-                    $form->select('type')
-                        ->options(SubjectConfig::TYPE);
+                    $form->select('type')->options(SubjectConfig::TYPE);
                     $form->text('key');
                     $form->text('value');
                     $form->text('remark');
@@ -313,8 +313,7 @@ class SubjectController extends AdminCommonController
             $subjectConfigExpandObj->formSaving($form, $adminUser);
         }
 
-        if($form->model()->parent_id != $form->parent_id)
-        {
+        if ($form->model()->parent_id != $form->parent_id) {
             dispatch(new SubjectPathUpdateJob($form->model()));
         }
     }
@@ -323,17 +322,15 @@ class SubjectController extends AdminCommonController
     protected function formSaved($form)
     {
         if ( ! $form->model()->uuid) {
-            Subject::query()
-                ->where('id', $form->model()->id)
-                ->update([
-                    'uuid' => "1" . sprintf('%06d', $form->model()->id),
-                ]);
+            Subject::query()->where('id', $form->model()->id)->update([
+                'uuid' => "1".sprintf('%06d', $form->model()->id),
+            ]);
         }
 
         $adminUser = Admin::user();
 
         //clear 顶部菜单的缓存
-        Cache::forget('speedy_' . $adminUser->id);
+        Cache::forget('speedy_'.$adminUser->id);
 
         CacheUtils::forgetSubject($form->model()->id);
 
@@ -344,10 +341,7 @@ class SubjectController extends AdminCommonController
         }
 
         if ($adminUser && ! $adminUser->isOwner()) {
-            if (
-                ($form->third_part_mall_id && $form->third_part_mall_id != $form->model()->third_part_mall_id) ||
-                ($form->uuid && $form->uuid != $form->model()->uuid)
-            ) {
+            if (($form->third_part_mall_id && $form->third_part_mall_id != $form->model()->third_part_mall_id) || ($form->uuid && $form->uuid != $form->model()->uuid)) {
                 throw new PermissionDeniedException('没有权限修改,请联系墨兔管理修改');
             }
         }

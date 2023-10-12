@@ -26,7 +26,7 @@ class CreateAdminRole implements ShouldQueue
      *
      * @var string|null
      */
-    public $queue = 'mid';
+    public $queue = 'high';
 
     /**
      * 延迟3s 执行,以便其他库在主体创建后修改主体关联的权限
@@ -35,7 +35,7 @@ class CreateAdminRole implements ShouldQueue
      *
      * @var int
      */
-    public $delay = 3;
+    public $delay = 1;
 
 
     public function handle(SubjectSaved $subjectSaved)
@@ -43,9 +43,10 @@ class CreateAdminRole implements ShouldQueue
         $subjectId = $subjectSaved->subjectId;
         $new = $subjectSaved->new ?? false;
         $force = $subjectSaved->force ?? false;
+        $data = $subjectSaved->data ?? [];
 
         if (config('other.auto_create') || $force) {
-            $this->createOrUpdateAdminRole($subjectId, $new);
+            $this->createOrUpdateAdminRole($subjectId, $new, $data);
         }
     }
 
@@ -57,9 +58,11 @@ class CreateAdminRole implements ShouldQueue
      * 同时赋予该主体的已购权限
      * 更新是也跟随更新
      *
-     * @param $subject
+     * @param       $subjectId
+     * @param       $new
+     * @param array $data
      */
-    protected function createOrUpdateAdminRole($subjectId, $new)
+    protected function createOrUpdateAdminRole($subjectId, $new, $data = [])
     {
         $subject = Subject::find($subjectId);
         $name = $subject->name;
@@ -68,11 +71,10 @@ class CreateAdminRole implements ShouldQueue
             'subject_id' => $subjectId,
             'slug'       => 'admin',
         ])->exists()) {
-            $adminRole = Role::query()
-                ->where([
-                    'subject_id' => $subjectId,
-                    'slug'       => 'admin',
-                ])->firstOrFail();
+            $adminRole = Role::query()->where([
+                'subject_id' => $subjectId,
+                'slug'       => 'admin',
+            ])->firstOrFail();
 
             //给角色分配权限
             if ($subject->permissions) {
@@ -86,9 +88,7 @@ class CreateAdminRole implements ShouldQueue
                 });
 
                 //$permissionIds添加上base权限
-                $basePermissions = Permission::where('common', true)
-                    ->pluck('id')
-                    ->toArray();
+                $basePermissions = Permission::where('common', true)->pluck('id')->toArray();
 
                 $permissionIds = array_merge($permissionIds, $basePermissions);
 
@@ -106,7 +106,7 @@ class CreateAdminRole implements ShouldQueue
             'subject_id' => $subjectId,
             'slug'       => 'admin',
         ], [
-            'name' => $name . '管理员',
+            'name' => $name.'管理员',
         ]);
 
         //给角色分配权限
@@ -121,9 +121,7 @@ class CreateAdminRole implements ShouldQueue
             });
 
             //$permissionIds添加上base权限
-            $basePermissions = Permission::where('common', true)
-                ->pluck('id')
-                ->toArray();
+            $basePermissions = Permission::where('common', true)->pluck('id')->toArray();
 
             $permissionIds = array_merge($permissionIds, $basePermissions);
 
@@ -133,19 +131,24 @@ class CreateAdminRole implements ShouldQueue
             CacheUtils::clearMenuCache();
         }
 
-        if ( ! Administrator::where('subject_id', $subjectId)
-            ->where('name', $name . '管理')
-            ->exists()) {
+        $name = $data['name'] ?? $name.'管理';
+
+        if ( ! Administrator::where('subject_id', $subjectId)->where('name', $name)->exists()) {
+            $username = $data['username'] ?? implode('', pinyin($name));
+            $password = bcrypt($data['password']) ?? bcrypt(implode('', pinyin($name)));
+
             $adminUser = Administrator::firstOrCreate([
                 'subject_id'     => $subjectId,
                 'adminable_id'   => $subjectId,
                 'adminable_type' => 'subject',
-                'username'       => implode('', pinyin($name)),
-                'name'           => $name . '管理',
-                'password'       => bcrypt(implode('', pinyin($name))),
+                'username'       => $username,
+                'name'           => $name,
+                'password'       => $password,
+                'mobile'          => $data['mobile'] ?? null,
             ]);
             $adminUser->roles()->sync($adminRole->id);
         }
+
     }
 
 }

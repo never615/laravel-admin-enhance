@@ -47,7 +47,7 @@
                 @if($errors->has('username'))
                     @foreach($errors->get('username') as $message)
                         <label class="control-label" for="inputError"><i
-                                class="fa fa-times-circle-o"></i>{{$message}}
+                                    class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -61,7 +61,7 @@
                 @if($errors->has('mobile'))
                     @foreach($errors->get('mobile') as $message)
                         <label class="control-label" for="inputError" style="color: #dd4b39"><i
-                                class="fa fa-times-circle-o"></i>{{$message}}
+                                    class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -79,7 +79,7 @@
                 @if($errors->has('password'))
                     @foreach($errors->get('password') as $message)
                         <label class="control-label" for="inputError"><i
-                                class="fa fa-times-circle-o"></i>{{$message}}
+                                    class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -91,7 +91,7 @@
                 @if($errors->has('verify_number'))
                     @foreach($errors->get('verify_number') as $message)
                         <label class="control-label" for="inputError" style="color: #dd4b39"><i
-                                class="fa fa-times-circle-o"></i>{{$message}}
+                                    class="fa fa-times-circle-o"></i>{{$message}}
                         </label><br>
                     @endforeach
                 @endif
@@ -105,21 +105,21 @@
             </div>
             <!-- 在这里添加代码  start-->
             @if(config('admin.captcha'))
-            <div class="row">
-                <div class="form-group has-feedback {!! !$errors->has('captcha') ?: 'has-error' !!}">
-                    @if($errors->has('captcha'))
-                        @foreach($errors->get('captcha') as $message)
-                            <label class="control-label" for="inputError" style="margin-left: 15px"><i
-                                    class="fa fa-times-circle-o">{{$message}}</i></label></br>
-                        @endforeach
-                    @endif
-                    <input type="text" class="form-control"
-                           style="display: inline;width: 55%; margin-left: 15px"
-                           placeholder="{{ trans('admin.captcha') }}" name="captcha" id="captcha">
-                    <img class="captcha" src="{{ captcha_src('default') }}">
+                <div class="row">
+                    <div class="form-group has-feedback {!! !$errors->has('captcha') ?: 'has-error' !!}">
+                        @if($errors->has('captcha'))
+                            @foreach($errors->get('captcha') as $message)
+                                <label class="control-label" for="inputError" style="margin-left: 15px"><i
+                                            class="fa fa-times-circle-o">{{$message}}</i></label></br>
+                            @endforeach
+                        @endif
+                        <input type="text" class="form-control"
+                               style="display: inline;width: 55%; margin-left: 15px"
+                               placeholder="{{ trans('admin.captcha') }}" name="captcha" id="captcha">
+                        <img class="captcha" src="{{ captcha_src('default') }}">
+                    </div>
                 </div>
-            </div>
-            <!-- 在这里添加代码  end-->
+                <!-- 在这里添加代码  end-->
             @endif
             <div class="row">
                 <div class="col-xs-8">
@@ -155,6 +155,13 @@
                     <button type="button" class="btn btn-primary btn-block btn-flat"
                             onclick="checkform_login()">{{ trans('admin.login') }}</button>
                 </div>
+
+                @if(config('admin.register'))
+                    <div class="col-xs-4">
+                        <a type="button" class="btn btn-block"
+                           href="/admin/auth/register">{{ trans('admin3.register') }}</a>
+                    </div>
+                @endif
                 <!-- /.col -->
             </div>
         </form>

@@ -34,7 +34,7 @@ interface SubjectConfigExtendInterface
      *
      * @return mixed
      */
-    public function basicInfoExtend(Form $form);
+    public function basicInfoExtend(Form $form,$currentId);
 
 
     /**
@@ -54,7 +54,7 @@ interface SubjectConfigExtendInterface
      *
      * @return mixed
      */
-    public function subjectOwnerExtraConfigByJson(EmbeddedForm $form);
+    public function subjectOwnerExtraConfigByJson(EmbeddedForm $form, $currentId);
 
 
     /**
@@ -95,7 +95,7 @@ interface SubjectConfigExtendInterface
      *
      * @return mixed
      */
-    public function projectOwnerConfig(Form $form);
+    public function projectOwnerConfig(Form $form,$currentId);
 
 
     /**
@@ -114,7 +114,7 @@ interface SubjectConfigExtendInterface
      *
      * @return mixed
      */
-    public function projectOwnerExtraConfigByJson(EmbeddedForm $form);
+    public function projectOwnerExtraConfigByJson(EmbeddedForm $form,$currentId);
 
 
     /**
