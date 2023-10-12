@@ -159,12 +159,6 @@ class SubjectController extends AdminCommonController
         });
 
         $form->tab('配置项', function ($form) {
-            if (AdminUtils::isOwner()) {
-                $form->text('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
-            } else {
-                $form->display('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
-            }
-
             $form->embeds('open_extra_config', '', function (Form\EmbeddedForm $form) {
                 //动态属性列扩展,开放给主体拥有者可以编辑的
                 $this->subjectOwnerExtraConfigByJson($form);
@@ -215,6 +209,12 @@ class SubjectController extends AdminCommonController
      */
     protected function basicInfoExtend($form)
     {
+        if (AdminUtils::isOwner()) {
+            $form->text('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+        } else {
+            $form->displayE('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+        }
+
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->basicInfoExtend($form);
         }
