@@ -216,7 +216,7 @@ class SubjectController extends AdminCommonController
         }
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->basicInfoExtend($form);
+            $subjectConfigExpandObj->basicInfoExtend($form, $this->currentId);
         }
 
     }
@@ -235,7 +235,7 @@ class SubjectController extends AdminCommonController
             '快捷访问菜单')->help('顶部菜单栏上的快捷访问菜单,在此配置后,拥有对应菜单权限的账号即可在快捷访问中看到对应菜单')->options(Menu::selectOptions());
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->subjectOwnerExtraConfigByJson($form);
+            $subjectConfigExpandObj->subjectOwnerExtraConfigByJson($form, $this->currentId);
         }
     }
 
@@ -260,7 +260,7 @@ class SubjectController extends AdminCommonController
     protected function projectOwnerConfig($form)
     {
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-            $subjectConfigExpandObj->projectOwnerConfig($form);
+            $subjectConfigExpandObj->projectOwnerConfig($form, $this->currentId);
         }
         //$form->textarea('extra_config');
         $form->embeds('extra_config', '其他配置', function (EmbeddedForm $form) {
@@ -273,7 +273,7 @@ class SubjectController extends AdminCommonController
                 '项目类型')->options(Subject::PROJECT_TYPE);
 
             foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
-                $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form);
+                $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form, $this->currentId);
             }
         });
     }
