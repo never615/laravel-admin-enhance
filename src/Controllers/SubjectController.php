@@ -76,6 +76,8 @@ class SubjectController extends AdminCommonController
 
         if (\Mallto\Admin\AdminUtils::isOwner()) {
             $grid->uuid()->editable();
+        } else {
+            $grid->uuid();
         }
 
         $grid->filter(function (Grid\Filter $filter) {
@@ -157,6 +159,12 @@ class SubjectController extends AdminCommonController
         });
 
         $form->tab('配置项', function ($form) {
+            if (AdminUtils::isOwner()) {
+                $form->text('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+            } else {
+                $form->display('uuid', '主体唯一标识')->help('接口参数中的项目标识uuid');
+            }
+
             $form->embeds('open_extra_config', '', function (Form\EmbeddedForm $form) {
                 //动态属性列扩展,开放给主体拥有者可以编辑的
                 $this->subjectOwnerExtraConfigByJson($form);
@@ -165,15 +173,14 @@ class SubjectController extends AdminCommonController
 
         $this->subjectOwnerExtend($form);
 
-        if (\Mallto\Admin\AdminUtils::isOwner() //|| \Mallto\Admin\AdminUtils::isBase()
-            || config('other.subject_parent_config')) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $form->tab('主体基本配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->systemConfigBasic($form);
             });
         }
 
-        if (\Mallto\Admin\AdminUtils::isOwner() || config('other.subject_parent_config')) {
+        if (\Mallto\Admin\AdminUtils::isOwner()) {
             $form->tab('已购模块配置(owner)', function ($form) {
                 //主体基本配置(owner) uuid/权限
                 $this->purchasedModuleConfig($form);
