@@ -62,7 +62,7 @@ return [
 
         'namespace' => 'App\\Admin\\Controllers',
 
-        'middleware' => ['web', 'adminE'],
+        'middleware' => ['web', 'adminE_base'],
     ],
 
     /*
