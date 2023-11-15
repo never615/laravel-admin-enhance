@@ -81,7 +81,7 @@ trait SubjectConfigTrait
 
         $form->text(ToolSubjectConfigConstants::OWNER_CONFIG_SMS_TEMPLATE_CODE, '短信验证码模板号');
 
-        $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')->options(Tag::TYPE);
+        $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')->options(config('other.database.tags_model')::TYPE);
     }
 
 }

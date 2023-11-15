@@ -53,7 +53,7 @@ class SubjectController extends AdminCommonController
      */
     protected function getModel()
     {
-        return config('other.subject', Subject::class);
+        return config('other.database.subject', Subject::class);
     }
 
 
@@ -267,7 +267,7 @@ class SubjectController extends AdminCommonController
             $form->text(SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID, '管理端微信服务uuid')->help('用于微信开放平台授权,获取指定uuid对应的服务号下微信用户的openid,</br>
 有的项目管理端单独使用一个公众号,所以需要配置单独的uuid');
 
-            $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')->options(Tag::TYPE);
+            $form->multipleSelect(SubjectConfigConstants::OWNER_CONFIG_TAG_TYPES, '可配置标签种类')->options(config('other.database.tags_model')::TYPE);
 
             $form->select(SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE,
                 '项目类型')->options(Subject::PROJECT_TYPE);
