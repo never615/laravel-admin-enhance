@@ -26,8 +26,7 @@ class Authenticate
 
         if (Admin::guard()->guest() && ! $this->shouldPassThrough($request)) {
             if ($request->expectsJson()) {
-                return response()
-                    ->json([ 'error' => "未授权,请登录" ], 401);
+                return response()->json([ 'error' => "未授权,请登录" ], 401);
             } else {
                 $redirectTo = admin_base_path(config('admin.auth.redirect_to', 'auth/login'));
 
@@ -43,7 +42,7 @@ class Authenticate
 
             $request->session()->invalidate();
 
-            throw new PermissionDeniedException('当前账号:' . $adminUser->name . '已被禁用');
+            throw new PermissionDeniedException('当前账号:'.$adminUser->name.'已被禁用');
         }
 
         return $next($request);
