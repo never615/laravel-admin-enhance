@@ -69,11 +69,11 @@ class CreateAdminRole implements ShouldQueue
 
         if (Role::where([
             'subject_id' => $subjectId,
-            'slug'       => 'admin',
+            'slug' => 'admin',
         ])->exists()) {
             $adminRole = Role::query()->where([
                 'subject_id' => $subjectId,
-                'slug'       => 'admin',
+                'slug' => 'admin',
             ])->firstOrFail();
 
             //给角色分配权限
@@ -82,7 +82,7 @@ class CreateAdminRole implements ShouldQueue
 
                 //提交过来的数组id,有一个null总是,过滤掉
                 $permissionIds = array_filter($permissionIds, function ($value) {
-                    if ( ! is_null($value)) {
+                    if (!is_null($value)) {
                         return $value;
                     }
                 });
@@ -104,9 +104,9 @@ class CreateAdminRole implements ShouldQueue
         //创建角色
         $adminRole = Role::firstOrCreate([
             'subject_id' => $subjectId,
-            'slug'       => 'admin',
+            'slug' => 'admin',
         ], [
-            'name' => $name.'管理员',
+            'name' => $name . '管理员',
         ]);
 
         //给角色分配权限
@@ -115,7 +115,7 @@ class CreateAdminRole implements ShouldQueue
 
             //提交过来的数组id,有一个null总是,过滤掉
             $permissionIds = array_filter($permissionIds, function ($value) {
-                if ( ! is_null($value)) {
+                if (!is_null($value)) {
                     return $value;
                 }
             });
@@ -131,20 +131,19 @@ class CreateAdminRole implements ShouldQueue
             CacheUtils::clearMenuCache();
         }
 
-        $name = $data['name'] ?? $name.'管理';
+        $name = $data['name'] ?? $name . '管理';
 
-        if ( ! Administrator::where('subject_id', $subjectId)->where('name', $name)->exists()) {
+        if (!Administrator::where('subject_id', $subjectId)->where('name', $name)->exists()) {
             $username = $data['username'] ?? implode('', pinyin($name));
-            $password = bcrypt($data['password']) ?? bcrypt(implode('', pinyin($name)));
-
+            $password = bcrypt($data['password'] ?? implode('', pinyin($name)));
             $adminUser = Administrator::firstOrCreate([
-                'subject_id'     => $subjectId,
-                'adminable_id'   => $subjectId,
+                'subject_id' => $subjectId,
+                'adminable_id' => $subjectId,
                 'adminable_type' => 'subject',
-                'username'       => $username,
-                'name'           => $name,
-                'password'       => $password,
-                'mobile'          => $data['mobile'] ?? null,
+                'username' => $username,
+                'name' => $name,
+                'password' => $password,
+                'mobile' => $data['mobile'] ?? null,
             ]);
             $adminUser->roles()->sync($adminRole->id);
         }
