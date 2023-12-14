@@ -31,7 +31,7 @@ class SubjectPathUpdateJob implements ShouldQueue
      */
     public $tries = 1;
 
-    public $delay = 3;
+    public $delay = 5;
 
     /**
      * @var

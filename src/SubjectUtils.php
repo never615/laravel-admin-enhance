@@ -33,8 +33,8 @@ class SubjectUtils
      * 保存在 extra_config 中
      *
      *
-     * @param string      $key 参见 SubjectConfigConstants::class
-     * @param null        $default
+     * @param string $key 参见 SubjectConfigConstants::class
+     * @param null $default
      * @param Subject|int $subject
      *
      * @return null
@@ -54,7 +54,7 @@ class SubjectUtils
 
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('c_s_ec_' . $subjectId . '_' . $key);
-            if ( ! is_null($value)) {
+            if (!is_null($value)) {
                 return $value;
             }
         } else {
@@ -66,9 +66,9 @@ class SubjectUtils
         $extraConfig = $subject->extra_config ?: [];
 
         $value = array_get($extraConfig, $key);
-        if ( ! is_null($value)) {
+        if (!is_null($value)) {
 
-        } elseif ( ! is_null($default)) {
+        } elseif (!is_null($default)) {
             $value = $default;
         } else {
             $value = '';
@@ -92,7 +92,7 @@ class SubjectUtils
      *
      * @param             $key
      * @param Subject|int $subject subject or subject_id
-     * @param null        $default
+     * @param null $default
      *
      * @return null
      * @throws Exception|\Psr\SimpleCache\InvalidArgumentException
@@ -110,7 +110,7 @@ class SubjectUtils
 
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('c_s_o_' . $subjectId . '_' . $key);
-            if ( ! is_null($value)) {
+            if (!is_null($value)) {
                 return $value;
             }
         } else {
@@ -120,7 +120,7 @@ class SubjectUtils
 
         $subject = Subject::query()->find($subjectId);
 
-        if ( ! $subject) {
+        if (!$subject) {
             throw new PermissionDeniedException('错误的主体 id:' . $subjectId);
         }
 
@@ -128,9 +128,9 @@ class SubjectUtils
 
         $value = array_get($extraConfig, $key);
 
-        if ( ! is_null($value)) {
+        if (!is_null($value)) {
 
-        } elseif ( ! is_null($default)) {
+        } elseif (!is_null($default)) {
             $value = $default;
         } else {
             $value = '';
@@ -153,8 +153,8 @@ class SubjectUtils
      * 对应subject_configs表
      *
      * @param                  $key
-     * @param null             $subject
-     * @param null             $default
+     * @param null $subject
+     * @param null $default
      *
      * @return mixed|null
      */
@@ -172,7 +172,7 @@ class SubjectUtils
 
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-            if ( ! is_null($value)) {
+            if (!is_null($value)) {
                 return $value;
             }
         } else {
@@ -186,7 +186,7 @@ class SubjectUtils
 
         if ($subjectConfig) {
             $value = $subjectConfig->value;
-        } elseif ( ! is_null($default)) {
+        } elseif (!is_null($default)) {
             $value = $default;
         } else {
             throw new SubjectConfigException($key . "未配置," . $subjectId);
@@ -209,7 +209,7 @@ class SubjectUtils
      * 对应主体管理的最后一个tab,即:系统参数(owner)
      *
      * @param             $key
-     * @param null        $default
+     * @param null $default
      * @param Subject|int $subject
      *
      * @return mixed|null
@@ -229,7 +229,7 @@ class SubjectUtils
 
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-            if ( ! is_null($value)) {
+            if (!is_null($value)) {
                 return $value;
             }
         } else {
@@ -238,13 +238,13 @@ class SubjectUtils
 
         //缓存中没有查到，查数据库
         $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
-            ->whereIn("type", [ 'public', 'front' ])
+            ->whereIn("type", ['public', 'front'])
             ->where("key", $key)
             ->first();
 
         if ($subjectConfig) {
             $value = $subjectConfig->value;
-        } elseif ( ! is_null($default)) {
+        } elseif (!is_null($default)) {
             $value = $default;
         } else {
             throw new SubjectConfigException($key . "未配置," . $subjectId);
@@ -267,9 +267,10 @@ class SubjectUtils
     public
     static function getUUID(
         $app = null
-    ) {
+    )
+    {
         if ($app) {
-            $uuid = $app['request']->header("UUID");
+            $uuid = $app['request']->header("x_uuid") ?? $app['request']->header("uuid");
             if (is_null($uuid)) {
                 $uuid = $app['request']->get("uuid");
                 if (strlen($uuid) > 10) {
@@ -277,7 +278,7 @@ class SubjectUtils
                 }
             }
         } else {
-            $uuid = \Request::header("UUID");
+            $uuid = \Request::header("x_uuid") ?? \Request::header("uuid");
             if (is_null($uuid)) {
                 $uuid = \Request::input("uuid");
                 if (strlen($uuid) > 10) {
@@ -291,7 +292,7 @@ class SubjectUtils
             //按照管理端请求的方式,尝试获取subject
             //$user = \Admin::user();
             $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminUser->id);
-            if ( ! $subject) {
+            if (!$subject) {
                 $subject = $adminUser->subject;
 
                 Cache::store('local_redis')->put('sub_admin_user_' . $adminUser->id, $subject, 300);
@@ -300,13 +301,13 @@ class SubjectUtils
         }
 
         if (empty($uuid)
-            && ! empty(config('auth.guards.admin_api'))
+            && !empty(config('auth.guards.admin_api'))
             && $adminApiUser = Auth::guard("admin_api")->user()) {
 
             //$uuid = $adminUser->subject->uuid;
             //$user = \Admin::user();
             $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminApiUser->id);
-            if ( ! $subject) {
+            if (!$subject) {
                 $subject = $adminApiUser->subject;
 
                 Cache::store('local_redis')->put('sub_admin_user_' . $adminApiUser->id, $subject, 300);
@@ -330,7 +331,7 @@ class SubjectUtils
     public
     static function getUUIDNoException()
     {
-        $uuid = \Request::header("UUID");
+        $uuid = \Request::header("X-UUID")??\Request::header("UUID");
         if (is_null($uuid)) {
             $uuid = \Request::input("uuid");
         }
@@ -369,7 +370,8 @@ class SubjectUtils
     public
     static function getCacheSubject(
         $uuid = null
-    ) {
+    )
+    {
         return self::getSubject(null, $uuid);
 
     }
@@ -378,10 +380,10 @@ class SubjectUtils
     public static function getSubjectById($subjectId)
     {
         $subject = Cache::store('local_redis')->get('sub_id_' . $subjectId);
-        if ( ! $subject) {
+        if (!$subject) {
             $subject = Subject::find($subjectId);
 
-            if ( ! $subject) {
+            if (!$subject) {
                 throw new HttpException(422, "获取subject 失败,无效的 is:" . $subjectId);
 
             }
@@ -407,12 +409,13 @@ class SubjectUtils
     static function getSubject(
         $app = null,
         $uuid = null
-    ) {
+    )
+    {
 
         $subject = null;
 
         //按照接口请求的方式,尝试获取subject
-        if ( ! $uuid) {
+        if (!$uuid) {
             try {
                 $uuid = self::getUUID($app);
             } catch (HttpException $e) {
@@ -420,50 +423,50 @@ class SubjectUtils
             }
         }
 
-        if ( ! is_null($uuid)) {
+        if (!is_null($uuid)) {
             $subject = Cache::store('local_redis')->get('sub_uuid_' . $uuid);
-            if ( ! $subject) {
+            if (!$subject) {
                 $subject = Subject::where("uuid", $uuid)->first();
-                if ( ! $subject) {
+                if (!$subject) {
                     $subject = Subject::where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID,
                         $uuid)
                         ->first();
                 }
             }
 
-            if ( ! $subject) {
+            if (!$subject) {
                 throw new HttpException(422, "uuid参数错误:" . $uuid);
             }
         }
 
         //针对有点项目没有设置 uuid 情况直接获取 subject
-        if ( ! $subject && $adminUser = \Admin::user()) {
+        if (!$subject && $adminUser = \Admin::user()) {
             //$uuid = \Admin::user()->subject->uuid;
             //按照管理端请求的方式,尝试获取subject
             //$user = \Admin::user();
             $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminUser->id);
-            if ( ! $subject) {
+            if (!$subject) {
                 $subject = $adminUser->subject;
 
                 Cache::store('local_redis')->put('sub_admin_user_' . $adminUser->id, $subject, 300);
             }
         }
 
-        if ( ! $subject
-            && ! empty(config('auth.guards.admin_api'))
+        if (!$subject
+            && !empty(config('auth.guards.admin_api'))
             && $adminApiUser = Auth::guard("admin_api")->user()) {
 
             //$uuid = $adminUser->subject->uuid;
             //$user = \Admin::user();
             $subject = Cache::store('local_redis')->get('sub_admin_user_' . $adminApiUser->id);
-            if ( ! $subject) {
+            if (!$subject) {
                 $subject = $adminApiUser->subject;
 
                 Cache::store('local_redis')->put('sub_admin_user_' . $adminApiUser->id, $subject, 300);
             }
         }
 
-        if ( ! $subject) {
+        if (!$subject) {
             throw new HttpException(422, "获取主体失败:" . $uuid);
         }
 
@@ -495,9 +498,10 @@ class SubjectUtils
     public
     static function getSubjectByThirdProjectId(
         $thirdProjectId
-    ) {
+    )
+    {
         $subject = Cache::store('local_redis')->get('sub_proj_id' . $thirdProjectId);
-        if ( ! $subject) {
+        if (!$subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
             if ($subject) {
                 Cache::store('local_redis')->put('sub_proj_id' . $thirdProjectId, $subject,
