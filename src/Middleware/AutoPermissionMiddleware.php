@@ -49,11 +49,11 @@ class AutoPermissionMiddleware
     public function handle(Request $request, Closure $next)
     {
         $adminUser = Auth::guard("admin")->user();
-        if ( ! $adminUser && ! empty(config('auth.guards.admin_api'))) {
+        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
             $adminUser = Auth::guard("admin_api")->user();
         }
 
-        if ( ! $adminUser) {
+        if (!$adminUser) {
             throw new PermissionDeniedException('未登录');
         }
 
@@ -65,7 +65,7 @@ class AutoPermissionMiddleware
         }
 
         if ($subjectId) {
-            if ( ! $adminUser->isOwner() && $adminUser->subject_id != $subjectId) {
+            if (!$adminUser->isOwner() && $adminUser->subject_id != $subjectId) {
                 throw new ResourceException("登录账号没有权限请求该项目，adminUser subject与UUID不符");
             }
         }
@@ -76,7 +76,7 @@ class AutoPermissionMiddleware
         if (count($routenameArr) == 2) {
             $subRouteName = $routenameArr[1];
 
-            if ( ! Permission::where("slug", $currentRouteName)
+            if (!Permission::where("slug", $currentRouteName)
                 ->exists()) {
                 if ($subRouteName === "edit" || $subRouteName === "show") {
                     $currentRouteName = $routenameArr[0] . ".index";
@@ -91,6 +91,7 @@ class AutoPermissionMiddleware
         $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
 
         if (is_null($currentRouteName)) {
+            \Log::warning('管理端权限校验,route name is empty', [$request->url()]);
             //todo 没有设置route name,使用uri来判断
             return $next($request);
         }
@@ -132,7 +133,7 @@ class AutoPermissionMiddleware
         if ($export) {
             $currentRouteName = str_replace("index", "export", $currentRouteName);
 
-            if ( ! $adminUser->can($currentRouteName)) {
+            if (!$adminUser->can($currentRouteName)) {
                 throw new AccessDeniedHttpException(trans("errors.permission_denied"));
             }
         }
