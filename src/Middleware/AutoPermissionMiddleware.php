@@ -92,7 +92,7 @@ class AutoPermissionMiddleware
 
         if (is_null($currentRouteName)) {
             \Log::warning('管理端权限校验,route name is empty', [$request->url()]);
-            //todo 没有设置route name,使用uri来判断
+            //todo 没有设置route name,使用uri来判断,目前通过约定不会有route name为空的路由
             return $next($request);
         }
 
@@ -100,17 +100,33 @@ class AutoPermissionMiddleware
             return $next($request);
         }
 
-        //权限管理有该权限,检查用户是否有该权限
-        if ($adminUser->can($currentRouteName)) {
-            //pass
+        //控制面板除外
+        if ($currentRouteName === 'dashboard') {
             return $next($request);
+        }
+
+        $path = $request->path();
+        //判断路由,如果来自/admin/api
+        if (starts_with($path, 'admin/api')) {
+            //todo 如果是来自admin/api的接口请求,暂时直接通过
+            return $next($request);
+
+//            //权限管理有该权限,检查用户是否有该权限
+//            if ($adminUser->canApi($currentRouteName)) {
+//                //pass
+//                return $next($request);
+//            } //denied
+//            else {
+//                throw new AccessDeniedHttpException('admin api ' . trans("errors.permission_denied"));
+//            }
         } else {
-            //不拥有或者不存在对应权限的路由不能访问,控制面板除外
-            //denied
-            if ($currentRouteName === 'dashboard') {
+            //权限管理有该权限,检查用户是否有该权限
+            if ($adminUser->can($currentRouteName)) {
+                //pass
                 return $next($request);
-            } else {
-                throw new AccessDeniedHttpException(trans("errors.permission_denied"));
+            } //denied
+            else {
+                throw new AccessDeniedHttpException('admin ' . trans("errors.permission_denied"));
             }
         }
     }

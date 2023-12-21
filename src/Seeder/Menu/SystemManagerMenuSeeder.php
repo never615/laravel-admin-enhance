@@ -56,6 +56,10 @@ class SystemManagerMenuSeeder extends Seeder
 
         $this->updateOrCreate(
             "operation_log_dictionarys.index", $systemManagerMenu->id, $order++, "操作日志字典", "fa-line-chart");
+
+        $this->updateOrCreate(
+            'api_permissions.index', $systemManagerMenu->id,
+            $order++, '管理端API权限', 'fa-user');
     }
 
 }

@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Mallto\Admin\Data\AdminUser;
 
 class AuthSettingController extends Controller
 {
@@ -54,7 +53,7 @@ class AuthSettingController extends Controller
         }
 
         return back()->withInput()->withErrors([
-                $this->username() => $this->getFailedLoginMessage(),
+            $this->username() => $this->getFailedLoginMessage(),
         ]);
     }
 
@@ -68,8 +67,8 @@ class AuthSettingController extends Controller
     protected function loginValidator(array $data)
     {
         return Validator::make($data, [
-                $this->username() => 'required',
-                'password' => 'required',
+            $this->username() => 'required',
+            'password' => 'required',
         ]);
     }
 
@@ -98,16 +97,16 @@ class AuthSettingController extends Controller
     {
         $form = $this->settingForm();
         $form->tools(
-                function (Form\Tools $tools) {
-                    $tools->disableList();
-                    $tools->disableDelete();
-                    $tools->disableView();
-                }
+            function (Form\Tools $tools) {
+                $tools->disableList();
+                $tools->disableDelete();
+                $tools->disableView();
+            }
         );
 
         return $content
-                ->title(trans('admin.user_setting'))
-                ->body($form->edit(Admin::user()->id));
+            ->title(trans('admin.user_setting'))
+            ->body($form->edit(Admin::user()->id));
     }
 
     /**
@@ -135,12 +134,12 @@ class AuthSettingController extends Controller
         $form->text('name', trans('admin.name'))->rules('required');
         $form->image('avatar', trans('admin.avatar'));
         $form->password('password', trans('admin.password'))
-                ->rules('confirmed|required|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/',['regex'=>'必须大小写+数字结合'])
-        ->help('必须大小写+数字结合');
+            ->rules('confirmed|required|regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/', ['regex' => '必须大小写+数字结合'])
+            ->help('必须大小写+数字结合');
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
-                ->default(function ($form) {
-                    return $form->model()->password;
-                });
+            ->default(function ($form) {
+                return $form->model()->password;
+            });
 
         $form->setAction(admin_url('auth/setting'));
         //需要修改参数,必须添加对应参数名,才能修改成功
@@ -169,8 +168,8 @@ class AuthSettingController extends Controller
     protected function getFailedLoginMessage()
     {
         return Lang::has('auth.failed')
-                ? trans('auth.failed')
-                : 'These credentials do not match our records.';
+            ? trans('auth.failed')
+            : 'These credentials do not match our records.';
     }
 
     /**

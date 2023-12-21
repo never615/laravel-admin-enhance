@@ -96,6 +96,10 @@ Route::group([
 
             $router->resource('subjects', 'SubjectController');
 
+            //ApiPermissionController
+            $router->resource('auth/api_permissions', '\Mallto\Admin\Controllers\ApiPermissionController');
+
+
             $router->resource('reports', 'ReportController');
             $router->resource('uploads', 'UploadController');
             $router->resource('videos', 'VideoController');

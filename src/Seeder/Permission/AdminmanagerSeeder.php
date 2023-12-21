@@ -25,9 +25,9 @@ class AdminmanagerSeeder extends Seeder
          */
         $this->createPermissions('主体', 'subjects', true, 0,
             false, false, false, [
-                'index'   => '查看',  //列表页/详情页/show
-                'create'  => '创建', //创建页/保存
-                'update'  => '修改', //修改
+                'index' => '查看',  //列表页/详情页/show
+                'create' => '创建', //创建页/保存
+                'update' => '修改', //修改
                 'destroy' => '删除', //删除权限
             ]);
 
@@ -45,6 +45,8 @@ class AdminmanagerSeeder extends Seeder
          * ------------------------  权限  ---------------------------
          */
         $this->createPermissions('权限', 'permissions');
+
+        $this->createPermissions('管理端API权限', 'api_permissions');
 
         /**
          * ------------------------  菜单  ---------------------------

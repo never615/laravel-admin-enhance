@@ -10,6 +10,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
@@ -83,43 +84,81 @@ class RoleController extends AdminCommonController
 //                ->help('不填写会自动生成,建议不填写');
 //        }
 
-        $form->text('name', trans('admin.name'))
-            ->rules('required')
-            ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
-
         $that = $this;
+
+
+        $form->tab('基本配置', function (Form $form) use ($that) {
+            $form->text('name', trans('admin.name'))
+                ->rules('required')
+                ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
+
 //        $form->multipleSelect('permissions', trans('admin.permissions'))
 //        $form->listbox('permissions', trans('admin.permissions'))
-        $form->checkbox('permissions', trans('admin.permissions'))
-            ->options(function () use ($that) {
-                if (AdminUtils::isOwner()) {
-                    $permissions = Permission::orderBy('order')->get()->toArray();
-                } else {
-                    $subjectId = Admin::user()->subject_id;
-                    $permissionsTemp = Subject::find($subjectId)
-                        ->permissions()
-                        ->orderBy('order')
-                        ->get();
 
-                    //主体拥有的权限需要加上那几个公共功能模块的权限
-                    $permissionsTemp = Permission::where('common', true)->get()
-                        ->merge($permissionsTemp);
 
-                    $permissions = $that->withSubPermissions($permissionsTemp);
-                }
+            $form->checkbox('permissions', trans('admin.permissions'))
+                ->options(function () use ($that) {
+                    if (AdminUtils::isOwner()) {
+                        $permissions = Permission::orderBy('order')->get()->toArray();
+                    } else {
+                        $subjectId = Admin::user()->subject_id;
+                        $permissionsTemp = Subject::find($subjectId)
+                            ->permissions()
+                            ->orderBy('order')
+                            ->get();
 
-                //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
-                return Permission::selectOptions($permissions, false, false,
-                    (isset($permissionsTemp) ? array_unique($permissionsTemp->pluck('parent_id')->toArray()) : 0));
-            })
-            ->stacked()
-            ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
+                        //主体拥有的权限需要加上那几个公共功能模块的权限
+                        $permissionsTemp = Permission::where('common', true)->get()
+                            ->merge($permissionsTemp);
+
+                        $permissions = $that->withSubPermissions($permissionsTemp);
+                    }
+
+                    //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
+                    return Permission::selectOptions($permissions, false, false,
+                        (isset($permissionsTemp) ? array_unique($permissionsTemp->pluck('parent_id')->toArray()) : 0));
+                })
+                ->stacked()
+                ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
+        });
+
+
+        if (AdminUtils::isOwner()) {
+            $form->tab('管理端接口权限', function (Form $form) use ($that) {
+                $form->checkbox('apiPermissions', trans('admin.permissions'))
+                    ->options(function () use ($that) {
+                        if (AdminUtils::isOwner()) {
+                            $permissions = AdminApiPermission::orderBy('order')->get()->toArray();
+                        } else {
+                            //todo 支持按照项目配置好管理端接口权限
+//                            $subjectId = Admin::user()->subject_id;
+//                            $permissionsTemp = Subject::find($subjectId)
+//                                ->permissions()
+//                                ->orderBy('order')
+//                                ->get();
+//
+//                            //主体拥有的权限需要加上那几个公共功能模块的权限
+//                            $permissionsTemp = Permission::where('common', true)->get()
+//                                ->merge($permissionsTemp);
+//
+//                            $permissions = $that->withSubPermissions($permissionsTemp);
+                        }
+
+                        //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
+                        return Permission::selectOptions($permissions, false, false, 0);
+                    })
+                    ->stacked()
+                    ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
+
+            });
+        }
+
 
         $form->saving(function (Form $form) {
             if ($form->model()->slug == config('admin.roles.owner')) {
                 throw new HttpException(403, '不能编辑标识为owner的角色');
             }
-            if ( ! AdminUtils::isOwner() && $form->model()->slug == 'admin') {
+            if (!AdminUtils::isOwner() && $form->model()->slug == 'admin') {
                 throw new ResourceException('不能编辑默认的管理角色');
             }
             $this->slugSavingCheck($form);

@@ -8,6 +8,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Auth\Database\HasPermissions;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions2;
 use Mallto\Admin\Data\Traits\SelectSource;
@@ -65,5 +66,7 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
         return $this->belongsToMany(AdminUserGroup::class, "admin_user_group_users",
             'user_id', 'group_id');
     }
+
+
 
 }

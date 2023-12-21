@@ -15,24 +15,29 @@ use Mallto\Admin\Data\Permission;
 trait SeederMaker
 {
 
+
     protected $routeNames = [
-        "index"   => "查看",  //列表页/详情页/show
-        "create"  => "创建/修改", //创建页/保存/修改
+        "index" => "查看",  //列表页/详情页/show
+        "create" => "创建/修改", //创建页/保存/修改
         "destroy" => "删除", //删除权限
-        "export"  => "导出", //导出权限
+        "export" => "导出", //导出权限
     ];
+
+    protected $model = Permission::class;
+
+    protected $routeNamePrefix = '';
 
 
     /**
-     * @param      $name        ,权限名
-     * @param      $slug        ,权限标识
-     * @param bool $sub         ,是否生成子权限
-     * @param int  $parentId    ,父权限id
+     * @param      $name ,权限名
+     * @param      $slug ,权限标识
+     * @param bool $sub ,是否生成子权限
+     * @param int $parentId ,父权限id
      * @param bool $closeDelete ,是否关闭创建子权限之`删除`权限
-     * @param bool $common      ,是否是所有主体都默认有的公共权限
+     * @param bool $common ,是否是所有主体都默认有的公共权限
      * @param bool $closeCreate ,是否关闭创建子权限之`创建/修改`权限
      * @param null $routeNames
-     * @param bool $force       ,存在同名权限,则删除
+     * @param bool $force ,存在同名权限,则删除
      *
      * @return int
      * @throws \Exception
@@ -47,16 +52,21 @@ trait SeederMaker
         $closeCreate = false,
         $routeNames = null,
         $force = false
-    ) {
+    )
+    {
+
+        if ($this->getRouteNamePrefix()) {
+            $slug = $this->getRouteNamePrefix() . '.' . $slug;
+        }
 
 
 //        $this->order = $this->order ?? Permission::max("order");
-        $this->order = Permission::max("order");
+        $this->order = $this->model::max("order");
 
         $path = "";
-        $parentPermission = Permission::find($parentId);
+        $parentPermission = $this->model::find($parentId);
         if ($parentPermission) {
-            if ( ! empty($parentPermission->path)) {
+            if (!empty($parentPermission->path)) {
                 $path = $parentPermission->path . $parentPermission->id . ".";
             } else {
                 $path = "." . $parentPermission->id . ".";
@@ -64,32 +74,32 @@ trait SeederMaker
         }
 
         try {
-            $temp = Permission::updateOrCreate(
+            $temp = $this->model::updateOrCreate(
                 [
                     "slug" => $slug,
                 ],
                 [
                     "parent_id" => $parentId,
-                    'order'     => $this->order += 1,
-                    "name"      => $name,
-                    "common"    => $common,
-                    "path"      => $path,
+                    'order' => $this->order += 1,
+                    "name" => $name,
+                    "common" => $common,
+                    "path" => $path,
                 ]);
         } catch (\Exception $exception) {
             if ($force) {
 
-                Permission::where("name", $name)->delete();
+                $this->model::where("name", $name)->delete();
 
-                $temp = Permission::updateOrCreate(
+                $temp = $this->model::updateOrCreate(
                     [
                         "slug" => $slug,
                     ],
                     [
                         "parent_id" => $parentId,
-                        'order'     => $this->order += 1,
-                        "name"      => $name,
-                        "common"    => $common,
-                        "path"      => $path,
+                        'order' => $this->order += 1,
+                        "name" => $name,
+                        "common" => $common,
+                        "path" => $path,
                     ]);
             } else {
                 throw  $exception;
@@ -99,9 +109,9 @@ trait SeederMaker
         $parentId = $temp->id;
 
         $path = "";
-        $parentPermission = Permission::find($parentId);
+        $parentPermission = $this->model::find($parentId);
         if ($parentPermission) {
-            if ( ! empty($parentPermission->path)) {
+            if (!empty($parentPermission->path)) {
                 $path = $parentPermission->path . $parentPermission->id . ".";
             } else {
                 $path = "." . $parentPermission->id . ".";
@@ -109,7 +119,7 @@ trait SeederMaker
         }
 
         if ($sub) {
-            if ( ! $routeNames) {
+            if (!$routeNames) {
                 $routeNames = $this->routeNames;
             }
 
@@ -122,19 +132,35 @@ trait SeederMaker
             }
 
             foreach ($routeNames as $routeName => $permissionName) {
-                Permission::updateOrCreate([
+                $this->model::updateOrCreate([
                     "slug" => $slug . "." . $routeName,
                 ], [
                     'parent_id' => $parentId,
-                    'order'     => $this->order += 1,
-                    "name"      => $name . $permissionName,
-                    "path"      => $path,
+                    'order' => $this->order += 1,
+                    "name" => $name . $permissionName,
+                    "path" => $path,
 
                 ]);
             }
         }
 
         return $parentId;
+    }
+
+
+    public function delete($slug, $model = null, $sub = false)
+    {
+        $tempModel = $model ?? $this->model;
+        $tempModel::query()->where('slug', $slug)->delete();
+
+        if ($sub) {
+            $routeNames = $this->routeNames;
+
+            foreach ($routeNames as $routeName => $permissionName) {
+                $tempModel::query()->where('slug', $slug . "." . $routeName)->delete();
+            }
+        }
+
     }
 
 
@@ -148,5 +174,32 @@ trait SeederMaker
             }
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param mixed $model
+     */
+    public function setModel($model): void
+    {
+        $this->model = $model;
+    }
+
+    public function getRouteNamePrefix(): string
+    {
+        return $this->routeNamePrefix;
+    }
+
+    public function setRouteNamePrefix(string $routeNamePrefix): void
+    {
+        $this->routeNamePrefix = $routeNamePrefix;
+    }
+
 
 }
