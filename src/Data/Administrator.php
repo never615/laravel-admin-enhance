@@ -8,7 +8,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Auth\Database\HasPermissions;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions2;
 use Mallto\Admin\Data\Traits\SelectSource;
@@ -28,7 +28,7 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
     }
 
     const STATUS = [
-        "normal"    => "正常",
+        "normal" => "正常",
         "forbidden" => "禁用",
     ];
 
@@ -43,9 +43,9 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
     protected $guarded = [];
 
     protected $casts = [
-        'extra'               => 'array',
+        'extra' => 'array',
         'manager_subject_ids' => "array",
-        'openid'              => 'array', //用户微信信息
+        'openid' => 'array', //用户微信信息
     ];
 
 
@@ -68,5 +68,11 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
     }
 
 
+    public function frontMenus(): Collection
+    {
+//        return $this->roles()->with('permissions')->get()->pluck('permissions')->flatten()->merge($this->permissions);
+//        return $this->roles()->with('frontMenus')->get()->pluck('frontMenus')->flatten();
+        return $this->roles()->with('frontMenus:id,title,uri,parent_id,path,order')->get()->pluck('frontMenus')->flatten();
+    }
 
 }

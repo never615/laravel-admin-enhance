@@ -8,6 +8,7 @@ namespace Mallto\Admin\Domain\User;
 use Illuminate\Support\Facades\Hash;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Domain\Permission\PermissionUsecase;
+use Mallto\Admin\Facades\AdminE;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Data\User;
 
@@ -43,15 +44,15 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      * 返回给前端的用户信息
      *
      * @param          $adminUser
-     * @param bool     $addToken
+     * @param bool $addToken
      * @param string[] $permission
      *
      * @return mixed
      */
-    public function getReturnUserInfo($adminUser, $addToken = true, $permission = [ 'admin_api_manager' ])
+    public function getReturnUserInfo($adminUser, $addToken = true, $permission = ['admin_api_manager'])
     {
         $adminable = $adminUser->adminable;
-        if ( ! $adminable) {
+        if (!$adminable) {
             $adminable = $adminUser->subject;
         }
         if ($addToken) {
@@ -61,7 +62,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
 
         $permissions = [];
 
-        if ( ! empty($permission)) {
+        if (!empty($permission)) {
             foreach ($permission as $item) {
                 $tempPermissions = $this->permissionUsecase->getUserPermissionForModule($adminUser,
                     $item);
@@ -78,12 +79,13 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             'adminable_type',
             'adminable_id',
         ]), [
-            'adminable'   => $adminable->only([
+            'adminable' => $adminable->only([
                 'name',
             ]),
-            'uuid'        => $adminable->uuid,
-            "token"       => $token->accessToken,
+            'uuid' => $adminable->uuid,
+            "token" => $token->accessToken,
             "permissions" => $permissions,
+            "menus" => AdminE::frontMenu()
         ]);
     }
 
@@ -100,11 +102,11 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     {
         $class = config('auth.providers.admin_users.model');
 
-        $adminUser = $class::with([ "adminable" ])
+        $adminUser = $class::with(["adminable"])
             ->where("subject_id", $subjectId)
             ->where("openid->" . $openid . "->openid", $openid)
             ->first();
-        if ( ! $adminUser) {
+        if (!$adminUser) {
             //管理端账户不存在
 
             //查询该openid对应会员的手机号,是否已经绑定了管理端账户
@@ -118,7 +120,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             ])->where('subject_id', $subjectId)->first();
 
             if ($user && $user->mobile) {
-                $adminUser = $class::with([ 'adminable' ])
+                $adminUser = $class::with(['adminable'])
                     ->where('subject_id', $subjectId)
                     ->where('mobile', $user->mobile)
                     ->first();
@@ -138,7 +140,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
      */
     public function getOpenid($adminUser)
     {
-        if ( ! empty($adminUser->openid)) {
+        if (!empty($adminUser->openid)) {
             //todo 目前暂时返回一个绑定的openid，需要优化支持推送多个微信绑定用户模板消息
             $openid = null;
             foreach ($adminUser->openid as $key => $value) {
@@ -180,7 +182,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             'username' => $username,
         ])->first();
 
-        if ( ! $adminUser) {
+        if (!$adminUser) {
             throw new ResourceException('登录账号不存在');
         }
 

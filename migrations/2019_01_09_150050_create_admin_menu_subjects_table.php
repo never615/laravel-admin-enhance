@@ -16,14 +16,14 @@ class CreateAdminMenuSubjectsTable extends Migration
      */
     public function up()
     {
-        Schema::create("admin_menu_subjects", function (\Illuminate\Database\Schema\Blueprint $table) {
-            $table->unsignedInteger("admin_menu_id");
-            $table->unsignedInteger("subject_id");
-        });
-
-        Schema::table("admin_menu", function (\Illuminate\Database\Schema\Blueprint $table) {
-            $table->string("sub_title")->nullable();
-        });
+//        Schema::create("admin_menu_subjects", function (\Illuminate\Database\Schema\Blueprint $table) {
+//            $table->unsignedInteger("admin_menu_id");
+//            $table->unsignedInteger("subject_id");
+//        });
+//
+//        Schema::table("admin_menu", function (\Illuminate\Database\Schema\Blueprint $table) {
+//            $table->string("sub_title")->nullable();
+//        });
     }
 
 
@@ -34,10 +34,10 @@ class CreateAdminMenuSubjectsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists("admin_menu_subjects");
-
-        Schema::table("admin_menu", function (\Illuminate\Database\Schema\Blueprint $table) {
-            $table->dropColumn("sub_title");
-        });
+//        Schema::dropIfExists("admin_menu_subjects");
+//
+//        Schema::table("admin_menu", function (\Illuminate\Database\Schema\Blueprint $table) {
+//            $table->dropColumn("sub_title");
+//        });
     }
 }

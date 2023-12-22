@@ -53,6 +53,9 @@ class AdminmanagerSeeder extends Seeder
          */
         $this->createPermissions('菜单', 'menus');
 
+        $this->createPermissions('前端菜单', 'front_menus');
+
+
         /**
          * ------------------------  报表  ---------------------------
          */

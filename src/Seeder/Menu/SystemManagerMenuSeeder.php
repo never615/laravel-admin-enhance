@@ -60,6 +60,10 @@ class SystemManagerMenuSeeder extends Seeder
         $this->updateOrCreate(
             'api_permissions.index', $systemManagerMenu->id,
             $order++, '管理端API权限', 'fa-user');
+
+        $this->updateOrCreate(
+            'front_menus.index', $systemManagerMenu->id,
+            $order++, '前端菜单管理', 'fa-bars');
     }
 
 }

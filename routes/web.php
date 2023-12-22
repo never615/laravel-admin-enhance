@@ -21,22 +21,22 @@ use Illuminate\Support\Facades\Route;
 
 //token 授权的管理端接口
 Route::group([
-    'prefix'     => 'admin/api',
-    'middleware' => [ 'oauth.providers', 'api', 'adminE.log' ],
-    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
+    'prefix' => 'admin/api',
+    'middleware' => ['oauth.providers', 'api', 'adminE.log'],
+    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
 ], function ($router) {
 
     $router->post('auth/login', 'AuthController@postLogin');
     $router->get('auth/yzm', 'AuthController@captcha');
 
     Route::group([
-        'middleware' => [ 'requestCheck' ],
+        'middleware' => ['requestCheck'],
     ], function () {
         Route::group([
-            'middleware' => [ 'multiauth:admin_api' ],
+            'middleware' => ['multiauth:admin_api'],
         ], function ($router) {
             Route::group([
-                'middleware' => [ 'adminE.auto_permission' ],
+                'middleware' => ['adminE.auto_permission'],
             ], function ($router) {
 
             });
@@ -54,9 +54,9 @@ Route::get('/', 'Mallto\Admin\Controllers\WelcomeController@index');
 Admin::routes();
 
 Route::group([
-    'namespace'  => 'Mallto\Admin\Controllers',
-    'middleware' => [ 'web' ],
-    'prefix'     => config('admin.route.prefix'),
+    'namespace' => 'Mallto\Admin\Controllers',
+    'middleware' => ['web'],
+    'prefix' => config('admin.route.prefix'),
 ], function ($router) {
 
     //todo 这个权限暂时放在这
@@ -68,7 +68,7 @@ Route::group([
     $router->post('auth/register', 'Admin\RegisterController@postRegister');
 
 //----------------------------------------  管理端开始  -----------------------------------------------
-    Route::group([ 'middleware' => 'adminE_base' ], function ($router) {
+    Route::group(['middleware' => 'adminE_base'], function ($router) {
         $router->get('/', 'HomeController@index')->name('dashboard');
 
         //获取七牛upload token
@@ -86,11 +86,11 @@ Route::group([
 
         Route::get('select_data/{key}', 'SelectSourceController@dataSource');
 
-        Route::group([ 'middleware' => [ 'adminE.auto_permission' ] ], function ($router) {
+        Route::group(['middleware' => ['adminE.auto_permission']], function ($router) {
             $router->resource('auth/admins', '\Mallto\Admin\Controllers\UserController');
             $router->resource('auth/roles', '\Mallto\Admin\Controllers\RoleController');
             $router->resource('auth/permissions', '\Mallto\Admin\Controllers\PermissionController');
-            $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController', [ 'except' => [ 'create' ] ]);
+            $router->resource('auth/menus', '\Mallto\Admin\Controllers\MenuController', ['except' => ['create']]);
             //$router->resource('auth/logs', '\Encore\Admin\Controllers\LogController',
             //    [ 'only' => [ 'index', 'destroy' ] ]);
 
@@ -98,6 +98,8 @@ Route::group([
 
             //ApiPermissionController
             $router->resource('auth/api_permissions', '\Mallto\Admin\Controllers\ApiPermissionController');
+            //FrontMenuController
+            $router->resource('auth/front_menus', '\Mallto\Admin\Controllers\FrontMenuController', ['except' => ['create']]);
 
 
             $router->resource('reports', 'ReportController');

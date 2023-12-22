@@ -11,6 +11,7 @@ use Encore\Admin\Grid;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\AdminApiPermission;
+use Mallto\Admin\Data\FrontMenu;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\Data\Role;
 use Mallto\Admin\Data\Subject;
@@ -145,10 +146,37 @@ class RoleController extends AdminCommonController
                         }
 
                         //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
-                        return Permission::selectOptions($permissions, false, false, 0);
+                        return AdminApiPermission::selectOptions($permissions, false, false, 0);
                     })
                     ->stacked()
                     ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
+
+            });
+
+            $form->tab('前端管理端菜单', function (Form $form) use ($that) {
+                $form->checkbox('frontMenus', trans('admin.menu'))
+                    ->options(function () use ($that) {
+                        if (AdminUtils::isOwner()) {
+                            $permissions = FrontMenu::orderBy('order')->get()->toArray();
+                        } else {
+                            //todo 支持按照项目配置好管理端接口权限
+//                            $subjectId = Admin::user()->subject_id;
+//                            $permissionsTemp = Subject::find($subjectId)
+//                                ->permissions()
+//                                ->orderBy('order')
+//                                ->get();
+//
+//                            //主体拥有的权限需要加上那几个公共功能模块的权限
+//                            $permissionsTemp = Permission::where('common', true)->get()
+//                                ->merge($permissionsTemp);
+//
+//                            $permissions = $that->withSubPermissions($permissionsTemp);
+                        }
+
+                        //因为分配的主体已购模块包含parent_id不是0的,所以在此处显示这部分权限,需要配置下parentId
+                        return FrontMenu::selectOptions($permissions, false, false, 0);
+                    })
+                    ->stacked();
 
             });
         }

@@ -7,6 +7,7 @@ namespace Mallto\Admin;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Cache;
+use Mallto\Admin\Data\FrontMenu;
 use Mallto\Admin\Data\Menu;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
@@ -95,13 +96,13 @@ class AdminE
             //}
 
             $speedy = Cache::get("speedy_" . $adminUser->id);
-            if ( ! $speedy) {
+            if (!$speedy) {
                 $speedy = [];
 
                 //读取对应主体中的快捷访问菜单配置
                 $menuIds = SubjectUtils::getConfigBySubjectOwner(SubjectConfigConstants::SUBJECT_OWNER_CONFIG_QUICK_ACCESS_MENU);
 
-                if ( ! $menuIds) {
+                if (!$menuIds) {
                     return;
                 }
 
@@ -139,6 +140,17 @@ class AdminE
     function menu()
     {
         return (new Menu())->toTree();
+    }
+
+    /**
+     * Left sider-bar menu.
+     *
+     * @return array
+     */
+    public
+    function frontMenu()
+    {
+        return (new FrontMenu())->toTree();
     }
 
 

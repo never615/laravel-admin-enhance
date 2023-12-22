@@ -67,10 +67,10 @@ class Menu extends Model
     }
 
 
-    public function subjects()
-    {
-        return $this->belongsToMany(Subject::class, "admin_menu_subjects", "admin_menu_id", "subject_id");
-    }
+//    public function subjects()
+//    {
+//        return $this->belongsToMany(Subject::class, "admin_menu_subjects", "admin_menu_id", "subject_id");
+//    }
 
 
     /**
