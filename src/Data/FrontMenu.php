@@ -165,7 +165,7 @@ class FrontMenu extends Model
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
 
-                    if ($menu->uri == '') {
+                    if ($menu['uri'] == '') {
                         //todo 替换动态链接
                     }
 
