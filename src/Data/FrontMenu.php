@@ -35,6 +35,10 @@ class FrontMenu extends Model
     protected $guarded = [];
 
     protected $fillable = [];
+    /**
+     * @var null
+     */
+    private $adminUser;
 
 
     /**
@@ -42,7 +46,7 @@ class FrontMenu extends Model
      *
      * @param array $attributes
      */
-    public function __construct(array $attributes = [])
+    public function __construct(array $attributes = [], $adminUser = null)
     {
         $connection = config('admin.database.connection') ?: config('database.default');
 
@@ -50,6 +54,7 @@ class FrontMenu extends Model
 
 //        $this->setTable(config('admin.database.menu_table'));
 
+        $this->adminUser = $adminUser;
         parent::__construct($attributes);
     }
 
@@ -92,7 +97,7 @@ class FrontMenu extends Model
             $parentIds = explode(".", trim($this->path, "."));
             if (!empty($parentIds)) {
                 return FrontMenu::query()
-                    ->select("id","title","uri","parent_id","path","order")
+                    ->select("id", "title", "uri", "parent_id", "path", "order")
                     ->whereIn("id", $parentIds)
                     ->get()
                     ->toArray();
@@ -126,7 +131,12 @@ class FrontMenu extends Model
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
         $byOrder = $orderColumn . ' = 0,' . $orderColumn;
 
-        $adminUser = Auth::guard("admin_api")->user();
+        $adminUser = null;
+        if ($this->adminUser) {
+            $adminUser = $this->adminUser;
+        } else {
+            $adminUser = Auth::guard("admin_api")->user();
+        }
 
         if ($adminUser->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
@@ -155,7 +165,7 @@ class FrontMenu extends Model
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
 
-                    if($menu->uri==''){
+                    if ($menu->uri == '') {
                         //todo 替换动态链接
                     }
 

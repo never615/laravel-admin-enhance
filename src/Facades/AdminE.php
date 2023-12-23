@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static void adminBootstrap()
  * @method static void extend($name, $class)
  * @method static void menu()
- * @method static void frontMenu()
+ * @method static void frontMenu($adminUser)
  * @method static void registerAuthRoutes(\Closure $builder)
  *
  * @see \Mallto\Admin\AdminE

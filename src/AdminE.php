@@ -148,9 +148,9 @@ class AdminE
      * @return array
      */
     public
-    function frontMenu()
+    function frontMenu($adminUser=null)
     {
-        return (new FrontMenu())->toTree();
+        return (new FrontMenu([],$adminUser))->toTree();
     }
 
 
