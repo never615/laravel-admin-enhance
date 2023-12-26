@@ -92,7 +92,7 @@ class AutoPermissionMiddleware
 
         if (is_null($currentRouteName)) {
             \Log::warning('管理端权限校验,route name is empty', [$request->url()]);
-            //todo 没有设置route name,使用uri来判断,目前通过约定不会有route name为空的路由
+            //todo 没有设置route name,使用uri来判断,目前直接通过
             return $next($request);
         }
 
