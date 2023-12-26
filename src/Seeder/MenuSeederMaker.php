@@ -48,7 +48,7 @@ trait MenuSeederMaker
             'title'     => $title,
             'icon'      => $icon,
             "path"      => $path,
-            "sub_title" => $subTitle,
+//            "sub_title" => $subTitle,
         ];
         if ( ! is_null($order)) {
             $updateData = array_merge($updateData, [
