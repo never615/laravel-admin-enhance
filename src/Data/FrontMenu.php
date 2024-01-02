@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
 
 /**
@@ -137,6 +138,8 @@ class FrontMenu extends Model
             $adminUser = Auth::guard("admin_api")->user();
         }
 
+        $baseSubject = $adminUser->subject->baseSubject();
+
         if ($adminUser->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
         } else {
@@ -158,21 +161,32 @@ class FrontMenu extends Model
                 $tempMenus = array_merge($tempMenus, $item->parentMenu());
             }
 
+
             //过滤保证唯一
             $uniqueTempArray = [];
-            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
+//            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
+//                if (!in_array($menu["id"], $uniqueTempArray)) {
+//                    $uniqueTempArray[] = $menu["id"];
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            });
+
+            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray, $baseSubject) {
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
 
-                    if ($menu['uri'] == '') {
-                        //todo 替换动态链接
+                    if (starts_with($menu['uri'], 'http://')) {
+                        $uriKey = str_replace('http://', '', $menu['uri']);
+                        //替换动态链接
+                        $uriValue = SubjectUtils::getDynamicKeyConfigByOwner($uriKey, $baseSubject, $menu['uri']);
+                        $menu['uri'] = $uriValue;
                     }
 
-                    return true;
-                } else {
-                    return false;
+                    return $menu;
                 }
-            });
+            }, $tempMenus);
 
             //排序
             $result = array_sort($tempMenus, $this->orderColumn);
