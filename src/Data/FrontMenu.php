@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
-use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Traits\ModelTree;
 
 /**
@@ -27,7 +26,7 @@ use Mallto\Admin\Traits\ModelTree;
 class FrontMenu extends Model
 {
 
-    use PermissionHelp, AdminBuilder, ModelTree {
+    use  AdminBuilder, ModelTree {
         ModelTree::boot as treeBoot;
     }
 
@@ -151,8 +150,8 @@ class FrontMenu extends Model
             $menus = $adminUser->frontMenus();
 //            \Log::debug($menus);
 
-
-            $tempMenus = $menus->toArray();
+            $tempMenus = $this->withSubMenus($menus);
+//            $tempMenus = $menus->toArray();
 
             //查出来的菜单如果有父菜单也要返回,直到parent_id为0
             foreach ($menus as $item) {
@@ -188,6 +187,40 @@ class FrontMenu extends Model
 
             return $result;
         }
+    }
+
+
+    /**
+     *
+     * 获取一组所有子菜单
+     *
+     * @param $menus
+     *
+     * @return array
+     */
+    public function withSubMenus($menus)
+    {
+        $ids = $menus->pluck("id")->toArray();
+        $ids = array_map(function ($id) {
+            return "%." . $id . ".%";
+        }, $ids);
+        $ids = implode(",", $ids);
+        $ids = "('{" . $ids . "}')";
+
+        $tempMenus = FrontMenu::query()
+            ->whereRaw("path like any $ids")
+            ->get()
+            ->toArray();
+
+        return array_merge($tempMenus, $menus->toArray());
+
+//        $tempPermissions = [];
+//        foreach ($permissions as $permission) {
+//            //查询权限的所有子权限
+//            $tempPermissions = array_merge($tempPermissions, $permission->subPermissions());
+//        }
+//
+//        return array_merge($tempPermissions, $permissions->toArray());
     }
 
 
