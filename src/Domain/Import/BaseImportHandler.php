@@ -88,7 +88,7 @@ abstract class BaseImportHandler
             //文件上传到了七牛的私有空间,读取
             $qiniuPrivate = Storage::disk(config('admin.upload.private_disk'));
 
-            $url = $qiniuPrivate->privateDownloadUrl($importRecord->file_url);
+            $url = $qiniuPrivate->getAdapter()->privateDownloadUrl($importRecord->file_url);
         }
 
         $fileUrls = explode('.', $importRecord->file_url);

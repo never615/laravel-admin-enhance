@@ -104,7 +104,7 @@ class ReportController extends AdminCommonController
             })
             ->progressBar($style = 'primary', $size = 'sm', $max = 100);
 
-        //$url = $disk->privateDownloadUrl('folder/my_file.txt');
+        //$url = $disk->getAdapter()->privateDownloadUrl('folder/my_file.txt');
         $grid->status();
 
         if (config('admin.upload.disk') === 'admin') {
@@ -124,7 +124,7 @@ EOT;
             $grid->column("download")->display(function () {
                 if ($this->finish === true) {
                     $disk = Storage::disk("qiniu_private");
-                    $url = $disk->privateDownloadUrl(config("app.unique") . '/' . config("app.env") . '/exports/' . $this->name,
+                    $url = $disk->getAdapter()->privateDownloadUrl(config("app.unique") . '/' . config("app.env") . '/exports/' . $this->name,
                         60);
 
                     return <<<EOT
