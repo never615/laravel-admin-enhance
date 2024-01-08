@@ -84,7 +84,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             ]),
             'uuid' => $adminable->uuid,
             "token" => $token->accessToken,
-//            "permissions" => $permissions,
+            "permissions" => $permissions,
             "menus" => AdminE::frontMenu($adminUser)
         ]);
     }
