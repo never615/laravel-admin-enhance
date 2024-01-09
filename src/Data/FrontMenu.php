@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
-use Mallto\Admin\Data\Traits\PermissionHelp;
+use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
 
 /**
@@ -27,7 +27,7 @@ use Mallto\Admin\Traits\ModelTree;
 class FrontMenu extends Model
 {
 
-    use PermissionHelp, AdminBuilder, ModelTree {
+    use  AdminBuilder, ModelTree {
         ModelTree::boot as treeBoot;
     }
 
@@ -138,6 +138,8 @@ class FrontMenu extends Model
             $adminUser = Auth::guard("admin_api")->user();
         }
 
+        $baseSubject = $adminUser->subject->baseSubject();
+
         if ($adminUser->isOwner()) {
             return static::orderByRaw($byOrder)->get()->toArray();
         } else {
@@ -151,29 +153,40 @@ class FrontMenu extends Model
             $menus = $adminUser->frontMenus();
 //            \Log::debug($menus);
 
-
-            $tempMenus = $menus->toArray();
+            $tempMenus = $this->withSubMenus($menus);
+//            $tempMenus = $menus->toArray();
 
             //查出来的菜单如果有父菜单也要返回,直到parent_id为0
             foreach ($menus as $item) {
                 $tempMenus = array_merge($tempMenus, $item->parentMenu());
             }
 
+
             //过滤保证唯一
             $uniqueTempArray = [];
-            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
+//            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
+//                if (!in_array($menu["id"], $uniqueTempArray)) {
+//                    $uniqueTempArray[] = $menu["id"];
+//                    return true;
+//                } else {
+//                    return false;
+//                }
+//            });
+
+            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray, $baseSubject) {
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
 
-                    if ($menu['uri'] == '') {
-                        //todo 替换动态链接
+                    if (starts_with($menu['uri'], 'http://')) {
+                        $uriKey = str_replace('http://', '', $menu['uri']);
+                        //替换动态链接
+                        $uriValue = SubjectUtils::getDynamicKeyConfigByOwner($uriKey, $baseSubject, $menu['uri']);
+                        $menu['uri'] = $uriValue;
                     }
 
-                    return true;
-                } else {
-                    return false;
+                    return $menu;
                 }
-            });
+            }, $tempMenus);
 
             //排序
             $result = array_sort($tempMenus, $this->orderColumn);
@@ -188,6 +201,40 @@ class FrontMenu extends Model
 
             return $result;
         }
+    }
+
+
+    /**
+     *
+     * 获取一组所有子菜单
+     *
+     * @param $menus
+     *
+     * @return array
+     */
+    public function withSubMenus($menus)
+    {
+        $ids = $menus->pluck("id")->toArray();
+        $ids = array_map(function ($id) {
+            return "%." . $id . ".%";
+        }, $ids);
+        $ids = implode(",", $ids);
+        $ids = "('{" . $ids . "}')";
+
+        $tempMenus = FrontMenu::query()
+            ->whereRaw("path like any $ids")
+            ->get()
+            ->toArray();
+
+        return array_merge($tempMenus, $menus->toArray());
+
+//        $tempPermissions = [];
+//        foreach ($permissions as $permission) {
+//            //查询权限的所有子权限
+//            $tempPermissions = array_merge($tempPermissions, $permission->subPermissions());
+//        }
+//
+//        return array_merge($tempPermissions, $permissions->toArray());
     }
 
 
