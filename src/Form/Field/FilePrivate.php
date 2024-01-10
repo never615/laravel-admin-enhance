@@ -128,7 +128,10 @@ class FilePrivate extends Field
 
         $this->storage->put($target, file_get_contents($file->getRealPath()));
 
-        $this->destroy();
+        if(is_string($this->original))
+        {
+            $this->destroy();
+        }
 
         return $target;
     }
