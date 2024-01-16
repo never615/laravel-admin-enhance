@@ -433,10 +433,6 @@ class SubjectUtils
                         ->first();
                 }
             }
-
-            if (!$subject) {
-                throw new HttpException(422, "uuid参数错误:" . $uuid);
-            }
         }
 
         //针对有点项目没有设置 uuid 情况直接获取 subject
