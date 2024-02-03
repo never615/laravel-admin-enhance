@@ -16,6 +16,7 @@ use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
+use Mallto\Tool\Utils\RequestUtils;
 
 /**
  * Class Menu.
@@ -214,18 +215,28 @@ class FrontMenu extends Model
      */
     public function withSubMenus($menus)
     {
+        $language = RequestUtils::getLan();
+
         $ids = $menus->pluck("id")->toArray();
         $ids = array_map(function ($id) {
             return "%." . $id . ".%";
         }, $ids);
         $ids = implode(",", $ids);
         $ids = "('{" . $ids . "}')";
+        $tempMenus = FrontMenu::query()->whereRaw("path like any $ids");
 
-        $tempMenus = FrontMenu::query()
-            ->whereRaw("path like any $ids")
-            ->get()
-            ->toArray();
-
+        if ($language) {
+            $localizedTitle = "{$language}_title";
+            $tempMenus = $tempMenus->select('id',
+                'uri',
+                'parent_id',
+                'path',
+                'order',
+                DB::raw("COALESCE($localizedTitle, title) as title"));
+        } else {
+            $tempMenus = $tempMenus->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
+        }
+        $tempMenus=$tempMenus->get()->toArray();
         return array_merge($tempMenus, $menus->toArray());
 
 //        $tempPermissions = [];
