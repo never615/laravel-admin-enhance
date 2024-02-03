@@ -115,7 +115,7 @@ class AuthController extends Controller
 
         $adminUser = $this->adminUserUsecase->getUserByOpenid($openid, $subject->id);
 
-        if ( ! $adminUser) {
+        if (!$adminUser) {
             throw new ResourceException("当前微信未绑定管理账号,请前往管理后台绑定");
         }
 
@@ -147,8 +147,8 @@ class AuthController extends Controller
             //验证验证码对不对
             $capthca = $request->input('captcha');
             $captchaKey = $request->input('captcha_key');
-            if ( ! captcha_api_check($capthca, $captchaKey)) {
-                throw new ResourceException('验证码不匹配');
+            if (!captcha_api_check($capthca, $captchaKey)) {
+                throw new ResourceException(trans('login.captcha.mismatch'));
             }
 
             $key = "1E390CMD585LLS4S"; //与JS端的KEY一致
@@ -165,26 +165,26 @@ class AuthController extends Controller
         if (method_exists($this, 'hasTooManyLoginAttempts') &&
             $this->hasTooManyLoginAttempts($request)
         ) {
-            throw new ResourceException(Lang::get('auth.throttle', [ 'seconds' => $seconds ]));
+            throw new ResourceException(Lang::get('auth.throttle', ['seconds' => $seconds]));
         }
 
         $permissons = $request->permissions;
 
-        $permissons = $permissons ? explode(',', $permissons) : [ 'admin_api_manager' ];
+        $permissons = $permissons ? explode(',', $permissons) : ['admin_api_manager'];
 
         $adminUser = $this->adminUserUsecase->getUserByUsernameAndPassword($request->username,
             $request->password);
 
-        if ( ! $adminUser) {
+        if (!$adminUser) {
             $this->incrementLoginAttempts($request);
             //错误次数
             $num = $this->limiter()->attempts($this->throttleKey($request));
             //剩余次数
             $s_num = $this->maxAttempts - $num;
 
-            $errorLog = '账号密码错误或账号不存在,剩余登录次数:' . $s_num;
+            $errorLog = trans('auth.login.attempts.remaining', ['count' => $s_num]);
             if ($s_num == 0) {
-                $errorLog = "太多次尝试登入,请在 $seconds 秒再次尝试.";
+                $errorLog = trans('auth.throttle', ['seconds' => $seconds]);
             }
             throw new ResourceException($errorLog);
         }
@@ -202,7 +202,7 @@ class AuthController extends Controller
      *
      * @return mixed
      */
-    private function beforeReturnUser($adminUser, $permission = [ 'admin_api_manager' ])
+    private function beforeReturnUser($adminUser, $permission = ['admin_api_manager'])
     {
         //检查账号是否被禁用
         if ($adminUser->status == 'forbidden') {
@@ -225,10 +225,10 @@ class AuthController extends Controller
     public function captcha()
     {
         return [
-            'code'   => 200,
+            'code' => 200,
             'status' => 'ok',
-            'msg'    => '成功',
-            'url'    => app('captcha')->create('default', true),
+            'msg' => '成功',
+            'url' => app('captcha')->create('default', true),
         ];
     }
 
