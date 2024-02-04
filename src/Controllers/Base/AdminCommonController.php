@@ -286,7 +286,7 @@ abstract class AdminCommonController extends AdminController
             if ($this->defaultFilter) {
                 $this->gridAdminUserFilter($filter);
 
-                $filter->between("created_at")->datetime();
+                $filter->between(trans('admin.created_at'))->datetime();
             }
         });
         if ( ! $this->closeGridCreatedAt) {
