@@ -154,7 +154,7 @@ trait ModelTree
      * Build Nested array.
      *
      * @param array $nodes
-     * @param int   $parentId
+     * @param int $parentId
      *
      * @return array
      */
@@ -167,6 +167,10 @@ trait ModelTree
         }
 
         foreach ($nodes as $node) {
+            if (!$node) {
+                \Log::warning($node);
+                continue;
+            }
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildNestedArray($nodes, $node[$this->getKeyName()]);
 
@@ -223,7 +227,7 @@ trait ModelTree
      * Save tree order from a tree like array.
      *
      * @param array $tree
-     * @param int   $parentId
+     * @param int $parentId
      */
     public static function saveOrder($tree = [], $parentId = 0)
     {
@@ -248,19 +252,20 @@ trait ModelTree
     /**
      * Get options for Select field in form.
      *
-     * @param array     $nodes
-     * @param bool      $root         ,是否返回root节点
-     * @param bool      $defaultBlack ,是否使用默认的空格大小
-     * @param int|array $parentId     ,进来的nodes默认只有parent_id是0的才能进行下一步,此配置支持接收数组,可以配置多个parentId
+     * @param array $nodes
+     * @param bool $root ,是否返回root节点
+     * @param bool $defaultBlack ,是否使用默认的空格大小
+     * @param int|array $parentId ,进来的nodes默认只有parent_id是0的才能进行下一步,此配置支持接收数组,可以配置多个parentId
      *
      * @return \Illuminate\Support\Collection
      */
     public static function selectOptions(
         array $nodes = null,
-        $root = true,
-        $defaultBlack = true,
-        $parentId = 0
-    ) {
+              $root = true,
+              $defaultBlack = true,
+              $parentId = 0
+    )
+    {
         $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {
@@ -274,20 +279,21 @@ trait ModelTree
     /**
      * Build options of select field in form.
      *
-     * @param array  $nodes
-     * @param int    $parentId
+     * @param array $nodes
+     * @param int $parentId
      * @param string $prefix
      *
-     * @param bool   $defaultBlack
+     * @param bool $defaultBlack
      *
      * @return array
      */
     protected function buildSelectOptions(
         array $nodes = null,
-        $parentId = 0,
-        $prefix = '',
-        $defaultBlack = true
-    ) {
+              $parentId = 0,
+              $prefix = '',
+              $defaultBlack = true
+    )
+    {
         if ($defaultBlack) {
             $prefix = $prefix ?: str_repeat('&nbsp;', 6);
         } else {
@@ -300,7 +306,7 @@ trait ModelTree
             $nodes = $this->allNodes();
         }
 
-        $parentId = (array) $parentId;
+        $parentId = (array)$parentId;
 
         foreach ($nodes as $node) {
             if ($defaultBlack) {

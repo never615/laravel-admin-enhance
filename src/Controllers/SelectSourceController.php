@@ -111,7 +111,7 @@ class SelectSourceController extends Controller
         if ($result) {
             return $result;
         }
-        throw new InvalidParamException("select source 参数错误");
+        throw new InvalidParamException("select source 参数错误2");
     }
 
 
