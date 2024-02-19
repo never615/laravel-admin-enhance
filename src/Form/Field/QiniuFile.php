@@ -38,7 +38,10 @@ class QiniuFile extends Field\File
             $this->name = $filePath;
         }
 
-        $this->destroy();
+        if(is_string($this->original))
+        {
+            $this->destroy();
+        }
 
         return $filePath;
     }

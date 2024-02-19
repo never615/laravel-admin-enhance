@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Seeder;
 
 use Mallto\Admin\Data\FrontMenu;
+use Mallto\Tool\Exception\ResourceException;
 
 /**
  * 生成权限的seeder基础方法
@@ -43,9 +44,17 @@ trait FrontMenuSeederMaker
             }
         }
 
+        //处理多语言标题
+        $titleParts = explode(',', $title);
+        if (count($titleParts) > 3) {
+            throw new ResourceException('标题包含三种以上语言.');
+        }
+
         $updateData = [
             'parent_id' => $parentId,
-            'title' => $title,
+            'title' => $titleParts[0],//默认中文
+            'tc_title' => $titleParts[1] ?? null,
+            'en_title' => $titleParts[2] ?? null,
             'icon' => $icon,
             "path" => $path,
 //            "sub_title" => $subTitle,
