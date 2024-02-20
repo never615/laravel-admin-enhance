@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Traits;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 
@@ -167,10 +168,9 @@ trait ModelTree
         }
 
         foreach ($nodes as $node) {
-            if (!$node || !isset($node[$this->parentColumn])) {
-                \Log::warning($node);
-                continue;
-            }
+//            if (!$node) {
+//                continue;
+//            }
             if ($node[$this->parentColumn] == $parentId) {
                 $children = $this->buildNestedArray($nodes, $node[$this->getKeyName()]);
 

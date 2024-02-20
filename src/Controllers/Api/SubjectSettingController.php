@@ -48,7 +48,11 @@ class SubjectSettingController extends Controller
 
         $subjectSetting = SubjectSetting::query()
             ->where('subject_id', $subject->id)
-            ->firstOrFail();
+            ->first();
+
+        if (!$subjectSetting) {
+            return [];
+        }
 
         $result = [];
 
@@ -60,7 +64,7 @@ class SubjectSettingController extends Controller
                 $value = $subjectSetting->public_configs[$queryName] ?? null;
                 if (is_null($value)) {
                     try {
-                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject,'default');
+                        $value = SubjectUtils::getDynamicKeyConfigByOwner($queryName, $subject, 'default');
                         if ($value === 'default') {
                             $value = null;
                             //return null;
@@ -72,7 +76,7 @@ class SubjectSettingController extends Controller
                 }
             }
 
-            if ( ! $value) {
+            if (!$value) {
                 $value = null;
                 //throw new ResourceException($queryName . '不存在或权限拒绝');
             }
@@ -85,12 +89,12 @@ class SubjectSettingController extends Controller
             //    $value = config("app.file_url_prefix") . $value;
             //}
 
-            if (in_array($value, [ 'true', 'false' ])) {
-                $value = (bool) $value;
+            if (in_array($value, ['true', 'false'])) {
+                $value = (bool)$value;
             }
 
             if (is_numeric($value)) {
-                $value = (int) $value;
+                $value = (int)$value;
             }
 
             $result[$queryName] = $value;

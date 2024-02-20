@@ -165,18 +165,19 @@ class FrontMenu extends Model
 
             //过滤保证唯一
             $uniqueTempArray = [];
-//            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
-//                if (!in_array($menu["id"], $uniqueTempArray)) {
-//                    $uniqueTempArray[] = $menu["id"];
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            });
-
-            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray, $baseSubject) {
+            $tempMenus1 = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            $uniqueTempArray2 = [];
+            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray2, $baseSubject) {
+                if (!in_array($menu["id"], $uniqueTempArray2)) {
+                    $uniqueTempArray2[] = $menu["id"];
 
                     if (starts_with($menu['uri'], 'http://')) {
                         $uriKey = str_replace('http://', '', $menu['uri']);
@@ -187,7 +188,7 @@ class FrontMenu extends Model
 
                     return $menu;
                 }
-            }, $tempMenus);
+            }, $tempMenus1);
 
             //排序
             $result = array_sort($tempMenus, $this->orderColumn);
