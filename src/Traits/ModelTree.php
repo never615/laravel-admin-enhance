@@ -167,7 +167,7 @@ trait ModelTree
         }
 
         foreach ($nodes as $node) {
-            if (!$node) {
+            if (!$node || !isset($node[$this->parentColumn])) {
                 \Log::warning($node);
                 continue;
             }
