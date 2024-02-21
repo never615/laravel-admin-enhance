@@ -70,7 +70,7 @@ Route::group([
 //----------------------------------------  管理端开始  -----------------------------------------------
     Route::group(['middleware' => 'adminE_base'], function ($router) {
         $router->get('/', 'HomeController@index')->name('dashboard');
-
+        $router->post('locale', 'MultiLanguageController@locale');
         //获取七牛upload token
         $router->get('uptoken', 'FileController@getUploadToken');
         //上传图片(富文本编辑器需要使用)
