@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
@@ -278,9 +279,9 @@ class SubjectUtils
                 }
             }
         } else {
-            $uuid = \Request::header("x_uuid") ?? \Request::header("uuid");
+            $uuid = Request::header("x_uuid") ?? Request::header("uuid");
             if (is_null($uuid)) {
-                $uuid = \Request::input("uuid");
+                $uuid = Request::input("uuid");
                 if (strlen($uuid) > 10) {
                     $uuid = null;
                 }
@@ -331,7 +332,7 @@ class SubjectUtils
     public
     static function getUUIDNoException()
     {
-        $uuid = \Request::header("X-UUID")??\Request::header("UUID");
+        $uuid = \Request::header("X-UUID") ?? \Request::header("UUID");
         if (is_null($uuid)) {
             $uuid = \Request::input("uuid");
         }

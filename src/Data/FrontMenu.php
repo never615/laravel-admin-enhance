@@ -16,6 +16,7 @@ use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
+use Mallto\Tool\Utils\RequestUtils;
 
 /**
  * Class Menu.
@@ -164,18 +165,19 @@ class FrontMenu extends Model
 
             //过滤保证唯一
             $uniqueTempArray = [];
-//            $tempMenus = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
-//                if (!in_array($menu["id"], $uniqueTempArray)) {
-//                    $uniqueTempArray[] = $menu["id"];
-//                    return true;
-//                } else {
-//                    return false;
-//                }
-//            });
-
-            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray, $baseSubject) {
+            $tempMenus1 = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            $uniqueTempArray2 = [];
+            $tempMenus = array_map(function ($menu) use (&$uniqueTempArray2, $baseSubject) {
+                if (!in_array($menu["id"], $uniqueTempArray2)) {
+                    $uniqueTempArray2[] = $menu["id"];
 
                     if (starts_with($menu['uri'], 'http://')) {
                         $uriKey = str_replace('http://', '', $menu['uri']);
@@ -186,7 +188,7 @@ class FrontMenu extends Model
 
                     return $menu;
                 }
-            }, $tempMenus);
+            }, $tempMenus1);
 
             //排序
             $result = array_sort($tempMenus, $this->orderColumn);
@@ -214,18 +216,28 @@ class FrontMenu extends Model
      */
     public function withSubMenus($menus)
     {
+        $language = RequestUtils::getLan();
+
         $ids = $menus->pluck("id")->toArray();
         $ids = array_map(function ($id) {
             return "%." . $id . ".%";
         }, $ids);
         $ids = implode(",", $ids);
         $ids = "('{" . $ids . "}')";
+        $tempMenus = FrontMenu::query()->whereRaw("path like any $ids");
 
-        $tempMenus = FrontMenu::query()
-            ->whereRaw("path like any $ids")
-            ->get()
-            ->toArray();
-
+        if ($language) {
+            $localizedTitle = "{$language}_title";
+            $tempMenus = $tempMenus->select('id',
+                'uri',
+                'parent_id',
+                'path',
+                'order',
+                DB::raw("COALESCE($localizedTitle, title) as title"));
+        } else {
+            $tempMenus = $tempMenus->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
+        }
+        $tempMenus=$tempMenus->get()->toArray();
         return array_merge($tempMenus, $menus->toArray());
 
 //        $tempPermissions = [];

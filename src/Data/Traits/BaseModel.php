@@ -6,10 +6,12 @@
 namespace Mallto\Admin\Data\Traits;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectSetting;
+use Mallto\Tool\Utils\RequestUtils;
 
 /**
  * Created by PhpStorm.
@@ -162,4 +164,14 @@ abstract class BaseModel extends Model
         return $this->belongsTo(Administrator::class, "admin_user_id");
     }
 
+    public function scopeWithLocalizedName($query,$suffix = 'name')
+    {
+        $language = RequestUtils::getLan();
+
+        if($language)
+        {
+            $localizedName = "{$language}_{$suffix}";
+            $query->addSelect(DB::raw("COALESCE(\"$localizedName\", \"$suffix\") as \"$suffix\""));
+        }
+    }
 }
