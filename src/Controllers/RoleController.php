@@ -94,6 +94,9 @@ class RoleController extends AdminCommonController
                 ->help('权限有父子关系,若设置了父级权限则不用在设置子级权限.如:设置了用户管理,则无需在配置用户查看/用户删除/用户修改权限');
 
             $this->formSubject($form);
+            $this->formAdminUser($form);
+            $form->displayE('created_at', trans('admin.created_at'));
+            $form->displayE('updated_at', trans('admin.updated_at'));
 
 
 //        $form->multipleSelect('permissions', trans('admin.permissions'))
