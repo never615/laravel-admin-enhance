@@ -57,7 +57,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         }
         if ($addToken) {
             $token = $adminUser->createToken('admin_api');
-            $adminUser->token = $token->accessToken;
+//            $adminUser->token = $token->plainTextToken;
         }
 
         $permissions = [];
@@ -83,7 +83,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
                 'name',
             ]),
             'uuid' => $adminable->uuid,
-            "token" => $token->accessToken,
+            "token" => $token->plainTextToken,
             "permissions" => $permissions,
             "menus" => AdminE::frontMenu($adminUser)
         ]);
