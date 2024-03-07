@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 //token 授权的管理端接口
 Route::group([
     'prefix' => 'admin/api',
-    'middleware' => ['oauth.providers', 'api', 'adminE.log','set_language'],
+    'middleware' => ['api', 'adminE.log', 'set_language'],
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
 ], function ($router) {
 
@@ -33,7 +33,7 @@ Route::group([
         'middleware' => ['requestCheck'],
     ], function () {
         Route::group([
-            'middleware' => ['multiauth:admin_api'],
+            'middleware' => ['auth:admin_api'],
         ], function ($router) {
             Route::group([
                 'middleware' => ['adminE.auto_permission'],
