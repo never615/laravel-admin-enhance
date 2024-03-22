@@ -17,6 +17,7 @@ class UpdateReplacementPasswordTimeAdminUsers extends Migration
         Schema::table('admin_users', function (Blueprint $table) {
             $table->timestamp('replacement_password_time')->nullable()->comment('密码更换时间');
         });
+
         \Mallto\Admin\Data\AdminUser::query()
                 ->chunkById(50, function ($adminUsers) {
                     foreach ($adminUsers as $adminUser) {
