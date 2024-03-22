@@ -18,7 +18,7 @@ class UpdateReplacementPasswordTimeAdminUsers extends Migration
             $table->timestamp('replacement_password_time')->nullable()->comment('密码更换时间');
         });
 
-        \Mallto\Admin\Data\AdminUser::query()
+        \Mallto\Admin\Data\Administrator::query()
                 ->chunkById(50, function ($adminUsers) {
                     foreach ($adminUsers as $adminUser) {
                         $adminUser->replacement_password_time = Carbon::now()->toDateTimeString();
