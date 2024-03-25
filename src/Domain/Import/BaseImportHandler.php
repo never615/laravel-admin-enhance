@@ -220,7 +220,7 @@ abstract class BaseImportHandler
      * 插入数据
      *
      * @param                  $importRecord
-     * @param array            $row |$rows
+     * @param array $row |$rows
      *
      * @return mixed
      * @throws \Exception
@@ -252,7 +252,7 @@ abstract class BaseImportHandler
      * 导入的队列任务执行失败的时候会触发
      *
      * @param ImportRecord $record
-     * @param \Throwable   $exception
+     * @param \Throwable $exception
      *
      * @return mixed
      */
@@ -260,9 +260,12 @@ abstract class BaseImportHandler
     function fail(
         $record,
         $exception = null
-    ) {
+    )
+    {
         $this->updateRecordStatus($record, 'failure',
             $exception->getMessage());
+        \Log::warning('导入失败:');
+        \Log::warning($exception);
     }
 
 
@@ -271,16 +274,17 @@ abstract class BaseImportHandler
      *
      * @param                      $importRecord
      * @param ImportRecord::STATUS $status
-     * @param null                 $finishAt
-     * @param null                 $failureReason
+     * @param null $finishAt
+     * @param null $failureReason
      */
     protected function updateRecordStatus(
         $importRecord,
         $status,
         $failureReason = null,
         $finishAt = null
-    ) {
-        if ( ! $finishAt && $status !== 'processing') {
+    )
+    {
+        if (!$finishAt && $status !== 'processing') {
             $finishAt = TimeUtils::getNowTime();
         }
 
@@ -321,7 +325,7 @@ abstract class BaseImportHandler
     /**
      * @param        $msg
      * @param string $failReason
-     * @param null   $line
+     * @param null $line
      *
      * @return string
      * @deprecated
@@ -330,7 +334,8 @@ abstract class BaseImportHandler
         $msg,
         $failReason = '',
         $line = null
-    ) {
+    )
+    {
         if ($line) {
             $failReason .= '第' . ($line - 1) . '行错误:' . $msg;
         } else {
