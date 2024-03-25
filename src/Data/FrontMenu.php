@@ -97,11 +97,19 @@ class FrontMenu extends Model
         if (!empty($this->path)) {
             $parentIds = explode(".", trim($this->path, "."));
             if (!empty($parentIds)) {
-                return FrontMenu::query()
-                    ->select("id", "title", "uri", "parent_id", "path", "order")
-                    ->whereIn("id", $parentIds)
-                    ->get()
-                    ->toArray();
+                $language = RequestUtils::getLan();
+                if ($language) {
+                    $localizedTitle = "{$language}_title";
+                    return FrontMenu::query()
+                        ->select("id", "uri", "parent_id", "path", "order",DB::raw("COALESCE($localizedTitle, title) as title"))
+                        ->whereIn("id", $parentIds)
+                        ->get()
+                        ->toArray();
+                } else {
+                    return FrontMenu::whereIn("id", $parentIds)
+                        ->get()
+                        ->toArray();
+                }
             }
         }
 
