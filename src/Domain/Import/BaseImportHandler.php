@@ -82,40 +82,41 @@ abstract class BaseImportHandler
     {
         if (config('admin.upload.disk') === 'admin') {
             $storage = Storage::disk(config('admin.upload.disk'));
-            $url = $storage->url($importRecord->file_url);
+//            $url = $storage->get($importRecord->file_url);
 
+            $path = storage_path($importRecord->file_url);
         } else {
             //文件上传到了七牛的私有空间,读取
             $qiniuPrivate = Storage::disk(config('admin.upload.private_disk'));
 
             $url = $qiniuPrivate->getAdapter()->privateDownloadUrl($importRecord->file_url);
+
+            $fileUrls = explode('.', $importRecord->file_url);
+            $ext = array_last($fileUrls);
+
+            try {
+                $contents = file_get_contents($url);
+            } catch (ErrorException $errorException) {
+                \Log::error('导入获取文件内容失败:' . $url);
+                \Log::warning($errorException->getMessage());
+                $this->updateRecordStatus($importRecord, 'failure',
+                    $errorException->getMessage());
+
+                //$this->updateRecordStatus($importRecord, 'failure',
+                //    '文件名不能包含特殊字符,只能是字母/数字/-_');
+
+                return;
+            }
+
+            $moduleSlug = $importRecord->module_slug;
+            if (str_contains($moduleSlug, '\\')) {
+                $moduleSlug = array_last(explode('\\', $moduleSlug));
+            }
+            //保存到服务器本地临时目录,便于读取文件
+            $tempFileName = $importRecord->subject_id . '_' . $moduleSlug . '_' . $importRecord->created_at . '.' . $ext;
+            Storage::disk('local')->put('tmp/import_file/' . $tempFileName, $contents);
+            $path = storage_path('app/tmp/import_file/' . $tempFileName);
         }
-
-        $fileUrls = explode('.', $importRecord->file_url);
-        $ext = array_last($fileUrls);
-
-        try {
-            $contents = file_get_contents($url);
-        } catch (ErrorException $errorException) {
-            \Log::error('导入获取文件内容失败:' . $url);
-            \Log::warning($errorException->getMessage());
-            $this->updateRecordStatus($importRecord, 'failure',
-                $errorException->getMessage());
-
-            //$this->updateRecordStatus($importRecord, 'failure',
-            //    '文件名不能包含特殊字符,只能是字母/数字/-_');
-
-            return;
-        }
-
-        $moduleSlug = $importRecord->module_slug;
-        if (str_contains($moduleSlug, '\\')) {
-            $moduleSlug = array_last(explode('\\', $moduleSlug));
-        }
-        //保存到服务器本地临时目录,便于读取文件
-        $tempFileName = $importRecord->subject_id . '_' . $moduleSlug . '_' . $importRecord->created_at . '.' . $ext;
-        Storage::disk('local')->put('tmp/import_file/' . $tempFileName, $contents);
-        $path = storage_path('app/tmp/import_file/' . $tempFileName);
 
         //1. 修改状态为进行中
         $this->updateRecordStatus($importRecord, 'processing');
