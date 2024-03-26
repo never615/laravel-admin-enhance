@@ -80,12 +80,10 @@ abstract class BaseImportHandler
      */
     public function handle($importRecord)
     {
-        \Log::warning(config('admin.upload.disk'));
         if (config('admin.upload.disk') === 'admin') {
 //            $storage = Storage::disk(config('admin.upload.disk'));
 //            $url = $storage->get($importRecord->file_url);
-
-            $path = storage_path($importRecord->file_url);
+            $path = storage_path('app/public/'.$importRecord->file_url);
         } else {
             //文件上传到了七牛的私有空间,读取
             $qiniuPrivate = Storage::disk(config('admin.upload.private_disk'));
