@@ -80,8 +80,9 @@ abstract class BaseImportHandler
      */
     public function handle($importRecord)
     {
+        \Log::warning(config('admin.upload.disk'));
         if (config('admin.upload.disk') === 'admin') {
-            $storage = Storage::disk(config('admin.upload.disk'));
+//            $storage = Storage::disk(config('admin.upload.disk'));
 //            $url = $storage->get($importRecord->file_url);
 
             $path = storage_path($importRecord->file_url);
