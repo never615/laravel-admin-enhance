@@ -10,11 +10,11 @@ use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\HasApiTokens;
 use Mallto\Admin\Data\Traits\DynamicData;
 use Mallto\Admin\Data\Traits\HasPermissions2;
 use Mallto\Admin\Data\Traits\SelectSource;
 use Mallto\Tool\Utils\RequestUtils;
-use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 
 /**
  * Class Administrator.
@@ -24,8 +24,8 @@ use SMartins\PassportMultiauth\HasMultiAuthApiTokens;
 class Administrator extends \Encore\Admin\Auth\Database\Administrator
 {
 
-    use Authenticatable, AdminBuilder, HasPermissions,
-        DynamicData, HasMultiAuthApiTokens, SelectSource, HasPermissions2 {
+    use HasApiTokens, Authenticatable, AdminBuilder, HasPermissions,
+        DynamicData, SelectSource, HasPermissions2 {
         HasPermissions2::can insteadof HasPermissions;
     }
 
@@ -78,8 +78,7 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
 //        return $this->roles()->with('frontMenus:id,title,uri,parent_id,path,order')->get()->pluck('frontMenus')->flatten();
         return $this->roles()->with(['frontMenus' => function ($query) use ($language) {
             // 使用本地作用域来添加本地化标题
-            if($language)
-            {
+            if ($language) {
                 $localizedTitle = "{$language}_title";
                 $query->select('id',
                     'uri',

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Mallto\Admin\Data\Traits\PermissionHelp;
 use Mallto\Admin\Domain\Permission\PermissionUsecase;
 use Mallto\Admin\Facades\AdminE;
-use Mallto\Tool\Exception\ResourceException;
+use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\User\Data\User;
 
 /**
@@ -57,7 +57,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         }
         if ($addToken) {
             $token = $adminUser->createToken('admin_api');
-            $adminUser->token = $token->accessToken;
+//            $adminUser->token = $token->plainTextToken;
         }
 
         $permissions = [];
@@ -83,7 +83,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
                 'name',
             ]),
             'uuid' => $adminable->uuid,
-            "token" => $token->accessToken,
+            "token" => $token->plainTextToken,
             "permissions" => $permissions,
             "menus" => AdminE::frontMenu($adminUser)
         ]);
@@ -183,7 +183,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
         ])->first();
 
         if (!$adminUser) {
-            throw new ResourceException('登录账号不存在');
+            throw new PermissionDeniedException('登录账号不存在');
         }
 
         if (Hash::check($password, $adminUser->password)) {

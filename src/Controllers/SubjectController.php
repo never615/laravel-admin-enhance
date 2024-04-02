@@ -122,6 +122,8 @@ class SubjectController extends AdminCommonController
 
             $form->text('name')->rules('required');
 
+//            $form->ueditor('detail', '关于');
+
             //父级主体和已购模块只能父级设置,自己可以看,不能改
             $currentId = $this->currentId;
             $current = Subject::find($this->currentId);
@@ -314,7 +316,9 @@ class SubjectController extends AdminCommonController
         }
 
         if ($form->model()->parent_id != $form->parent_id) {
-            dispatch(new SubjectPathUpdateJob($form->model()));
+//            dispatch(new SubjectPathUpdateJob($form->model()));
+            SubjectPathUpdateJob::dispatch($form->model())
+                ->delay(5);
         }
     }
 

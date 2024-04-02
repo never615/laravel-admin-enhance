@@ -23,6 +23,10 @@ class AdminUserController extends Controller
     {
         $adminUser = Auth::guard("admin_api")->user();
 
+        if(!$adminUser){
+            throw new PermissionDeniedException('未登录或用户不存在');
+        }
+
         //检查账号是否被禁用
         if ($adminUser->status == "forbidden") {
             throw new PermissionDeniedException("当前账号已被禁用");
