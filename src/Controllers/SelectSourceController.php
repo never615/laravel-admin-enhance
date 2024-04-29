@@ -8,6 +8,7 @@ namespace Mallto\Admin\Controllers;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Subject;
@@ -54,17 +55,17 @@ class SelectSourceController extends Controller
             $key = $fatherValue;
         }
 
-        $adminUser = Admin::user();
+        $adminUser = Admin::user() ?? Auth::guard("admin_api")->user();
 
         $subject = $this->getSubject($request);
-        if ( ! $subject) {
+        if (!$subject) {
             $subject = $adminUser->subject;
         }
 
         //查询子主体
         if (AdminUtils::isOwner()) {
             //todo 临时处理,如果以后项目上千的要优化
-            $childSubjectIds=Subject::pluck('id')->toArray();
+            $childSubjectIds = Subject::pluck('id')->toArray();
         } else {
             $childSubjectIds = $subject->getChildrenSubject();
         }
@@ -78,7 +79,7 @@ class SelectSourceController extends Controller
 
         //特别处理主体数据
         if ($key === 'subject' || $key === 'subject_id') {
-            if ( ! is_null($id)) {
+            if (!is_null($id)) {
                 $id = explode(",", $id);
 
                 return Subject::select(DB::raw("id,name as text"))->findOrFail($id);
@@ -86,7 +87,7 @@ class SelectSourceController extends Controller
                 return Subject::select(DB::raw("id,name as text"))
                     ->whereIn('id', $childSubjectIds)
                     ->where('name', '~*', "$q")
-                    ->paginate($perPage, [ 'id', 'text' ]);
+                    ->paginate($perPage, ['id', 'text']);
             }
         } elseif ($key === 'load') { //load 模式是直接加载全部数据,不过是远程加载
             //form多级联动需要的数据
@@ -166,7 +167,8 @@ class SelectSourceController extends Controller
     private
     function getSubject(
         $request
-    ) {
+    )
+    {
         if ($request->subject_uuid) {
             return Subject::where("uuid", $request->subject_uuid)->firstOrFail();
         }
