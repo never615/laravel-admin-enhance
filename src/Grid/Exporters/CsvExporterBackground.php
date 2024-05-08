@@ -88,7 +88,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
         if ($this->isRunInQueue()) {
             //后台导出
 
-            //\Log::debug('后台导出');
+            //Log::debug('后台导出');
 
             $this->backgroundExport($tableName, $fileName);
 
@@ -107,16 +107,16 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
         unset($array[0]);
         foreach ($array as $row) {
             if (isset($row['args'][0]) && $row['args'][0] instanceof Route) {
-                //\Log::debug($row['args'][0]);
-                //\Log::debug('route');
+                //Log::debug($row['args'][0]);
+                //Log::debug('route');
 
                 $route = $row['args'][0];
                 //$route=new Route();
                 $controllerClass = get_class($route->controller);
-                //\Log::debug($controllerClass);
+                //Log::debug($controllerClass);
             }
 
-            //\Log::debug($row['file'] . ':' . $row['line'] . '行,调用方法:' . $row['function']);
+            //Log::debug($row['file'] . ':' . $row['line'] . '行,调用方法:' . $row['function']);
         }
 
         if ($count <= 2000) {
@@ -176,7 +176,7 @@ class CsvExporterBackground extends \Encore\Admin\Grid\Exporters\AbstractExporte
         $disk = Storage::disk("qiniu_private");
 
         $filePath = public_path('storage/exports/' . $report->name);
-//            \Log::info($filePath);
+//            Log::info($filePath);
 
         $disk->put(config("app.unique") . '/' . config("app.env") . '/exports/' . $report->name,
             fopen($filePath, 'r+')); //分段上传文件。建议大文件>10Mb使用。
@@ -274,7 +274,7 @@ EOT;
             $tableName,
             $report
         ) {
-            //\Log::debug($records);
+            //Log::debug($records);
             if ($records && count($records) > 0) {
                 //fwrite($handle, chr(0xEF) . chr(0xBB) . chr(0xBF)); // 添加 BOM
 

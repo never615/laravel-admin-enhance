@@ -154,7 +154,6 @@ abstract class DataExporter extends \Encore\Admin\Grid\Exporters\AbstractExporte
             $disk = Storage::disk("qiniu_private");
 
             $filePath = public_path('storage/exports/' . $report->name);
-//            \Log::info($filePath);
 
             $disk->put(config("app.unique") . '/' . config("app.env") . '/exports/' . $report->name,
                 fopen($filePath, 'r+')); //分段上传文件。建议大文件>10Mb使用。

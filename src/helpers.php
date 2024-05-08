@@ -4,6 +4,7 @@
  */
 
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 
 if ( ! function_exists('array_dot2')) {
 
@@ -134,8 +135,8 @@ if ( ! function_exists('mt_trans')) {
 
                 return admin_translate($tempKeys[1], $tempKeys[0]);
             } catch (\Exception $exception) {
-                \Log::warning("admin_translate");
-                \Log::warning($exception);
+                Log::warning("admin_translate");
+                Log::warning($exception);
             }
         }
 

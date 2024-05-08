@@ -11,6 +11,7 @@ use Maatwebsite\Excel\HeadingRowImport;
 use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 use Mallto\Admin\Data\ImportRecord;
 use Mallto\Tool\Utils\TimeUtils;
+use Illuminate\Support\Facades\Log;
 
 /**
  *
@@ -96,8 +97,8 @@ abstract class BaseImportHandler
             try {
                 $contents = file_get_contents($url);
             } catch (ErrorException $errorException) {
-                \Log::error('导入获取文件内容失败:' . $url);
-                \Log::warning($errorException->getMessage());
+                Log::error('导入获取文件内容失败:' . $url);
+                Log::warning($errorException->getMessage());
                 $this->updateRecordStatus($importRecord, 'failure',
                     $errorException->getMessage());
 
@@ -124,7 +125,7 @@ abstract class BaseImportHandler
         $importKeys = (new HeadingRowImport)->toArray($path);
         $importKeys = $importKeys[0][0];
 
-        //\Log::debug($importKeys);
+        //Log::debug($importKeys);
         //foreach ($importKeys as $key => $importKey) {
         //if ($importKey) {
         //    $this->updateRecordStatus($importRecord, 'failure', '列中有空列名,请对照导入模板检查');
@@ -135,8 +136,8 @@ abstract class BaseImportHandler
 
         if (array_diff($expectKeys, $importKeys) || array_diff($importKeys, $expectKeys)) {
             $this->updateRecordStatus($importRecord, 'failure', '列名错误,请对照导入模板检查');
-            \Log::warning($expectKeys);
-            \Log::warning($importKeys);
+            Log::warning($expectKeys);
+            Log::warning($importKeys);
 
             return false;
         }
@@ -264,8 +265,8 @@ abstract class BaseImportHandler
     {
         $this->updateRecordStatus($record, 'failure',
             $exception->getMessage());
-        \Log::warning('导入失败:');
-        \Log::warning($exception);
+        Log::warning('导入失败:');
+        Log::warning($exception);
     }
 
 

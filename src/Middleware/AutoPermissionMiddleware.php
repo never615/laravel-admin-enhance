@@ -91,7 +91,6 @@ class AutoPermissionMiddleware
         $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
 
         if (is_null($currentRouteName)) {
-//            \Log::warning('管理端权限校验,route name is empty', [$request->url()]);
             //没有设置route name,使用uri来判断,目前直接通过, 目前主要就是管理端dashboard用的一些接口.
             return $next($request);
         }

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Mallto\Admin\Data\Subject;
+use Illuminate\Support\Facades\Log;
 
 class SubjectPathUpdateJob implements ShouldQueue
 {
@@ -88,7 +89,7 @@ class SubjectPathUpdateJob implements ShouldQueue
      */
     public function failed(\Exception $e)
     {
-        \Log::error('同步更新子级path失败');
-        \Log::warning($e);
+        Log::error('同步更新子级path失败');
+        Log::warning($e);
     }
 }

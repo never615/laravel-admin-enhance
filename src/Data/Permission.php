@@ -156,7 +156,6 @@ class Permission extends Model
             $nodes = $this->allNodes();
         }
 
-        //\Log::debug(json_encode($nodes));
 
         $parentId = (array) $parentId;
 

@@ -19,6 +19,7 @@ use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\FrontMenu;
 use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Role;
+use Illuminate\Support\Facades\Log;
 
 class FrontMenuController extends AdminCommonController
 {
@@ -218,8 +219,8 @@ class FrontMenuController extends AdminCommonController
                 ]);
             }
         } catch (\Exception $e) {
-            \Log::error("删除菜单失败");
-            \Log::warning($e);
+            Log::error("删除菜单失败");
+            Log::warning($e);
 
             return response()->json([
                 'status' => false,
