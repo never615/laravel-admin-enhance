@@ -62,8 +62,6 @@ class AdminUtils
             }
         }
 
-//        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
-//        \Log::debug(session(CacheConstants::SESSION_CURRENT_SUBJECT));
 
         return [ $adminUser, $isOwner, $currentSubject ];
     }
@@ -118,8 +116,6 @@ class AdminUtils
             [ $currentAdminUser, $isOwner, $currentSubject ] = self::getLoginUserData();
         }
 
-//        \Log::debug(session(CacheConstants::SESSION_ADMIN_USER));
-//        \Log::debug(\GuzzleHttp\json_encode($currentAdminUser));
 
         return $currentAdminUser;
     }

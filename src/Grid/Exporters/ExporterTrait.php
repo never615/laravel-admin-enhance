@@ -169,7 +169,6 @@ trait ExporterTrait
 //                unset($record[$key]);
 //            }
 //
-//            \Log::info($record);
 ////            $record = array_dot($record->toArray());
 //
 //            foreach ((array) $keys as $key) {

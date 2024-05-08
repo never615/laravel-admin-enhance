@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Jobs\LogJob;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 记录管理端操作日志
@@ -44,13 +45,13 @@ class OperationLog extends LogOperation
                 $adminUser = Auth::guard("admin_api")->user();
             }
         } catch (\Exception $exception) {
-            \Log::warning('OperationLog');
-            \Log::warning($exception);
+            Log::warning('OperationLog');
+            Log::warning($exception);
             try {
                 $adminUser = Auth::guard("admin_api")->user();
             } catch (\Exception $exception) {
-                \Log::warning('OperationLog2');
-                \Log::warning($exception);
+                Log::warning('OperationLog2');
+                Log::warning($exception);
             }
         }
         if ( ! $adminUser) {

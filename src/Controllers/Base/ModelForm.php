@@ -5,6 +5,8 @@
 
 namespace Mallto\Admin\Controllers\Base;
 
+use Illuminate\Support\Facades\Log;
+
 trait ModelForm
 {
 
@@ -63,8 +65,8 @@ trait ModelForm
             }
         } catch (\Exception $e) {
 
-            \Log::error("删除model失败");
-            \Log::warning($e);
+            Log::error("删除model失败");
+            Log::warning($e);
 
             return response()->json([
                 'status'  => false,

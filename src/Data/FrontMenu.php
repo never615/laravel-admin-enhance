@@ -160,7 +160,6 @@ class FrontMenu extends Model
 //            $menus = new Collection();
 
             $menus = $adminUser->frontMenus();
-//            \Log::debug($menus);
 
             $tempMenus = $this->withSubMenus($menus);
 //            $tempMenus = $menus->toArray();

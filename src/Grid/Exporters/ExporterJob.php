@@ -82,8 +82,8 @@ class ExporterJob implements ShouldQueue
         $report = $this->report;
         $controllerClassName = $this->controllerClass;
 
-        //\Log::debug($exporterClassName);
-        //\Log::debug($controllerClassName);
+        //Log::debug($exporterClassName);
+        //Log::debug($controllerClassName);
 
         if ($report) {
             $report->update([
@@ -96,7 +96,7 @@ class ExporterJob implements ShouldQueue
             request()->headers->set("mode", "queue");
             request()->headers->set("report", $report->id);
 
-            //\Log::debug(request()->all());
+            //Log::debug(request()->all());
 
             //调用导出代码的controller
             $controllerClass = new ReflectionClass($controllerClassName); // 建立 Person这个类的反射类
@@ -119,7 +119,7 @@ class ExporterJob implements ShouldQueue
             //}
 
             $adminUser = Administrator::query()->find($this->adminUserId);
-            //\Log::debug($adminUser);
+            //Log::debug($adminUser);
             Admin::setUser($adminUser);
 
             $controllerInstance->adminUser = $adminUser;
@@ -131,7 +131,7 @@ class ExporterJob implements ShouldQueue
             $gridMethod = $controllerClass->getMethod('grid'); // 得到ReflectionMethod对象
             $gridMethod->setAccessible(true);// 设置为可见，也就是可访问
             $grid = $gridMethod->invoke($controllerInstance);// 传入对象来访问这个方法
-            //\Log::debug(333);
+            //Log::debug(333);
             $grid->handleExportRequest(true);
 
             return;

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Tool\Exception\ResourceException;
 use Mallto\User\Domain\SmsVerifyCodeUsecase;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends BaseAuthController
 {
@@ -206,7 +207,7 @@ class AuthController extends BaseAuthController
         $sms = app(SmsVerifyCodeUsecase::class);
 
         if ($count > 1) {
-            \Log::error("当前登录的手机号" . $mobile . "有绑定了多个账号");
+            Log::error("当前登录的手机号" . $mobile . "有绑定了多个账号");
         }
 
         $sms->sendSmsVerifyCode($mobile, $user->subject_id, 'admin_sms_login');
@@ -232,7 +233,6 @@ class AuthController extends BaseAuthController
         //暂定使用数据库驱动就默认只允许一个用户登录
         //$sessionId = session()->getId();
         if (config('session.driver') === 'database') {
-            //\Log::debug(Admin::guard()->user()->id);
             DB::table('sessions')
                 ->where('user_id', Admin::guard()->user()->id)
                 ->where('id', '!=', session()->getId())

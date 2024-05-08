@@ -198,7 +198,6 @@ class SubjectSettingController extends AdminCommonController
 
         $keys = array_merge($publicConfigsKeys, $privateConfigsKeys, $subjectOwnerConfigsKeys, $columnKeys);
 
-        //\Log::debug($keys);
         // 获取去掉重复数据的数组
         $uniqueArr = array_unique($keys);
         // 获取重复数据的数组
