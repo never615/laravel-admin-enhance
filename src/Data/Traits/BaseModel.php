@@ -24,7 +24,7 @@ abstract class BaseModel extends Model
 
     use DynamicData, SelectSource;
 
-    protected $hidden = [ 'deleted_at' ];
+    protected $hidden = ['deleted_at'];
 
     protected $guarded = [];
 
@@ -35,7 +35,7 @@ abstract class BaseModel extends Model
     /**
      * 为数组 / JSON 序列化准备日期。
      *
-     * @param  \DateTimeInterface  $date
+     * @param \DateTimeInterface $date
      * @return string
      */
     protected function serializeDate(\DateTimeInterface $date)
@@ -164,14 +164,28 @@ abstract class BaseModel extends Model
         return $this->belongsTo(Administrator::class, "admin_user_id");
     }
 
-    public function scopeWithLocalizedName($query,$suffix = 'name')
+    public function scopeWithLocalizedName($query, $suffix = 'name')
     {
         $language = RequestUtils::getLan();
 
-        if($language)
-        {
+        if ($language) {
             $localizedName = "{$language}_{$suffix}";
             $query->addSelect(DB::raw("COALESCE(\"$localizedName\", \"$suffix\") as \"$suffix\""));
         }
     }
+
+
+    public function getLocalizeColumnName($suffix = 'name')
+    {
+        $language = RequestUtils::getLan();
+
+        if ($language) {
+            $localizedName = "{$language}_{$suffix}";
+            return $localizedName;
+        } else {
+            return $suffix;
+        }
+    }
+
+
 }
