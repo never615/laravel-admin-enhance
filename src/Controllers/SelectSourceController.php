@@ -48,6 +48,10 @@ class SelectSourceController extends Controller
         //自动设置默认值使用,当前条目的id
         $id = $request->get("id", null);
 
+        if (is_array($id)) {
+            $id = implode(',', $id);
+        }
+
         //ajaxload使用,父节点的值
         $fatherValue = $request->get('father_value');
 
