@@ -26,7 +26,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
     /**
      * @var PermissionUsecase
      */
-    private $permissionUsecase;
+    protected $permissionUsecase;
 
 
     /**
