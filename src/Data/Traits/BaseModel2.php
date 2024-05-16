@@ -5,8 +5,11 @@
 
 namespace Mallto\Admin\Data\Traits;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
+use Mallto\Admin\AdminUtils;
 use Mallto\Admin\SubjectUtils;
 use Request;
 
@@ -73,65 +76,66 @@ abstract class BaseModel2 extends Model
         return parent::newEloquentBuilder($query);
     }
 
-
-    public function getLogoAttribute($value)
+    public function logo(): Attribute
     {
-        if (empty($value)) {
-            return null;
-        }
-
-        if (starts_with($value, "http")) {
-            return $value;
-        }
-
-        return config("app.file_url_prefix") . $value;
-    }
-
-
-    public function getImageAttribute($value)
-    {
-        if (empty($value)) {
-            return null;
-        }
-
-        if (starts_with($value, "http")) {
-            return $value;
-        }
-
-        return config("app.file_url_prefix") . $value;
-    }
-
-
-    public function setImagesAttribute($values)
-    {
-        foreach ($values as $key => $value) {
-            if (starts_with($value, config("app.file_url_prefix"))) {
-                $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
-            }
-        }
-
-        $values = json_encode($values);
-        $this->attributes['images'] = $values;
-    }
-
-
-    public function getImagesAttribute($value)
-    {
-        $values = json_decode($value);
-
-        if ($values && count($values) > 0) {
-            foreach ($values as $key => $value) {
-                if (starts_with($value, "http")) {
-                    $values[$key] = $value;
-                } else {
-                    $values[$key] = config("app.file_url_prefix") . $value;
+        return new Attribute(
+            get: function ($value) {
+                if (empty($value)) {
+                    return null;
                 }
-            }
-        } else {
-            return [];
-        }
+                if (Str::startsWith($value, "http")) {
+                    return $value;
+                }
 
-        return $values;
+                return config("app.file_url_prefix") . $value;
+            }
+        );
     }
 
+    public function image(): Attribute
+    {
+        return new Attribute(
+            get: function ($value) {
+                if (empty($value)) {
+                    return null;
+                }
+                if (Str::startsWith($value, "http")) {
+                    return $value;
+                }
+
+                return config("app.file_url_prefix") . $value;
+            }
+        );
+    }
+    public function images(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                $values = json_decode($value);
+
+                if ($values && count($values) > 0) {
+                    foreach ($values as $key => $value) {
+                        if (starts_with($value, "http")) {
+                            $values[$key] = $value;
+                        } else {
+                            $values[$key] = config("app.file_url_prefix") . $value;
+                        }
+                    }
+                } else {
+                    return [];
+                }
+
+                return $values;
+            },
+            set: function ($values) {
+                foreach ($values as $key => $value) {
+                    if (starts_with($value, config("app.file_url_prefix"))) {
+                        $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
+                    }
+                }
+
+                $this->attributes['images'] = json_encode($values, JSON_THROW_ON_ERROR);
+            }
+        );
+    }
 }

@@ -5,6 +5,8 @@
 
 namespace Mallto\Admin\Data;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Str;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Data\Traits\BaseModel;
 use Mallto\Admin\SubjectUtils;
@@ -23,20 +25,21 @@ class ImportSetting extends BaseModel
         return $this->hasMany(ImportRecord::class, "import_handler", "import_handler");
     }
 
-
-    public function getTemplateUrlAttribute($value)
+    public function templateUrl(): Attribute
     {
-        if (empty($value)) {
-            return null;
-        }
+        return new Attribute(
+            get: function ($value) {
+                if (empty($value)) {
+                    return null;
+                }
+                if (Str::startsWith($value, "http")) {
+                    return $value;
+                }
 
-        if (starts_with($value, "http")) {
-            return $value;
-        }
-
-        return config("app.file_url_prefix") . $value;
+                return config("app.file_url_prefix") . $value;
+            }
+        );
     }
-
 
     public function scopeSelectSourceDataBySubject($query)
     {

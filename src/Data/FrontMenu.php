@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Data;
 
 use Encore\Admin\Traits\AdminBuilder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
@@ -59,18 +60,20 @@ class FrontMenu extends Model
         parent::__construct($attributes);
     }
 
-
-    public function getTitleAttribute($value)
+    public function title(): Attribute
     {
-        $isOwner = AdminUtils::isOwner();
+        return new Attribute(
+            get: function ($value) {
+                $isOwner = AdminUtils::isOwner();
 
-        if ($isOwner && $this->sub_title) {
-            return $value . "-" . $this->sub_title;
-        } else {
-            return $value;
-        }
+                if ($isOwner && $this->sub_title) {
+                    return $value . "-" . $this->sub_title;
+                } else {
+                    return $value;
+                }
+            }
+        );
     }
-
 
     /**
      * A Menu belongs to many roles.

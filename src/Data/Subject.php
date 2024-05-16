@@ -3,8 +3,10 @@
 namespace Mallto\Admin\Data;
 
 use Encore\Admin\Facades\Admin;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
 
@@ -51,21 +53,21 @@ class Subject extends Model
     {
         return $this->belongsToMany(Menu::class, "admin_menu_subjects", "subject_id", "admin_menu_id");
     }
-
-
-    public function getLogoAttribute($value)
+    public function logo(): Attribute
     {
-        if (empty($value)) {
-            return null;
-        }
+        return new Attribute(
+            get: function ($value) {
+                if (empty($value)) {
+                    return null;
+                }
+                if (Str::startsWith($value, "http")) {
+                    return $value;
+                }
 
-        if (starts_with($value, "http")) {
-            return $value;
-        }
-
-        return config("app.file_url_prefix") . $value;
+                return config("app.file_url_prefix") . $value;
+            }
+        );
     }
-
 
     public function subjectAdminUsers()
     {
