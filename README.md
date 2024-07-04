@@ -14,3 +14,6 @@
 
 
 ```
+
+
+发布资源: `php artisan vendor:publish --force --tag="error-views"`
