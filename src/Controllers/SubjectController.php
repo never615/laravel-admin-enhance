@@ -12,6 +12,7 @@ use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Tools;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -26,6 +27,8 @@ use Mallto\Admin\Grid\Tools\ImportButton;
 use Mallto\Admin\Jobs\SubjectPathUpdateJob;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
+use Mallto\Tool\Data\AppSecret;
+use Mallto\Tool\Data\AppSecretsHasSubject;
 use Mallto\Tool\Data\Tag;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
@@ -133,8 +136,8 @@ class SubjectController extends AdminCommonController
             }
 
             //存在父级主体或者是创建页面则显示归属
-            if ($parent || ! $this->currentId) {
-                $form->select('parent_id', '归属'.mt_trans('subjects'))->options(function () use ($parent, $currentId) {
+            if ($parent || !$this->currentId) {
+                $form->select('parent_id', '归属' . mt_trans('subjects'))->options(function () use ($parent, $currentId) {
                     //if ($this->id == 1) {
                     if (AdminUtils::isOwner()) {
                         $arr = Subject::query()->orderBy('id')->pluck('name', 'id');
@@ -325,26 +328,46 @@ class SubjectController extends AdminCommonController
 
     protected function formSaved($form)
     {
-        if ( ! $form->model()->uuid) {
+        if (!$form->model()->uuid) {
             Subject::query()->where('id', $form->model()->id)->update([
-                'uuid' => "1".sprintf('%06d', $form->model()->id),
+                'uuid' => "1" . sprintf('%06d', $form->model()->id),
             ]);
+        }
+        //新创建主体,如果父主体是开发者.则需要把子主体也关联到同一开发者
+        if (!$this->currentId) {
+            //判断是否有父级
+            if ($form->model()->parent_id !== null) {
+                //判断父级是否开发者,因为目前同一主体下的所有子主体都会关联到同一个开发者上
+                //目前只考虑一个主体一个开发者,如果一个主体对应多个开发者,需要调整代码
+                $appSecretsHasSubject = AppSecretsHasSubject::query()
+                    ->where('subject_id', $form->model()->parent_id)
+                    ->first();
+                if ($appSecretsHasSubject) {
+                    AppSecretsHasSubject::query()->insert
+                    ([
+                        'app_secret_id' => $appSecretsHasSubject->app_secret_id,
+                        'subject_id' => $form->model()->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
         }
 
         $adminUser = Admin::user();
 
         //clear 顶部菜单的缓存
-        Cache::forget('speedy_'.$adminUser->id);
+        Cache::forget('speedy_' . $adminUser->id);
 
         CacheUtils::forgetSubject($form->model()->id);
 
-        event(new SubjectSaved($form->model()->id, ! $this->currentId));
+        event(new SubjectSaved($form->model()->id, !$this->currentId));
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->formSaved($form, $adminUser);
         }
 
-        if ($adminUser && ! $adminUser->isOwner()) {
+        if ($adminUser && !$adminUser->isOwner()) {
             if (($form->third_part_mall_id && $form->third_part_mall_id != $form->model()->third_part_mall_id) || ($form->uuid && $form->uuid != $form->model()->uuid)) {
                 throw new PermissionDeniedException('没有权限修改,请联系墨兔管理修改');
             }
