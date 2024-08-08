@@ -17,37 +17,6 @@
 use Encore\Admin\Facades\Admin;
 use Illuminate\Support\Facades\Route;
 
-//----------------------------------------  管理端接口开始  -----------------------------------------------
-
-//token 授权的管理端接口
-Route::group([
-    'prefix' => 'admin/api',
-    'middleware' => ['api', 'adminE.log', 'set_language'],
-    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
-], function ($router) {
-
-    $router->post('auth/login', 'AuthController@postLogin');
-    $router->get('auth/yzm', 'AuthController@captcha');
-
-    Route::group([
-        'middleware' => ['requestCheck'],
-    ], function () {
-        Route::group([
-            'middleware' => ['auth:admin_api'],
-        ], function ($router) {
-            Route::group([
-                'middleware' => ['adminE.auto_permission'],
-            ], function ($router) {
-
-            });
-
-            $router->get('admin_user', 'AdminUserController@index');
-        });
-    });
-
-});
-
-//----------------------------------------  管理端接口结束  -----------------------------------------------
 
 Route::get('/', 'Mallto\Admin\Controllers\WelcomeController@index');
 

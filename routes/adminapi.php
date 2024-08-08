@@ -22,6 +22,50 @@ use Illuminate\Support\Facades\Route;
  * 如果要支持第三种方式使用的接口需要配置route name
  */
 
+//----------------------------------------  管理端接口开始  -----------------------------------------------
+
+//token 授权的管理端接口
+Route::group([
+    'prefix'     => 'admin/api',
+    'middleware' => [ 'api', 'adminE.log', 'set_language' ],
+    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
+], function ($router) {
+
+    $router->post('auth/login', 'AuthController@postLogin');
+    $router->get('auth/yzm', 'AuthController@captcha');
+
+    Route::group([
+        'middleware' => [ 'auth:admin_api' ],
+    ], function ($router) {
+        Route::group([
+            'middleware' => [ 'adminE.auto_permission' ],
+        ], function ($router) {
+
+        });
+
+        $router->get('admin_user', 'AdminUserController@index');
+    });
+
+    //Route::group([
+    //    'middleware' => ['requestCheck'],
+    //], function () {
+    //    Route::group([
+    //        'middleware' => ['auth:admin_api'],
+    //    ], function ($router) {
+    //        Route::group([
+    //            'middleware' => ['adminE.auto_permission'],
+    //        ], function ($router) {
+    //
+    //        });
+    //
+    //        $router->get('admin_user', 'AdminUserController@index');
+    //    });
+    //});
+
+});
+
+//----------------------------------------  管理端接口结束  -----------------------------------------------
+
 //$routeFunction接口支持通过1和2请求
 $routeFunction = function () {
 };
@@ -34,8 +78,8 @@ $routeFunctionByAutoPermission = function () {
 
 //-------------- laravel 管理端项目请求 走web 中间件 start ---------------------------------------------------
 $attributes = [
-    'namespace' => 'Mallto\Tool\Controller',
-    'middleware' => ['web'],
+    'namespace'  => 'Mallto\Admin\Controller',
+    'middleware' => [ 'web' ],
 ];
 
 Route::group($attributes, function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
@@ -43,16 +87,16 @@ Route::group($attributes, function ($router) use ($routeFunction, $routeFunction
 //----------------------------------------  管理端开始  -----------------------------------------------
 
     Route::group([
-        'prefix' => 'admin/web_api',
-        "middleware" => ['adminE'],
-        'as' => 'web_api', // 配置路由组中路由命名的前缀。
+        'prefix'     => 'admin/web_api',
+        "middleware" => [ 'adminE' ],
+        'as'         => 'web_api', // 配置路由组中路由命名的前缀。
     ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
         Route::group([
-            'namespace' => 'Mallto\Tool\Controller\Admin\Api',
+            'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
         ], $routeFunction);
 
         Route::group([
-            'namespace' => 'Mallto\Tool\Controller\Admin\Api',
+            'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
         ], $routeFunctionByAutoPermission);
     });
 });
@@ -61,21 +105,21 @@ Route::group($attributes, function ($router) use ($routeFunction, $routeFunction
 //-------------- 纯前端管理端项目请求用 start ---------------------------------------------------
 
 Route::group([
-    'prefix' => 'admin/api',
-    'middleware' => ['owner_api', 'requestCheck', 'set_language'],
-    'namespace' => 'Mallto\Tool\Controller\Admin\Api',
-    'as' => 'admin_api', // 配置路由组中路由命名的前缀。
+    'prefix'     => 'admin/api',
+    'middleware' => [ 'owner_api', 'requestCheck', 'set_language' ],
+    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
+    'as'         => 'admin_api', // 配置路由组中路由命名的前缀。
 ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
     Route::group([
-        'middleware' => ['auth:admin_api'],
+        'middleware' => [ 'auth:admin_api' ],
     ], $routeFunction);
 
     //-------- 接口权限校验 -----------
     Route::group([
-        'middleware' => ['auth:admin_api'],
+        'middleware' => [ 'auth:admin_api' ],
     ], function ($router) use ($routeFunctionByAutoPermission) {
         Route::group([
-            'middleware' => ['adminE.auto_permission'],
+            'middleware' => [ 'adminE.auto_permission' ],
         ], $routeFunctionByAutoPermission);
     });
 });
@@ -84,35 +128,34 @@ Route::group([
 
 //----------------下面是第三方开发者可以调用，需要接口签名校验及接口权限校验的 start --------------
 $attributes = [
-    'namespace' => 'Mallto\Tool\Controller\Admin\Api',
-    'prefix' => 'api/tp',
-    'middleware' => ['api'],
-    'as' => 'tp_api', // 配置路由组中路由命名的前缀。
+    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
+    'prefix'     => 'api/tp',
+    'middleware' => [ 'api' ],
+    'as'         => 'tp_api', // 配置路由组中路由命名的前缀。
 ];
 
 Route::group($attributes, function ($router) use ($routeFunctionByAutoPermission) {
-    Route::group(['middleware' => ['requestCheck', 'owner_api', 'authSign_referrer']],
+    Route::group([ 'middleware' => [ 'requestCheck', 'owner_api', 'authSign_referrer' ] ],
         $routeFunctionByAutoPermission);
 });
 
-
 $attributes = [
-    'namespace' => 'Mallto\Tool\Controller\Tp',
-    'prefix' => 'api/tp',
-    'middleware' => ['api'],
-    'as' => 'tp_api', // 配置路由组中路由命名的前缀。
+    'namespace'  => 'Mallto\Admin\Controllers\Tp',
+    'prefix'     => 'api/tp',
+    'middleware' => [ 'api' ],
+    'as'         => 'tp_api', // 配置路由组中路由命名的前缀。
 ];
 
 Route::group($attributes, function ($router) use ($routeFunctionByAutoPermission) {
-    Route::group(['middleware' => ['requestCheck', 'owner_api', 'authSign_referrer']], function () {
-
+    Route::group([ 'middleware' => [ 'requestCheck', 'owner_api', 'authSign_referrer' ] ], function () {
+        Route::get('access_token', 'AccessTokenController@getByAdminUsername');
     });
 });
 
 $attributes = [
-    'namespace' => 'Mallto\Tool\Controller\Admin\Api',
-    'prefix' => 'api',
-    'middleware' => ['api'],
+    'namespace'  => 'Mallto\Admin\Controllers\Admin\Api',
+    'prefix'     => 'api',
+    'middleware' => [ 'api' ],
 ];
 
 //----------------下面是第三方开发者可以调用，需要接口签名校验及接口权限校验的 end --------------
