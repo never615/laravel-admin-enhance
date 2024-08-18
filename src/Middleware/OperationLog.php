@@ -9,9 +9,9 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Middleware\LogOperation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Jobs\LogJob;
-use Illuminate\Support\Facades\Log;
 
 /**
  * 记录管理端操作日志
@@ -78,7 +78,7 @@ class OperationLog extends LogOperation
             "action"     => "request",
         ];
 
-        dispatch(new LogJob("logAdminOperation", $log));
+        dispatch(new LogJob("logAdminOperation", $log))->onQueue("default");
 
         $response = $next($request);
         $content = $response->getContent();
