@@ -12,7 +12,6 @@ use Encore\Admin\Form\NestedForm;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Tools;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
@@ -27,9 +26,7 @@ use Mallto\Admin\Grid\Tools\ImportButton;
 use Mallto\Admin\Jobs\SubjectPathUpdateJob;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
-use Mallto\Tool\Data\AppSecret;
 use Mallto\Tool\Data\AppSecretsHasSubject;
-use Mallto\Tool\Data\Tag;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
 class SubjectController extends AdminCommonController
@@ -318,9 +315,9 @@ class SubjectController extends AdminCommonController
             $subjectConfigExpandObj->formSaving($form, $adminUser);
         }
 
-        if ($form->model()->parent_id != $form->parent_id) {
+        if ($form->model()->parent_id && $form->model()->parent_id != $form->parent_id) {
 //            dispatch(new SubjectPathUpdateJob($form->model()));
-            SubjectPathUpdateJob::dispatch($form->model())
+            SubjectPathUpdateJob::dispatch($form->model()->id)
                 ->delay(5);
         }
     }

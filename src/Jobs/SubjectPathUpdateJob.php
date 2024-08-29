@@ -10,8 +10,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Mallto\Admin\Data\Subject;
 use Illuminate\Support\Facades\Log;
+use Mallto\Admin\Data\Subject;
 
 class SubjectPathUpdateJob implements ShouldQueue
 {
@@ -38,7 +38,7 @@ class SubjectPathUpdateJob implements ShouldQueue
     /**
      * @var
      */
-    private $subject;
+    private $subjectId;
 
 
     /**
@@ -46,9 +46,9 @@ class SubjectPathUpdateJob implements ShouldQueue
      *
      * @param $id
      */
-    public function __construct($subject)
+    public function __construct($subjectId)
     {
-        $this->subject = $subject;
+        $this->subjectId = $subjectId;
     }
 
 
@@ -61,7 +61,7 @@ class SubjectPathUpdateJob implements ShouldQueue
     public function handle()
     {
         //更新所有子级
-        $subjectId = $this->subject->id;
+        $subjectId = $this->subjectId;
         $subject = Subject::query()->find($subjectId);
         $childrenSubject = $subject->getChildrenSubject($subjectId);
         foreach ($childrenSubject as $childrenSubjectId) {
