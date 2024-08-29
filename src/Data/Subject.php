@@ -4,13 +4,13 @@ namespace Mallto\Admin\Data;
 
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
+use Mallto\Tool\Data\BaseModel;
 
-class Subject extends Model
+class Subject extends BaseModel
 {
 
     use ModelTree;
@@ -23,9 +23,8 @@ class Subject extends Model
 
     const PROJECT_TYPE = [
         'default' => '普通项目',
-        'map'     => '地图项目',
+        'map' => '地图项目',
     ];
-
 
     /**
      * Subject constructor.
@@ -40,7 +39,7 @@ class Subject extends Model
 
 
     protected $casts = [
-        'extra_config'      => 'array',
+        'extra_config' => 'array',
         'open_extra_config' => 'array',
         'park_notify_third' => 'array',
     ];
@@ -53,6 +52,7 @@ class Subject extends Model
     {
         return $this->belongsToMany(Menu::class, "admin_menu_subjects", "subject_id", "admin_menu_id");
     }
+
     public function logo(): Attribute
     {
         return new Attribute(
@@ -189,7 +189,7 @@ class Subject extends Model
         //处理数据查看范围
         //如果设置了manager_subject_ids,则优先处理该值
         $managerSubjectIds = $adminUser->manager_subject_ids;
-        if ( ! empty($managerSubjectIds)) {
+        if (!empty($managerSubjectIds)) {
             $tempSubject = new Subject();
             $tempSubjectIds = $managerSubjectIds;
 
@@ -221,9 +221,9 @@ class Subject extends Model
             return $this;
         } else {
             $baseSubject = null;
-            if ( ! empty($this->path)) {
+            if (!empty($this->path)) {
                 $parentIds = explode(".", trim($this->path, "."));
-                if ( ! empty($parentIds)) {
+                if (!empty($parentIds)) {
                     $baseSubject = Subject::whereIn("id", $parentIds)
                         ->where("base", true)
                         ->first();
@@ -282,8 +282,8 @@ class Subject extends Model
     public function getParentSubjectIds()
     {
         $parentIds = explode(".", trim($this->path, "."));
-        if ( ! empty($this->path)) {
-            if ( ! empty($parentIds)) {
+        if (!empty($this->path)) {
+            if (!empty($parentIds)) {
                 return Subject::whereIn("id", $parentIds)
                     ->pluck("id")
                     ->toArray();
@@ -340,18 +340,19 @@ class Subject extends Model
      * Get options for Select field in form.
      *
      * @param array $nodes
-     * @param bool  $root         ,是否返回root节点
-     * @param bool  $defaultBlack ,是否使用默认的空格大小
-     * @param int   $parentId
+     * @param bool $root ,是否返回root节点
+     * @param bool $defaultBlack ,是否使用默认的空格大小
+     * @param int $parentId
      *
      * @return \Illuminate\Support\Collection
      */
     public static function selectOptions(
         array $nodes = null,
-        $root = true,
-        $defaultBlack = true,
-        $parentId = 0
-    ) {
+              $root = true,
+              $defaultBlack = true,
+              $parentId = 0
+    )
+    {
         $options = (new static())->buildSelectOptions($nodes, $parentId, "", $defaultBlack);
 
         if ($root) {

@@ -5,9 +5,9 @@
 
 namespace Mallto\Admin\Data;
 
-use Illuminate\Database\Eloquent\Model;
+use Mallto\Tool\Data\BaseModel;
 
-class OperationLogDictionary extends Model
+class OperationLogDictionary extends BaseModel
 {
     protected $table = "operation_log_dictionarys";
 }

@@ -21,7 +21,7 @@ use Mallto\Tool\Utils\RequestUtils;
  * Date: 21/04/2017
  * Time: 5:13 PM
  */
-abstract class BaseModel extends Model
+abstract class BaseModel extends \Mallto\Tool\Data\BaseModel
 {
 
     use DynamicData, SelectSource;

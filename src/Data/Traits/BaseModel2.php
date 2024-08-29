@@ -7,11 +7,11 @@ namespace Mallto\Admin\Data\Traits;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\SubjectUtils;
-use Request;
 
 /**
  * @deprecated
@@ -21,7 +21,7 @@ use Request;
  * Date: 21/04/2017
  * Time: 5:13 PM
  */
-abstract class BaseModel2 extends Model
+abstract class BaseModel2 extends \Mallto\Tool\Data\BaseModel
 {
 
     use DynamicData, SelectSource;
