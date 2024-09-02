@@ -56,106 +56,107 @@ abstract class BaseModel extends \Mallto\Tool\Data\BaseModel
         return $this->belongsTo(SubjectSetting::class, 'subject_id', 'subject_id');
     }
 
-    public function icon(): Attribute
+    public function getIconAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
+        if (empty($value)) {
+            return null;
+        }
 
-                $url = config("app.file_url_prefix") . $value;
-                if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
-                    return $url;
-                } else {
-                    return $url . '?imageView2/0/interlace/1/q/75|imageslim';
-                }
-            }
-        );
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        $url = config("app.file_url_prefix") . $value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
 
-    public function logo(): Attribute
-    {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
 
-                $url = config("app.file_url_prefix") . $value;
-                if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
-                    return $url;
-                } else {
-                    return $url . '?imageView2/0/interlace/1/q/75|imageslim';
-                }
-            }
-        );
+    public function getLogoAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        $url = config("app.file_url_prefix") . $value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
-    public function image(): Attribute
-    {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
 
-                $url = config("app.file_url_prefix") . $value;
-                if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
-                    return $url;
-                } else {
-                    return $url . '?imageView2/0/interlace/1/q/75|imageslim';
-                }
-            }
-        );
+
+    public function getImageAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        $url = config("app.file_url_prefix") . $value;
+        if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+            return $url;
+        } else {
+            return $url . '?imageView2/0/interlace/1/q/75|imageslim';
+        }
     }
-    public function images(): Attribute
+
+
+    public function setImagesAttribute($values)
     {
-        return Attribute::make(
-            get: function ($value) {
-                $values = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-
-                if ($values && count($values) > 0) {
-                    foreach ($values as $key => $value) {
-                        if (Str::startsWith($value, "http")) {
-                            $values[$key] = $value;
-                        } else {
-                            $url = config("app.file_url_prefix") . $value;
-                            if (AdminUtils::isAdminRequest() || Str::contains($url, "?")) {
-                                $values[$key] = $url;
-                            } else {
-                                $values[$key] = $url . '?imageView2/0/interlace/1/q/75|imageslim';
-                            }
-                        }
-                    }
-                } else {
-                    return [];
+        foreach ($values as &$value) {
+            if (starts_with($value, config("app.file_url_prefix"))) {
+                $url = str_replace(config("app.file_url_prefix"), "", $value);
+                if (str_contains($url, "?")) {
+                    $tmpUrls = explode("?", $url);
+                    $url = $tmpUrls[0];
                 }
+                $value = $url;
+            }
+        }
 
-                return $values;
-            },
-            set: function ($values) {
-                foreach ($values as &$value) {
-                    if (Str::startsWith($value, config("app.file_url_prefix"))) {
-                        $url = str_replace(config("app.file_url_prefix"), "", $value);
-                        if (Str::contains($url, "?")) {
-                            $tmpUrls = explode("?", $url);
-                            $url = $tmpUrls[0];
-                        }
-                        $value = $url;
+        $values = array_values($values);
+
+        $values = json_encode($values);
+
+        $this->attributes['images'] = $values;
+    }
+
+
+    public function getImagesAttribute($value)
+    {
+        $values = json_decode($value);
+
+        if ($values && count($values) > 0) {
+            foreach ($values as $key => $value) {
+                if (starts_with($value, "http")) {
+                    $values[$key] = $value;
+                } else {
+
+                    $url = config("app.file_url_prefix") . $value;
+                    if (AdminUtils::isAdminRequest() || str_contains($url, "?")) {
+                        $values[$key] = $url;
+                    } else {
+                        $values[$key] = $url . '?imageView2/0/interlace/1/q/75|imageslim';
                     }
                 }
-                $this->attributes['images'] = json_encode(array_values($values), JSON_THROW_ON_ERROR);
             }
-        );
+        } else {
+            return [];
+        }
+
+        return $values;
     }
 
     public function admin()

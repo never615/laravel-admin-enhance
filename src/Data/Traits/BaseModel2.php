@@ -76,66 +76,63 @@ abstract class BaseModel2 extends \Mallto\Tool\Data\BaseModel
         return parent::newEloquentBuilder($query);
     }
 
-    public function logo(): Attribute
+    public function getLogoAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
+        if (empty($value)) {
+            return null;
+        }
 
-                return config("app.file_url_prefix") . $value;
-            }
-        );
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix") . $value;
     }
 
-    public function image(): Attribute
-    {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
 
-                return config("app.file_url_prefix") . $value;
-            }
-        );
+    public function getImageAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix") . $value;
     }
-    public function images(): Attribute
-    {
-        return Attribute::make(
-            get: function ($value) {
-                $values = json_decode($value);
 
-                if ($values && count($values) > 0) {
-                    foreach ($values as $key => $value) {
-                        if (starts_with($value, "http")) {
-                            $values[$key] = $value;
-                        } else {
-                            $values[$key] = config("app.file_url_prefix") . $value;
-                        }
-                    }
+
+    public function setImagesAttribute($values)
+    {
+        foreach ($values as $key => $value) {
+            if (starts_with($value, config("app.file_url_prefix"))) {
+                $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
+            }
+        }
+
+        $values = json_encode($values);
+        $this->attributes['images'] = $values;
+    }
+
+
+    public function getImagesAttribute($value)
+    {
+        $values = json_decode($value);
+
+        if ($values && count($values) > 0) {
+            foreach ($values as $key => $value) {
+                if (starts_with($value, "http")) {
+                    $values[$key] = $value;
                 } else {
-                    return [];
+                    $values[$key] = config("app.file_url_prefix") . $value;
                 }
-
-                return $values;
-            },
-            set: function ($values) {
-                foreach ($values as $key => $value) {
-                    if (starts_with($value, config("app.file_url_prefix"))) {
-                        $values[$key] = str_replace(config("app.file_url_prefix"), "", $value);
-                    }
-                }
-
-                $this->attributes['images'] = json_encode($values, JSON_THROW_ON_ERROR);
             }
-        );
+        } else {
+            return [];
+        }
+
+        return $values;
     }
 }
