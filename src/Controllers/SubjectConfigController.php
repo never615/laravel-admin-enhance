@@ -44,7 +44,7 @@ class SubjectConfigController extends AdminCommonController
         $grid->key()->display(function ($value) {
             return config('other.subject_config_key')[$value] ?? $value;
         });
-        $grid->value()->limit(50);
+        $grid->value()->editable();
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('key');
