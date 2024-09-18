@@ -21,19 +21,16 @@ class Video extends Model
 
     ];
 
-    public function url(): Attribute
+    public function getUrlAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
+        if (empty($value)) {
+            return null;
+        }
 
-                return config("app.file_url_prefix") . $value;
-            }
-        );
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix") . $value;
     }
 }

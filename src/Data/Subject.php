@@ -53,20 +53,17 @@ class Subject extends BaseModel
         return $this->belongsToMany(Menu::class, "admin_menu_subjects", "subject_id", "admin_menu_id");
     }
 
-    public function logo(): Attribute
+    public function getLogoAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
+        if (empty($value)) {
+            return null;
+        }
 
-                return config("app.file_url_prefix") . $value;
-            }
-        );
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix") . $value;
     }
 
     public function subjectAdminUsers()

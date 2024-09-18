@@ -25,20 +25,17 @@ class ImportSetting extends BaseModel
         return $this->hasMany(ImportRecord::class, "import_handler", "import_handler");
     }
 
-    public function templateUrl(): Attribute
+    public function getTemplateUrlAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                if (empty($value)) {
-                    return null;
-                }
-                if (Str::startsWith($value, "http")) {
-                    return $value;
-                }
+        if (empty($value)) {
+            return null;
+        }
 
-                return config("app.file_url_prefix") . $value;
-            }
-        );
+        if (starts_with($value, "http")) {
+            return $value;
+        }
+
+        return config("app.file_url_prefix") . $value;
     }
 
     public function scopeSelectSourceDataBySubject($query)

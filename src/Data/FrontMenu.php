@@ -60,19 +60,15 @@ class FrontMenu extends Model
         parent::__construct($attributes);
     }
 
-    public function title(): Attribute
+    public function getTitleAttribute($value)
     {
-        return new Attribute(
-            get: function ($value) {
-                $isOwner = AdminUtils::isOwner();
+        $isOwner = AdminUtils::isOwner();
 
-                if ($isOwner && $this->sub_title) {
-                    return $value . "-" . $this->sub_title;
-                } else {
-                    return $value;
-                }
-            }
-        );
+        if ($isOwner && $this->sub_title) {
+            return $value . "-" . $this->sub_title;
+        } else {
+            return $value;
+        }
     }
 
     /**
