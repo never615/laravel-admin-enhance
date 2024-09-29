@@ -14,6 +14,9 @@ interface SelectSourceExtendInterface
 {
 
     /**
+     *
+     * 分批分页加载数据,支持搜索,支持多个id直接限定查询结果
+     *
      * 方便下级依赖库添加数据源
      *
      * @param $key

@@ -48,8 +48,13 @@ class SelectSourceController extends Controller
         //自动设置默认值使用,当前条目的id
         $id = $request->get("id", null);
 
-        if (is_array($id)) {
-            $id = implode(',', $id);
+
+        if ($id && !is_array($id)) {
+            try {
+                $id = explode(',', $id);
+            } catch (\Exception $e) {
+                $id = null;
+            }
         }
 
         //ajaxload使用,父节点的值
@@ -84,7 +89,7 @@ class SelectSourceController extends Controller
         //特别处理主体数据
         if ($key === 'subject' || $key === 'subject_id') {
             if (!is_null($id)) {
-                $id = explode(",", $id);
+//                $id = explode(",", $id);
 
                 return Subject::select(DB::raw("id,name as text"))->findOrFail($id);
             } else {
@@ -107,8 +112,6 @@ class SelectSourceController extends Controller
                 return $result;
             }
             throw new InvalidParamException("select source 参数错误");
-
-
         }
 
         $result = $this->addDataSource($key, $id, $childSubjectIds, $q, $perPage, $adminUser, $fatherValue);
@@ -116,7 +119,9 @@ class SelectSourceController extends Controller
         if ($result) {
             return $result;
         }
-        throw new InvalidParamException("select source 参数错误2");
+
+        throw new InvalidParamException("select source params error, invalid key:" . $key);
+//        throw new InvalidParamException("select source 参数错误2");
     }
 
 
