@@ -3,9 +3,7 @@
 namespace Mallto\Admin\Data;
 
 use Encore\Admin\Facades\Admin;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\Traits\ModelTree;
 use Mallto\Tool\Data\BaseModel;
@@ -196,13 +194,19 @@ class Subject extends BaseModel
             }
             $tempSubjectIds = array_unique($tempSubjectIds);
         } else {
-            $currentSubject = $adminUser->subject;
-            $tempSubjectIds = $currentSubject->getChildrenSubject();
+            if ($adminUser->isOwner()) {
+
+            } else {
+                $currentSubject = $adminUser->subject;
+                $tempSubjectIds = $currentSubject->getChildrenSubject();
+            }
         }
 
         //3.限定查询范围为所有子主体
-        $query->whereIn('id', $tempSubjectIds)
-            ->orderBy('id', 'desc');
+        if (!empty($tempSubjectIds)) {
+            $query->whereIn('id', $tempSubjectIds);
+        }
+        $query->orderBy('id', 'desc');
     }
 
 
