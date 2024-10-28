@@ -132,8 +132,10 @@ class SubjectController extends AdminCommonController
                 $parent = Subject::find($current->parent_id);
             }
 
+            $adminUser = Admin::user();
+
             //存在父级主体或者是创建页面则显示归属
-            if ($parent || !$this->currentId) {
+            if ($parent || !$this->currentId || $adminUser->isOwner()) {
                 $form->select('parent_id', '归属' . mt_trans('subjects'))->options(function () use ($parent, $currentId) {
                     //if ($this->id == 1) {
                     if (AdminUtils::isOwner()) {
