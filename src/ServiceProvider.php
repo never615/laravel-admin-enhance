@@ -16,8 +16,10 @@ use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
 use Mallto\Admin\Listeners\CreateAdminRole;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\Listeners\SubjectCacheClear;
+use Mallto\Admin\Middleware\MultiLanguageMiddleware;
 use Mallto\Admin\Middleware\Pjax;
 use Mallto\Admin\Observers\SubjectConfigObserver;
+use Encore\Admin\Facades\Admin;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -115,6 +117,11 @@ class ServiceProvider extends BaseServiceProvider
 
         //$this->adminBootstrap();
         $this->registerEventListeners();
+
+        if(config('admin.multi-language.show-navbar')){
+            $this->app['router']->pushMiddlewareToGroup('web', MultiLanguageMiddleware::class);
+            Admin::navbar()->add(new Widgets\LanguageMenu());
+        }
     }
 
 
