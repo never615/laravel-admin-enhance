@@ -33,7 +33,7 @@ trait MenuSeederMaker
 
         $path = $this->updatePath($parentId);
 
-        $updateChildMenu = true;
+        $updateChildMenu = false;
         //如果修改了 parent_id,则修改所有子菜单的 path
         if ($parentId) {
             $tempMenu = Menu::query()->where('uri', $uri)
