@@ -513,4 +513,11 @@ class SubjectUtils
         throw new HttpException(422, "第三方项目标识找不到对应项目:" . $thirdProjectId);
     }
 
+    public static function getSubjectUUID($subjectId)
+    {
+        $subject = self::getSubjectById($subjectId);
+
+        return $subject->uuid ?? null;
+    }
+
 }
