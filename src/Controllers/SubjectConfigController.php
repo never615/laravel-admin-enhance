@@ -42,7 +42,7 @@ class SubjectConfigController extends AdminCommonController
         $grid->type();
 
         $grid->key()->display(function ($value) {
-            return config('other.subject_config_key')[$value] ?? $value;
+            return config('subject-config.subject_config_key')[$value] ?? $value;
         });
         $grid->value()->editable();
 
@@ -77,7 +77,7 @@ class SubjectConfigController extends AdminCommonController
             ->help('<a href="https://wiki.mall-to.com/web/#/44?page_id=904">更多配置见</a>')
             ->with(function ($values) {
                 $html = '<table border="1"><tr><th>说明</th><th>key</th></tr>';
-                foreach (config('other.subject_config_key') as $key => $value) {
+                foreach (config('subject-config.subject_config_key') as $key => $value) {
                     $html .= "<tr><th>$value</th><th>$key</th></tr>";
                 }
 

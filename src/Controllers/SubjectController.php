@@ -82,6 +82,7 @@ class SubjectController extends AdminCommonController
 
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
+            $filter->ilike('uuid');
 
             $filter->equal('parent_id', '归属')->select(Subject::dynamicData()->pluck('name', 'id'));
         });
