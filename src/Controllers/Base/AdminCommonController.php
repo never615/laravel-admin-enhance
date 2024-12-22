@@ -86,7 +86,7 @@ abstract class AdminCommonController extends AdminController
      *
      * @var bool
      */
-    protected $isDisableDelete = false;
+    protected $isDisableDelete = true;
 
 
     /**
@@ -154,7 +154,7 @@ abstract class AdminCommonController extends AdminController
     /**
      * Show interface.
      *
-     * @param mixed   $id
+     * @param mixed $id
      * @param Content $content
      *
      * @return Content
@@ -232,7 +232,7 @@ abstract class AdminCommonController extends AdminController
 
         $isOwner = AdminUtils::isOwner();
 
-        if ( ! $isOwner) {
+        if (!$isOwner) {
             if ($this->showGridId) {
                 $grid->id('ID')->sortable();
             } else {
@@ -264,7 +264,7 @@ abstract class AdminCommonController extends AdminController
             }
         }
 
-        if ( ! $this->isDisableDelete) {
+        if (!$this->isDisableDelete) {
             $grid->tools(function (Grid\Tools $tools) {
                 $tools->batch(function (Grid\Tools\BatchActions $actions) {
                     $actions->disableDelete();
@@ -289,10 +289,10 @@ abstract class AdminCommonController extends AdminController
                 $filter->between(trans('admin.created_at'))->datetime();
             }
         });
-        if ( ! $this->closeGridCreatedAt) {
+        if (!$this->closeGridCreatedAt) {
             $grid->created_at(trans('admin.created_at'))->sortable();
         }
-        if ( ! $this->closeGridUpdatedAt) {
+        if (!$this->closeGridUpdatedAt) {
             $grid->updated_at(trans('admin.updated_at'))->sortable();
         }
 
@@ -360,7 +360,7 @@ abstract class AdminCommonController extends AdminController
 
     protected function getTableName()
     {
-        if ( ! $this->tableName) {
+        if (!$this->tableName) {
             $model = resolve($this->getModel());
             $this->tableName = $model->getTable();
         }
