@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright (c) 2024. Mallto.Co.Ltd.<mall-to.com> All rights reserved.
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
