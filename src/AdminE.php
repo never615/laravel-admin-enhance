@@ -253,7 +253,7 @@ class AdminE
 
         Admin::js('vendor/laravel-adminE/walden.js');
 
-        //Admin::js('https://file.easy.mall-to.com/js/walden.js');
+        //Admin::js('https://file.mall-to.com/js/walden.js');
     }
 
 }
