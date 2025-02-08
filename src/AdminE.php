@@ -69,10 +69,10 @@ class AdminE
     }
 
 
-    public function extendSelectSourceClass($class)
+    public function extendSelectSourceClass($libName, $class)
     {
-        $this->extendSelectSourceClass[] = $class;
-        $this->extendSelectSourceClass = array_unique($this->extendSelectSourceClass);
+        $this->extendSelectSourceClass[$libName] = $class;
+//        $this->extendSelectSourceClass = array_unique($this->extendSelectSourceClass);
     }
 
 
@@ -148,9 +148,9 @@ class AdminE
      * @return array
      */
     public
-    function frontMenu($adminUser=null)
+    function frontMenu($adminUser = null)
     {
-        return (new FrontMenu([],$adminUser))->toTree();
+        return (new FrontMenu([], $adminUser))->toTree();
     }
 
 
@@ -253,7 +253,7 @@ class AdminE
 
         Admin::js('vendor/laravel-adminE/walden.js');
 
-        //Admin::js('https://file.easy.mall-to.com/js/walden.js');
+        //Admin::js('https://file.mall-to.com/js/walden.js');
     }
 
 }
