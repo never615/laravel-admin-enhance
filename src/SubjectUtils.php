@@ -272,7 +272,7 @@ class SubjectUtils
     {
         if ($app) {
             $uuid = $app['request']->header("x_uuid") ?? $app['request']->header("uuid");
-            if (is_null($uuid)) {
+            if (empty($uuid)) {
                 $uuid = $app['request']->get("uuid");
                 if (strlen($uuid) > 10) {
                     $uuid = null;
@@ -280,7 +280,7 @@ class SubjectUtils
             }
         } else {
             $uuid = Request::header("x_uuid") ?? Request::header("uuid");
-            if (is_null($uuid)) {
+            if (empty($uuid)) {
                 $uuid = Request::input("uuid");
                 if (strlen($uuid) > 10) {
                     $uuid = null;
