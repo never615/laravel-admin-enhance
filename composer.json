@@ -15,7 +15,7 @@
     "require": {
         "php": ">=8.2.0",
         "maatwebsite/excel": "~3.1.0",
-        "mews/captcha": "^3.2"
+        "mews/captcha": "~3.0"
     },
     "autoload": {
         "psr-4": {
