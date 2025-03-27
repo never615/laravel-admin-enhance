@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
+use Captcha;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
@@ -224,11 +225,26 @@ class AuthController extends Controller
     //生成图片验证码
     public function captcha()
     {
+
+        $data = Captcha::create(api: true);
+        if (!is_string($data['img'])) {
+            try {
+                $data['img'] = $data['img']->toDataUri();
+            } catch (\Exception $e) {
+                return [
+                    'code' => 500,
+                    'status' => 'error',
+                    'msg' => '验证码生成失败',
+                ];
+            }
+        }
+
         return [
             'code' => 200,
             'status' => 'ok',
             'msg' => '成功',
-            'url' => app('captcha')->create('default', true),
+//            'url' => app('captcha')->create('default', true),
+            'url' => $data
         ];
     }
 
