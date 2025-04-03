@@ -9,6 +9,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\SubjectUtils;
 
 /**
  * Created by PhpStorm.
@@ -88,5 +89,11 @@ class SubjectConfigController extends AdminCommonController
 
         $form->textarea('value')->rows(15);
         $form->textarea('remark');
+
+        $form->saved(function (Form $form) {
+            if ($form->model()->key) {
+                SubjectUtils::clearDynamicConfig($form->model()->key, $form->model()->subject_id);
+            }
+        });
     }
 }

@@ -144,6 +144,29 @@ class SubjectUtils
     }
 
 
+    public static function clearDynamicConfig($key, $subject = null)
+    {
+        $subjectId = null;
+
+        if ($subject) {
+            if (is_numeric($subject)) {
+                $subjectId = $subject;
+            } else {
+                $subjectId = $subject->id;
+            }
+        }
+
+        if ($subjectId) {
+            Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
+        } else {
+            $subjectId = self::getSubjectId();
+            if ($subjectId) {
+                Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
+            }
+        }
+    }
+
+
     /**
      * 获取可以动态设置key的配置项
      *
