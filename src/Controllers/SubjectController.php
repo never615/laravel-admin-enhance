@@ -28,6 +28,7 @@ use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\SubjectConfigConstants;
 use Mallto\Tool\Data\AppSecretsHasSubject;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Tool\Exception\ResourceException;
 
 class SubjectController extends AdminCommonController
 {
@@ -316,6 +317,24 @@ class SubjectController extends AdminCommonController
 
         foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
             $subjectConfigExpandObj->formSaving($form, $adminUser);
+        }
+
+        //检查 name 唯一
+        if ($form->name) {
+            if ($this->currentId) {
+                $subject = Subject::query()
+                    ->where('name', $form->name)
+                    ->where('id', '!=', $this->currentId)
+                    ->first();
+            } else {
+                $subject = Subject::query()
+                    ->where('name', $form->name)
+                    ->first();
+            }
+
+            if ($subject) {
+                throw new ResourceException('名称已存在');
+            }
         }
 
         if ($form->model()->parent_id && $form->model()->parent_id != $form->parent_id) {

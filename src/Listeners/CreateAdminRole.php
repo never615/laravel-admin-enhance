@@ -6,6 +6,7 @@
 namespace Mallto\Admin\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\Administrator;
 use Mallto\Admin\Data\Permission;
