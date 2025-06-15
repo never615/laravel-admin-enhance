@@ -84,7 +84,7 @@ class LoginUserController extends AdminCommonController
         $grid->last_activity('最近活动时间')
             ->sortable()
             ->display(function ($value) {
-                return Carbon::createFromTimestamp($value)->toDateTimeString();
+                return Carbon::createFromTimestamp($value,config('app.timezone'))->toDateTimeString();
             });
 
         if (AdminUtils::isOwner()) {
