@@ -51,6 +51,7 @@ trait SelectSource
     public function scopeSelectSourceDatas($query)
     {
         return $query->selectSourceDatas2()
+            ->addSmartOrdering()
             ->pluck($this->selectName, $this->selectId)
             ->toArray();
     }
@@ -75,6 +76,28 @@ trait SelectSource
             return $query->dynamicData()
                 ->selectBySubject();
         }
+    }
+
+    /**
+     * 添加智能排序：优先使用 weight 字段降序，然后按 name 排序
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeAddSmartOrdering($query)
+    {
+        $tableName = $this->getTable();
+
+        // 检查表是否有 weight 字段
+        if (Schema::hasColumn($tableName, 'weight')) {
+            $query->orderBy($tableName . '.weight', 'desc');
+        }
+
+        // 始终按 name 排序作为次要排序条件
+//        $query->orderBy($tableName . '.' . $this->selectName);
+        $query->orderBy($tableName . '.' . $this->selectId);
+
+        return $query;
     }
 
 

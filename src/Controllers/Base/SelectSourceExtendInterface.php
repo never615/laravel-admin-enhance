@@ -20,7 +20,7 @@ interface SelectSourceExtendInterface
      * 方便下级依赖库添加数据源
      *
      * @param $key
-     * @param $id
+     * @param array|int $id 限定查询的id数组 或者 int 的id
      * @param $childSubjectIds
      * @param $q
      * @param $perPage

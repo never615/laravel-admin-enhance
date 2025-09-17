@@ -61,6 +61,9 @@ class SubjectController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->name()->sortable();
+        $grid->column('weight', '权重')
+            ->editable()
+            ->sortable();
         $grid->parent_id('归属')->display(function ($parent_id) {
             $subject = Subject::find($parent_id);
             if ($subject) {
@@ -71,7 +74,6 @@ class SubjectController extends AdminCommonController
                 } else {
                     return '';
                 }
-
             }
         })->sortable();
 
@@ -84,7 +86,7 @@ class SubjectController extends AdminCommonController
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
             $filter->ilike('uuid');
-
+            $filter->equal('weight', '权重');
             $filter->equal('parent_id', '归属')->select(Subject::dynamicData()->pluck('name', 'id'));
         });
 
@@ -124,7 +126,7 @@ class SubjectController extends AdminCommonController
 
             $form->text('name')->rules('required');
 
-//            $form->ueditor('detail', '关于');
+            $form->number('weight', '权重')->default(0)->help('权重越大越靠前');
 
             //父级主体和已购模块只能父级设置,自己可以看,不能改
             $currentId = $this->currentId;

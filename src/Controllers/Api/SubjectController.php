@@ -28,9 +28,10 @@ class SubjectController extends Controller
         $projectType = $request->get('project_type');
 
         $query = Subject::query()
+            ->orderBy('weight', 'desc')
             ->orderBy('created_at', 'desc')
             ->whereNotNull('uuid')
-            ->select('name', 'uuid');
+            ->select('name', 'uuid', 'weight');
 
         if ($projectType) {
             $query->where('extra_config->' . SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE, $projectType);
