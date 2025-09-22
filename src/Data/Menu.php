@@ -59,6 +59,12 @@ class Menu extends Model
     {
         $isOwner = AdminUtils::isOwner();
 
+        // 支持多语言菜单标题
+        if (starts_with($value, 'trans::')) {
+            $translationKey = substr($value, 7); // 移除 'trans::' 前缀
+            $value = trans($translationKey);
+        }
+
         if ($isOwner && $this->sub_title) {
             return $value . "-" . $this->sub_title;
         } else {

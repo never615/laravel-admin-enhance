@@ -63,7 +63,7 @@ EOF;
 
         $this->setUpScripts();
 
-        $import = "导入";
+        $import = trans("admin.import");
 
         return <<<EOT
 <div class="btn-group pull-right" style="margin-right: 10px">
