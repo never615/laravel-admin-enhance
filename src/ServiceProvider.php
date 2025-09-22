@@ -118,9 +118,16 @@ class ServiceProvider extends BaseServiceProvider
         //$this->adminBootstrap();
         $this->registerEventListeners();
 
-        if(config('admin.multi-language.show-navbar')){
+        if (config('admin.multi-language.enable') && config('admin.multi-language.show-navbar')) {
             $this->app['router']->pushMiddlewareToGroup('web', MultiLanguageMiddleware::class);
-            Admin::navbar()->add(new Widgets\LanguageMenu());
+
+            // 使用视图合成器方式添加多语言菜单，确保在每个请求中都添加
+            $this->app['view']->composer(
+                'admin::partials.header',
+                function ($view) {
+                    Admin::navbar()->add(new Widgets\LanguageMenu());
+                }
+            );
         }
     }
 
