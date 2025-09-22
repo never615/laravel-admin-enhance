@@ -143,7 +143,9 @@ class Menu extends Model
             if ($adminUser->isOwner()) {
                 return static::orderByRaw($byOrder)->get()->toArray();
             } else {
-                $result = Cache::get("menu_" . $adminUser->id);
+                // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
+                $locale = app()->getLocale();
+                $result = Cache::get("menu_" . $adminUser->id . '_' . $locale);
                 if ($result) {
                     return $result;
                 }
@@ -204,7 +206,8 @@ class Menu extends Model
                 //排序
                 $result = array_sort($tempMenus, $this->orderColumn);
 
-                $cacheMenuKey = "menu_" . $adminUser->id;
+                // 为非管理员用户添加语言标识到缓存键中
+                $cacheMenuKey = "menu_" . $adminUser->id . '_' . $locale;
                 CacheUtils::putMenu($cacheMenuKey, $result);
 
                 $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);

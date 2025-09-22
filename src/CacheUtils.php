@@ -49,6 +49,9 @@ class CacheUtils
         foreach ($cacheMenuKeys as $cacheMenuKey) {
             Cache::forget($cacheMenuKey);
         }
+        
+        // 必须同时清除缓存键列表，否则下次无法正确清除缓存
+        Cache::forget(CacheConstants::CACHE_MENU_KEYS);
     }
 
 

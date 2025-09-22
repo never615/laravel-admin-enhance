@@ -17,6 +17,7 @@ namespace Mallto\Admin\Middleware;
 use Closure;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Config;
 
 
 class MultiLanguageMiddleware
@@ -33,6 +34,10 @@ class MultiLanguageMiddleware
             $default = config('admin.multi-language.default');
             App::setLocale($default);
         }
+        
+        // 同时更新配置中的locale值
+        Config::set('app.locale', App::getLocale());
+        
         return $next($request);
     }
 
