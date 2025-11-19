@@ -21,7 +21,7 @@ class DashboardMenuSeeder extends Seeder
         $order = 1;
 
         $this->updateOrCreate(
-            "dashboard", 0, $order++, "数据看板", "fa-bar-chart");
+            "dashboard", 0, $order++, "Dashboard", "fa-bar-chart");
 
     }
 }
