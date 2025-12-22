@@ -19,8 +19,12 @@ class InitDataSeeder extends Seeder
     {
 
         if (Subject::count() > 0) {
+            $this->command->info("已有数据，跳过初始化数据");
             return;
         }
+
+        $this->command->info("开始初始化数据...");
+
 
         /**
          * --------------------   Subject create  -------------------------
@@ -34,8 +38,8 @@ class InitDataSeeder extends Seeder
          * -----------------------  Role create  --------------------------------
          */
         $ownerRole = Role::create([
-            "name"       => "维护角色",
-            "slug"       => "owner",
+            "name" => "维护角色",
+            "slug" => "owner",
             "subject_id" => $系统维护Subject->id,
         ]);
 
@@ -43,11 +47,11 @@ class InitDataSeeder extends Seeder
          * --------------------------------  Admin_user create   ------------------------------
          */
         $mallto = Administrator::create([
-            'username'       => 'system',
-            'password'       => bcrypt('system'),
-            'name'           => '维护人员',
-            "subject_id"     => $系统维护Subject->id,
-            "adminable_id"   => $系统维护Subject->id,
+            'username' => 'system',
+            'password' => bcrypt('system'),
+            'name' => '维护人员',
+            "subject_id" => $系统维护Subject->id,
+            "adminable_id" => $系统维护Subject->id,
             "adminable_type" => "subject",
         ]);
         // add role to user.

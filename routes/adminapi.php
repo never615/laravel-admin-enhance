@@ -31,8 +31,11 @@ Route::group([
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
 ], function ($router) {
 
+
+    //这里的登录接口不走 auth:admin_api 中间件
     $router->post('auth/login', 'AuthController@postLogin');
     $router->get('auth/yzm', 'AuthController@captcha');
+
 
     Route::group([
         'middleware' => ['auth:admin_api'],
@@ -40,27 +43,13 @@ Route::group([
         Route::group([
             'middleware' => ['adminE.auto_permission'],
         ], function ($router) {
-
+            Route::apiResource('roles', 'RoleController')
+                ->names('admin_api.roles');
+            Route::apiResource('admin_users', 'AdminUserController')
+                ->names('admin_api.admin_users');
+            $router->get('admin_user', 'AdminUserProfileController@show');
         });
-
-        $router->get('admin_user', 'AdminUserController@index');
     });
-
-    //Route::group([
-    //    'middleware' => ['requestCheck'],
-    //], function () {
-    //    Route::group([
-    //        'middleware' => ['auth:admin_api'],
-    //    ], function ($router) {
-    //        Route::group([
-    //            'middleware' => ['adminE.auto_permission'],
-    //        ], function ($router) {
-    //
-    //        });
-    //
-    //        $router->get('admin_user', 'AdminUserController@index');
-    //    });
-    //});
 
 });
 

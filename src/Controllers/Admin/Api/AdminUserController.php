@@ -6,35 +6,185 @@
 namespace Mallto\Admin\Controllers\Admin\Api;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Mallto\Admin\Domain\User\AdminUserUsecase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Mallto\Admin\Data\Administrator;
+use Mallto\Admin\Data\Role;
 use Mallto\Tool\Exception\PermissionDeniedException;
+use Mallto\Tool\Exception\ResourceException;
 
-/**
- * Created by PhpStorm.
- * User: never615 <never615.com>
- * Date: 2018/12/28
- * Time: 5:51 PM
- */
 class AdminUserController extends Controller
 {
-
-    public function index()
+    public function index(Request $request): \Illuminate\Pagination\LengthAwarePaginator
     {
-        $adminUser = Auth::guard("admin_api")->user();
+        $adminUser = $this->authUser();
+        $subjectId = $adminUser->subject_id;
 
-        if(!$adminUser){
-            throw new PermissionDeniedException('未登录或用户不存在');
+        $query = Administrator::query()
+            ->with('roles:id,name')
+            ->where('subject_id', $subjectId);
+
+        if ($request->filled('username')) {
+            $query->where('username', 'ilike', "%{$request->username}%");
+        }
+        if ($request->filled('name')) {
+            $query->where('name', 'ilike', "%{$request->name}%");
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
 
-        //检查账号是否被禁用
-        if ($adminUser->status == "forbidden") {
-            throw new PermissionDeniedException("当前账号已被禁用");
-        }
+        $perPage = (int)($request->get('per_page', 20));
+        return $query->orderByDesc('id')->paginate($perPage);
 
-        $adminUserUsecase = app(AdminUserUsecase::class);
-
-        return $adminUserUsecase->getReturnUserInfo($adminUser, true);
     }
 
+    public function store(Request $request): JsonResponse
+    {
+        $adminUser = $this->authUser();
+        $payload = $this->validateUser($request);
+        $subjectId = $adminUser->subject_id;
+        $payload['subject_id'] = $subjectId;
+        $payload['password'] = bcrypt($payload['password']);
+
+        $this->assertUsernameUnique($payload['username'], $subjectId);
+
+        DB::transaction(function () use (&$model, $payload, $request) {
+            $model = Administrator::query()->create(Arr::except($payload, ['roles']));
+            if (!empty($request->roles)) {
+                $model->roles()->sync($request->roles);
+            }
+        });
+
+        return response()->json($model->load('roles:id,name'), 201);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $adminUser = $this->authUser();
+        $model = $this->findUserBySubject($id, $adminUser->subject_id);
+
+        return response()->json($model->load('roles:id,name'));
+    }
+
+    public function update(Request $request, $id): JsonResponse
+    {
+        $adminUser = $this->authUser();
+        $model = $this->findUserBySubject($id, $adminUser->subject_id);
+
+        $payload = $this->validateUser($request, $model->id, false);
+
+        if (!empty($payload['password'])) {
+            $payload['password'] = bcrypt($payload['password']);
+        } else {
+            unset($payload['password']);
+        }
+
+        $this->assertUsernameUnique($payload['username'] ?? $model->username, $model->subject_id, $model->id);
+
+        DB::transaction(function () use ($model, $payload, $request, $adminUser) {
+            if ($adminUser->id === $model->id && $request->filled('roles')) {
+                throw new PermissionDeniedException('Self roles update is not allowed');
+            }
+
+            $model->update(Arr::except($payload, ['roles']));
+            if ($request->has('roles')) {
+                $model->roles()->sync(array_filter((array)$request->roles));
+            }
+        });
+
+        return response()->json($model->fresh()->load('roles:id,name'));
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        $adminUser = $this->authUser();
+        $model = $this->findUserBySubject($id, $adminUser->subject_id);
+
+        if ($adminUser->id === $model->id) {
+            throw new PermissionDeniedException('Self delete is not allowed');
+        }
+
+        $model->delete();
+
+        return response()->json(['msg' => 'Deleted']);
+    }
+
+
+    protected function authUser(): Administrator
+    {
+        $adminUser = Auth::guard('admin_api')->user();
+        if (!$adminUser) {
+            throw new PermissionDeniedException('Not authenticated');
+        }
+
+        return $adminUser;
+    }
+
+    protected function validateUser(Request $request, $id = null, $isCreate = true): array
+    {
+        $rules = [
+            'username' => ['sometimes', 'required', 'string'],
+            'name' => ['sometimes', 'required', 'string'],
+            'mobile' => ['nullable', 'string'],
+            'status' => ['nullable', 'in:normal,forbidden'],
+            'roles' => ['nullable', 'array'],
+            'roles.*' => ['integer', 'exists:' . (new Role)->getTable() . ',id'],
+        ];
+
+        if ($isCreate) {
+            $rules['username'][0] = 'required';
+            $rules['name'][0] = 'required';
+            $rules['password'] = ['required', 'string', 'min:6'];
+        } else {
+            $rules['password'] = ['nullable', 'string', 'min:6'];
+        }
+
+        $data = $request->all();
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            throw new ResourceException($validator->errors()->first());
+        }
+
+        $validated = $validator->validated();
+
+        if (!array_key_exists('roles', $validated)) {
+            $validated['roles'] = $request->has('roles') ? (array)$request->roles : null;
+        }
+
+        return $validated;
+    }
+
+    protected function findUserBySubject($id, $subjectId): Administrator
+    {
+        $model = Administrator::query()
+            ->where('subject_id', $subjectId)
+            ->find($id);
+
+        if (!$model) {
+            throw new ModelNotFoundException();
+        }
+
+        return $model;
+    }
+
+    protected function assertUsernameUnique(string $username, int $subjectId, $ignoreId = null): void
+    {
+        $query = Administrator::query()
+            ->where('subject_id', $subjectId)
+            ->where('username', $username);
+
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+
+        if ($query->exists()) {
+            throw new ResourceException('Username already exists');
+        }
+    }
 }
