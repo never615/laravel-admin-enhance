@@ -29,6 +29,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  *
  * 参考文档:https://github.com/never615/laravel-admin/wiki/%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1#关于自动校验权限
  *
+ * 这个类原来用于 laravel 管理后台 session用户的权限校验,后来扩展到支持 admin_api 的 token用户权限校验
+ *
  * @package Encore\Admin\Middleware
  */
 class AutoPermissionMiddleware
@@ -41,7 +43,7 @@ class AutoPermissionMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param         $request
+     * @param Request $request
      * @param Closure $next
      *
      * @return mixed
@@ -54,20 +56,22 @@ class AutoPermissionMiddleware
         }
 
         if (!$adminUser) {
-            throw new PermissionDeniedException('未登录');
+            throw new PermissionDeniedException('Not authenticated');
         }
 
         $subjectId = null;
         try {
             $subjectId = SubjectUtils::getSubjectId();
         } catch (HttpException $httpException) {
-
+            throw new ResourceException($httpException->getMessage());
         }
 
-        if ($subjectId) {
-            if (!$adminUser->isOwner() && $adminUser->subject_id != $subjectId) {
-                throw new ResourceException("登录账号没有权限请求该项目，adminUser subject与UUID不符");
-            }
+        if(!$subjectId) {
+            throw new ResourceException('Cannot resolve subject_id for current request');
+        }
+
+        if (!$adminUser->isOwner() && $adminUser->subject_id != $subjectId) {
+            throw new ResourceException('Current account has no permission to access this project (subject mismatch)');
         }
 
         $currentRouteName = $request->route()->getName();

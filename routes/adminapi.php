@@ -36,22 +36,47 @@ Route::group([
     $router->post('auth/login', 'AuthController@postLogin');
     $router->get('auth/yzm', 'AuthController@captcha');
 
-
     Route::group([
         'middleware' => ['auth:admin_api'],
     ], function ($router) {
         Route::group([
             'middleware' => ['adminE.auto_permission'],
         ], function ($router) {
-            Route::apiResource('roles', 'RoleController')
-                ->names('admin_api.roles');
-            Route::apiResource('admin_users', 'AdminUserController')
-                ->names('admin_api.admin_users');
             $router->get('admin_user', 'AdminUserProfileController@show');
+
+            Route::apiResource('front_roles', 'FrontRoleController')
+                ->names('admin_api.front_roles');
+            Route::apiResource('front_admin_users', 'FrontAdminUserController')
+                ->names('admin_api.front_admin_users');
         });
     });
 
+
 });
+
+
+////token 授权的管理端接口
+//Route::group([
+//    'prefix' => 'admin/api',
+//    'middleware' => ['api', 'set_language'],
+//    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
+//], function ($router) {
+//
+//    $router->post('auth/front_login', 'FrontAuthController@login');
+//
+//    Route::group([
+//        'middleware' => ['auth:front_admin_api'],
+//    ], function ($router) {
+//        Route::group([
+//            'middleware' => ['front_admin.auto_permission'],
+//        ], function ($router) {
+//            Route::apiResource('front_roles', 'FrontRoleController')
+//                ->names('admin_api.front_roles');
+//            Route::apiResource('front_admin_users', 'FrontAdminUserController')
+//                ->names('admin_api.front_admin_users');
+//        });
+//    });
+//});
 
 //----------------------------------------  管理端接口结束  -----------------------------------------------
 
@@ -73,7 +98,7 @@ $attributes = [
 
 Route::group($attributes, function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
 
-//----------------------------------------  管理端开始  -----------------------------------------------
+//-------------- laravel 管理端项目请求 走web 中间件 的管理端开始  -----------------------------------------------
 
     Route::group([
         'prefix' => 'admin/web_api',
@@ -108,10 +133,11 @@ Route::group([
         'middleware' => ['auth:admin_api'],
     ], function ($router) use ($routeFunctionByAutoPermission) {
         Route::group([
-            'middleware' => ['adminE.auto_permission'],
+            'middleware' => ['front_admin.auto_permission'],
         ], $routeFunctionByAutoPermission);
     });
 });
+
 
 //-------------- 纯前端管理端项目请求用 end ---------------------------------------------------
 
@@ -147,4 +173,4 @@ $attributes = [
     'middleware' => ['api'],
 ];
 
-//----------------下面是第三方开发者可以调用，需要接口签名校验及接口权限校验的 end --------------
+//----------------第三方开发者可以调用，需要接口签名校验及接口权限校验的 end --------------

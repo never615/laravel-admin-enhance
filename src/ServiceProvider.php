@@ -6,6 +6,7 @@
 namespace Mallto\Admin;
 
 use Doctrine\DBAL\DBALException;
+use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
@@ -19,7 +20,6 @@ use Mallto\Admin\Listeners\SubjectCacheClear;
 use Mallto\Admin\Middleware\MultiLanguageMiddleware;
 use Mallto\Admin\Middleware\Pjax;
 use Mallto\Admin\Observers\SubjectConfigObserver;
-use Encore\Admin\Facades\Admin;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -32,6 +32,7 @@ class ServiceProvider extends BaseServiceProvider
         'Mallto\Admin\Console\UpdateCommand',
         'Mallto\Admin\Console\PathGeneratorCommand',
         'Mallto\Admin\Console\MenuCommand',
+        'Mallto\\Admin\\Console\\Commands\\FrontAdminMigrateCommand',
     ];
 
     /**
@@ -45,6 +46,7 @@ class ServiceProvider extends BaseServiceProvider
         'adminE.log' => \Mallto\Admin\Middleware\OperationLog::class,
         'adminE.pjax' => Pjax::class,
         'adminE.replacement_password' => \Mallto\Admin\Middleware\ReplacementPassword::class,
+        'front_admin.auto_permission' => \Mallto\Admin\Middleware\FrontAutoPermissionMiddleware::class,
     ];
 
     /**

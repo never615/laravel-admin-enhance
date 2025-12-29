@@ -30,7 +30,7 @@ use Mallto\Tool\Exception\ResourceException;
  * (目前是直接配置角色对应的 front_menus表,后续角色只关联 api_permissions,通过权限来动态匹配 front_menus,来生成菜单返回)
  * Class RoleController
  */
-class RoleController extends Controller
+class FrontRoleController extends Controller
 {
     public function index(Request $request): \Illuminate\Pagination\LengthAwarePaginator
     {
@@ -38,12 +38,8 @@ class RoleController extends Controller
         $subjectId = $adminUser->subject_id;
 
         $query = Role::query()
-            ->with([
-//                'permissions:id,name,slug',
-//                'apiPermissions:id,name,slug',
-//                'frontMenus:id,title,uri'
-            ])
-            ->where('subject_id', $subjectId);
+            ->where('subject_id', $subjectId)
+            ->where('pure_front', true);
 
         if ($request->filled('name')) {
             $query->where('name', 'ilike', "%{$request->name}%");
@@ -66,10 +62,11 @@ class RoleController extends Controller
         $adminUser = $this->authUser();
         $payload = $this->validateRole($request);
         $payload['subject_id'] = $adminUser->subject_id;
+        $payload['pure_front'] = true;
 
         $model = null;
         DB::transaction(function () use (&$model, $payload, $request) {
-            $model = Role::query()->create(Arr::except($payload, ['permissions', 'api_permissions', 'front_menus']));
+            $model = Role::query()->create(Arr::except($payload, ['api_permissions']));
             $this->syncRelations($model, $request);
         });
 
@@ -177,7 +174,8 @@ class RoleController extends Controller
     protected function findRoleBySubject($id, $subjectId, $withPermission = false): Role
     {
         $query = Role::query()
-            ->where('subject_id', $subjectId);
+            ->where('subject_id', $subjectId)
+            ->where('pure_front', true);
 
         if ($withPermission) {
             $query->with(['apiPermissions:id,name,slug']);
