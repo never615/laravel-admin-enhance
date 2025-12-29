@@ -48,6 +48,8 @@ Route::group([
                 ->names('admin_api.front_roles');
             Route::apiResource('front_admin_users', 'FrontAdminUserController')
                 ->names('admin_api.front_admin_users');
+            $router->get('front_permissions', 'FrontPermissionController@index')
+                ->name('admin_api.front_permissions.index');
         });
     });
 

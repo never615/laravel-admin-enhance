@@ -3,6 +3,7 @@
 namespace Mallto\Admin\Seeder;
 
 use Illuminate\Database\Seeder;
+use Mallto\Admin\Seeder\FrontMenu\FrontMapMenuSeeder;
 
 class TablesSeeder extends Seeder
 {
@@ -12,10 +13,14 @@ class TablesSeeder extends Seeder
      *
      * @return void
      */
-    public function run(MenuTablesSeeder $menuTablesSeeder, PermissionTablesSeeder $permissionTablesSeeder)
+    public function run()
     {
-        $menuTablesSeeder->run();
-        $permissionTablesSeeder->run();
-        $this->call([ ImportSettingSeeder::class ]);
+
+        $this->call([
+            MenuTablesSeeder::class,
+            PermissionTablesSeeder::class,
+            ImportSettingSeeder::class,
+            FrontMapMenuSeeder::class,
+        ]);
     }
 }
