@@ -46,7 +46,7 @@ class ServiceProvider extends BaseServiceProvider
         'adminE.log' => \Mallto\Admin\Middleware\OperationLog::class,
         'adminE.pjax' => Pjax::class,
         'adminE.replacement_password' => \Mallto\Admin\Middleware\ReplacementPassword::class,
-        'front_admin.auto_permission' => \Mallto\Admin\Middleware\FrontAutoPermissionMiddleware::class,
+//        'front_admin.auto_permission' => \Mallto\Admin\Middleware\FrontAutoPermissionMiddleware::class,
     ];
 
     /**

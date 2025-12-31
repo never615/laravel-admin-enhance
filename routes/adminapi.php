@@ -135,7 +135,7 @@ Route::group([
         'middleware' => ['auth:admin_api'],
     ], function ($router) use ($routeFunctionByAutoPermission) {
         Route::group([
-            'middleware' => ['front_admin.auto_permission'],
+            'middleware' => ['adminE.auto_permission'],
         ], $routeFunctionByAutoPermission);
     });
 });
