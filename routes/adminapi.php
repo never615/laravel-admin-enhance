@@ -22,65 +22,6 @@ use Illuminate\Support\Facades\Route;
  * 如果要支持第三种方式使用的接口需要配置route name
  */
 
-//----------------------------------------  管理端接口开始  -----------------------------------------------
-
-//token 授权的管理端接口
-Route::group([
-    'prefix' => 'admin/api',
-    'middleware' => ['api', 'adminE.log', 'set_language'],
-    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
-], function ($router) {
-
-
-    //这里的登录接口不走 auth:admin_api 中间件
-    $router->post('auth/login', 'AuthController@postLogin');
-    $router->get('auth/yzm', 'AuthController@captcha');
-
-    Route::group([
-        'middleware' => ['auth:admin_api'],
-    ], function ($router) {
-        Route::group([
-            'middleware' => ['adminE.auto_permission'],
-        ], function ($router) {
-            $router->get('admin_user', 'AdminUserProfileController@show');
-
-            Route::apiResource('front_roles', 'FrontRoleController')
-                ->names('admin_api.front_roles');
-            Route::apiResource('front_admin_users', 'FrontAdminUserController')
-                ->names('admin_api.front_admin_users');
-            $router->get('front_permissions', 'FrontPermissionController@index')
-                ->name('admin_api.front_permissions.index');
-        });
-    });
-
-
-});
-
-
-////token 授权的管理端接口
-//Route::group([
-//    'prefix' => 'admin/api',
-//    'middleware' => ['api', 'set_language'],
-//    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
-//], function ($router) {
-//
-//    $router->post('auth/front_login', 'FrontAuthController@login');
-//
-//    Route::group([
-//        'middleware' => ['auth:front_admin_api'],
-//    ], function ($router) {
-//        Route::group([
-//            'middleware' => ['front_admin.auto_permission'],
-//        ], function ($router) {
-//            Route::apiResource('front_roles', 'FrontRoleController')
-//                ->names('admin_api.front_roles');
-//            Route::apiResource('front_admin_users', 'FrontAdminUserController')
-//                ->names('admin_api.front_admin_users');
-//        });
-//    });
-//});
-
-//----------------------------------------  管理端接口结束  -----------------------------------------------
 
 //$routeFunction接口支持通过1和2请求
 $routeFunction = function () {
@@ -120,24 +61,48 @@ Route::group($attributes, function ($router) use ($routeFunction, $routeFunction
 
 //-------------- 纯前端管理端项目请求用 start ---------------------------------------------------
 
+
+//token 授权的管理端接口
 Route::group([
     'prefix' => 'admin/api',
-    'middleware' => ['owner_api', 'requestCheck', 'set_language'],
+    'middleware' => ['api', 'adminE.log', 'set_language'],
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
     'as' => 'admin_api', // 配置路由组中路由命名的前缀。
 ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
-    Route::group([
-        'middleware' => ['auth:admin_api'],
-    ], $routeFunction);
 
-    //-------- 接口权限校验 -----------
+
+    //这里的登录接口不走 auth:admin_api 中间件
+    $router->post('auth/login', 'AuthController@postLogin');
+    $router->get('auth/yzm', 'AuthController@captcha');
+
     Route::group([
         'middleware' => ['auth:admin_api'],
-    ], function ($router) use ($routeFunctionByAutoPermission) {
+    ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
+
+        Route::group([
+            'middleware' => ['auth:admin_api'],
+        ], $routeFunction);
+
+
         Route::group([
             'middleware' => ['adminE.auto_permission'],
         ], $routeFunctionByAutoPermission);
+
+        Route::group([
+            'middleware' => ['adminE.auto_permission'],
+        ], function ($router) {
+            $router->get('admin_user', 'AdminUserProfileController@show');
+
+            Route::apiResource('front_roles', 'FrontRoleController')
+                ->names('admin_api.front_roles');
+            Route::apiResource('front_admin_users', 'FrontAdminUserController')
+                ->names('admin_api.front_admin_users');
+            $router->get('front_permissions', 'FrontPermissionController@index')
+                ->name('admin_api.front_permissions.index');
+        });
     });
+
+
 });
 
 

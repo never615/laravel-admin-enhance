@@ -5,11 +5,11 @@
 
 namespace Mallto\Admin;
 
-use Doctrine\DBAL\DBALException;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Mallto\Admin\Controllers\SelectSourceExtend;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
@@ -119,6 +119,9 @@ class ServiceProvider extends BaseServiceProvider
 
         //$this->adminBootstrap();
         $this->registerEventListeners();
+
+        \Mallto\Admin\Facades\AdminE::extendSelectSourceClass('laravel-admin-enhance', SelectSourceExtend::class);
+
 
         if (config('admin.multi-language.enable') && config('admin.multi-language.show-navbar')) {
             $this->app['router']->pushMiddlewareToGroup('web', MultiLanguageMiddleware::class);
