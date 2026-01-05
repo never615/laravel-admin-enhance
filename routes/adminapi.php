@@ -67,7 +67,7 @@ Route::group([
     'prefix' => 'admin/api',
     'middleware' => ['api', 'adminE.log', 'set_language'],
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
-    'as' => 'admin_api', // 配置路由组中路由命名的前缀。
+    'as' => 'admin_api.', // 配置路由组中路由命名的前缀。
 ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
 
 
@@ -94,11 +94,11 @@ Route::group([
             $router->get('admin_user', 'AdminUserProfileController@show');
 
             Route::apiResource('front_roles', 'FrontRoleController')
-                ->names('admin_api.front_roles');
+                ->names('front_roles');
             Route::apiResource('front_admin_users', 'FrontAdminUserController')
-                ->names('admin_api.front_admin_users');
+                ->names('front_admin_users');
             $router->get('front_permissions', 'FrontPermissionController@index')
-                ->name('admin_api.front_permissions.index');
+                ->name('front_permissions.index');
         });
     });
 
