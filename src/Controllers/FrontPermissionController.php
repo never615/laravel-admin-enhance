@@ -7,15 +7,11 @@ namespace Mallto\Admin\Controllers;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
-use Encore\Admin\Grid\Exporter;
 use Encore\Admin\Tree;
-use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
-use Mallto\Admin\Data\Permission;
-use Mallto\Admin\Data\Role;
-use Mallto\Admin\Domain\Export\AdminPermissionExporter;
+use Mallto\Admin\Data\AdminApiPermission;
 
-class PermissionController extends AdminCommonController
+class FrontPermissionController extends AdminCommonController
 {
 
     /**
@@ -25,7 +21,7 @@ class PermissionController extends AdminCommonController
      */
     protected function getHeaderTitle()
     {
-        return '权限管理';
+        return '前端权限管理';
     }
 
     /**
@@ -35,39 +31,12 @@ class PermissionController extends AdminCommonController
      */
     protected function getModel()
     {
-        return Permission::class;
+        return AdminApiPermission::class;
     }
 
     protected function grid()
     {
-        if (request('_export_') == 'all') {
-            $grid = new Grid(new Permission());
-
-            if (request('role_id')) {
-                $role = Role::query()->findOrFail(request('role_id'));
-
-                $subPermissions = [];
-                foreach ($role->permissions as $permission) {
-                    $temps = $permission->subPermissions();
-
-                    $subPermissions[] = $permission->toArray()['slug'];
-
-                    if (!empty($temps)) {
-                        foreach ($temps as $temp) {
-                            $subPermissions[] = $temp['slug'];
-                        }
-                    }
-                }
-            }
-
-            $grid->model()->whereIn('slug', $subPermissions);
-
-            $grid->disablePagination();
-
-            return (new Exporter($grid))->resolve(new AdminPermissionExporter())->withScope('all')->export();
-        }
-
-        return Permission::tree(function (Tree $tree) {
+        return AdminApiPermission::tree(function (Tree $tree) {
             $tree->branch(function ($branch) {
                 $payload = "<strong>{$branch['name']}</strong>";
 
@@ -85,7 +54,7 @@ class PermissionController extends AdminCommonController
 
     protected function formOption(Form $form)
     {
-        $form->select("parent_id", "父节点")->options(Permission::selectOptions());
+        $form->select("parent_id", "父节点")->options(AdminApiPermission::selectOptions());
         $form->text('slug', trans('admin.slug'))->rules('required');
         $form->text('name', trans('admin.name'))->rules('required');
         $form->switch("common", "基础功能权限")
@@ -94,7 +63,7 @@ class PermissionController extends AdminCommonController
         $form->saving(function ($form) {
             //创建/修改重新生成对应的path
             $parentId = $form->parent_id ?? $form->model()->parent_id;
-            $parent = Permission::find($parentId);
+            $parent = AdminApiPermission::find($parentId);
             if ($parent) {
                 if (!empty($parent->path)) {
                     $form->model()->path = $parent->path . $parent->id . ".";
@@ -105,7 +74,6 @@ class PermissionController extends AdminCommonController
         });
 
         $form->saved(function ($form) {
-            CacheUtils::clearMenuCache();
         });
 
     }

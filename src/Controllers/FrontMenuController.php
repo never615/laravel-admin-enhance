@@ -14,12 +14,10 @@ use Encore\Admin\Layout\Row;
 use Encore\Admin\Tree;
 use Encore\Admin\Widgets\Box;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\FrontMenu;
-use Mallto\Admin\Data\Menu;
 use Mallto\Admin\Data\Role;
-use Illuminate\Support\Facades\Log;
 
 class FrontMenuController extends AdminCommonController
 {
@@ -34,7 +32,7 @@ class FrontMenuController extends AdminCommonController
     public function index(Content $content)
     {
         return Admin::content(function (Content $content) {
-            $content->header(trans('admin.menu'));
+            $content->header('管理端地图' . trans('admin.menu'));
             $content->description(trans('admin.list'));
 
             $content->row(function (Row $row) {
@@ -90,20 +88,22 @@ class FrontMenuController extends AdminCommonController
 //                }
 
                 $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$title}</strong>";
+                $uri = $branch['uri'];
+                $payload .= "&nbsp;&nbsp;&nbsp;$uri";
 
-                if (!isset($branch['children']) && $branch['uri']) {
-
-                    if (Route::has($branch['uri'])) {
-                        $uri = route($branch['uri']);
-                    } else {
-                        if (url()->isValidUrl($branch['uri'])) {
-                            $uri = $branch['uri'];
-                        } else {
-                            $uri = admin_base_path($branch['uri']);
-                        }
-                    }
-                    $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
-                }
+//                if (!isset($branch['children']) && $branch['uri']) {
+//                    if (Route::has($branch['uri'])) {
+//                        $uri = route($branch['uri']);
+//                    } else {
+//
+//                        if (url()->isValidUrl($branch['uri'])) {
+//                            $uri = $branch['uri'];
+//                        } else {
+//                            $uri = admin_base_path($branch['uri']);
+//                        }
+//                    }
+//                    $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
+//                }
 
                 return $payload;
             });

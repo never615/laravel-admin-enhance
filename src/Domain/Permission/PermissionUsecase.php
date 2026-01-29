@@ -18,7 +18,7 @@ class PermissionUsecase
 
 
     /**
-     * 获取用户 某一权限的所有子权限
+     * todo 获取用户 某一权限的所有子权限
      *
      * @param        $adminUser
      * @param string $parentPermissionSlug
@@ -27,48 +27,6 @@ class PermissionUsecase
      */
     public function getUserPermissionForModule($adminUser, $parentPermissionSlug = null)
     {
-
-        //$parentPermissionIds = Permission::query()
-        //    ->select('id')
-        //    //->whereHas('roles', function ($query) use ($adminUser) {
-        //    //    $query->whereHas('administrators', function ($query) use ($adminUser) {
-        //    //        $query->where('id', $adminUser->id);
-        //    //    });
-        //    //})
-        //    ->where("slug", $parentPermissionSlug)
-        //    //->first();
-        //    ->pluck('id')
-        //    ->toArray();
-        //
-        //$parentPermissionIds = array_map(function ($id) {
-        //    return "%." . $id . ".%";
-        //}, $parentPermissionIds);
-        //$parentPermissionIds = implode(",", $parentPermissionIds);
-        //$parentPermissionIds = "('{" . $parentPermissionIds . "}')";
-        //
-        //return Permission::query()
-        //    //->whereHas('roles', function ($query) use ($adminUser) {
-        //    //    $query->whereHas('administrators', function ($query) use ($adminUser) {
-        //    //        $query->where('id', $adminUser->id);
-        //    //    });
-        //    //})
-        //    ->whereRaw("path like any $parentPermissionIds")
-        //    //->select("id", "name", "slug", "path")
-        //    ->select("id", "name", "slug")
-        //    ->orderBy('order')
-        //    //->get();
-        //    ->pluck("name", "slug")->toArray();
-
-        //去掉slug.之后的内容
-        //$permissions = $subPermissions->map(function ($value, $key) {
-        //    $tempSlug = explode(".", $value->slug)[0];
-        //    $value->slug = $tempSlug;
-        //
-        //    return $value;
-        //});
-
-        //return $permissions->pluck("name", "slug")->toArray();
-
         //1. 查询用户拥有的权限
         $permissions = $adminUser->roles()
             ->with("permissions:id,name,slug,path")

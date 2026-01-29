@@ -102,4 +102,20 @@ trait FrontMenuSeederMaker
 
         return $path;
     }
+
+
+    public function delete($uri)
+    {
+        FrontMenu::query()
+            ->where('uri', $uri)
+            ->delete();
+    }
+
+
+    public function getId($uri)
+    {
+        return FrontMenu::query()
+            ->where('uri', $uri)
+            ->firstOrFail()->id;
+    }
 }

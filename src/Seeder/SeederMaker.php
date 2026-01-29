@@ -7,6 +7,21 @@ use Mallto\Admin\Data\Permission;
 /**
  * 生成权限的seeder基础方法
  *
+ *
+ * 权限校验设计说明:
+ * 1.返回给前端的菜单会通过账号角色配置的权限自动匹配菜单返回,需要权限标识符合菜单标识符一致.
+ * (这样设计避免了给了角色配置一遍权限然后还需要配置一遍菜单的情况)
+ * 2. 权限标识又和接口路由名保持一致,这样就会根据登录用户拥有的权限决定是否要通过对应的路由.
+ * 3. 所以最后就是对于表格表单模块来说:   菜单标识=权限标识=接口路由标识一致; 非表格表单模块就是: 菜单标识=权限标识
+ *
+ *
+ * 菜单标识设计思路是:
+ * 1.如果普通的表格表单模块对应的是后端一个表的增删改查,菜单名就是模块名(表名)的单数
+ * (用单数是因为历史原因,最初 php 管理端路由用复数怕和前端接口路由重复,后续解决的重复问题,但是没有用回复数了).
+ * 2.否则的话,菜单名就是 admin_map 开头的. 比如实时定位用admin_map_position.
+ * (不加 admin_map 开头可能和现有路由名重复,使用约定的方式解决,相比使用设计的方式分开菜单和权限标识,
+ * 可以减少开发时间和后续维护简单一些)
+ *
  * Created by PhpStorm.
  * User: never615
  * Date: 24/04/2017
@@ -26,6 +41,9 @@ trait SeederMaker
     protected $model = Permission::class;
 
     protected $routeNamePrefix = '';
+
+    // 是否全局生成子权限
+    protected $globalSub = true;
 
 
     /**
@@ -54,6 +72,9 @@ trait SeederMaker
         $force = false
     )
     {
+        if ($this->isGlobalSub() === false) {
+            $sub = false;
+        }
 
         if ($this->getRouteNamePrefix()) {
             $slug = $this->getRouteNamePrefix() . '.' . $slug;
@@ -148,7 +169,7 @@ trait SeederMaker
     }
 
 
-    public function delete($slug, $model = null, $sub = false)
+    public function delete($slug, $sub = true, $model = null)
     {
         $tempModel = $model ?? $this->model;
         $tempModel::query()->where('slug', $slug)->delete();
@@ -199,6 +220,16 @@ trait SeederMaker
     public function setRouteNamePrefix(string $routeNamePrefix): void
     {
         $this->routeNamePrefix = $routeNamePrefix;
+    }
+
+    public function isGlobalSub(): bool
+    {
+        return $this->globalSub;
+    }
+
+    public function setGlobalSub(bool $globalSub): void
+    {
+        $this->globalSub = $globalSub;
     }
 
 

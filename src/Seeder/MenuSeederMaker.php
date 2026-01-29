@@ -45,12 +45,12 @@ trait MenuSeederMaker
 
         $updateData = [
             'parent_id' => $parentId,
-            'title'     => $title,
-            'icon'      => $icon,
-            "path"      => $path,
+            'title' => $title,
+            'icon' => $icon,
+            "path" => $path,
 //            "sub_title" => $subTitle,
         ];
-        if ( ! is_null($order)) {
+        if (!is_null($order)) {
             $updateData = array_merge($updateData, [
                 'order' => $order,
             ]);
@@ -82,7 +82,7 @@ trait MenuSeederMaker
         $parentMenu = Menu::find($parentId);
 
         if ($parentMenu) {
-            if ( ! empty($parentMenu->path)) {
+            if (!empty($parentMenu->path)) {
                 $path = $parentMenu->path . $parentMenu->id . ".";
             } else {
                 $path = "." . $parentMenu->id . ".";
@@ -92,5 +92,10 @@ trait MenuSeederMaker
         }
 
         return $path;
+    }
+
+    private function delete(string $uri)
+    {
+        Menu::query()->where('uri', $uri)->delete();
     }
 }

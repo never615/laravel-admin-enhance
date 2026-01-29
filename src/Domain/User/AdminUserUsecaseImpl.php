@@ -60,17 +60,17 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
 //            $adminUser->token = $token->plainTextToken;
         }
 
-        $permissions = [];
-
-        if (!empty($permission)) {
-            foreach ($permission as $item) {
-                $tempPermissions = $this->permissionUsecase->getUserPermissionForModule($adminUser,
-                    $item);
-                if ($tempPermissions) {
-                    $permissions = array_merge($permissions, $tempPermissions);
-                }
-            }
-        }
+//        $permissions = [];
+//
+//        if (!empty($permission)) {
+//            foreach ($permission as $item) {
+//                $tempPermissions = $this->permissionUsecase->getUserPermissionForModule($adminUser,
+//                    $item);
+//                if ($tempPermissions) {
+//                    $permissions = array_merge($permissions, $tempPermissions);
+//                }
+//            }
+//        }
 
         return array_merge($adminUser->only([
             'id',
@@ -84,7 +84,7 @@ class AdminUserUsecaseImpl implements AdminUserUsecase
             ]),
             'uuid' => $adminable->uuid,
             "token" => $token->plainTextToken,
-            "permissions" => $permissions,
+//            "permissions" => $permissions,
             "menus" => AdminE::frontMenu($adminUser)
         ]);
     }
