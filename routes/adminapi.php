@@ -46,7 +46,7 @@ Route::group($attributes, function ($router) use ($routeFunction, $routeFunction
     Route::group([
         'prefix' => 'admin/web_api',
         "middleware" => ['adminE'],
-        'as' => 'web_api', // 配置路由组中路由命名的前缀。
+        'as' => 'web_api.', // 配置路由组中路由命名的前缀。
     ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
         Route::group([
             'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
@@ -113,7 +113,7 @@ $attributes = [
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
     'prefix' => 'api/tp',
     'middleware' => ['api'],
-    'as' => 'tp_api', // 配置路由组中路由命名的前缀。
+    'as' => 'tp_api.', // 配置路由组中路由命名的前缀。
 ];
 
 Route::group($attributes, function ($router) use ($routeFunctionByAutoPermission) {
@@ -125,7 +125,7 @@ $attributes = [
     'namespace' => 'Mallto\Admin\Controllers\Tp',
     'prefix' => 'api/tp',
     'middleware' => ['api'],
-    'as' => 'tp_api', // 配置路由组中路由命名的前缀。
+    'as' => 'tp_api.', // 配置路由组中路由命名的前缀。
 ];
 
 Route::group($attributes, function ($router) use ($routeFunctionByAutoPermission) {
