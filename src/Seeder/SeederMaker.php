@@ -171,7 +171,10 @@ trait SeederMaker
 
     public function delete($slug, $sub = true, $model = null)
     {
-        $tempModel = $model ?? $this->model;
+        $tempModel = $this->model;
+        if (!is_bool($model)) {
+            $tempModel = $model;
+        }
         $tempModel::query()->where('slug', $slug)->delete();
 
         if ($sub) {
