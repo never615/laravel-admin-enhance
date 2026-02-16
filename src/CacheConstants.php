@@ -41,4 +41,5 @@ class CacheConstants
      * 缓存中保存 所有菜单缓存的对应key的值
      */
     const CACHE_MENU_KEYS = "cache_menu_keys";
+    const CACHE_FRONT_MENU_KEYS = "cache_front_menu_keys";
 }

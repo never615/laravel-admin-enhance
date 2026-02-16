@@ -40,7 +40,7 @@ class CacheUtils
 
 
     /**
-     * clea menu cache
+     * clear menu cache
      */
     public static function clearMenuCache()
     {
@@ -49,9 +49,26 @@ class CacheUtils
         foreach ($cacheMenuKeys as $cacheMenuKey) {
             Cache::forget($cacheMenuKey);
         }
-        
+
         // 必须同时清除缓存键列表，否则下次无法正确清除缓存
         Cache::forget(CacheConstants::CACHE_MENU_KEYS);
+
+        self::clearFrontMenuCache();
+    }
+
+    /**
+     * clear front menu cache
+     */
+    public static function clearFrontMenuCache()
+    {
+        $cacheMenuKeys = Cache::get(CacheConstants::CACHE_FRONT_MENU_KEYS, []);
+
+        foreach ($cacheMenuKeys as $cacheMenuKey) {
+            Cache::forget($cacheMenuKey);
+        }
+
+        // 必须同时清除缓存键列表，否则下次无法正确清除缓存
+        Cache::forget(CacheConstants::CACHE_FRONT_MENU_KEYS);
     }
 
 
@@ -63,7 +80,7 @@ class CacheUtils
      */
     public static function putMenu($cacheMenuKey, $result)
     {
-        Cache::put($cacheMenuKey, $result, 30 * 60);
+        Cache::put($cacheMenuKey, $result, 60 * 60 * 24);
     }
 
 
@@ -75,6 +92,17 @@ class CacheUtils
     public static function putMenuKeys($cacheMenuKeys)
     {
         Cache::put(CacheConstants::CACHE_MENU_KEYS, $cacheMenuKeys, 60 * 60 * 24);
+    }
+
+
+    /**
+     * 缓存保存前端菜单的key
+     *
+     * @param $cacheMenuKeys
+     */
+    public static function putFrontMenuKeys($cacheMenuKeys)
+    {
+        Cache::put(CacheConstants::CACHE_FRONT_MENU_KEYS, $cacheMenuKeys, 60 * 60 * 24);
     }
 
 

@@ -9,6 +9,7 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\AdminUtils;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\FrontMenu;
@@ -133,7 +134,7 @@ class RoleController extends AdminCommonController
 
         if (AdminUtils::isOwner()) {
             $form->tab('管理端接口权限', function (Form $form) use ($that) {
-                $form->checkbox('apiPermissions', trans('admin.permissions'))
+                $form->checkbox('frontApiPermissions', trans('admin.permissions'))
                     ->options(function () use ($that) {
                         if (AdminUtils::isOwner()) {
                             $permissions = AdminApiPermission::orderBy('order')->get()->toArray();
@@ -200,8 +201,9 @@ class RoleController extends AdminCommonController
         });
 
         $form->saved(function ($form) {
-            AdminUtils::clearMenuCache();
+            CacheUtils::clearMenuCache();
         });
     }
+
 
 }

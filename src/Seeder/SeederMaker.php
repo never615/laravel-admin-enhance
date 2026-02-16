@@ -175,6 +175,10 @@ trait SeederMaker
         if ($model && !is_bool($model)) {
             $tempModel = $model;
         }
+
+        if ($this->routeNamePrefix) {
+            $slug = $this->routeNamePrefix . '.' . $slug;
+        }
         $tempModel::query()->where('slug', $slug)->delete();
 
         if ($sub) {

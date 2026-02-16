@@ -217,14 +217,14 @@ class AdminUtils
     }
 
 
-    /**
-     * clea menu cache
-     *
-     * @deprecated use CacheUtils
-     */
-    public static function clearMenuCache()
-    {
-        CacheUtils::clearMenuCache();
-    }
+//    /**
+//     * clea menu cache
+//     *
+//     * @deprecated use CacheUtils
+//     */
+//    public static function clearMenuCache()
+//    {
+//        CacheUtils::clearMenuCache();
+//    }
 
 }

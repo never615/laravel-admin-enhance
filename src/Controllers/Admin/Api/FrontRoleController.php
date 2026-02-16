@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Mallto\Admin\AdminUtils;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Role;
 use Mallto\Tool\Exception\PermissionDeniedException;
@@ -70,7 +70,7 @@ class FrontRoleController extends Controller
             $this->syncRelations($model, $request);
         });
 
-        AdminUtils::clearMenuCache();
+        CacheUtils::clearMenuCache();
 
         return $this->respondWithRole($model->fresh(), 201);
     }
@@ -90,7 +90,7 @@ class FrontRoleController extends Controller
             $this->syncRelations($model, $request);
         });
 
-        AdminUtils::clearMenuCache();
+        CacheUtils::clearMenuCache();
 
         return $this->respondWithRole($model->fresh());
     }
@@ -107,7 +107,7 @@ class FrontRoleController extends Controller
         }
 
         $model->delete();
-        AdminUtils::clearMenuCache();
+        CacheUtils::clearMenuCache();
 
         return response()->noContent();
     }
@@ -167,7 +167,7 @@ class FrontRoleController extends Controller
     protected function syncRelations(Role $role, Request $request): void
     {
         if ($request->has('api_permissions')) {
-            $role->apiPermissions()->sync(array_filter((array)$request->api_permissions));
+            $role->frontApiPermissions()->sync(array_filter((array)$request->api_permissions));
         }
     }
 

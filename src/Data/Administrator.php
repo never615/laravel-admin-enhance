@@ -8,6 +8,7 @@ namespace Mallto\Admin\Data;
 use Encore\Admin\Auth\Database\HasPermissions;
 use Encore\Admin\Traits\AdminBuilder;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
@@ -91,4 +92,7 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
             }
         }])->get()->pluck('frontMenus')->flatten();
     }
+
+
+
 }

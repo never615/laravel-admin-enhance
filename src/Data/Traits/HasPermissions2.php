@@ -2,11 +2,27 @@
 
 namespace Mallto\Admin\Data\Traits;
 
+use Illuminate\Support\Collection;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Permission;
 
 trait HasPermissions2
 {
+
+    /**
+     * 查询用户的前端接口权限,通过用户的角色关联查询
+     *
+     * @return mixed
+     */
+    public function allFrontPermissions(): Collection
+    {
+        return $this->roles()
+            ->with('frontApiPermissions')
+            ->get()
+            ->pluck('frontApiPermissions')
+            ->flatten();
+    }
+
 
     /**
      * Check if user has permission.

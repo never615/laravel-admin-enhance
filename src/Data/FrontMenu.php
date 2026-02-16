@@ -6,12 +6,12 @@
 namespace Mallto\Admin\Data;
 
 use Encore\Admin\Traits\AdminBuilder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
@@ -100,7 +100,7 @@ class FrontMenu extends Model
                 if ($language) {
                     $localizedTitle = "{$language}_title";
                     return FrontMenu::query()
-                        ->select("id", "uri", "parent_id", "path", "order",DB::raw("COALESCE($localizedTitle, title) as title"))
+                        ->select("id", "uri", "parent_id", "path", "order", DB::raw("COALESCE($localizedTitle, title) as title"))
                         ->whereIn("id", $parentIds)
                         ->get()
                         ->toArray();
@@ -136,6 +136,7 @@ class FrontMenu extends Model
      */
     public function allNodes(): array
     {
+//        Log::debug("获取前端菜单");
         $orderColumn = DB::getQueryGrammar()->wrap($this->orderColumn);
         $byOrder = $orderColumn . ' = 0,' . $orderColumn;
 
@@ -148,30 +149,52 @@ class FrontMenu extends Model
 
         $baseSubject = $adminUser->subject->baseSubject();
 
+        $result = null;
+
         if ($adminUser->isOwner()) {
-            return static::orderByRaw($byOrder)->get()->toArray();
+            $result = static::orderByRaw($byOrder)->get()->toArray();
         } else {
-//            $result = Cache::get("front_menu_" . $adminUser->id);
-//            if ($result) {
-//                return $result;
-//            }
+            // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
+            $locale = app()->getLocale();
+            $cacheMenuKey = "front_menu_" . $adminUser->id . '_' . $locale;
 
-//            $menus = new Collection();
+            $result = Cache::get($cacheMenuKey);
+//            $result = null;
 
-            $menus = $adminUser->frontMenus();
+//            Log::debug("从缓存中获取前端菜单", ["cacheMenuKey" => $cacheMenuKey, "result" => $result]);
+            if ($result) {
+                return $this->filterMenuAttributes($result);
+            }
+
+            // 获取用户的所有前端权限
+            $permissions = $adminUser->allFrontPermissions();
+
+//            Log::debug('用户的前端权限', ['permissions' => $permissions]);
+            $userPermissions = $this->withSubFrontPermissions($permissions);
+            $userPermissionSlugs = array_pluck($userPermissions, "slug");
+
+            // 处理权限 slug 中的 admin_api. 前缀，转换为菜单 uri
+            $userPermissionSlugs = array_map(function ($slug) {
+                return str_replace('admin_api.', '', $slug);
+            }, $userPermissionSlugs);
+
+//            Log::debug('用户的前端权限 Slugs', ['userPermissionSlugs' => $userPermissionSlugs]);
+
+            // 基于权限查询菜单
+            $menus = static::whereIn("uri", $userPermissionSlugs)->get();
+
+//            Log::debug('用户拥有权限的菜单', ['menus' => $menus]);
 
             $tempMenus = $this->withSubMenus($menus);
-//            $tempMenus = $menus->toArray();
 
-            //查出来的菜单如果有父菜单也要返回,直到parent_id为0
+            // 查出来的菜单如果有父菜单也要返回,直到parent_id为0
             foreach ($menus as $item) {
                 $tempMenus = array_merge($tempMenus, $item->parentMenu());
             }
 
-
-            //过滤保证唯一
+            // 过滤保证唯一
             $uniqueTempArray = [];
-            $tempMenus1 = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray, $baseSubject) {
+            $tempMenus1 = array_filter($tempMenus, function ($menu) use (&$uniqueTempArray) {
                 if (!in_array($menu["id"], $uniqueTempArray)) {
                     $uniqueTempArray[] = $menu["id"];
                     return true;
@@ -180,12 +203,13 @@ class FrontMenu extends Model
                 }
             });
 
+            // 处理动态链接
             $uniqueTempArray2 = [];
             $tempMenus = array_map(function ($menu) use (&$uniqueTempArray2, $baseSubject) {
                 if (!in_array($menu["id"], $uniqueTempArray2)) {
                     $uniqueTempArray2[] = $menu["id"];
 
-                    if (starts_with($menu['uri'], 'http://')) {
+                    if (isset($menu['uri']) && starts_with($menu['uri'], 'http://')) {
                         $uriKey = str_replace('http://', '', $menu['uri']);
                         //替换动态链接
                         $uriValue = SubjectUtils::getDynamicKeyConfigByOwner($uriKey, $baseSubject, $menu['uri']);
@@ -194,21 +218,47 @@ class FrontMenu extends Model
 
                     return $menu;
                 }
+                return null;
             }, $tempMenus1);
 
-            //排序
+            // 过滤掉 null 值
+            $tempMenus = array_filter($tempMenus);
+
+            // 排序
             $result = array_sort($tempMenus, $this->orderColumn);
 
-            $cacheMenuKey = "front_menu_" . $adminUser->id;
+            // 缓存结果
             CacheUtils::putMenu($cacheMenuKey, $result);
 
-            $cacheMenuKeys = Cache::get(CacheConstants::CACHE_MENU_KEYS, []);
+            $cacheMenuKeys = Cache::get(CacheConstants::CACHE_FRONT_MENU_KEYS, []);
             $cacheMenuKeys[] = $cacheMenuKey;
 
-            CacheUtils::putMenuKeys($cacheMenuKeys);
-
-            return $result;
+            CacheUtils::putFrontMenuKeys($cacheMenuKeys);
         }
+
+        return $this->filterMenuAttributes($result);
+    }
+
+    /**
+     * 过滤菜单属性，只保留指定的字段
+     * 保留字段: id, parent_id, order, title, icon, uri, en_title, tc_title, children
+     *
+     * @param array $menus
+     * @return array
+     */
+    private function filterMenuAttributes(array $menus): array
+    {
+        $allowedAttributes = ['id', 'parent_id', 'order', 'title', 'icon', 'uri', 'en_title', 'tc_title', 'children'];
+
+        return array_map(function ($menu) use ($allowedAttributes) {
+            $filteredMenu = [];
+            foreach ($allowedAttributes as $attr) {
+                if (isset($menu[$attr])) {
+                    $filteredMenu[$attr] = $menu[$attr];
+                }
+            }
+            return $filteredMenu;
+        }, $menus);
     }
 
 
@@ -243,7 +293,7 @@ class FrontMenu extends Model
         } else {
             $tempMenus = $tempMenus->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
         }
-        $tempMenus=$tempMenus->get()->toArray();
+        $tempMenus = $tempMenus->get()->toArray();
         return array_merge($tempMenus, $menus->toArray());
 
 //        $tempPermissions = [];
@@ -253,6 +303,31 @@ class FrontMenu extends Model
 //        }
 //
 //        return array_merge($tempPermissions, $permissions->toArray());
+    }
+
+
+    /**
+     *
+     * 获取一组前端权限的所有子权限,带着原来的这一组权限一起返回
+     *
+     * @param $permissions
+     *
+     * @return array
+     */
+    public function withSubFrontPermissions($permissions)
+    {
+        $ids = $permissions->pluck("id")->toArray();
+        $ids = array_map(function ($id) {
+            return "%." . $id . ".%";
+        }, $ids);
+        $ids = implode(",", $ids);
+        $ids = "('{" . $ids . "}')";
+
+        $tempPermissions = AdminApiPermission::whereRaw("path like any $ids")
+            ->get()
+            ->toArray();
+
+        return array_merge($tempPermissions, $permissions->toArray());
     }
 
 

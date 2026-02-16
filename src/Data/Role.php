@@ -23,7 +23,7 @@ class Role extends \Encore\Admin\Auth\Database\Role
      *
      * @return BelongsToMany
      */
-    public function apiPermissions(): BelongsToMany
+    public function frontApiPermissions(): BelongsToMany
     {
         $pivotTable = 'admin_role_api_permissions';
 
