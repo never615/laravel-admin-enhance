@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
@@ -25,6 +26,87 @@ use Mallto\Tool\Exception\PermissionDeniedException;
  */
 class SubjectUtils
 {
+    /**
+     * swoole_table 名称
+     * 不使用进程内存缓存，因为数据修改后无法及时同步到所有 worker 的进程内存
+     * 两级缓存：L1(swoole_table config_cache) → L2(local_redis) → L3(DB)
+     */
+    private const SWOOLE_TABLE = 'config_cache';
+
+    /**
+     * 从 swoole_table 获取缓存值 (L2)
+     */
+    private static function swooleTableGet(string $key)
+    {
+        try {
+            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+        if (!$table) return null;
+
+        $row = $table->get($key);
+        if ($row === false) return null;
+
+        $expire = $row['expire'] ?? 0;
+        if ($expire > 0 && $expire < time()) {
+            $table->del($key);
+            return null;
+        }
+
+        $value = $row['value'] ?? null;
+        if (is_null($value) || $value === '') return null;
+
+        return unserialize($value);
+    }
+
+    /**
+     * 写入 swoole_table 缓存 (L2)
+     */
+    private static function swooleTableSet(string $key, $value, int $ttl = 3600): void
+    {
+        try {
+            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
+        } catch (\Throwable $e) {
+            return;
+        }
+        if (!$table) return;
+
+        $serialized = serialize($value);
+        // 超出列大小限制则跳过（从配置读取列大小，Swoole\Table::getColumns() 不存在）
+        $columns = config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.column', []);
+        foreach ($columns as $col) {
+            if (($col['name'] ?? '') === 'value' && strlen($serialized) > ($col['size'] ?? 2048)) return;
+        }
+
+        $table->set($key, [
+            'value'  => $serialized,
+            'expire' => $ttl > 0 ? time() + $ttl : 0,
+        ]);
+    }
+
+    /**
+     * 删除 swoole_table 缓存 (L2)
+     */
+    private static function swooleTableDel(string $key): void
+    {
+        try {
+            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
+        } catch (\Throwable $e) {
+            return;
+        }
+        if (!$table) return;
+
+        $table->del($key);
+    }
+
+    /**
+     * 写入 L1 (swoole_table) 缓存
+     */
+    private static function cacheConfigResult(string $memKey, $value): void
+    {
+        self::swooleTableSet($memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
+    }
 
     /**
      * 获取只有项目拥有者才能编辑的配置项
@@ -53,15 +135,31 @@ class SubjectUtils
             }
         }
 
+        // L1: swoole_table 跨 worker 共享缓存
+        $memKey = 'ec_' . ($subjectId ?: 'null') . '_' . $key;
+        $swooleVal = self::swooleTableGet($memKey);
+        if (!is_null($swooleVal)) {
+            return $swooleVal;
+        }
+
+        // L2: Redis
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('c_s_ec_' . $subjectId . '_' . $key);
             if (!is_null($value)) {
+                self::cacheConfigResult($memKey, $value);
                 return $value;
             }
         } else {
             $subjectId = self::getSubjectId();
+            // subjectId 确定后更新 memKey
+            $memKey = 'ec_' . $subjectId . '_' . $key;
+            $swooleVal = self::swooleTableGet($memKey);
+            if (!is_null($swooleVal)) {
+                return $swooleVal;
+            }
         }
 
+        // L4: DB
         $subject = Subject::query()->findOrFail($subjectId);
 
         $extraConfig = $subject->extra_config ?: [];
@@ -77,6 +175,8 @@ class SubjectUtils
 
         Cache::store('local_redis')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
             Carbon::now()->endOfDay());
+
+        self::cacheConfigResult($memKey, $value);
 
         return $value;
     }
@@ -109,16 +209,30 @@ class SubjectUtils
             }
         }
 
+        // L1: swoole_table 跨 worker 共享缓存
+        $memKey = 'so_' . ($subjectId ?: 'null') . '_' . $key;
+        $swooleVal = self::swooleTableGet($memKey);
+        if (!is_null($swooleVal)) {
+            return $swooleVal;
+        }
+
+        // L2: Redis
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('c_s_o_' . $subjectId . '_' . $key);
             if (!is_null($value)) {
+                self::cacheConfigResult($memKey, $value);
                 return $value;
             }
         } else {
             $subjectId = self::getSubjectId();
-
+            $memKey = 'so_' . $subjectId . '_' . $key;
+            $swooleVal = self::swooleTableGet($memKey);
+            if (!is_null($swooleVal)) {
+                return $swooleVal;
+            }
         }
 
+        // L4: DB
         $subject = Subject::query()->find($subjectId);
 
         if (!$subject) {
@@ -140,6 +254,8 @@ class SubjectUtils
         Cache::store('local_redis')->put('c_s_o_' . $subjectId . '_' . $key, $value,
             Carbon::now()->endOfDay());
 
+        self::cacheConfigResult($memKey, $value);
+
         return $value;
     }
 
@@ -157,13 +273,162 @@ class SubjectUtils
         }
 
         if ($subjectId) {
-            Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
+            $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
+            $memKey = 'dk_' . $subjectId . '_' . $key;
+            Cache::store('local_redis')->forget($redisKey);
+            self::swooleTableDel($memKey);
+            // 广播到所有服务器
+            self::broadcastCacheInvalidate($memKey, [$redisKey]);
         } else {
             $subjectId = self::getSubjectId();
             if ($subjectId) {
-                Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
+                $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
+                $memKey = 'dk_' . $subjectId . '_' . $key;
+                Cache::store('local_redis')->forget($redisKey);
+                self::swooleTableDel($memKey);
+                // 广播到所有服务器
+                self::broadcastCacheInvalidate($memKey, [$redisKey]);
             }
         }
+    }
+
+    /**
+     * 通过 Redis Pub/Sub 广播缓存清理消息到所有服务器。
+     *
+     * 与 SwooleTableCache::broadcastDel() 使用相同的频道和消息格式，
+     * 由 SwooleTableCacheSubscribeProcess 统一处理。
+     */
+    private static function broadcastCacheInvalidate(string $swooleKey, array $redisKeys = []): void
+    {
+        try {
+            Redis::connection('default')->publish('swoole_table:invalidate', json_encode([
+                'action'     => 'del',
+                'table'      => self::SWOOLE_TABLE,
+                'swoole_key' => $swooleKey,
+                'redis_keys' => $redisKeys,
+            ]));
+        } catch (\Throwable $e) {
+            // 广播失败不影响主流程，其他服务器会通过 TTL 自然过期
+            \Illuminate\Support\Facades\Log::error('[SubjectUtils] 缓存广播失败: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 按前缀广播缓存清理消息到所有服务器。
+     *
+     * 清理 swoole_table 中匹配前缀的 key + local_redis 中匹配前缀的 key，
+     * 并通过 Redis Pub/Sub 广播到所有服务器执行同样的清理。
+     *
+     * @param string $swoolePrefix swoole_table key 前缀
+     * @param string $redisPrefix  local_redis key 前缀
+     */
+    private static function broadcastCacheInvalidateByPrefix(string $swoolePrefix, string $redisPrefix): void
+    {
+        // 1. 先清理本地 swoole_table
+        self::swooleTableDelByPrefix($swoolePrefix);
+
+        // 2. 先清理本地 local_redis
+        self::localRedisDelByPrefix($redisPrefix);
+
+        // 3. 广播到其他服务器
+        try {
+            Redis::connection('default')->publish('swoole_table:invalidate', json_encode([
+                'action'        => 'del_prefix',
+                'table'         => self::SWOOLE_TABLE,
+                'swoole_prefix' => $swoolePrefix,
+                'redis_prefix'  => $redisPrefix,
+            ]));
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('[SubjectUtils] 缓存广播失败: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 按前缀删除 swoole_table 中的缓存 key。
+     */
+    private static function swooleTableDelByPrefix(string $prefix): void
+    {
+        try {
+            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
+        } catch (\Throwable $e) {
+            return;
+        }
+        if (!$table || $prefix === '') return;
+
+        foreach ($table as $key => $row) {
+            if (strpos($key, $prefix) === 0) {
+                $table->del($key);
+            }
+        }
+    }
+
+    /**
+     * 按前缀删除 local_redis 中的缓存 key。
+     *
+     * 使用 SCAN 避免 KEYS 命令阻塞。
+     */
+    private static function localRedisDelByPrefix(string $prefix): void
+    {
+        if ($prefix === '') return;
+
+        try {
+            $cachePrefix = config('cache.prefix', '');
+            $fullPrefix = $cachePrefix ? $cachePrefix . ':' . $prefix : $prefix;
+
+            $connection = Redis::connection('local_cache');
+            $cursor = null;
+            do {
+                $result = $connection->scan($cursor, ['match' => $fullPrefix . '*', 'count' => 100]);
+                if ($result === false) break;
+                if (is_array($result) && !empty($result)) {
+                    $connection->del(...$result);
+                }
+            } while ($cursor > 0);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+    }
+
+    /**
+     * 清理 getConfigByOwner 的缓存（extra_config）。
+     *
+     * 按 subjectId 清理该主体所有的 extra_config 缓存：
+     *   - swoole_table key 前缀: ec_{subjectId}_
+     *   - local_redis key 前缀: c_s_ec_{subjectId}_
+     *
+     * 会通过 Redis Pub/Sub 广播到所有服务器。
+     *
+     * @param int|string $subjectId
+     */
+    public static function clearConfigByOwner($subjectId): void
+    {
+        if (!$subjectId) return;
+
+        self::broadcastCacheInvalidateByPrefix(
+            'ec_' . $subjectId . '_',
+            'c_s_ec_' . $subjectId . '_'
+        );
+    }
+
+    /**
+     * 清理 getConfigBySubjectOwner 的缓存（open_extra_config）。
+     *
+     * 按 subjectId 清理该主体所有的 open_extra_config 缓存：
+     *   - swoole_table key 前缀: so_{subjectId}_
+     *   - local_redis key 前缀: c_s_o_{subjectId}_
+     *
+     * 会通过 Redis Pub/Sub 广播到所有服务器。
+     *
+     * @param int|string $subjectId
+     */
+    public static function clearConfigBySubjectOwner($subjectId): void
+    {
+        if (!$subjectId) return;
+
+        self::broadcastCacheInvalidateByPrefix(
+            'so_' . $subjectId . '_',
+            'c_s_o_' . $subjectId . '_'
+        );
     }
 
 
@@ -194,16 +459,30 @@ class SubjectUtils
             }
         }
 
+        // L1: swoole_table 跨 worker 共享缓存
+        $memKey = 'dk_' . ($subjectId ?: 'null') . '_' . $key;
+        $swooleVal = self::swooleTableGet($memKey);
+        if (!is_null($swooleVal)) {
+            return $swooleVal;
+        }
+
+        // L2: Redis
         if ($subjectId) {
             $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
             if (!is_null($value)) {
+                self::cacheConfigResult($memKey, $value);
                 return $value;
             }
         } else {
             $subjectId = self::getSubjectId();
+            $memKey = 'dk_' . $subjectId . '_' . $key;
+            $swooleVal = self::swooleTableGet($memKey);
+            if (!is_null($swooleVal)) {
+                return $swooleVal;
+            }
         }
 
-        //缓存中没有查到，查数据库
+        // L4: DB
         $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
             ->where("key", $key)
             ->first();
@@ -218,6 +497,8 @@ class SubjectUtils
 
         Cache::store('local_redis')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
             Carbon::now()->endOfDay());
+
+        self::cacheConfigResult($memKey, $value);
 
         return $value;
     }

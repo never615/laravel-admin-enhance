@@ -7,47 +7,60 @@ namespace Mallto\Admin\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
+use Mallto\Admin\SubjectUtils;
 
 /**
+ * Subject 保存后清理相关缓存。
+ *
+ * 清理范围：
+ *   1. 更新 sub_uuid 缓存（subject 对象缓存）
+ *   2. 清理 getConfigBySubjectOwner 缓存（open_extra_config，前缀 so_ / c_s_o_）
+ *   3. 清理 getConfigByOwner 缓存（extra_config，前缀 ec_ / c_s_ec_）
+ *   以上清理都会通过 Redis Pub/Sub 广播到所有服务器，
+ *   同时清理 swoole_table 和 local_redis。
+ *
  * User: never615 <never615.com>
  * Date: 2020/5/12
- * Time: 7:06 下午
  */
 class SubjectCacheClear implements ShouldQueue
 {
-
-    /**
-     * 任务将被推送到的连接名称.
-     *
-     * @var string|null
-     */
     public $queue = 'mid';
-
 
     public function handle(SubjectSaved $subjectSaved)
     {
         $subjectId = $subjectSaved->subjectId;
 
-        $subject = Subject::query()->findOrFail($subjectId);
-
-        //处理刷新缓存
-
-        //1. 清理subject缓存
-        Cache::store('local_redis')->put('sub_uuid' . $subject->uuid, $subject, Carbon::now()->endOfDay());
-        if (isset($subject->extra_config['uuid'])) {
-            Cache::store('local_redis')->put('sub_uuid' . $subject->extra_config['uuid'], $subject,
-                Carbon::now()->endOfDay());
+        try {
+            $subject = Subject::query()->findOrFail($subjectId);
+        } catch (\Throwable $e) {
+            Log::error('[SubjectCacheClear] Subject 不存在: ' . $subjectId);
+            return;
         }
 
-        //2. 清理subject的open_extra_config缓存
-        Artisan::call('tool:redis_del_prefix --prefix=c_s_o_' . $subjectId);
+        // 1. 更新 subject 对象缓存（本地 Redis，其他服务器靠 TTL 过期）
+        Cache::store('local_redis')->put('sub_uuid_' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+        if (isset($subject->extra_config['uuid'])) {
+            Cache::store('local_redis')->put(
+                'sub_uuid_' . $subject->extra_config['uuid'],
+                $subject,
+                Carbon::now()->endOfDay()
+            );
+        }
 
-        //3. 清理extra_config
-        Artisan::call('tool:redis_del_prefix --prefix=c_s_ec_' . $subjectId);
+        // 2. 清理 open_extra_config 缓存（getConfigBySubjectOwner）
+        //    swoole_table key 前缀: so_{subjectId}_
+        //    local_redis key 前缀: c_s_o_{subjectId}_
+        SubjectUtils::clearConfigBySubjectOwner($subjectId);
+
+        // 3. 清理 extra_config 缓存（getConfigByOwner）
+        //    swoole_table key 前缀: ec_{subjectId}_
+        //    local_redis key 前缀: c_s_ec_{subjectId}_
+        SubjectUtils::clearConfigByOwner($subjectId);
+
+        Log::info('[SubjectCacheClear] 缓存已清理并广播', ['subjectId' => $subjectId]);
     }
-
 }
