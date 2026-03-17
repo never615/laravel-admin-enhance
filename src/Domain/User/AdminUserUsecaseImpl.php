@@ -18,7 +18,7 @@ use Mallto\User\Data\User;
  * Date: 2018/12/28
  * Time: 6:26 PM
  */
-abstract class AdminUserUsecaseImpl implements AdminUserUsecase
+class AdminUserUsecaseImpl implements AdminUserUsecase
 {
 
     use PermissionHelp;
@@ -39,8 +39,6 @@ abstract class AdminUserUsecaseImpl implements AdminUserUsecase
         $this->permissionUsecase = $permissionUsecase;
     }
 
-
-    public abstract function getReturnUserInfoInternal($adminUser, $addToken = true, $permission = ['admin_api_manager']);
 
     /**
      * 返回给前端的用户信息
@@ -92,6 +90,11 @@ abstract class AdminUserUsecaseImpl implements AdminUserUsecase
 //            "permissions" => $permissions,
             "menus" => AdminE::frontMenu($adminUser)
         ]);
+    }
+
+    public function getReturnUserInfoInternal($adminUser, $addToken = true, $permission = ['admin_api_manager'])
+    {
+
     }
 
 
