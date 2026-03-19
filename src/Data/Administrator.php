@@ -71,27 +71,24 @@ class Administrator extends \Encore\Admin\Auth\Database\Administrator
     }
 
 
-    public function frontMenus(): Collection
-    {
-        $language = RequestUtils::getLan();
-//        return $this->roles()->with('permissions')->get()->pluck('permissions')->flatten()->merge($this->permissions);
-//        return $this->roles()->with('frontMenus')->get()->pluck('frontMenus')->flatten();
-//        return $this->roles()->with('frontMenus:id,title,uri,parent_id,path,order')->get()->pluck('frontMenus')->flatten();
-        return $this->roles()->with(['frontMenus' => function ($query) use ($language) {
-            // 使用本地作用域来添加本地化标题
-            if ($language) {
-                $localizedTitle = "{$language}_title";
-                $query->select('id',
-                    'uri',
-                    'parent_id',
-                    'path',
-                    'order',
-                    DB::raw("COALESCE($localizedTitle, title) as title"));
-            } else {
-                $query->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
-            }
-        }])->get()->pluck('frontMenus')->flatten();
-    }
+//    public function frontMenus(): Collection
+//    {
+//        $language = RequestUtils::getLan();
+//        return $this->roles()->with(['frontMenus' => function ($query) use ($language) {
+//            // 使用本地作用域来添加本地化标题
+//            if ($language) {
+//                $localizedTitle = "{$language}_title";
+//                $query->select('id',
+//                    'uri',
+//                    'parent_id',
+//                    'path',
+//                    'order',
+//                    DB::raw("COALESCE($localizedTitle, title) as title"));
+//            } else {
+//                $query->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
+//            }
+//        }])->get()->pluck('frontMenus')->flatten();
+//    }
 
 
 

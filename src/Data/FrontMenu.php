@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
@@ -150,13 +149,15 @@ class FrontMenu extends Model
         $baseSubject = $adminUser->subject->baseSubject();
 
         $result = null;
+        $language = RequestUtils::getLan();
+        $localizedTitle = $language ? "{$language}_title" : 'title';
 
         if ($adminUser->isOwner()) {
             $result = static::orderByRaw($byOrder)->get()->toArray();
         } else {
             // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
-            $locale = app()->getLocale();
-            $cacheMenuKey = "front_menu_" . $adminUser->id . '_' . $locale;
+//            $locale = app()->getLocale();
+            $cacheMenuKey = "front_menu_" . $adminUser->id . '_' . $language;
 
             $result = Cache::get($cacheMenuKey);
 //            $result = null;
@@ -181,7 +182,15 @@ class FrontMenu extends Model
 //            Log::debug('用户的前端权限 Slugs', ['userPermissionSlugs' => $userPermissionSlugs]);
 
             // 基于权限查询菜单
-            $menus = static::whereIn("uri", $userPermissionSlugs)->get();
+            $menus = static::whereIn("uri", $userPermissionSlugs)
+                ->select('id',
+                    'uri',
+                    'parent_id',
+                    'path',
+                    'order',
+                    DB::raw("COALESCE($localizedTitle, title) as title")
+                )
+                ->get();
 
 //            Log::debug('用户拥有权限的菜单', ['menus' => $menus]);
 
@@ -273,6 +282,8 @@ class FrontMenu extends Model
     public function withSubMenus($menus)
     {
         $language = RequestUtils::getLan();
+        $localizedTitle = $language ? "{$language}_title" : 'title';
+
 
         $ids = $menus->pluck("id")->toArray();
         $ids = array_map(function ($id) {
@@ -282,27 +293,15 @@ class FrontMenu extends Model
         $ids = "('{" . $ids . "}')";
         $tempMenus = FrontMenu::query()->whereRaw("path like any $ids");
 
-        if ($language) {
-            $localizedTitle = "{$language}_title";
-            $tempMenus = $tempMenus->select('id',
-                'uri',
-                'parent_id',
-                'path',
-                'order',
-                DB::raw("COALESCE($localizedTitle, title) as title"));
-        } else {
-            $tempMenus = $tempMenus->select('id', 'title', 'uri', 'parent_id', 'path', 'order');
-        }
+        $tempMenus = $tempMenus->select(
+            'id',
+            'uri',
+            'parent_id',
+            'path',
+            'order',
+            DB::raw("COALESCE($localizedTitle, title) as title"));
         $tempMenus = $tempMenus->get()->toArray();
         return array_merge($tempMenus, $menus->toArray());
-
-//        $tempPermissions = [];
-//        foreach ($permissions as $permission) {
-//            //查询权限的所有子权限
-//            $tempPermissions = array_merge($tempPermissions, $permission->subPermissions());
-//        }
-//
-//        return array_merge($tempPermissions, $permissions->toArray());
     }
 
 
