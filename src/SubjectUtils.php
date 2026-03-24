@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Exception\SubjectConfigException;
+use Mallto\Admin\SwooleTableUtils;
 use Mallto\Tool\Exception\HttpException;
 use Mallto\Tool\Exception\PermissionDeniedException;
 
@@ -34,78 +35,11 @@ class SubjectUtils
     private const SWOOLE_TABLE = 'config_cache';
 
     /**
-     * 从 swoole_table 获取缓存值 (L2)
-     */
-    private static function swooleTableGet(string $key)
-    {
-        try {
-            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
-        } catch (\Throwable $e) {
-            return null;
-        }
-        if (!$table) return null;
-
-        $row = $table->get($key);
-        if ($row === false) return null;
-
-        $expire = $row['expire'] ?? 0;
-        if ($expire > 0 && $expire < time()) {
-            $table->del($key);
-            return null;
-        }
-
-        $value = $row['value'] ?? null;
-        if (is_null($value) || $value === '') return null;
-
-        return unserialize($value);
-    }
-
-    /**
-     * 写入 swoole_table 缓存 (L2)
-     */
-    private static function swooleTableSet(string $key, $value, int $ttl = 3600): void
-    {
-        try {
-            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
-        } catch (\Throwable $e) {
-            return;
-        }
-        if (!$table) return;
-
-        $serialized = serialize($value);
-        // 超出列大小限制则跳过（从配置读取列大小，Swoole\Table::getColumns() 不存在）
-        $columns = config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.column', []);
-        foreach ($columns as $col) {
-            if (($col['name'] ?? '') === 'value' && strlen($serialized) > ($col['size'] ?? 2048)) return;
-        }
-
-        $table->set($key, [
-            'value'  => $serialized,
-            'expire' => $ttl > 0 ? time() + $ttl : 0,
-        ]);
-    }
-
-    /**
-     * 删除 swoole_table 缓存 (L2)
-     */
-    private static function swooleTableDel(string $key): void
-    {
-        try {
-            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
-        } catch (\Throwable $e) {
-            return;
-        }
-        if (!$table) return;
-
-        $table->del($key);
-    }
-
-    /**
      * 写入 L1 (swoole_table) 缓存
      */
     private static function cacheConfigResult(string $memKey, $value): void
     {
-        self::swooleTableSet($memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
+        SwooleTableUtils::set($memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
     }
 
     /**
@@ -137,7 +71,7 @@ class SubjectUtils
 
         // L1: swoole_table 跨 worker 共享缓存
         $memKey = 'ec_' . ($subjectId ?: 'null') . '_' . $key;
-        $swooleVal = self::swooleTableGet($memKey);
+        $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
         if (!is_null($swooleVal)) {
             return $swooleVal;
         }
@@ -153,7 +87,7 @@ class SubjectUtils
             $subjectId = self::getSubjectId();
             // subjectId 确定后更新 memKey
             $memKey = 'ec_' . $subjectId . '_' . $key;
-            $swooleVal = self::swooleTableGet($memKey);
+            $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
             if (!is_null($swooleVal)) {
                 return $swooleVal;
             }
@@ -211,7 +145,7 @@ class SubjectUtils
 
         // L1: swoole_table 跨 worker 共享缓存
         $memKey = 'so_' . ($subjectId ?: 'null') . '_' . $key;
-        $swooleVal = self::swooleTableGet($memKey);
+        $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
         if (!is_null($swooleVal)) {
             return $swooleVal;
         }
@@ -226,7 +160,7 @@ class SubjectUtils
         } else {
             $subjectId = self::getSubjectId();
             $memKey = 'so_' . $subjectId . '_' . $key;
-            $swooleVal = self::swooleTableGet($memKey);
+            $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
             if (!is_null($swooleVal)) {
                 return $swooleVal;
             }
@@ -276,7 +210,7 @@ class SubjectUtils
             $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
             $memKey = 'dk_' . $subjectId . '_' . $key;
             Cache::store('local_redis')->forget($redisKey);
-            self::swooleTableDel($memKey);
+            SwooleTableUtils::del(self::SWOOLE_TABLE, $memKey);
             // 广播到所有服务器
             self::broadcastCacheInvalidate($memKey, [$redisKey]);
         } else {
@@ -285,7 +219,7 @@ class SubjectUtils
                 $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
                 $memKey = 'dk_' . $subjectId . '_' . $key;
                 Cache::store('local_redis')->forget($redisKey);
-                self::swooleTableDel($memKey);
+                SwooleTableUtils::del(self::SWOOLE_TABLE, $memKey);
                 // 广播到所有服务器
                 self::broadcastCacheInvalidate($memKey, [$redisKey]);
             }
@@ -325,7 +259,7 @@ class SubjectUtils
     private static function broadcastCacheInvalidateByPrefix(string $swoolePrefix, string $redisPrefix): void
     {
         // 1. 先清理本地 swoole_table
-        self::swooleTableDelByPrefix($swoolePrefix);
+        SwooleTableUtils::delByPrefix(self::SWOOLE_TABLE, $swoolePrefix);
 
         // 2. 先清理本地 local_redis
         self::localRedisDelByPrefix($redisPrefix);
@@ -343,24 +277,6 @@ class SubjectUtils
         }
     }
 
-    /**
-     * 按前缀删除 swoole_table 中的缓存 key。
-     */
-    private static function swooleTableDelByPrefix(string $prefix): void
-    {
-        try {
-            $table = app('swoole')->{self::SWOOLE_TABLE . 'Table'} ?? null;
-        } catch (\Throwable $e) {
-            return;
-        }
-        if (!$table || $prefix === '') return;
-
-        foreach ($table as $key => $row) {
-            if (strpos($key, $prefix) === 0) {
-                $table->del($key);
-            }
-        }
-    }
 
     /**
      * 按前缀删除 local_redis 中的缓存 key。
@@ -461,7 +377,7 @@ class SubjectUtils
 
         // L1: swoole_table 跨 worker 共享缓存
         $memKey = 'dk_' . ($subjectId ?: 'null') . '_' . $key;
-        $swooleVal = self::swooleTableGet($memKey);
+        $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
         if (!is_null($swooleVal)) {
             return $swooleVal;
         }
@@ -476,7 +392,7 @@ class SubjectUtils
         } else {
             $subjectId = self::getSubjectId();
             $memKey = 'dk_' . $subjectId . '_' . $key;
-            $swooleVal = self::swooleTableGet($memKey);
+            $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
             if (!is_null($swooleVal)) {
                 return $swooleVal;
             }
