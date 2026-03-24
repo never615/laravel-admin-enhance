@@ -6,7 +6,6 @@
 namespace Mallto\Admin;
 
 use Exception;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -107,8 +106,8 @@ class SubjectUtils
             $value = '';
         }
 
-        Cache::store('local_redis')->put('c_s_ec_' . $subjectId . '_' . $key, $value,
-            Carbon::now()->endOfDay());
+        // 配置数据修改时由 SubjectCacheClear 监听 SubjectSaved 事件主动清理，无需 TTL 过期
+        Cache::store('local_redis')->forever('c_s_ec_' . $subjectId . '_' . $key, $value);
 
         self::cacheConfigResult($memKey, $value);
 
@@ -185,8 +184,8 @@ class SubjectUtils
             $value = '';
         }
 
-        Cache::store('local_redis')->put('c_s_o_' . $subjectId . '_' . $key, $value,
-            Carbon::now()->endOfDay());
+        // 配置数据修改时由 SubjectCacheClear 主动清理，无需 TTL 过期
+        Cache::store('local_redis')->forever('c_s_o_' . $subjectId . '_' . $key, $value);
 
         self::cacheConfigResult($memKey, $value);
 
@@ -411,8 +410,8 @@ class SubjectUtils
             throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        Cache::store('local_redis')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
-            Carbon::now()->endOfDay());
+        // 配置数据修改时由 SubjectConfigController saved 回调主动清理，无需 TTL 过期
+        Cache::store('local_redis')->forever('sub_dyna_conf_' . $key . '_' . $subjectId, $value);
 
         self::cacheConfigResult($memKey, $value);
 
@@ -471,8 +470,8 @@ class SubjectUtils
             throw new SubjectConfigException($key . "未配置," . $subjectId);
         }
 
-        Cache::store('local_redis')->put('sub_dyna_conf_' . $key . '_' . $subjectId, $value,
-            Carbon::now()->endOfDay());
+        // 配置数据修改时由 SubjectConfigController saved 回调主动清理，无需 TTL 过期
+        Cache::store('local_redis')->forever('sub_dyna_conf_' . $key . '_' . $subjectId, $value);
 
         return $value;
     }
@@ -687,11 +686,11 @@ class SubjectUtils
             throw new HttpException(422, "获取主体失败:" . $uuid);
         }
 
-        Cache::store('local_redis')->put('sub_uuid_' . $subject->uuid, $subject,
-            Carbon::now()->endOfDay());
+        // Subject 修改时由 SubjectCacheClear 监听 SubjectSaved 事件主动更新，无需 TTL 过期
+        Cache::store('local_redis')->forever('sub_uuid_' . $subject->uuid, $subject);
         if ($subject->extra_config && isset($subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID])) {
-            Cache::store('local_redis')->put('sub_uuid_' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
-                $subject, Carbon::now()->endOfDay());
+            Cache::store('local_redis')->forever('sub_uuid_' . $subject->extra_config[SubjectConfigConstants::OWNER_CONFIG_ADMIN_WECHAT_UUID],
+                $subject);
         }
 
         if ($subject) {
@@ -721,8 +720,8 @@ class SubjectUtils
         if (!$subject) {
             $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
             if ($subject) {
-                Cache::store('local_redis')->put('sub_proj_id' . $thirdProjectId, $subject,
-                    Carbon::now()->endOfDay());
+                // Subject 数据极少变更，每次访问时覆盖写入，无需 TTL 过期
+                Cache::store('local_redis')->forever('sub_proj_id' . $thirdProjectId, $subject);
             }
         }
 

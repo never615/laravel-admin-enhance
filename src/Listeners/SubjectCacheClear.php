@@ -6,7 +6,6 @@
 namespace Mallto\Admin\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Mallto\Admin\Data\Subject;
@@ -41,13 +40,12 @@ class SubjectCacheClear implements ShouldQueue
             return;
         }
 
-        // 1. 更新 subject 对象缓存（本地 Redis，其他服务器靠 TTL 过期）
-        Cache::store('local_redis')->put('sub_uuid_' . $subject->uuid, $subject, Carbon::now()->endOfDay());
+        // 1. 更新 subject 对象缓存（本地 Redis，其他服务器靠 SubjectUtils::getSubject 覆盖写入）
+        Cache::store('local_redis')->forever('sub_uuid_' . $subject->uuid, $subject);
         if (isset($subject->extra_config['uuid'])) {
-            Cache::store('local_redis')->put(
+            Cache::store('local_redis')->forever(
                 'sub_uuid_' . $subject->extra_config['uuid'],
-                $subject,
-                Carbon::now()->endOfDay()
+                $subject
             );
         }
 
