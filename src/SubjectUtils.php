@@ -39,7 +39,7 @@ class SubjectUtils
      */
     private static function cacheConfigResult(string $memKey, $value): void
     {
-        SwooleTableUtils::set($memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
+        SwooleTableUtils::set(self::SWOOLE_TABLE, $memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
     }
 
     /**
