@@ -65,7 +65,7 @@ Route::group($attributes, function ($router) use ($routeFunction, $routeFunction
 //token 授权的管理端接口
 Route::group([
     'prefix' => 'admin/api',
-    'middleware' => ['api', 'adminE.log', 'set_language'],
+    'middleware' => ['api', 'adminE.log', 'set_language', 'token_from_query'],
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
     'as' => 'admin_api.', // 配置路由组中路由命名的前缀。
 ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
