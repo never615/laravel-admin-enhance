@@ -42,9 +42,13 @@ class SubjectConfigController extends AdminCommonController
     {
         $grid->type();
 
-        $grid->key()->display(function ($value) {
-            return config('subject-config.subject_config_key')[$value] ?? $value;
-        });
+
+
+//        $grid->key('说明')->display(function ($value) {
+//            return config('subject-config.subject_config_key')[$value] ?? $value;
+//        });
+
+        $grid->key()->editable();
         $grid->value()->editable();
 
         $grid->filter(function (Grid\Filter $filter) {
