@@ -178,7 +178,7 @@ class FrontRoleController extends Controller
             ->where('pure_front', true);
 
         if ($withPermission) {
-            $query->with(['apiPermissions:id,name,slug']);
+            $query->with(['frontApiPermissions:id,name,slug']);
         }
 
         $model = $query->find($id);
