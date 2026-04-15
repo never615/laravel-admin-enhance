@@ -20,9 +20,9 @@ class UpdateSubjectsAddThirdPartSlug extends Migration
      */
     public function up()
     {
-        if ( ! Schema::hasColumn('subjects', 'third_part_mall_id')) {
+        if ( ! Schema::hasColumn('subjects', 'third_id')) {
             Schema::table('subjects', function (Blueprint $table) {
-                $table->string("third_part_mall_id")->nullable()->comment('第三方项目标识');
+                $table->string("third_id")->nullable()->comment('第三方项目标识');
             });
         }
     }
@@ -36,7 +36,7 @@ class UpdateSubjectsAddThirdPartSlug extends Migration
     public function down()
     {
         Schema::table('subjects', function (Blueprint $table) {
-            $table->dropColumn('third_part_mall_id');
+            $table->dropColumn('third_id');
         });
     }
 }

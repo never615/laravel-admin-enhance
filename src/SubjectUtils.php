@@ -718,7 +718,7 @@ class SubjectUtils
     {
         $subject = Cache::store('local_redis')->get('sub_proj_id' . $thirdProjectId);
         if (!$subject) {
-            $subject = Subject::where("third_part_mall_id", $thirdProjectId)->first();
+            $subject = Subject::where("third_id", $thirdProjectId)->first();
             if ($subject) {
                 // Subject 数据极少变更，每次访问时覆盖写入，无需 TTL 过期
                 Cache::store('local_redis')->forever('sub_proj_id' . $thirdProjectId, $subject);

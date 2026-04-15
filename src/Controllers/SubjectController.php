@@ -61,6 +61,9 @@ class SubjectController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->name()->sortable();
+        $grid->column('en_name', '英文名称')->sortable();
+        $grid->column('tc_name', '繁体名称')->sortable();
+        $grid->column('third_id', '第三方ID')->sortable();
         $grid->column('weight', '权重')
             ->editable()
             ->sortable();
@@ -86,6 +89,9 @@ class SubjectController extends AdminCommonController
         $grid->filter(function (Grid\Filter $filter) {
             $filter->ilike('name');
             $filter->ilike('uuid');
+            $filter->ilike('en_name');
+            $filter->ilike('tc_name');
+            $filter->ilike('third_id');
             $filter->equal('weight', '权重');
             $filter->equal('parent_id', '归属')->select(Subject::dynamicData()->pluck('name', 'id'));
         });
@@ -125,6 +131,9 @@ class SubjectController extends AdminCommonController
             $form->displayE('id');
 
             $form->text('name')->rules('required');
+            $form->text('en_name', '英文名称');
+            $form->text('tc_name', '繁体名称');
+            $form->text('third_id', '第三方ID');
 
             $form->number('weight', '权重')->default(0)->help('权重越大越靠前');
 
@@ -339,6 +348,24 @@ class SubjectController extends AdminCommonController
             }
         }
 
+        //检查 third_id 唯一（当项目拥有者时）
+        if (AdminUtils::isOwner() && $form->third_id) {
+            if ($this->currentId) {
+                $subject = Subject::query()
+                    ->where('third_id', $form->third_id)
+                    ->where('id', '!=', $this->currentId)
+                    ->first();
+            } else {
+                $subject = Subject::query()
+                    ->where('third_id', $form->third_id)
+                    ->first();
+            }
+
+            if ($subject) {
+                throw new ResourceException('第三方ID已存在');
+            }
+        }
+
         if ($form->model()->parent_id && $form->model()->parent_id != $form->parent_id) {
 //            dispatch(new SubjectPathUpdateJob($form->model()));
             SubjectPathUpdateJob::dispatch($form->model()->id)
@@ -389,7 +416,8 @@ class SubjectController extends AdminCommonController
         }
 
         if ($adminUser && !$adminUser->isOwner()) {
-            if (($form->third_part_mall_id && $form->third_part_mall_id != $form->model()->third_part_mall_id) || ($form->uuid && $form->uuid != $form->model()->uuid)) {
+            if (($form->third_id && $form->third_id != $form->model()->third_id) || 
+                ($form->uuid && $form->uuid != $form->model()->uuid)) {
                 throw new PermissionDeniedException('没有权限修改,请联系墨兔管理修改');
             }
         }
