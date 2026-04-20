@@ -63,7 +63,7 @@ class SubjectController extends AdminCommonController
         $grid->name()->sortable();
         $grid->column('en_name', '英文名称')->sortable();
         $grid->column('tc_name', '繁体名称')->sortable();
-        $grid->column('third_id', '第三方ID')->sortable();
+        $grid->column('third_code', '第三方code')->sortable();
         $grid->column('weight', '权重')
             ->editable()
             ->sortable();
@@ -91,7 +91,7 @@ class SubjectController extends AdminCommonController
             $filter->ilike('uuid');
             $filter->ilike('en_name');
             $filter->ilike('tc_name');
-            $filter->ilike('third_id');
+            $filter->ilike('third_code');
             $filter->equal('weight', '权重');
             $filter->equal('parent_id', '归属')->select(Subject::dynamicData()->pluck('name', 'id'));
         });
@@ -133,7 +133,7 @@ class SubjectController extends AdminCommonController
             $form->text('name')->rules('required');
             $form->text('en_name', '英文名称');
             $form->text('tc_name', '繁体名称');
-            $form->text('third_id', '第三方ID');
+            $form->text('third_code', '第三方code');
 
             $form->number('weight', '权重')->default(0)->help('权重越大越靠前');
 
