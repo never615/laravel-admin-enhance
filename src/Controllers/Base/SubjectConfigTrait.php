@@ -37,9 +37,6 @@ trait SubjectConfigTrait
         }
         $form->text('wechat_uuid', '微信授权标识');
         $form->switch('base', '总部');
-
-        $form->text('third_id', '第三方项目标识');
-
     }
 
 

@@ -134,6 +134,8 @@ class SubjectController extends AdminCommonController
             $form->text('en_name', '英文名称');
             $form->text('tc_name', '繁体名称');
             $form->text('third_code', '第三方code');
+            $form->text('third_id', '第三方项目标识');
+
 
             $form->number('weight', '权重')->default(0)->help('权重越大越靠前');
 
