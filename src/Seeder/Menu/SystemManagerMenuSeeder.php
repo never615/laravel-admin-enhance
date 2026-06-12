@@ -47,7 +47,7 @@ class SystemManagerMenuSeeder extends Seeder
             $order++, '导入配置', 'fa-connectdevelop');
 
         $configCenterMenu = $this->updateOrCreate(
-            'config_center', $systemManagerMenu->id, $order++, '配置中心', 'fa-sliders');
+            'config_center', 0, $order++, '配置中心', 'fa-sliders');
 
         $this->updateOrCreate(
             'subject_configs.index', $configCenterMenu->id,
