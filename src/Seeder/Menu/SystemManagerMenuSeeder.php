@@ -46,13 +46,16 @@ class SystemManagerMenuSeeder extends Seeder
             'import_settings.index', $systemManagerMenu->id,
             $order++, '导入配置', 'fa-connectdevelop');
 
+        $configCenterMenu = $this->updateOrCreate(
+            'config_center', $systemManagerMenu->id, $order++, '配置中心', 'fa-sliders');
+
         $this->updateOrCreate(
-            'subject_configs.index', $systemManagerMenu->id,
-            $order++, '动态配置', 'fa-assistive-listening');
+            'subject_configs.index', $configCenterMenu->id,
+            30, '动态配置', 'fa-assistive-listening');
 
         // 项目配置
         $this->updateOrCreate(
-            'subject_settings.index', $systemManagerMenu->id, $order++, '项目配置', 'fa-server');
+            'subject_settings.index', $configCenterMenu->id, 40, '项目配置', 'fa-server');
 
         $this->updateOrCreate(
             "operation_log_dictionarys.index", $systemManagerMenu->id, $order++, "操作日志字典", "fa-line-chart");
