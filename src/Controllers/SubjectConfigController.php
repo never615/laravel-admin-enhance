@@ -40,6 +40,10 @@ class SubjectConfigController extends AdminCommonController
 
     protected function gridOption(Grid $grid)
     {
+        $grid->tools(function ($tools) {
+            $tools->append('<div class="alert alert-info" style="margin:0 0 10px 0;">动态配置保存后不会立即进入 LaravelS/Horizon 运行期内存。需要进入“配置中心 &gt; 发布与重启”执行发布并重启后，新的定位/推送等长驻进程才会读取最新值。</div>');
+        });
+
         $grid->type();
 
 
@@ -75,7 +79,7 @@ class SubjectConfigController extends AdminCommonController
         $form->select('type')
             ->options(SubjectConfig::TYPE)
             ->default('private')
-            ->help('front类型的配置会前端请求的主体初始化配置接口一起返回');
+            ->help('front类型的配置会前端请求的主体初始化配置接口一起返回。保存后需要进入“配置中心 > 发布与重启”执行发布并重启，LaravelS/Horizon 新进程才会读取最新运行期快照。');
 
         $form->displayE('show_default_key', '预设的一些key')
             ->setDisplay(true)

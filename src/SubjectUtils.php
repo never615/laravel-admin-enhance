@@ -41,6 +41,46 @@ class SubjectUtils
         SwooleTableUtils::set(self::SWOOLE_TABLE, $memKey, $value, (int) config('laravels.swoole_tables.' . self::SWOOLE_TABLE . '.ttl', 3600));
     }
 
+    private static function subjectIdFrom($subject): ?int
+    {
+        if (!$subject) {
+            return null;
+        }
+
+        if (is_numeric($subject)) {
+            return (int)$subject;
+        }
+
+        return (int)$subject->id;
+    }
+
+    private static function runtimeDynamicConfigValue($subjectId, $key): array
+    {
+        $subjectId = (int)$subjectId;
+        $key = (string)$key;
+        $values = config('subject_config_runtime.values', []);
+
+        if ($subjectId <= 0 || !is_array($values)) {
+            return [
+                'hit' => false,
+                'value' => null,
+            ];
+        }
+
+        $configs = $values[$subjectId] ?? $values[(string)$subjectId] ?? null;
+        if (!is_array($configs) || !array_key_exists($key, $configs)) {
+            return [
+                'hit' => false,
+                'value' => null,
+            ];
+        }
+
+        return [
+            'hit' => true,
+            'value' => $configs[$key],
+        ];
+    }
+
     /**
      * 获取只有项目拥有者才能编辑的配置项
      *
@@ -364,37 +404,29 @@ class SubjectUtils
      */
     public static function getDynamicKeyConfigByOwner($key, $subject = null, $default = null)
     {
-        $subjectId = null;
+        $subjectId = self::subjectIdFrom($subject);
 
-        if ($subject) {
-            if (is_numeric($subject)) {
-                $subjectId = $subject;
-            } else {
-                $subjectId = $subject->id;
-            }
+        if (!$subjectId) {
+            $subjectId = self::getSubjectId();
+        }
+
+        $runtimeValue = self::runtimeDynamicConfigValue($subjectId, $key);
+        if ($runtimeValue['hit']) {
+            return $runtimeValue['value'];
         }
 
         // L1: swoole_table 跨 worker 共享缓存
-        $memKey = 'dk_' . ($subjectId ?: 'null') . '_' . $key;
+        $memKey = 'dk_' . $subjectId . '_' . $key;
         $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
         if (!is_null($swooleVal)) {
             return $swooleVal;
         }
 
         // L2: Redis
-        if ($subjectId) {
-            $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-            if (!is_null($value)) {
-                self::cacheConfigResult($memKey, $value);
-                return $value;
-            }
-        } else {
-            $subjectId = self::getSubjectId();
-            $memKey = 'dk_' . $subjectId . '_' . $key;
-            $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
-            if (!is_null($swooleVal)) {
-                return $swooleVal;
-            }
+        $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
+        if (!is_null($value)) {
+            self::cacheConfigResult($memKey, $value);
+            return $value;
         }
 
         // L4: DB
