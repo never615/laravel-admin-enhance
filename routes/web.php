@@ -76,6 +76,10 @@ Route::group([
             $router->resource('videos', 'VideoController');
 
             //主体配置管理: 动态配置
+            $router->get('subject-config-module', 'SubjectConfigModuleController@index')
+                ->name('subject_configs.form');
+            $router->post('subject-config-module', 'SubjectConfigModuleController@save')
+                ->name('subject_configs.form.save');
             $router->resource('subject_configs', 'SubjectConfigController');
 
             //主体配置管理:一个表中的一行数据配置一个主体
@@ -106,7 +110,6 @@ Route::group([
 //----------------------------------------  管理端结束  -----------------------------------------------
 
 });
-
 
 
 

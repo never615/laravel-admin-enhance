@@ -36,6 +36,10 @@ class ConfigManagerMenuSeeder extends Seeder
             'traditional_configs', $configCenterMenu->id, 90, '传统配置', 'fa-archive');
 
         $this->updateOrCreate(
+            'subject_configs.form', $configCenterMenu->id,
+            5, '项目动态配置', 'fa-sliders');
+
+        $this->updateOrCreate(
             'subject_configs.index', $traditionalConfigMenu->id,
             10, '动态配置', 'fa-assistive-listening');
 

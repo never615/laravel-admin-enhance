@@ -68,6 +68,8 @@ class AdminmanagerSeeder extends Seeder
         $this->createPermissions('操作日志字典', 'operation_log_dictionarys');
 
         $this->createPermissions('项目配置', 'subject_settings', true, 0, false);
+        $this->createPermissions('项目动态配置', 'subject_configs.form', false, 0, false);
+        $this->createPermissions('项目动态配置保存', 'subject_configs.form.save', false, 0, false);
 
 //        $this->createPermissions('文件', 'uploads');
 
