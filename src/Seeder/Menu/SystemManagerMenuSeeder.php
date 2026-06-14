@@ -27,7 +27,7 @@ class SystemManagerMenuSeeder extends Seeder
     public function run()
     {
 
-        $order = 4;
+        $order = 3;
 
         $systemManagerMenu = $this->updateOrCreate(
             'system_manager', 0, $order++, '系统管理', 'fa-windows');
@@ -46,22 +46,6 @@ class SystemManagerMenuSeeder extends Seeder
             'import_settings.index', $systemManagerMenu->id,
             $order++, '导入配置', 'fa-connectdevelop');
 
-        $configCenterMenu = $this->updateOrCreate(
-            'config_center', 0, $order++, '配置中心', 'fa-sliders');
-
-        $traditionalConfigMenu = $this->updateOrCreate(
-            'traditional_configs', $configCenterMenu->id, 90, '传统配置', 'fa-archive');
-
-        $this->updateOrCreate(
-            'subject_configs.index', $traditionalConfigMenu->id,
-            10, '动态配置', 'fa-assistive-listening');
-
-        // 项目配置
-        $this->updateOrCreate(
-            'subject_settings.index', $traditionalConfigMenu->id, 20, '项目配置', 'fa-server');
-
-        $this->updateOrCreate(
-            "operation_log_dictionarys.index", $systemManagerMenu->id, $order++, "操作日志字典", "fa-line-chart");
 
         $this->updateOrCreate(
             'api_permissions.index', $systemManagerMenu->id,

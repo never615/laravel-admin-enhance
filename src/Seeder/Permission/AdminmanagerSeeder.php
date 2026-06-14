@@ -65,6 +65,7 @@ class AdminmanagerSeeder extends Seeder
          * ------------------------  操作日志  ---------------------------
          */
         $this->createPermissions('操作日志', 'logs');
+        $this->createPermissions('操作日志字典', 'operation_log_dictionarys');
 
         $this->createPermissions('项目配置', 'subject_settings', true, 0, false);
 

@@ -21,7 +21,7 @@ class AdminManagerMenuSeeder extends Seeder
     public function run()
     {
 
-        $order = 3;
+        $order = 2;
 
         $adminManagerMenu = $this->updateOrCreate(
             "admin_manager", 0, $order++, "管理", "fa-tasks");
@@ -44,9 +44,6 @@ class AdminManagerMenuSeeder extends Seeder
             "admin_user_groups.index", $adminManagerMenu->id,
             $order++, "主体管理账户分组", "fa-group");
 
-        $this->updateOrCreate(
-            'logs.index', $adminManagerMenu->id,
-            $order++, '操作日志', 'fa-history');
 
         $this->updateOrCreate(
             "import_records.index", $adminManagerMenu->id,
@@ -67,6 +64,10 @@ class AdminManagerMenuSeeder extends Seeder
         $this->updateOrCreate(
             "login_users.index", $adminManagerMenu->id,
             $order++, "在线账号", "fa-users");
+
+
+
+
 
     }
 }
