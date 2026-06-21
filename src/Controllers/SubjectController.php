@@ -291,6 +291,9 @@ class SubjectController extends AdminCommonController
             $form->select(SubjectConfigConstants::OWNER_CONFIG_PROJECT_TYPE,
                 '项目类型')->options(Subject::PROJECT_TYPE);
 
+            $form->switch(SubjectConfigConstants::OWNER_CONFIG_IS_MINI_PROGRAM,
+                '是否小程序项目');
+
             foreach ($this->subjectConfigExpandObjs as $subjectConfigExpandObj) {
                 $subjectConfigExpandObj->projectOwnerExtraConfigByJson($form, $this->currentId);
             }

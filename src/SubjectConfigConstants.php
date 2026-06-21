@@ -29,6 +29,10 @@ class SubjectConfigConstants
 
     //项目类型
     const OWNER_CONFIG_PROJECT_TYPE = 'project_type';
+
+    //是否小程序项目
+    const OWNER_CONFIG_IS_MINI_PROGRAM = 'is_mini_program';
+
     /**
      * 主体拥有者配置项
      */
