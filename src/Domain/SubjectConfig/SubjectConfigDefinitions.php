@@ -221,7 +221,7 @@ class SubjectConfigDefinitions
     private static function vendorDefinitions(): array
     {
         return [
-            self::definition('hytera_connect_ip', '海能达连接 IP', 'vendor', '172.31.1.1', 'string', '海能达 ACAPI 连接地址。', self::familyMeta('hytera')),
+            self::definition('hytera_connect_ip', '海能达连接 IP', 'vendor', '', 'string', '海能达 ACAPI 连接地址。未配置时不建立 ACAPI 连接。', self::familyMeta('hytera')),
             self::definition('hytera_connect_port', '海能达连接端口', 'vendor', '4300', 'integer', '海能达 ACAPI 连接端口。', self::familyMeta('hytera')),
             self::definition('hytera_login_name', '海能达登录名', 'vendor', 'hytera', 'string', '海能达 ACAPI 登录名。', self::familyMeta('hytera')),
             self::definition('hytera_password', '海能达密码', 'vendor', 'hytera', 'string', '海能达 ACAPI 密码。', self::familyMeta('hytera')),
