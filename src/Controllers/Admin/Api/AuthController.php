@@ -145,6 +145,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        if ($request->input('username') === 'system') {
+            throw new PermissionDeniedException("system账号禁止通过地图项目登录");
+        }
+
         if (strlen($request->password) >= 20) {
             //验证验证码对不对
             $capthca = $request->input('captcha');
