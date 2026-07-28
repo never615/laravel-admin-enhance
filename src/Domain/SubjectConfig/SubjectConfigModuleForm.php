@@ -2,12 +2,12 @@
 
 namespace Mallto\Admin\Domain\SubjectConfig;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
-use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Domain\NewConfig\NewConfigPublisher;
 use Mallto\Tool\Exception\ResourceException;
 
@@ -70,6 +70,10 @@ class SubjectConfigModuleForm
                 'value' => (string)$row->value,
                 'type' => (string)($row->type ?: 'private'),
                 'remark' => (string)($row->remark ?: ''),
+                'apply_mode' => SubjectConfigApplyMode::SNAPSHOT_RELOAD,
+                'apply_mode_label' => SubjectConfigApplyMode::label(
+                    SubjectConfigApplyMode::SNAPSHOT_RELOAD
+                ),
             ])
             ->values()
             ->all();
@@ -95,63 +99,110 @@ class SubjectConfigModuleForm
             throw new ResourceException('请先选择项目。');
         }
 
-        if (!Subject::query()->whereKey($subjectId)->exists()) {
-            throw new ResourceException('项目不存在或无权限访问。');
-        }
-
         $definitions = SubjectConfigDefinitions::definitions();
         $values = (array)($input['values'] ?? []);
         $historyValues = (array)($input['history'] ?? []);
         $stationRows = (array)($input['temporary_station'] ?? []);
 
-        $existingRows = SubjectConfig::query()
-            ->where('subject_id', $subjectId)
-            ->get()
-            ->keyBy('key');
-
-        foreach ($definitions as $key => $definition) {
-            $encodedKey = SubjectConfigDefinitions::encodedKey($key);
-            $existing = $existingRows->get($key);
-            $submittedValue = array_key_exists($encodedKey, $values)
-                ? $values[$encodedKey]
-                : ($existing ? $existing->value : ($definition['default_value'] ?? ''));
-            $value = $this->validateValue($key, $definition, $submittedValue);
-            $normalized = $this->normalizeValue($definition, $value);
-
-            if (!$this->shouldPersistFixedValue($definition, $normalized, $existing)) {
-                continue;
+        $changedKeys = DB::transaction(function () use (
+            $subjectId,
+            $definitions,
+            $values,
+            $historyValues,
+            $stationRows
+        ): array {
+            $subject = Subject::query()->whereKey($subjectId)->lockForUpdate()->first();
+            if (!$subject) {
+                throw new ResourceException('项目不存在或无权限访问。');
             }
 
-            $this->saveValue($subjectId, $key, $definition, $normalized, $existing);
+            $existingRows = SubjectConfig::query()
+                ->where('subject_id', $subjectId)
+                ->get()
+                ->keyBy('key');
+            $changedKeys = [];
+
+            foreach ($definitions as $key => $definition) {
+                $encodedKey = SubjectConfigDefinitions::encodedKey($key);
+                $existing = $existingRows->get($key);
+                $submittedValue = array_key_exists($encodedKey, $values)
+                    ? $values[$encodedKey]
+                    : ($existing ? $existing->value : ($definition['default_value'] ?? ''));
+                $value = $this->validateValue($key, $definition, $submittedValue);
+                $normalized = $this->normalizeValue($definition, $value);
+
+                if (!$this->shouldPersistFixedValue($definition, $normalized, $existing)) {
+                    continue;
+                }
+
+                $saved = $this->saveValue($subjectId, $key, $definition, $normalized, $existing);
+                $existingRows->put($key, $saved);
+                $changedKeys[] = $key;
+            }
+
+            foreach ($historyValues as $encodedKey => $value) {
+                $key = $this->decodeKey((string)$encodedKey);
+                if ($key === '' || isset($definitions[$key]) || str_starts_with($key, self::TEMPORARY_STATION_PREFIX)) {
+                    continue;
+                }
+
+                $existing = $existingRows->get($key);
+                $normalized = trim((string)$value);
+                if (!$existing || (string)$existing->value === $normalized) {
+                    continue;
+                }
+
+                $this->saveValue($subjectId, $key, [
+                    'type' => 'string',
+                    'subject_config_type' => $existing->type ?: 'private',
+                    'remark' => $existing->remark ?: '',
+                ], $normalized, $existing);
+                $changedKeys[] = $key;
+            }
+
+            return array_merge(
+                $changedKeys,
+                $this->saveTemporaryStationRows($subjectId, $stationRows, $existingRows)
+            );
+        });
+
+        $changedKeys = array_values(array_unique(array_map('strval', $changedKeys)));
+        sort($changedKeys);
+        if ($changedKeys !== []) {
+            $this->publisher->publish(false);
         }
 
-        foreach ($historyValues as $encodedKey => $value) {
-            $key = $this->decodeKey((string)$encodedKey);
-            if ($key === '' || isset($definitions[$key]) || str_starts_with($key, self::TEMPORARY_STATION_PREFIX)) {
-                continue;
+        $liveKeys = [];
+        $restartKeys = [];
+        foreach ($changedKeys as $key) {
+            if (SubjectConfigDefinitions::isLiveCached($key)) {
+                $liveKeys[] = $key;
+            } else {
+                $restartKeys[] = $key;
             }
-
-            $existing = $existingRows->get($key);
-            if (!$existing) {
-                continue;
-            }
-
-            $this->saveValue($subjectId, $key, [
-                'type' => 'string',
-                'subject_config_type' => $existing->type ?: 'private',
-                'remark' => $existing->remark ?: '',
-            ], trim((string)$value), $existing);
         }
 
-        $this->saveTemporaryStationRows($subjectId, $stationRows, $existingRows);
-
-        $this->publisher->publish(false);
-
-        return $this->snapshot($subjectId);
+        return [
+            'snapshot' => $this->snapshot($subjectId),
+            'apply' => [
+                'changed_keys' => array_map(static fn(string $key): array => [
+                    'key' => $key,
+                    'apply_mode' => SubjectConfigDefinitions::applyModeFor($key),
+                ], $changedKeys),
+                'live_keys' => $liveKeys,
+                'restart_keys' => $restartKeys,
+                'requires_restart' => $restartKeys !== [],
+                'published' => $changedKeys !== [],
+            ],
+        ];
     }
 
-    private function saveTemporaryStationRows(int $subjectId, array $stationRows, $existingRows): void
+    /**
+     * @return array<int, string>
+     */
+    private function saveTemporaryStationRows(int $subjectId, array $stationRows, $existingRows): array
     {
+        $changedKeys = [];
         foreach ($stationRows as $row) {
             if (!is_array($row)) {
                 continue;
@@ -169,13 +220,28 @@ class SubjectConfigModuleForm
                 throw new ResourceException('临时基站 key 必须以 ' . self::TEMPORARY_STATION_PREFIX . ' 开头。');
             }
 
+            $existing = $existingRows->get($key);
+            $valueChanged = !$existing || (string)$existing->value !== $value;
+            $remarkChanged = $existing && (string)($existing->remark ?? '') !== $remark;
+            if (!$valueChanged && !$remarkChanged) {
+                continue;
+            }
+
+            if ($existing) {
+                $existing->remark = $remark;
+            }
             $saved = $this->saveValue($subjectId, $key, [
                 'type' => 'string',
                 'subject_config_type' => 'private',
                 'remark' => $remark,
-            ], $value, $existingRows->get($key));
+            ], $value, $existing);
             $existingRows->put($key, $saved);
+            if ($valueChanged) {
+                $changedKeys[] = $key;
+            }
         }
+
+        return $changedKeys;
     }
 
     private function saveValue(
@@ -198,7 +264,6 @@ class SubjectConfigModuleForm
         }
 
         $config->save();
-        SubjectUtils::clearDynamicConfig($key, $subjectId);
 
         return $config;
     }
@@ -206,12 +271,12 @@ class SubjectConfigModuleForm
     private function shouldPersistFixedValue(array $definition, string $value, ?SubjectConfig $existing): bool
     {
         if ($existing) {
-            return true;
+            return (string)$existing->value !== $value;
         }
 
         $default = $this->normalizeValue($definition, (string)($definition['default_value'] ?? ''));
 
-        return $value !== '' && $value !== $default;
+        return $value !== $default;
     }
 
     private function rowSnapshot(string $key, array $definition, ?SubjectConfig $row, bool $history): array
@@ -245,6 +310,8 @@ class SubjectConfigModuleForm
                 : (string)($definition['subject_config_type'] ?? 'private'),
             'source' => $source,
             'history' => $history,
+            'apply_mode' => SubjectConfigDefinitions::applyModeFor($key),
+            'apply_mode_label' => SubjectConfigDefinitions::applyModeLabelFor($key),
         ];
     }
 

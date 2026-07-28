@@ -2,24 +2,52 @@
 
 namespace Mallto\Admin\Observers;
 
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\SubjectUtils;
 
 class SubjectConfigObserver
 {
-
-    /**
-     * Handle the user "updated" event.
-     *
-     * @param SubjectConfig $subjectConfig
-     *
-     * @return void
-     */
-    public function updated(SubjectConfig $subjectConfig)
+    public function saved(SubjectConfig $subjectConfig): void
     {
-        //处理刷新缓存
-        Cache::store('local_redis')->put('sub_dyna_conf_' . $subjectConfig->key . '_' . $subjectConfig->subject_id,
-            $subjectConfig->value, 3600);
+        $this->invalidateAfterCommit($subjectConfig);
     }
 
+    public function deleted(SubjectConfig $subjectConfig): void
+    {
+        $this->invalidateAfterCommit($subjectConfig);
+    }
+
+    private function invalidateAfterCommit(SubjectConfig $subjectConfig): void
+    {
+        $identities = [];
+        foreach ([
+            [
+                'subject_id' => (int)$subjectConfig->getOriginal('subject_id'),
+                'key' => (string)$subjectConfig->getOriginal('key'),
+            ],
+            [
+                'subject_id' => (int)$subjectConfig->subject_id,
+                'key' => (string)$subjectConfig->key,
+            ],
+        ] as $identity) {
+            if ($identity['subject_id'] <= 0 || $identity['key'] === '') {
+                continue;
+            }
+
+            $identities[$identity['subject_id'] . "\0" . $identity['key']] = $identity;
+        }
+
+        if ($identities === []) {
+            return;
+        }
+
+        DB::connection($subjectConfig->getConnectionName())->afterCommit(
+            static function () use ($identities): void {
+                foreach ($identities as $identity) {
+                    SubjectUtils::clearDynamicConfig($identity['key'], $identity['subject_id']);
+                }
+            }
+        );
+    }
 }

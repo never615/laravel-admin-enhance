@@ -25,6 +25,7 @@ class SubjectConfigDefinition
             'placeholder' => '',
             'family_key' => '',
             'family_label' => '',
+            'apply_mode' => SubjectConfigApplyMode::SNAPSHOT_RELOAD,
         ], $meta);
     }
 

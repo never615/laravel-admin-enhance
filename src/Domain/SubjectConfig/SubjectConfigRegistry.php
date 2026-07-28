@@ -54,6 +54,11 @@ class SubjectConfigRegistry
         });
     }
 
+    public static function definition(string $key): ?array
+    {
+        return self::$definitions[$key] ?? null;
+    }
+
     private static function handleDuplicate(string $type, string $key): void
     {
         $message = sprintf('Duplicate subject config %s registered: %s', $type, $key);

@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Request;
 use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
+use Mallto\Admin\Domain\SubjectConfig\SubjectConfigDefinitions;
+use Mallto\Admin\Domain\SubjectConfig\SubjectConfigLiveCache;
 use Mallto\Admin\Exception\SubjectConfigException;
 use Mallto\Admin\SwooleTableUtils;
 use Mallto\Tool\Exception\HttpException;
@@ -79,6 +81,56 @@ class SubjectUtils
             'hit' => true,
             'value' => $configs[$key],
         ];
+    }
+
+    /**
+     * @return array{found: bool, value: mixed}
+     */
+    private static function loadDynamicConfigPayload($subjectId, string $key): array
+    {
+        $subjectConfig = SubjectConfig::query()
+            ->where('subject_id', $subjectId)
+            ->where('key', $key)
+            ->first();
+
+        return [
+            'found' => $subjectConfig !== null,
+            'value' => $subjectConfig?->value,
+        ];
+    }
+
+    private static function resolveDynamicConfigPayload(
+        array $payload,
+        string $key,
+        $subjectId,
+        $default = null
+    ) {
+        if (!empty($payload['found'])) {
+            return $payload['value'] ?? null;
+        }
+
+        if (!is_null($default)) {
+            return $default;
+        }
+
+        throw new SubjectConfigException($key . "未配置," . $subjectId);
+    }
+
+    private static function getSnapshotDynamicConfigFallback($subjectId, string $key, $default = null)
+    {
+        $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
+        $value = Cache::store('local_redis')->get($redisKey);
+        if (!is_null($value)) {
+            return $value;
+        }
+
+        $payload = self::loadDynamicConfigPayload($subjectId, $key);
+        $value = self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
+
+        // 快照未命中时保留原有兼容缓存；正式运行值仍由发布后的进程内快照提供。
+        Cache::store('local_redis')->forever($redisKey, $value);
+
+        return $value;
     }
 
     /**
@@ -235,55 +287,33 @@ class SubjectUtils
 
     public static function clearDynamicConfig($key, $subject = null)
     {
-        $subjectId = null;
-
-        if ($subject) {
-            if (is_numeric($subject)) {
-                $subjectId = $subject;
-            } else {
-                $subjectId = $subject->id;
-            }
-        }
-
-        if ($subjectId) {
-            $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
-            $memKey = 'dk_' . $subjectId . '_' . $key;
-            Cache::store('local_redis')->forget($redisKey);
-            SwooleTableUtils::del(self::SWOOLE_TABLE, $memKey);
-            // 广播到所有服务器
-            self::broadcastCacheInvalidate($memKey, [$redisKey]);
-        } else {
+        $subjectId = self::subjectIdFrom($subject);
+        if (!$subjectId) {
             $subjectId = self::getSubjectId();
-            if ($subjectId) {
-                $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
-                $memKey = 'dk_' . $subjectId . '_' . $key;
-                Cache::store('local_redis')->forget($redisKey);
-                SwooleTableUtils::del(self::SWOOLE_TABLE, $memKey);
-                // 广播到所有服务器
-                self::broadcastCacheInvalidate($memKey, [$redisKey]);
-            }
         }
-    }
 
-    /**
-     * 通过 Redis Pub/Sub 广播缓存清理消息到所有服务器。
-     *
-     * 与 SwooleTableCache::broadcastDel() 使用相同的频道和消息格式，
-     * 由 SwooleTableCacheSubscribeProcess 统一处理。
-     */
-    private static function broadcastCacheInvalidate(string $swooleKey, array $redisKeys = []): void
-    {
-        try {
-            Redis::connection('default')->publish('swoole_table:invalidate', json_encode([
-                'action'     => 'del',
-                'table'      => self::SWOOLE_TABLE,
-                'swoole_key' => $swooleKey,
-                'redis_keys' => $redisKeys,
-            ]));
-        } catch (\Throwable $e) {
-            // 广播失败不影响主流程，其他服务器会通过 TTL 自然过期
-            \Illuminate\Support\Facades\Log::error('[SubjectUtils] 缓存广播失败: ' . $e->getMessage());
+        if (!$subjectId) {
+            return null;
         }
+
+        $key = (string)$key;
+        if (SubjectConfigDefinitions::isLiveCached($key)) {
+            return app(SubjectConfigLiveCache::class)->invalidate((int)$subjectId, $key);
+        }
+
+        try {
+            Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Log::warning(sprintf(
+                'subject config compatibility cache invalidate failed: subject_id=%d key=%s exception=%s message=%s',
+                (int)$subjectId,
+                $key,
+                $exception::class,
+                $exception->getMessage()
+            ));
+        }
+
+        return null;
     }
 
     /**
@@ -410,44 +440,32 @@ class SubjectUtils
             $subjectId = self::getSubjectId();
         }
 
-        $runtimeValue = self::runtimeDynamicConfigValue($subjectId, $key);
-        if ($runtimeValue['hit']) {
-            return $runtimeValue['value'];
+        $key = (string)$key;
+        if (!SubjectConfigDefinitions::isLiveCached($key)) {
+            $runtimeValue = self::runtimeDynamicConfigValue($subjectId, $key);
+            if ($runtimeValue['hit']) {
+                return $runtimeValue['value'];
+            }
+
+            return self::getSnapshotDynamicConfigFallback($subjectId, $key, $default);
         }
 
-        // L1: swoole_table 跨 worker 共享缓存
-        $memKey = 'dk_' . $subjectId . '_' . $key;
-        $swooleVal = SwooleTableUtils::get(self::SWOOLE_TABLE, $memKey);
-        if (!is_null($swooleVal)) {
-            return $swooleVal;
+        if ((int)$subjectId <= 0) {
+            return self::resolveDynamicConfigPayload(
+                self::loadDynamicConfigPayload($subjectId, $key),
+                $key,
+                $subjectId,
+                $default
+            );
         }
 
-        // L2: Redis
-        $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-        if (!is_null($value)) {
-            self::cacheConfigResult($memKey, $value);
-            return $value;
-        }
+        $payload = app(SubjectConfigLiveCache::class)->remember(
+            (int)$subjectId,
+            $key,
+            static fn(): array => self::loadDynamicConfigPayload($subjectId, $key)
+        );
 
-        // L4: DB
-        $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
-            ->where("key", $key)
-            ->first();
-
-        if ($subjectConfig) {
-            $value = $subjectConfig->value;
-        } elseif (!is_null($default)) {
-            $value = $default;
-        } else {
-            throw new SubjectConfigException($key . "未配置," . $subjectId);
-        }
-
-        // 配置数据修改时由 SubjectConfigController saved 回调主动清理，无需 TTL 过期
-        Cache::store('local_redis')->forever('sub_dyna_conf_' . $key . '_' . $subjectId, $value);
-
-        self::cacheConfigResult($memKey, $value);
-
-        return $value;
+        return self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
     }
 
 

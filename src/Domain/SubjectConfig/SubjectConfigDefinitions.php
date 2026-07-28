@@ -61,6 +61,25 @@ class SubjectConfigDefinitions
         return (string)(self::module($module)['title'] ?? $module);
     }
 
+    public static function applyModeFor(string $key): string
+    {
+        $definition = SubjectConfigRegistry::definition($key);
+
+        return SubjectConfigApplyMode::normalize(
+            is_array($definition) ? ($definition['apply_mode'] ?? null) : null
+        );
+    }
+
+    public static function isLiveCached(string $key): bool
+    {
+        return self::applyModeFor($key) === SubjectConfigApplyMode::LIVE_CACHED;
+    }
+
+    public static function applyModeLabelFor(string $key): string
+    {
+        return SubjectConfigApplyMode::label(self::applyModeFor($key));
+    }
+
     public static function encodedKey(string $key): string
     {
         return rtrim(strtr(base64_encode($key), '+/', '-_'), '=');

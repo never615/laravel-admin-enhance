@@ -9,7 +9,6 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
 use Mallto\Admin\Data\SubjectConfig;
-use Mallto\Admin\SubjectUtils;
 
 /**
  * Created by PhpStorm.
@@ -41,7 +40,7 @@ class SubjectConfigController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->tools(function ($tools) {
-            $tools->append('<div class="alert alert-info" style="margin:0 0 10px 0;">动态配置保存后不会立即进入 LaravelS/Horizon 运行期内存。需要进入“配置中心 &gt; 发布与重启”执行发布并重启后，新的定位/推送等长驻进程才会读取最新值。</div>');
+            $tools->append('<div class="alert alert-info" style="margin:0 0 10px 0;">不同动态配置的生效方式不同，请在“项目动态配置”页查看模式标记；未登记或显示“需发布重启”的 key 必须执行发布与重启。</div>');
         });
 
         $grid->type();
@@ -79,7 +78,7 @@ class SubjectConfigController extends AdminCommonController
         $form->select('type')
             ->options(SubjectConfig::TYPE)
             ->default('private')
-            ->help('front类型的配置会前端请求的主体初始化配置接口一起返回。保存后需要进入“配置中心 > 发布与重启”执行发布并重启，LaravelS/Horizon 新进程才会读取最新运行期快照。');
+            ->help('front类型的配置会随前端主体初始化接口返回。请在“项目动态配置”页查看该 key 的生效模式；未知 key 默认需发布重启。');
 
         $form->displayE('show_default_key', '预设的一些key')
             ->setDisplay(true)
@@ -98,10 +97,5 @@ class SubjectConfigController extends AdminCommonController
         $form->textarea('value')->rows(15);
         $form->textarea('remark');
 
-        $form->saved(function (Form $form) {
-            if ($form->model()->key) {
-                SubjectUtils::clearDynamicConfig($form->model()->key, $form->model()->subject_id);
-            }
-        });
     }
 }

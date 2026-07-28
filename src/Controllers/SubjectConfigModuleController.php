@@ -29,7 +29,7 @@ class SubjectConfigModuleController extends Controller
         $subjectId = (int)$request->get('subject_id');
 
         try {
-            $form->save($request->all());
+            $result = $form->save($request->all());
         } catch (ValidationException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
@@ -38,7 +38,7 @@ class SubjectConfigModuleController extends Controller
             return back()->withInput();
         }
 
-        admin_toastr('项目动态配置已保存，运行期快照已发布；需要长驻进程生效时请执行发布与重启。');
+        admin_toastr($this->saveMessage((array)($result['apply'] ?? [])));
 
         return redirect()->route('subject_configs.form', ['subject_id' => $subjectId]);
     }
@@ -133,7 +133,8 @@ HTML;
 
         return '<div class="alert alert-info subject-config-module-notice">'
             . '当前项目：<strong>' . $this->escape((string)$subjectName) . '</strong>。'
-            . '保存后会发布运行期快照，但 LaravelS/Horizon 长驻进程需要“发布与重启”后读取新值。'
+            . '“保存后生效”配置会在数据库提交后清理共享缓存，通常下一次调用即可读取；缓存失效异常时最长按 TTL 收敛。'
+            . '“需发布重启”配置继续写入运行期快照，必须执行“发布与重启”。'
             . '临时基站 sa_lo_st_ 配置最多 ' . $this->escape((string)$limit) . ' 个。'
             . '</div>';
     }
@@ -175,11 +176,12 @@ HTML;
             $name = $inputGroup . '[' . $this->escape($encodedKey) . ']';
             $familyBadge = $this->renderFamilyBadge($row);
             $historyBadge = !empty($row['history']) ? '<span class="label label-warning subject-config-module-badge">历史</span>' : '';
+            $applyBadge = $this->renderApplyModeBadge($row);
 
             $html .= '<tr class="subject-config-module-row" data-module="' . $this->escape($module) . '">'
                 . '<td class="config-name"><strong>' . $this->escape((string)$row['name']) . '</strong>'
                 . '<span class="label label-default subject-config-module-badge">' . $this->escape((string)$row['module_label']) . '</span>'
-                . $familyBadge . $historyBadge
+                . $familyBadge . $historyBadge . $applyBadge
                 . '<div class="subject-config-module-help subject-config-module-code">' . $this->escape((string)$row['key']) . '</div>'
                 . '<div class="subject-config-module-help">类型: ' . $this->escape((string)$row['subject_config_type']) . ' / 来源: ' . $this->escape((string)$row['source']) . '</div></td>'
                 . '<td class="config-value">' . $this->renderInput($row, $name)
@@ -209,6 +211,7 @@ HTML;
             $html .= '<tr class="subject-config-module-row" data-module="temporary_station">'
                 . '<td class="config-name"><strong>临时基站保存开关</strong>'
                 . '<span class="label label-default subject-config-module-badge">临时基站</span>'
+                . '<span class="label label-warning subject-config-module-badge">需发布重启</span>'
                 . '<div class="subject-config-module-help subject-config-module-code">sa_lo_st_{mac}</div>'
                 . '<div class="subject-config-module-help">类型: ' . $this->escape((string)($row['type'] ?? 'private')) . '</div></td>'
                 . '<td class="config-value">'
@@ -262,6 +265,39 @@ HTML;
         }
 
         return '<span class="label label-info subject-config-module-badge">' . $this->escape($familyLabel) . '</span>';
+    }
+
+    private function renderApplyModeBadge(array $row): string
+    {
+        if (($row['apply_mode'] ?? '') === 'live_cached') {
+            return '<span class="label label-success subject-config-module-badge">保存后生效</span>';
+        }
+
+        return '<span class="label label-warning subject-config-module-badge">需发布重启</span>';
+    }
+
+    private function saveMessage(array $apply): string
+    {
+        $liveKeys = array_values((array)($apply['live_keys'] ?? []));
+        $restartKeys = array_values((array)($apply['restart_keys'] ?? []));
+
+        if ($liveKeys === [] && $restartKeys === []) {
+            return '未检测到配置变化。';
+        }
+
+        if ($restartKeys === []) {
+            $ttl = max(1, (int)config('subject_config_runtime.live_cache.ttl_seconds', 60));
+
+            return '项目动态配置已保存；实时缓存配置将在下一次调用读取，最长 '
+                . $ttl . ' 秒收敛。';
+        }
+
+        $restartList = implode('、', $restartKeys);
+        if ($liveKeys === []) {
+            return '项目动态配置已保存并发布快照；以下配置需发布重启后生效：' . $restartList;
+        }
+
+        return '实时缓存配置已开始生效；以下配置仍需发布重启：' . $restartList;
     }
 
     private function renderFilterScript(): string
