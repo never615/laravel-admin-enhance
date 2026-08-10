@@ -59,7 +59,6 @@ HTML;
         }
 
         $action = route('subject_configs.form.save');
-        $publishRestartUrl = route('new_configs.publish_restart');
         $legacyUrl = route('subject_configs.index');
         $filters = $this->renderModuleFilters($snapshot);
         $rows = $this->renderRows($snapshot['rows'] ?? [], 'values');
@@ -95,7 +94,6 @@ HTML;
         </div>
         <div class="subject-config-module-actions">
             <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> 保存项目动态配置</button>
-            <a class="btn btn-warning" href="{$this->escape($publishRestartUrl)}"><i class="fa fa-refresh"></i> 发布与重启</a>
             <a class="btn btn-default" href="{$this->escape($legacyUrl)}"><i class="fa fa-list"></i> 传统动态配置</a>
         </div>
     </form>
@@ -133,8 +131,7 @@ HTML;
 
         return '<div class="alert alert-info subject-config-module-notice">'
             . '当前项目：<strong>' . $this->escape((string)$subjectName) . '</strong>。'
-            . '“保存后生效”配置会在数据库提交后清理共享缓存，通常下一次调用即可读取；缓存失效异常时最长按 TTL 收敛。'
-            . '“需发布重启”配置继续写入运行期快照，必须执行“发布与重启”。'
+            . '保存后通过运行缓存生效，数据库提交后会清理共享缓存，通常下一次调用即可读取；异常时最长按 TTL 收敛。'
             . '临时基站 sa_lo_st_ 配置最多 ' . $this->escape((string)$limit) . ' 个。'
             . '</div>';
     }
@@ -211,7 +208,7 @@ HTML;
             $html .= '<tr class="subject-config-module-row" data-module="temporary_station">'
                 . '<td class="config-name"><strong>临时基站保存开关</strong>'
                 . '<span class="label label-default subject-config-module-badge">临时基站</span>'
-                . '<span class="label label-warning subject-config-module-badge">需发布重启</span>'
+                . '<span class="label label-success subject-config-module-badge">保存后生效</span>'
                 . '<div class="subject-config-module-help subject-config-module-code">sa_lo_st_{mac}</div>'
                 . '<div class="subject-config-module-help">类型: ' . $this->escape((string)($row['type'] ?? 'private')) . '</div></td>'
                 . '<td class="config-value">'
@@ -273,7 +270,7 @@ HTML;
             return '<span class="label label-success subject-config-module-badge">保存后生效</span>';
         }
 
-        return '<span class="label label-warning subject-config-module-badge">需发布重启</span>';
+        return '<span class="label label-success subject-config-module-badge">保存后生效</span>';
     }
 
     private function saveMessage(array $apply): string
@@ -288,16 +285,11 @@ HTML;
         if ($restartKeys === []) {
             $ttl = max(1, (int)config('subject_config_runtime.live_cache.ttl_seconds', 60));
 
-            return '项目动态配置已保存；实时缓存配置将在下一次调用读取，最长 '
+            return '项目动态配置已保存；保存后通过运行缓存生效，最长 '
                 . $ttl . ' 秒收敛。';
         }
 
-        $restartList = implode('、', $restartKeys);
-        if ($liveKeys === []) {
-            return '项目动态配置已保存并发布快照；以下配置需发布重启后生效：' . $restartList;
-        }
-
-        return '实时缓存配置已开始生效；以下配置仍需发布重启：' . $restartList;
+        return '项目动态配置已保存；保存后通过运行缓存生效。';
     }
 
     private function renderFilterScript(): string

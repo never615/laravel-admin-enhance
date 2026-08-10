@@ -168,19 +168,8 @@ class SubjectConfigModuleForm
 
         $changedKeys = array_values(array_unique(array_map('strval', $changedKeys)));
         sort($changedKeys);
-        if ($changedKeys !== []) {
-            $this->publisher->publish(false);
-        }
-
-        $liveKeys = [];
+        $liveKeys = $changedKeys;
         $restartKeys = [];
-        foreach ($changedKeys as $key) {
-            if (SubjectConfigDefinitions::isLiveCached($key)) {
-                $liveKeys[] = $key;
-            } else {
-                $restartKeys[] = $key;
-            }
-        }
 
         return [
             'snapshot' => $this->snapshot($subjectId),
@@ -192,7 +181,7 @@ class SubjectConfigModuleForm
                 'live_keys' => $liveKeys,
                 'restart_keys' => $restartKeys,
                 'requires_restart' => $restartKeys !== [],
-                'published' => $changedKeys !== [],
+                'published' => false,
             ],
         ];
     }

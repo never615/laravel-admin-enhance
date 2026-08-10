@@ -40,7 +40,7 @@ class SubjectConfigController extends AdminCommonController
     protected function gridOption(Grid $grid)
     {
         $grid->tools(function ($tools) {
-            $tools->append('<div class="alert alert-info" style="margin:0 0 10px 0;">不同动态配置的生效方式不同，请在“项目动态配置”页查看模式标记；未登记或显示“需发布重启”的 key 必须执行发布与重启。</div>');
+            $tools->append('<div class="alert alert-info" style="margin:0 0 10px 0;">项目动态配置保存后通过运行缓存生效，无需发布或重启。</div>');
         });
 
         $grid->type();
@@ -78,7 +78,7 @@ class SubjectConfigController extends AdminCommonController
         $form->select('type')
             ->options(SubjectConfig::TYPE)
             ->default('private')
-            ->help('front类型的配置会随前端主体初始化接口返回。请在“项目动态配置”页查看该 key 的生效模式；未知 key 默认需发布重启。');
+            ->help('front类型的配置会随前端主体初始化接口返回。保存后通过运行缓存生效。');
 
         $form->displayE('show_default_key', '预设的一些key')
             ->setDisplay(true)
