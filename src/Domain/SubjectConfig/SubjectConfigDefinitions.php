@@ -72,7 +72,7 @@ class SubjectConfigDefinitions
 
     public static function isLiveCached(string $key): bool
     {
-        return self::applyModeFor($key) === SubjectConfigApplyMode::LIVE_CACHED;
+        return self::applyModeFor($key) === SubjectConfigApplyMode::SHARED_REDIS;
     }
 
     public static function applyModeLabelFor(string $key): string

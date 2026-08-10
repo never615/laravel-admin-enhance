@@ -56,33 +56,6 @@ class SubjectUtils
         return (int)$subject->id;
     }
 
-    private static function runtimeDynamicConfigValue($subjectId, $key): array
-    {
-        $subjectId = (int)$subjectId;
-        $key = (string)$key;
-        $values = config('subject_config_runtime.values', []);
-
-        if ($subjectId <= 0 || !is_array($values)) {
-            return [
-                'hit' => false,
-                'value' => null,
-            ];
-        }
-
-        $configs = $values[$subjectId] ?? $values[(string)$subjectId] ?? null;
-        if (!is_array($configs) || !array_key_exists($key, $configs)) {
-            return [
-                'hit' => false,
-                'value' => null,
-            ];
-        }
-
-        return [
-            'hit' => true,
-            'value' => $configs[$key],
-        ];
-    }
-
     /**
      * @return array{found: bool, value: mixed}
      */
@@ -91,6 +64,7 @@ class SubjectUtils
         $subjectConfig = SubjectConfig::query()
             ->where('subject_id', $subjectId)
             ->where('key', $key)
+            ->orderBy('id')
             ->first();
 
         return [
@@ -116,21 +90,20 @@ class SubjectUtils
         throw new SubjectConfigException($key . "未配置," . $subjectId);
     }
 
-    private static function getSnapshotDynamicConfigFallback($subjectId, string $key, $default = null)
+    /** @return array{found: bool, value: mixed} */
+    private static function loadDynamicPublicConfigPayload($subjectId, string $key): array
     {
-        $redisKey = 'sub_dyna_conf_' . $key . '_' . $subjectId;
-        $value = Cache::store('local_redis')->get($redisKey);
-        if (!is_null($value)) {
-            return $value;
-        }
+        $subjectConfig = SubjectConfig::query()
+            ->where('subject_id', $subjectId)
+            ->whereIn('type', ['public', 'front'])
+            ->where('key', $key)
+            ->orderBy('id')
+            ->first();
 
-        $payload = self::loadDynamicConfigPayload($subjectId, $key);
-        $value = self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
-
-        // 快照未命中时保留原有兼容缓存；正式运行值仍由发布后的进程内快照提供。
-        Cache::store('local_redis')->forever($redisKey, $value);
-
-        return $value;
+        return [
+            'found' => $subjectConfig !== null,
+            'value' => $subjectConfig?->value,
+        ];
     }
 
     /**
@@ -296,24 +269,7 @@ class SubjectUtils
             return null;
         }
 
-        $key = (string)$key;
-        if (SubjectConfigDefinitions::isLiveCached($key)) {
-            return app(SubjectConfigLiveCache::class)->invalidate((int)$subjectId, $key);
-        }
-
-        try {
-            Cache::store('local_redis')->forget('sub_dyna_conf_' . $key . '_' . $subjectId);
-        } catch (\Throwable $exception) {
-            \Illuminate\Support\Facades\Log::warning(sprintf(
-                'subject config compatibility cache invalidate failed: subject_id=%d key=%s exception=%s message=%s',
-                (int)$subjectId,
-                $key,
-                $exception::class,
-                $exception->getMessage()
-            ));
-        }
-
-        return null;
+        return app(SubjectConfigLiveCache::class)->invalidate((int)$subjectId, (string)$key);
     }
 
     /**
@@ -441,14 +397,6 @@ class SubjectUtils
         }
 
         $key = (string)$key;
-        if (!SubjectConfigDefinitions::isLiveCached($key)) {
-            $runtimeValue = self::runtimeDynamicConfigValue($subjectId, $key);
-            if ($runtimeValue['hit']) {
-                return $runtimeValue['value'];
-            }
-
-            return self::getSnapshotDynamicConfigFallback($subjectId, $key, $default);
-        }
 
         if ((int)$subjectId <= 0) {
             return self::resolveDynamicConfigPayload(
@@ -487,43 +435,29 @@ class SubjectUtils
      */
     public static function getDynamicPublicKeyConfigByOwner($key, $subject = null, $default = null)
     {
-        $subjectId = null;
-
-        if ($subject) {
-            if (is_numeric($subject)) {
-                $subjectId = $subject;
-            } else {
-                $subjectId = $subject->id;
-            }
-        }
-
-        if ($subjectId) {
-            $value = Cache::store('local_redis')->get('sub_dyna_conf_' . $key . '_' . $subjectId);
-            if (!is_null($value)) {
-                return $value;
-            }
-        } else {
+        $subjectId = self::subjectIdFrom($subject);
+        if (!$subjectId) {
             $subjectId = self::getSubjectId();
         }
 
-        //缓存中没有查到，查数据库
-        $subjectConfig = SubjectConfig::where("subject_id", $subjectId)
-            ->whereIn("type", ['public', 'front'])
-            ->where("key", $key)
-            ->first();
-
-        if ($subjectConfig) {
-            $value = $subjectConfig->value;
-        } elseif (!is_null($default)) {
-            $value = $default;
-        } else {
-            throw new SubjectConfigException($key . "未配置," . $subjectId);
+        $key = (string)$key;
+        if ((int)$subjectId <= 0) {
+            return self::resolveDynamicConfigPayload(
+                self::loadDynamicPublicConfigPayload($subjectId, $key),
+                $key,
+                $subjectId,
+                $default
+            );
         }
 
-        // 配置数据修改时由 SubjectConfigController saved 回调主动清理，无需 TTL 过期
-        Cache::store('local_redis')->forever('sub_dyna_conf_' . $key . '_' . $subjectId, $value);
+        $payload = app(SubjectConfigLiveCache::class)->rememberPublic(
+            (int)$subjectId,
+            $key,
+            SubjectConfigDefinitions::applyModeFor($key),
+            static fn(): array => self::loadDynamicPublicConfigPayload($subjectId, $key)
+        );
 
-        return $value;
+        return self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
     }
 
 

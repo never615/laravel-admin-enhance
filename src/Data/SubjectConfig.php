@@ -13,6 +13,9 @@ class SubjectConfig extends BaseModel
 {
     private const SAVE_LOCATOR_STATION_PREFIX = 'sa_lo_st_';
 
+    /** @var array{subject_id:int, key:string, created:bool}|null */
+    public ?array $runtimeConfigChangeContext = null;
+
     const TYPE = [
         'public'  => '公共配置',
         'private' => '私有配置',
