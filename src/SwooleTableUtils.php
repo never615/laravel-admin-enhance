@@ -22,6 +22,12 @@ class SwooleTableUtils
      */
     public const MAX_KEY_LENGTH = 64;
 
+    /** Swoole Table 全局开关；关闭后调用方直接使用 Redis 后备层。 */
+    private static function enabled(): bool
+    {
+        return (bool) config('laravels.swoole_table_enable', false);
+    }
+
     /**
      * 从指定 swoole_table 获取缓存值。
      *
@@ -33,7 +39,7 @@ class SwooleTableUtils
     public static function get(string $table, string $key)
     {
         // key 超出 Swoole\Table 限制时直接回退，避免 "key is too long" 异常
-        if (strlen($key) > self::MAX_KEY_LENGTH) return null;
+        if (!self::enabled() || strlen($key) > self::MAX_KEY_LENGTH) return null;
 
         try {
             $swooleTable = app('swoole')->{$table . 'Table'} ?? null;
@@ -71,7 +77,7 @@ class SwooleTableUtils
     public static function set(string $table, string $key, $value, int $ttl = 3600): void
     {
         // key 超出 Swoole\Table 限制时跳过，避免 "key is too long" 异常
-        if (strlen($key) > self::MAX_KEY_LENGTH) return;
+        if (!self::enabled() || strlen($key) > self::MAX_KEY_LENGTH) return;
 
         try {
             $swooleTable = app('swoole')->{$table . 'Table'} ?? null;
@@ -87,10 +93,14 @@ class SwooleTableUtils
             if (($col['name'] ?? '') === 'value' && strlen($serialized) > ($col['size'] ?? 2048)) return;
         }
 
-        $swooleTable->set($key, [
-            'value'  => $serialized,
-            'expire' => $ttl > 0 ? time() + $ttl : 0,
-        ]);
+        try {
+            $swooleTable->set($key, [
+                'value'  => $serialized,
+                'expire' => $ttl > 0 ? time() + $ttl : 0,
+            ]);
+        } catch (\Throwable $e) {
+            // Table 缺失或写满只关闭 L1 加速，调用方已写入 Redis。
+        }
     }
 
     /**
@@ -101,6 +111,8 @@ class SwooleTableUtils
      */
     public static function del(string $table, string $key): void
     {
+        if (!self::enabled()) return;
+
         try {
             $swooleTable = app('swoole')->{$table . 'Table'} ?? null;
         } catch (\Throwable $e) {
@@ -121,6 +133,8 @@ class SwooleTableUtils
      */
     public static function delByPrefix(string $table, string $prefix): void
     {
+        if (!self::enabled()) return;
+
         try {
             $swooleTable = app('swoole')->{$table . 'Table'} ?? null;
         } catch (\Throwable $e) {
@@ -135,4 +149,3 @@ class SwooleTableUtils
         }
     }
 }
-
