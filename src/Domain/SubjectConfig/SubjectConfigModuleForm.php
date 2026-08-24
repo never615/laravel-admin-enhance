@@ -14,6 +14,7 @@ use Mallto\Tool\Exception\ResourceException;
 class SubjectConfigModuleForm
 {
     private const TEMPORARY_STATION_PREFIX = 'sa_lo_st_';
+    private const SYSTEM_MAINTENANCE_SUBJECT_ID = 1;
 
     public function __construct(private NewConfigPublisher $publisher)
     {
@@ -26,6 +27,7 @@ class SubjectConfigModuleForm
         $subject = null;
 
         if ($subjectId) {
+            $this->ensureSubjectCanBeConfigured($subjectId);
             $subject = Subject::query()->find($subjectId);
             if (!$subject) {
                 throw new ResourceException('项目不存在或无权限访问。');
@@ -98,6 +100,7 @@ class SubjectConfigModuleForm
         if ($subjectId <= 0) {
             throw new ResourceException('请先选择项目。');
         }
+        $this->ensureSubjectCanBeConfigured($subjectId);
 
         $definitions = SubjectConfigDefinitions::definitions();
         $values = (array)($input['values'] ?? []);
@@ -351,6 +354,13 @@ class SubjectConfigModuleForm
         return $decoded === false ? '' : $decoded;
     }
 
+    private function ensureSubjectCanBeConfigured(int $subjectId): void
+    {
+        if ($subjectId === self::SYSTEM_MAINTENANCE_SUBJECT_ID) {
+            throw new ResourceException('系统维护项目不可在项目动态配置中操作。');
+        }
+    }
+
     private function subjectOptions(): array
     {
         if (!Schema::hasTable('subjects')) {
@@ -364,6 +374,7 @@ class SubjectConfigModuleForm
         }
 
         return $query
+            ->whereKeyNot(self::SYSTEM_MAINTENANCE_SUBJECT_ID)
             ->limit(500)
             ->pluck('name', 'id')
             ->map(fn($name, $id) => (string)$name . ' (ID:' . $id . ')')
