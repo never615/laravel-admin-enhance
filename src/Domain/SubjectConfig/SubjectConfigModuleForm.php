@@ -320,6 +320,31 @@ class SubjectConfigModuleForm
             default => ['nullable', 'string'],
         };
 
+        if ($type === 'json' && array_key_exists('json_boolean_keys', $definition)) {
+            // Opt-in schemas only: ordinary JSON settings retain their existing validation.
+            // Decode as an object so {} remains distinct from [] and booleans are not coerced.
+            $allowedKeys = (array)$definition['json_boolean_keys'];
+            array_unshift($rules, 'bail');
+            $rules[] = static function ($attribute, $value, $fail) use ($name, $allowedKeys): void {
+                $object = json_decode($value);
+                if (!$object instanceof \stdClass) {
+                    $fail($name . '必须是 JSON 对象。');
+                    return;
+                }
+
+                foreach (get_object_vars($object) as $field => $enabled) {
+                    if (!in_array($field, $allowedKeys, true)) {
+                        $fail($name . '包含未定义的配置项。');
+                        return;
+                    }
+                    if (!is_bool($enabled)) {
+                        $fail($name . '的配置项必须使用 true 或 false。');
+                        return;
+                    }
+                }
+            };
+        }
+
         $messages = [
             'value.required' => $name . '不能为空。',
             'value.in' => $name . '只能选择开启或关闭。',
