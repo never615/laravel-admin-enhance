@@ -14,6 +14,7 @@ use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Data\SubjectConfig;
 use Mallto\Admin\Domain\User\AdminUserUsecase;
 use Mallto\Admin\Domain\User\AdminUserUsecaseImpl;
+use Mallto\Admin\Domain\SubjectConfig\SubjectConfigLiveCache;
 use Mallto\Admin\Listeners\CreateAdminRole;
 use Mallto\Admin\Listeners\Events\SubjectSaved;
 use Mallto\Admin\Listeners\SubjectCacheClear;
@@ -147,6 +148,10 @@ class ServiceProvider extends BaseServiceProvider
         $this->registerRouteMiddleware();
 
         $this->commands($this->commands);
+
+        // The adapter is stateless; keep its dependency graph stable in long-lived workers
+        // while each remember() call still resolves the current runtime value.
+        $this->app->singleton(SubjectConfigLiveCache::class);
 
         $this->app->bind(
             AdminUserUsecase::class,
