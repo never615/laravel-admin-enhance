@@ -50,6 +50,23 @@ class SubjectConfigLiveCache
         return $this->cache->remember(RuntimeConfigIdentity::subjectPublic($subjectId, $key), $mode, $loader);
     }
 
+    /**
+     * Prefetch hot private identities only; missing keys never acquire refill locks.
+     * @param array<int, string> $keys
+     * @return array<string, array{found: bool, value: mixed}|null>
+     */
+    public function getPrivateMany(int $subjectId, array $keys): array
+    {
+        $entries = [];
+        foreach (array_unique($keys) as $key) {
+            $entries[$key] = [
+                'identity' => RuntimeConfigIdentity::subjectPrivate($subjectId, $key),
+                'mode' => SubjectConfigDefinitions::applyModeFor($key),
+            ];
+        }
+        return $this->cache->getMany($entries);
+    }
+
     /** @return array{shared_forget_succeeded: bool, warnings: array<int, string>} */
     public function invalidate(int $subjectId, string $key): array
     {
