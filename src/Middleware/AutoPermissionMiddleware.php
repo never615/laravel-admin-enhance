@@ -17,6 +17,7 @@ namespace Mallto\Admin\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mallto\Admin\Domain\Permission\AdminApiPermissionResolver;
 use Mallto\Admin\Data\Permission;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\HttpException;
@@ -50,13 +51,26 @@ class AutoPermissionMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $adminUser = Auth::guard("admin")->user();
-        if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+        $requestPath = $request->path();
+        $isAdminApi = $requestPath === 'admin/api' || starts_with($requestPath, 'admin/api/');
+
+        // Never let a web-session user satisfy a bearer-token admin API request.
+        // The two guards can be present on the same request in browser clients.
+        if ($isAdminApi) {
             $adminUser = Auth::guard("admin_api")->user();
+        } else {
+            $adminUser = Auth::guard("admin")->user();
+            if (!$adminUser && !empty(config('auth.guards.admin_api'))) {
+                $adminUser = Auth::guard("admin_api")->user();
+            }
         }
 
         if (!$adminUser) {
             throw new PermissionDeniedException('Not authenticated');
+        }
+
+        if ($adminUser->status === 'forbidden') {
+            throw new PermissionDeniedException('Account is forbidden');
         }
 
         $subjectId = null;
@@ -74,8 +88,27 @@ class AutoPermissionMiddleware
             throw new ResourceException('Current account has no permission to access this project (subject mismatch)');
         }
 
-        $currentRouteName = $request->route()->getName();
-        $routenameArr = explode(".", $currentRouteName);
+        $currentRouteName = $request->route() ? $request->route()->getName() : null;
+
+        if ($this->isEditorPermissionBypassRoute($currentRouteName)) {
+            return $next($request);
+        }
+
+        if ($isAdminApi) {
+            $permissionResolver = app(AdminApiPermissionResolver::class);
+            $permissionSlug = $permissionResolver->resolve($currentRouteName);
+            if ($request->get('_export_')) {
+                $permissionSlug = $permissionResolver->resolveExport($permissionSlug);
+            }
+
+            if (!$permissionSlug || !$adminUser->canApi($permissionSlug)) {
+                throw new PermissionDeniedException('权限不足');
+            }
+
+            return $next($request);
+        }
+
+        $routenameArr = explode(".", (string)$currentRouteName);
 
         if (count($routenameArr) == 2) {
             $subRouteName = $routenameArr[1];
@@ -108,32 +141,15 @@ class AutoPermissionMiddleware
             return $next($request);
         }
 
-        $path = $request->path();
-        //判断路由,如果来自/admin/api
-        if (starts_with($path, 'admin/api')) {
-            //todo 如果是来自admin/api的接口请求,暂时直接通过
+        //权限管理有该权限,检查用户是否有该权限
+        if ($adminUser->can($currentRouteName)) {
+            //pass
             return $next($request);
-
-//            //权限管理有该权限,检查用户是否有该权限
-//            if ($adminUser->canApi($currentRouteName)) {
-//                //pass
-//                return $next($request);
-//            } //denied
-//            else {
-//                throw new AccessDeniedHttpException('admin api ' . trans("errors.permission_denied"));
-//            }
-        } else {
-            //权限管理有该权限,检查用户是否有该权限
-            if ($adminUser->can($currentRouteName)) {
-                //pass
-                return $next($request);
-            } //denied
-            else {
-                throw new AccessDeniedHttpException('admin ' . trans("errors.permission_denied"));
-            }
+        } //denied
+        else {
+            throw new AccessDeniedHttpException('admin ' . trans("errors.permission_denied"));
         }
     }
-
 
     /**
      * 导出权限校验
@@ -156,5 +172,18 @@ class AutoPermissionMiddleware
                 throw new AccessDeniedHttpException(trans("errors.permission_denied"));
             }
         }
+    }
+
+    /**
+     * Editor endpoints are temporarily exempt from resource permissions while
+     * retaining the authentication, account status, and subject checks above.
+     */
+    private function isEditorPermissionBypassRoute(?string $routeName): bool
+    {
+        return $routeName !== null
+            && preg_match(
+                '/^(admin_api|web_api)\.(place_door|place|sprite)\.(index|show|store|update|destroy|create|edit)$/',
+                $routeName
+            ) === 1;
     }
 }

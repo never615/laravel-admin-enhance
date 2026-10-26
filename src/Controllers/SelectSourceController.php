@@ -15,6 +15,7 @@ use Mallto\Admin\Data\Subject;
 use Mallto\Admin\Facades\AdminE;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Tool\Exception\InvalidParamException;
+use Mallto\Tool\Exception\PermissionDeniedException;
 
 class SelectSourceController extends Controller
 {
@@ -64,15 +65,21 @@ class SelectSourceController extends Controller
             $key = $fatherValue;
         }
 
-        $adminUser = Admin::user() ?? Auth::guard("admin_api")->user();
+        $isAdminApi = $request->path() === 'admin/api' || starts_with($request->path(), 'admin/api/');
+        $adminUser = $isAdminApi
+            ? Auth::guard('admin_api')->user()
+            : (Admin::user() ?? Auth::guard('admin_api')->user());
+        if (!$adminUser) {
+            throw new PermissionDeniedException('Not authenticated');
+        }
 
-        $subject = $this->getSubject($request);
+        $subject = $this->getSubject($request, $adminUser);
         if (!$subject) {
             $subject = $adminUser->subject;
         }
 
         //查询子主体
-        if (AdminUtils::isOwner()) {
+        if ($adminUser->isOwner()) {
             //todo 临时处理,如果以后项目上千的要优化
             $childSubjectIds = Subject::pluck('id')->toArray();
         } else {
@@ -89,9 +96,15 @@ class SelectSourceController extends Controller
         //特别处理主体数据
         if ($key === 'subject' || $key === 'subject_id') {
             if (!is_null($id)) {
-//                $id = explode(",", $id);
+                $requestedIds = array_map('intval', (array)$id);
+                $allowedIds = array_values(array_intersect($requestedIds, $childSubjectIds));
+                if (count($allowedIds) !== count(array_unique($requestedIds))) {
+                    throw new PermissionDeniedException('Subject access denied');
+                }
 
-                return Subject::select(DB::raw("id,name as text"))->findOrFail($id);
+                return Subject::select(DB::raw("id,name as text"))
+                    ->whereIn('id', $allowedIds)
+                    ->get();
             } else {
                 return Subject::select(DB::raw("id,name as text"))
                     ->whereIn('id', $childSubjectIds)
@@ -102,7 +115,7 @@ class SelectSourceController extends Controller
             //form多级联动需要的数据
             if ($q === 'subject') {
                 return Subject::select(DB::raw("id,name as text"))
-//                            ->where("id", $childSubjectIds)
+                    ->whereIn('id', $childSubjectIds)
                     ->get();
                 //->paginate($perPage, [ 'id', 'text' ]);
             }
@@ -174,15 +187,42 @@ class SelectSourceController extends Controller
 
 
     private
-    function getSubject(
-        $request
-    )
+    function getSubject($request, $adminUser)
     {
         if ($request->subject_uuid) {
-            return Subject::where("uuid", $request->subject_uuid)->firstOrFail();
+            $subject = Subject::where("uuid", $request->subject_uuid)->firstOrFail();
+            if (!$adminUser->isOwner() && !$this->canManageSubject($adminUser, $subject->id)) {
+                throw new PermissionDeniedException('Subject access denied');
+            }
+
+            return $subject;
         }
 
-        return SubjectUtils::getSubject();
+        return $adminUser->subject ?: SubjectUtils::getSubject();
+    }
+
+    private function canManageSubject($adminUser, int $subjectId): bool
+    {
+        $managedRootIds = array_values(array_filter(array_map(
+            'intval',
+            (array)$adminUser->manager_subject_ids
+        )));
+        if (!$managedRootIds) {
+            $managedRootIds = [(int)$adminUser->subject_id];
+        }
+
+        return Subject::query()
+            ->where(function ($query) use ($managedRootIds) {
+                foreach ($managedRootIds as $index => $rootId) {
+                    $method = $index === 0 ? 'where' : 'orWhere';
+                    $query->{$method}(function ($nested) use ($rootId) {
+                        $nested->where('id', $rootId)
+                            ->orWhere('path', 'like', "%.{$rootId}.%");
+                    });
+                }
+            })
+            ->whereKey($subjectId)
+            ->exists();
     }
 
 }

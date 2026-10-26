@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
+use Mallto\Admin\Domain\Permission\AdminApiMenuPermissionMapper;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
 use Mallto\Tool\Utils\RequestUtils;
@@ -154,10 +155,23 @@ class FrontMenu extends Model
 
         if ($adminUser->isOwner()) {
             $result = static::orderByRaw($byOrder)->get()->toArray();
+            $result = array_map(function ($menu) {
+                $menu['actions'] = [
+                    'view' => true,
+                    'show' => true,
+                    'create' => true,
+                    'update' => true,
+                    'delete' => true,
+                    'export' => true,
+                ];
+
+                return $menu;
+            }, $result);
         } else {
             // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
 //            $locale = app()->getLocale();
-            $cacheMenuKey = "front_menu_" . $adminUser->id . '_' . $language;
+            // Use a new cache namespace so menus created before CRUD flags were added are not reused.
+            $cacheMenuKey = "front_menu_crud_v2_" . $adminUser->id . '_' . $language;
 
             $result = Cache::get($cacheMenuKey);
 //            $result = null;
@@ -167,22 +181,17 @@ class FrontMenu extends Model
                 return $this->filterMenuAttributes($result);
             }
 
-            // 获取用户的所有前端权限
+            // 菜单只根据明确授予的查看权限显示；资源父权限用于组织权限树，不代表操作授权。
             $permissions = $adminUser->allFrontPermissions();
-
-//            Log::debug('用户的前端权限', ['permissions' => $permissions]);
-            $userPermissions = $this->withSubFrontPermissions($permissions);
-            $userPermissionSlugs = array_pluck($userPermissions, "slug");
-
-            // 处理权限 slug 中的 admin_api. 前缀，转换为菜单 uri
-            $userPermissionSlugs = array_map(function ($slug) {
-                return str_replace('admin_api.', '', $slug);
-            }, $userPermissionSlugs);
-
-//            Log::debug('用户的前端权限 Slugs', ['userPermissionSlugs' => $userPermissionSlugs]);
-
-            // 基于权限查询菜单
-            $menus = static::whereIn("uri", $userPermissionSlugs)
+            $permissionSlugs = array_fill_keys($permissions->pluck('slug')->all(), true);
+            $allPermissionSlugs = array_fill_keys(AdminApiPermission::query()->pluck('slug')->all(), true);
+            $permissionMapper = new AdminApiMenuPermissionMapper();
+            $visibleMenuUris = $permissionMapper->visibleMenuUris(
+                array_keys($permissionSlugs),
+                $allPermissionSlugs
+            );
+            $menus = static::query()
+                ->whereIn('uri', $visibleMenuUris)
                 ->select('id',
                     'uri',
                     'parent_id',
@@ -192,9 +201,17 @@ class FrontMenu extends Model
                 )
                 ->get();
 
-//            Log::debug('用户拥有权限的菜单', ['menus' => $menus]);
+            $isOwner = $adminUser->isOwner();
+            $menus->each(function ($menu) use ($permissionMapper, $permissionSlugs, $allPermissionSlugs, $isOwner) {
+                $menu->setAttribute('actions', $permissionMapper->actions(
+                    $menu->uri,
+                    $permissionSlugs,
+                    $allPermissionSlugs,
+                    $isOwner
+                ));
+            });
 
-            $tempMenus = $this->withSubMenus($menus);
+            $tempMenus = $menus->toArray();
 
             // 查出来的菜单如果有父菜单也要返回,直到parent_id为0
             foreach ($menus as $item) {
@@ -250,14 +267,14 @@ class FrontMenu extends Model
 
     /**
      * 过滤菜单属性，只保留指定的字段
-     * 保留字段: id, parent_id, order, title, icon, uri, en_title, tc_title, children
+     * 保留字段: id, parent_id, order, title, icon, uri, en_title, tc_title, children, actions
      *
      * @param array $menus
      * @return array
      */
     private function filterMenuAttributes(array $menus): array
     {
-        $allowedAttributes = ['id', 'parent_id', 'order', 'title', 'icon', 'uri', 'en_title', 'tc_title', 'children'];
+        $allowedAttributes = ['id', 'parent_id', 'order', 'title', 'icon', 'uri', 'en_title', 'tc_title', 'children', 'actions'];
 
         return array_map(function ($menu) use ($allowedAttributes) {
             $filteredMenu = [];
@@ -269,7 +286,6 @@ class FrontMenu extends Model
             return $filteredMenu;
         }, $menus);
     }
-
 
     /**
      *

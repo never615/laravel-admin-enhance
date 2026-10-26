@@ -99,10 +99,13 @@ class ApiPermissionController extends AdminCommonController
                 } else {
                     $form->model()->path = "." . $parent->id . ".";
                 }
+            } else {
+                $form->model()->path = '';
             }
         });
 
         $form->saved(function ($form) {
+            $form->model()->refreshDescendantPaths();
             CacheUtils::clearMenuCache();
         });
 

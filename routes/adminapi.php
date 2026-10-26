@@ -30,10 +30,22 @@ $routeFunction = function () {
 //$routeFunctionByAutoPermission支持1/2/3 三中方式请求
 $routeFunctionByAutoPermission = function () {
 //    Route::resource('tags', 'TagController');
+};
+
+// 下拉数据通过已认证会话/token 访问，不参与业务权限校验。
+$routeFunctionByAuthentication = function () {
     Route::get('select_data/{key}', '\Mallto\Admin\Controllers\SelectSourceController@dataSource');
 };
 
 //-------------- laravel 管理端项目请求 走web 中间件 start ---------------------------------------------------
+$selectDataAttributes = [
+    'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
+    'prefix' => 'admin/web_api',
+    'middleware' => ['web', 'adminE_base'],
+    'as' => 'web_api.',
+];
+Route::group($selectDataAttributes, $routeFunctionByAuthentication);
+
 $attributes = [
     'namespace' => 'Mallto\Admin\Controller',
     'middleware' => ['web'],
@@ -68,7 +80,7 @@ Route::group([
     'middleware' => ['api', 'adminE.log', 'set_language', 'token_from_query'],
     'namespace' => 'Mallto\Admin\Controllers\Admin\Api',
     'as' => 'admin_api.', // 配置路由组中路由命名的前缀。
-], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
+], function ($router) use ($routeFunction, $routeFunctionByAutoPermission, $routeFunctionByAuthentication) {
 
 
     //这里的登录接口不走 auth:admin_api 中间件
@@ -77,7 +89,14 @@ Route::group([
 
     Route::group([
         'middleware' => ['auth:admin_api'],
-    ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission) {
+    ], function ($router) use ($routeFunction, $routeFunctionByAutoPermission, $routeFunctionByAuthentication) {
+
+        $routeFunctionByAuthentication();
+
+        // Authenticated users can read their own profile; this is not the
+        // permission to list or manage other admin accounts.
+        $router->get('admin_user', 'AdminUserProfileController@show')
+            ->name('admin_user.profile');
 
         Route::group([
             'middleware' => ['auth:admin_api'],
@@ -91,8 +110,6 @@ Route::group([
         Route::group([
             'middleware' => ['adminE.auto_permission'],
         ], function ($router) {
-            $router->get('admin_user', 'AdminUserProfileController@show');
-
             Route::apiResource('front_roles', 'FrontRoleController')
                 ->names('front_roles');
             Route::apiResource('front_admin_users', 'FrontAdminUserController')
@@ -116,9 +133,9 @@ $attributes = [
     'as' => 'tp_api.', // 配置路由组中路由命名的前缀。
 ];
 
-Route::group($attributes, function ($router) use ($routeFunctionByAutoPermission) {
+Route::group($attributes, function ($router) use ($routeFunctionByAuthentication) {
     Route::group(['middleware' => ['requestCheck', 'owner_api', 'authSign_referrer']],
-        $routeFunctionByAutoPermission);
+        $routeFunctionByAuthentication);
 });
 
 $attributes = [

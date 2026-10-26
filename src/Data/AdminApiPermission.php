@@ -16,6 +16,32 @@ class AdminApiPermission extends Model
 
     protected $guarded = [];
 
+    /**
+     * Rebuild paths below this node after a permission is moved.
+     *
+     * The path is used by API authorization to find inherited resource
+     * permissions, so stale descendant paths can otherwise retain or drop
+     * access after an admin changes the tree.
+     */
+    public function refreshDescendantPaths(array &$visited = []): void
+    {
+        $id = (int)$this->getKey();
+        if (!$id || isset($visited[$id])) {
+            return;
+        }
+        $visited[$id] = true;
+
+        $children = static::query()->where('parent_id', $id)->get();
+        foreach ($children as $child) {
+            $path = $this->path ? $this->path . $id . '.' : '.' . $id . '.';
+            if ($child->path !== $path) {
+                $child->path = $path;
+                $child->saveQuietly();
+            }
+            $child->refreshDescendantPaths($visited);
+        }
+    }
+
 
     /**
      * Create a new Eloquent model instance.
@@ -88,15 +114,34 @@ class AdminApiPermission extends Model
      */
     public function elderPermissions()
     {
-        if (!empty($this->path)) {
-            $parentIds = explode(".", trim($this->path, "."));
-            if (!empty($parentIds)) {
-                return AdminApiPermission::whereIn("id", $parentIds)
-                    ->get();
+        $parentIds = [];
+        $visited = [(int)$this->getKey() => true];
+        $parentId = $this->parent_id;
+
+        while ($parentId && !isset($visited[(int)$parentId])) {
+            $parentId = (int)$parentId;
+            $visited[$parentId] = true;
+            $parentIds[] = $parentId;
+
+            $parent = static::query()->find($parentId);
+            if (!$parent) {
+                break;
             }
+            $parentId = $parent->parent_id;
         }
 
-        return new Collection();
+        if (!$parentIds) {
+            return new Collection();
+        }
+
+        $parents = static::query()->whereIn('id', $parentIds)->get()->keyBy('id');
+
+        return collect(array_reverse($parentIds))
+            ->map(static function ($id) use ($parents) {
+                return $parents->get($id);
+            })
+            ->filter()
+            ->values();
     }
 
 

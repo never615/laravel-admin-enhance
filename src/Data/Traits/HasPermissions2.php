@@ -5,6 +5,7 @@ namespace Mallto\Admin\Data\Traits;
 use Illuminate\Support\Collection;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Permission;
+use Mallto\Admin\Domain\Permission\AdminApiPermissionGrantResolver;
 
 trait HasPermissions2
 {
@@ -17,6 +18,8 @@ trait HasPermissions2
     public function allFrontPermissions(): Collection
     {
         return $this->roles()
+            ->where('subject_id', $this->subject_id)
+            ->where('pure_front', true)
             ->with('frontApiPermissions')
             ->get()
             ->pluck('frontApiPermissions')
@@ -110,40 +113,60 @@ trait HasPermissions2
         }
 
 
-        //3.用户拥有该权限的父权限,通过
-        //先查询该权限的父权限,因为权限支持多级,所以要查询出该权限的所有长辈权限
+        //3.前端 API 权限优先按具体操作检查；资源父权限保留旧配置的全操作授权。
         $permission = AdminApiPermission::query()->where('slug', $permissionSlug)->first();
         if (!$permission) {
             return false;
         }
-        //查询该权限的父权限
+        if ($permission->common) {
+            return true;
+        }
+
+        $assignedPermissionSlugs = $this->roles()
+            ->where('subject_id', $this->subject_id)
+            ->where('pure_front', true)
+            ->with('frontApiPermissions')
+            ->get()
+            ->pluck('frontApiPermissions')
+            ->flatten()
+            ->pluck('slug')
+            ->all();
         $elderPermissions = $permission->elderPermissions();
-        //检查用户的权限中有没有父权限
-//        if ($elderPermissions && $this->permissions()->whereIn("id",
-//                $elderPermissions->pluck("id"))->exists()) {
-//            return true;
-//        }
-
-        //4.用户的角色拥有该权限通过
-        //5.用户的角色拥有该权限的父权限,通过
-        $waiteVerifyPermissionSlugs = array_merge($elderPermissions->pluck("slug")->toArray(),
-            (array)$permission->slug);
-
-        $roleApiPermissionSlugs = $this->roles->pluck('apiPermissions')->flatten()->pluck('slug');
-
-        foreach ($waiteVerifyPermissionSlugs as $waiteVerifyPermissionSlug) {
-            if ($roleApiPermissionSlugs->contains($waiteVerifyPermissionSlug)) {
-                return true;
+        if ($permission->parent_id && !$elderPermissions->contains('id', $permission->parent_id)) {
+            $parentPermission = AdminApiPermission::query()->find($permission->parent_id);
+            if ($parentPermission) {
+                $elderPermissions->push($parentPermission);
             }
         }
 
-        return false;
+        $resourceParentSlugs = [];
+        foreach ($elderPermissions as $elderPermission) {
+            $operationSlugs = array_map(function ($operation) use ($elderPermission) {
+                return $elderPermission->slug . '.' . $operation;
+            }, ['index', 'create', 'destroy', 'export']);
+
+            if (AdminApiPermission::query()
+                ->where('parent_id', $elderPermission->id)
+                ->whereIn('slug', $operationSlugs)
+                ->count() >= 2) {
+                $resourceParentSlugs[] = $elderPermission->slug;
+            }
+        }
+
+        return app(AdminApiPermissionGrantResolver::class)->isGranted(
+            $permission->slug,
+            $assignedPermissionSlugs,
+            $resourceParentSlugs
+        );
     }
 
 
     public function isOwner()
     {
-        return $this->isRole(config("admin.roles.owner"));
+        return $this->roles()
+            ->where('subject_id', $this->subject_id)
+            ->where('slug', config("admin.roles.owner"))
+            ->exists();
     }
 
 

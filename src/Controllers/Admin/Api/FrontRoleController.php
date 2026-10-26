@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Role;
+use Mallto\Admin\Domain\Permission\AdminApiPermissionDelegationResolver;
 use Mallto\Tool\Exception\PermissionDeniedException;
 use Mallto\Tool\Exception\ResourceException;
 
@@ -54,25 +55,25 @@ class FrontRoleController extends Controller
         $adminUser = $this->authUser();
         $role = $this->findRoleBySubject($id, $adminUser->subject_id, true);
 
-        return $this->respondWithRole($role);
+        return $this->respondWithRole($role, 200, $adminUser);
     }
 
     public function store(Request $request): JsonResponse
     {
         $adminUser = $this->authUser();
-        $payload = $this->validateRole($request);
+        $payload = $this->validateRole($request, true, null, $adminUser);
         $payload['subject_id'] = $adminUser->subject_id;
         $payload['pure_front'] = true;
 
         $model = null;
-        DB::transaction(function () use (&$model, $payload, $request) {
+        DB::transaction(function () use (&$model, $payload) {
             $model = Role::query()->create(Arr::except($payload, ['api_permissions']));
-            $this->syncRelations($model, $request);
+            $this->syncRelations($model, $payload);
         });
 
         CacheUtils::clearMenuCache();
 
-        return $this->respondWithRole($model->fresh(), 201);
+        return $this->respondWithRole($model->fresh(), 201, $adminUser);
     }
 
 
@@ -83,16 +84,16 @@ class FrontRoleController extends Controller
 
         $this->guardSystemRoles($model);
 
-        $payload = $this->validateRole($request, false, $model->id);
+        $payload = $this->validateRole($request, false, $model->id, $adminUser);
 
-        DB::transaction(function () use ($model, $payload, $request) {
+        DB::transaction(function () use ($model, $payload) {
             $model->update(Arr::except($payload, ['api_permissions']));
-            $this->syncRelations($model, $request);
+            $this->syncRelations($model, $payload);
         });
 
         CacheUtils::clearMenuCache();
 
-        return $this->respondWithRole($model->fresh());
+        return $this->respondWithRole($model->fresh(), 200, $adminUser);
     }
 
     public function destroy($id): \Illuminate\Http\Response
@@ -106,7 +107,12 @@ class FrontRoleController extends Controller
             throw new PermissionDeniedException('Cannot delete current user role');
         }
 
-        $model->delete();
+        DB::transaction(function () use ($model) {
+            $model->administrators()->detach();
+            $model->frontApiPermissions()->detach();
+            $model->frontMenus()->detach();
+            $model->delete();
+        });
         CacheUtils::clearMenuCache();
 
         return response()->noContent();
@@ -122,7 +128,12 @@ class FrontRoleController extends Controller
         return $adminUser;
     }
 
-    protected function validateRole(Request $request, bool $isCreate = true, $roleId = null): array
+    protected function validateRole(
+        Request $request,
+        bool $isCreate = true,
+        $roleId = null,
+        $adminUser = null
+    ): array
     {
         $rules = [
             'name' => [$isCreate ? 'required' : 'sometimes', 'string'],
@@ -140,11 +151,82 @@ class FrontRoleController extends Controller
 
         $validated = $validator->validated();
 
+        if (array_key_exists('slug', $validated)) {
+            $validated['slug'] = trim((string)$validated['slug']);
+            if ($validated['slug'] === '') {
+                unset($validated['slug']);
+            }
+        }
+
+        if (array_key_exists('api_permissions', $validated)) {
+            $permissionIds = array_values(array_unique(array_map(
+                'intval',
+                array_filter((array)$validated['api_permissions'], static function ($id) {
+                    return $id !== null && $id !== '';
+                })
+            )));
+            $allowedPermissionIds = $this->allowedPermissionIds($adminUser ?: $this->authUser());
+            if (array_diff($permissionIds, $allowedPermissionIds)) {
+                throw new PermissionDeniedException('权限不足');
+            }
+            $validated['api_permissions'] = $permissionIds;
+        }
+
         if (!isset($validated['slug']) || empty($validated['slug'])) {
-            $validated['slug'] = $this->generateSlug($validated['name'], $roleId);
+            if (!$isCreate && $roleId) {
+                $existingRole = $this->findRoleBySubject(
+                    $roleId,
+                    ($adminUser ?: $this->authUser())->subject_id
+                );
+                $validated['slug'] = $existingRole->slug;
+            } else {
+                $validated['slug'] = $this->generateSlug($validated['name'], $roleId);
+            }
+        }
+
+        if (in_array($validated['slug'], $this->systemRoleSlugs(), true)) {
+            throw new PermissionDeniedException('System role slug is reserved');
+        }
+
+        $slugQuery = Role::query()
+            ->where('subject_id', $adminUser ? $adminUser->subject_id : $this->authUser()->subject_id)
+            ->where('slug', $validated['slug']);
+        if ($roleId) {
+            $slugQuery->where('id', '!=', $roleId);
+        }
+        if ($slugQuery->exists()) {
+            throw new ResourceException('Role slug already exists');
+        }
+
+        if (!$isCreate && !array_key_exists('api_permissions', $validated)) {
+            $role = Role::query()
+                ->where('subject_id', $adminUser->subject_id)
+                ->where('pure_front', true)
+                ->with('frontApiPermissions:id,slug')
+                ->findOrFail($roleId);
+            $allowedPermissionIds = $this->allowedPermissionIds($adminUser);
+            $allowedPermissionSlugs = AdminApiPermission::query()
+                ->whereIn('id', $allowedPermissionIds)
+                ->pluck('slug')
+                ->all();
+            $hiddenPermissionSlugs = array_diff(
+                $role->frontApiPermissions->pluck('slug')->all(),
+                $allowedPermissionSlugs
+            );
+            if ($hiddenPermissionSlugs) {
+                throw new PermissionDeniedException('角色包含当前账号无权分配的权限，请明确提交权限列表后再修改');
+            }
         }
 
         return $validated;
+    }
+
+    protected function systemRoleSlugs(): array
+    {
+        return array_values(array_filter([
+            config('admin.roles.owner'),
+            config('admin.roles.admin'),
+        ]));
     }
 
     protected function generateSlug(string $name, $roleId = null): string
@@ -164,10 +246,31 @@ class FrontRoleController extends Controller
         return $slug;
     }
 
-    protected function syncRelations(Role $role, Request $request): void
+    protected function syncRelations(Role $role, array $payload): void
     {
-        if ($request->has('api_permissions')) {
-            $role->frontApiPermissions()->sync(array_filter((array)$request->api_permissions));
+        if (array_key_exists('api_permissions', $payload)) {
+            $permissionIds = array_values(array_unique(array_map('intval', (array)$payload['api_permissions'])));
+            // Persist exactly the IDs submitted by the client. Permission-tree
+            // parents are not inferred or inserted during role saving.
+            $connection = $role->getConnection();
+            $connection->table('admin_role_api_permissions')
+                ->where('role_id', $role->getKey())
+                ->delete();
+
+            if ($permissionIds) {
+                $timestamp = now();
+                $connection->table('admin_role_api_permissions')->insert(array_map(
+                    static function (int $permissionId) use ($role, $timestamp) {
+                        return [
+                            'role_id' => $role->getKey(),
+                            'permission_id' => $permissionId,
+                            'created_at' => $timestamp,
+                            'updated_at' => $timestamp,
+                        ];
+                    },
+                    $permissionIds
+                ));
+            }
         }
     }
 
@@ -198,12 +301,22 @@ class FrontRoleController extends Controller
         }
     }
 
-    protected function respondWithRole(Role $role, $status = 200): JsonResponse
+    protected function respondWithRole(Role $role, $status = 200, $adminUser = null): JsonResponse
     {
 //        $role->load(['apiPermissions:id,name,slug']);
 
+        $adminUser = $adminUser ?: $this->authUser();
+        $allowedPermissionIds = $this->allowedPermissionIds($adminUser);
+        if ($role->relationLoaded('frontApiPermissions')) {
+            $role->setRelation(
+                'frontApiPermissions',
+                $role->frontApiPermissions->whereIn('id', $allowedPermissionIds)->values()
+            );
+        }
+
         $allPermissions = AdminApiPermission::query()
             ->select('admin_api_permissions.id', 'admin_api_permissions.name', 'admin_api_permissions.slug')
+            ->whereIn('admin_api_permissions.id', $allowedPermissionIds)
             ->selectRaw('CASE WHEN EXISTS (
                 SELECT 1 FROM admin_role_api_permissions 
                 WHERE admin_role_api_permissions.permission_id = admin_api_permissions.id 
@@ -215,5 +328,41 @@ class FrontRoleController extends Controller
 
         $role->all_api_permissions = $allPermissions;
         return response()->json($role, $status);
+    }
+
+    /**
+     * Return the permissions that the current account may grant to another role.
+     * Resource parent permissions keep their legacy meaning: all direct CRUD
+     * children are grantable. A child permission alone grants only itself.
+     *
+     * @param mixed $adminUser
+     * @return int[]
+     */
+    protected function allowedPermissionIds($adminUser): array
+    {
+        $permissions = AdminApiPermission::query()
+            ->select('id', 'slug', 'parent_id', 'common')
+            ->orderBy('order')
+            ->get()
+            ->toArray();
+
+        if ($adminUser->isOwner()) {
+            return array_map(static function ($permission) {
+                return (int)$permission['id'];
+            }, $permissions);
+        }
+
+        $assignedSlugs = $adminUser->allFrontPermissions()->pluck('slug')->all();
+        $allowedSlugs = app(AdminApiPermissionDelegationResolver::class)->allowedSlugs(
+            $permissions,
+            $assignedSlugs
+        );
+        $allowedSlugMap = array_fill_keys($allowedSlugs, true);
+
+        return array_values(array_map(static function ($permission) {
+            return (int)$permission['id'];
+        }, array_filter($permissions, static function ($permission) use ($allowedSlugMap) {
+            return isset($allowedSlugMap[$permission['slug']]);
+        })));
     }
 }

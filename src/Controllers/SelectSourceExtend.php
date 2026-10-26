@@ -69,17 +69,18 @@ class SelectSourceExtend implements SelectSourceExtendInterface
 
         if (!$adminUser || !$adminUser->isOwner()) {
             $query->select(DB::raw('admin_roles.id,admin_roles.name as text'));
+            $query->whereIn('admin_roles.subject_id', $childSubjectIds);
         } else {
             $query->select(DB::raw("admin_roles.id,admin_roles.name||'-('||subjects.name||')' as text"));
         }
+
+        $query->join('subjects', 'subjects.id', 'admin_roles.subject_id');
 
 
         if (!is_null($id)) {
             return $query->findOrFail($id);
         } else {
-            $query->join('subjects', 'subjects.id', 'subject_id')
-                ->orderBy('admin_roles.created_at', 'desc')
-                ->whereIn('admin_roles.subject_id', $childSubjectIds);
+            $query->orderBy('admin_roles.created_at', 'desc');
 
             if ($q)
                 $query->where('admin_roles.name', '~*', "$q");

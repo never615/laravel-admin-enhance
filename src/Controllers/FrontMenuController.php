@@ -16,6 +16,7 @@ use Encore\Admin\Widgets\Box;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Mallto\Admin\Controllers\Base\AdminCommonController;
+use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Data\FrontMenu;
 use Mallto\Admin\Data\Role;
 
@@ -195,6 +196,8 @@ class FrontMenuController extends AdminCommonController
                 Cache::forget($cacheMenuKey);
             }
 
+            CacheUtils::clearFrontMenuCache();
+
         });
     }
 
@@ -207,6 +210,7 @@ class FrontMenuController extends AdminCommonController
             if ($this->form()->destroy($id)) {
                 //同时删除所有的子菜单
                 FrontMenu::where("parent_id", $id)->delete();
+                CacheUtils::clearMenuCache();
 
                 return response()->json([
                     'status' => true,
