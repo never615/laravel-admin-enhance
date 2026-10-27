@@ -25,6 +25,7 @@ class SubjectConfigModuleForm
         $definitions = SubjectConfigDefinitions::definitions();
         $rows = collect();
         $subject = null;
+        $duplicateKeys = [];
 
         if ($subjectId) {
             $this->ensureSubjectCanBeConfigured($subjectId);
@@ -33,11 +34,15 @@ class SubjectConfigModuleForm
                 throw new ResourceException('项目不存在或无权限访问。');
             }
 
-            $rows = SubjectConfig::query()
+            $allRows = SubjectConfig::query()
                 ->where('subject_id', $subjectId)
                 ->orderBy('key')
-                ->get()
-                ->keyBy('key');
+                ->orderBy('id', 'desc')
+                ->get();
+            $duplicateKeys = $allRows->groupBy('key')->filter(fn($group) => $group->count() > 1)
+                ->map(fn($group) => $group->pluck('id')->sort()->values()->all())->all();
+            // keyBy retains the last row: match runtime's lowest-ID selection.
+            $rows = $allRows->keyBy('key');
         }
 
         $fixedRows = collect($definitions)
@@ -85,6 +90,7 @@ class SubjectConfigModuleForm
             'description' => '配置中心 / 项目动态配置',
             'subject_id' => $subjectId,
             'subject' => $subject,
+            'duplicate_keys' => $duplicateKeys,
             'subjects' => $this->subjectOptions(),
             'modules' => SubjectConfigDefinitions::modules(),
             'rows' => $fixedRows,
@@ -106,6 +112,14 @@ class SubjectConfigModuleForm
         $values = (array)($input['values'] ?? []);
         $historyValues = (array)($input['history'] ?? []);
         $stationRows = (array)($input['temporary_station'] ?? []);
+        $submittedStationKeys = collect($stationRows)->filter(fn($row) => is_array($row))
+            ->map(fn($row) => trim((string)($row['key'] ?? '')))->filter(fn($key) => $key !== '');
+        $duplicateStationKeys = $submittedStationKeys->duplicates()->unique();
+        if ($duplicateStationKeys->isNotEmpty()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'temporary_station' => '本次提交包含重复的临时基站配置键：' . $duplicateStationKeys->implode('；'),
+            ]);
+        }
 
         $changedKeys = DB::transaction(function () use (
             $subjectId,
@@ -121,8 +135,17 @@ class SubjectConfigModuleForm
 
             $existingRows = SubjectConfig::query()
                 ->where('subject_id', $subjectId)
-                ->get()
-                ->keyBy('key');
+                ->orderBy('id')
+                ->get();
+            $duplicates = $existingRows->groupBy('key')->filter(fn($rows) => $rows->count() > 1);
+            if ($duplicates->isNotEmpty()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'values' => '项目存在重复配置，提交已取消，请先核对并处理：'
+                        . $duplicates->map(fn($rows, $key) => $key . '（ID：'
+                            . $rows->pluck('id')->implode(', ') . '）')->implode('；'),
+                ]);
+            }
+            $existingRows = $existingRows->keyBy('key');
             $changedKeys = [];
 
             foreach ($definitions as $key => $definition) {

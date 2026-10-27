@@ -25,8 +25,27 @@ class SubjectConfig extends BaseModel
     protected static function booted(): void
     {
         static::saving(function (SubjectConfig $subjectConfig) {
+            $subjectConfig->assertUniqueKey();
             $subjectConfig->assertSaveLocatorStationLimit();
         });
+    }
+
+    private function assertUniqueKey(): void
+    {
+        $query = self::on($this->getConnectionName())
+            ->where('subject_id', $this->subject_id)
+            ->where('key', $this->key);
+        if ($this->exists) {
+            $query->whereKeyNot($this->getKey());
+        }
+        $conflicts = $query->orderBy('id')->pluck('id');
+        if ($conflicts->isNotEmpty()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'key' => '项目 ' . $this->subject_id . ' 的配置键 ' . $this->key
+                    . ' 已存在（记录 ID：' . $conflicts->implode(', ')
+                    . '）。同一项目的 key 必须唯一，type 不区分配置键；请先核对并处理重复记录。',
+            ]);
+        }
     }
 
     private function assertSaveLocatorStationLimit(): void

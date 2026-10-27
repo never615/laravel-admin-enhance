@@ -48,6 +48,14 @@ class SubjectConfigModuleController extends Controller
         $selector = $this->renderSubjectSelector($snapshot);
         $errors = $this->renderErrors();
         $notice = $this->renderNotice($snapshot);
+        if (!empty($snapshot['duplicate_keys'])) {
+            $conflicts = [];
+            foreach ($snapshot['duplicate_keys'] as $key => $ids) {
+                $conflicts[] = $this->escape((string)$key) . '（ID：' . $this->escape(implode(', ', $ids)) . '）';
+            }
+            $notice .= '<div class="alert alert-danger">检测到重复配置：' . implode('；', $conflicts)
+                . '。当前显示运行时读取的最早记录；请在传统动态配置中核对并处理，处理前无法提交。</div>';
+        }
 
         if (empty($snapshot['subject_id'])) {
             return <<<HTML
