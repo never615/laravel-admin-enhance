@@ -131,14 +131,6 @@ class FrontAdminUserController extends Controller
     protected function validateUser(Request $request, bool $isCreate)
     {
         $input = $request->all();
-        if (array_key_exists('role_ids', $input)) {
-            if (array_key_exists('roles', $input)
-                && $this->normalizeRoleIds($input['roles']) !== $this->normalizeRoleIds($input['role_ids'])) {
-                throw new ResourceException('roles and role_ids must match');
-            }
-
-            $input['roles'] = $input['role_ids'];
-        }
 
         $rules = [
             'username' => ['sometimes', 'required', 'string'],
@@ -231,10 +223,6 @@ class FrontAdminUserController extends Controller
         if (!$model) {
             throw new ModelNotFoundException();
         }
-
-        $model->setAttribute('role_ids', $model->roles->pluck('id')->map(static function ($id) {
-            return (int)$id;
-        })->all());
 
         return $model;
     }

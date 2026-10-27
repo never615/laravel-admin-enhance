@@ -5,7 +5,7 @@ namespace Mallto\Admin\Data\Traits;
 use Illuminate\Support\Collection;
 use Mallto\Admin\Data\AdminApiPermission;
 use Mallto\Admin\Data\Permission;
-use Mallto\Admin\Domain\Permission\AdminApiPermissionGrantResolver;
+use Mallto\Admin\Domain\Permission\AdminApiPermissionDelegationResolver;
 
 trait HasPermissions2
 {
@@ -17,9 +17,10 @@ trait HasPermissions2
      */
     public function allFrontPermissions(): Collection
     {
+        // pure_front limits what the frontend role editor may manage. Legacy
+        // backend roles can also have API grants, so it must not filter access.
         return $this->roles()
             ->where('subject_id', $this->subject_id)
-            ->where('pure_front', true)
             ->with('frontApiPermissions')
             ->get()
             ->pluck('frontApiPermissions')
@@ -113,7 +114,7 @@ trait HasPermissions2
         }
 
 
-        //3.前端 API 权限优先按具体操作检查；资源父权限保留旧配置的全操作授权。
+        //3.前端 API 权限优先按具体操作检查；显式父权限保留旧配置对子权限的授权。
         $permission = AdminApiPermission::query()->where('slug', $permissionSlug)->first();
         if (!$permission) {
             return false;
@@ -122,42 +123,12 @@ trait HasPermissions2
             return true;
         }
 
-        $assignedPermissionSlugs = $this->roles()
-            ->where('subject_id', $this->subject_id)
-            ->where('pure_front', true)
-            ->with('frontApiPermissions')
-            ->get()
-            ->pluck('frontApiPermissions')
-            ->flatten()
-            ->pluck('slug')
-            ->all();
-        $elderPermissions = $permission->elderPermissions();
-        if ($permission->parent_id && !$elderPermissions->contains('id', $permission->parent_id)) {
-            $parentPermission = AdminApiPermission::query()->find($permission->parent_id);
-            if ($parentPermission) {
-                $elderPermissions->push($parentPermission);
-            }
-        }
-
-        $resourceParentSlugs = [];
-        foreach ($elderPermissions as $elderPermission) {
-            $operationSlugs = array_map(function ($operation) use ($elderPermission) {
-                return $elderPermission->slug . '.' . $operation;
-            }, ['index', 'create', 'destroy', 'export']);
-
-            if (AdminApiPermission::query()
-                ->where('parent_id', $elderPermission->id)
-                ->whereIn('slug', $operationSlugs)
-                ->count() >= 2) {
-                $resourceParentSlugs[] = $elderPermission->slug;
-            }
-        }
-
-        return app(AdminApiPermissionGrantResolver::class)->isGranted(
-            $permission->slug,
-            $assignedPermissionSlugs,
-            $resourceParentSlugs
+        $allowedSlugs = app(AdminApiPermissionDelegationResolver::class)->allowedSlugs(
+            AdminApiPermission::query()->get(['id', 'slug', 'parent_id', 'common'])->toArray(),
+            $this->allFrontPermissions()->pluck('slug')->all()
         );
+
+        return in_array($permission->slug, $allowedSlugs, true);
     }
 
 

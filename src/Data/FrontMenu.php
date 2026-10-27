@@ -15,6 +15,7 @@ use Mallto\Admin\AdminUtils;
 use Mallto\Admin\CacheConstants;
 use Mallto\Admin\CacheUtils;
 use Mallto\Admin\Domain\Permission\AdminApiMenuPermissionMapper;
+use Mallto\Admin\Domain\Permission\AdminApiPermissionDelegationResolver;
 use Mallto\Admin\SubjectUtils;
 use Mallto\Admin\Traits\ModelTree;
 use Mallto\Tool\Utils\RequestUtils;
@@ -170,8 +171,8 @@ class FrontMenu extends Model
         } else {
             // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
 //            $locale = app()->getLocale();
-            // Use a new cache namespace so menus created before CRUD flags were added are not reused.
-            $cacheMenuKey = "front_menu_crud_v2_" . $adminUser->id . '_' . $language;
+            // Version the cache when grant semantics change, including legacy role/group support.
+            $cacheMenuKey = "front_menu_crud_v3_" . $adminUser->subject_id . '_' . $adminUser->id . '_' . $language;
 
             $result = Cache::get($cacheMenuKey);
 //            $result = null;
@@ -181,10 +182,15 @@ class FrontMenu extends Model
                 return $this->filterMenuAttributes($result);
             }
 
-            // 菜单只根据明确授予的查看权限显示；资源父权限用于组织权限树，不代表操作授权。
+            // 菜单按有效查看权限显示；显式父权限向下继承，单独子权限不会反向补全父权限。
             $permissions = $adminUser->allFrontPermissions();
-            $permissionSlugs = array_fill_keys($permissions->pluck('slug')->all(), true);
-            $allPermissionSlugs = array_fill_keys(AdminApiPermission::query()->pluck('slug')->all(), true);
+            $allPermissions = AdminApiPermission::query()->get(['id', 'slug', 'parent_id', 'common']);
+            $effectiveSlugs = app(AdminApiPermissionDelegationResolver::class)->allowedSlugs(
+                $allPermissions->toArray(),
+                $permissions->pluck('slug')->all()
+            );
+            $permissionSlugs = array_fill_keys($effectiveSlugs, true);
+            $allPermissionSlugs = array_fill_keys($allPermissions->pluck('slug')->all(), true);
             $permissionMapper = new AdminApiMenuPermissionMapper();
             $visibleMenuUris = $permissionMapper->visibleMenuUris(
                 array_keys($permissionSlugs),
