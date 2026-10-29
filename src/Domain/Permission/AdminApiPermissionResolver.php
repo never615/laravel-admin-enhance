@@ -31,6 +31,7 @@ class AdminApiPermissionResolver
         $specialRoutePermissions = [
             'admin_api.front_permissions.index' => 'admin_api.admin_role.index',
             'admin_api.nearest_locator.index' => 'admin_api.position',
+            'admin_api.realtime_map.mqtt_session' => 'admin_api.position',
             'admin_api.history_locator.index' => 'admin_api.historical_track',
             'admin_api.sync_map_data.index' => 'admin_api.sync_map_data.sync',
             'admin_api.locator_slug.getLocatorSlug' => 'admin_api.locator.create',
