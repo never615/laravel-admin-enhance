@@ -182,7 +182,7 @@ class AutoPermissionMiddleware
     {
         return $routeName !== null
             && preg_match(
-                '/^(admin_api|web_api)\.(place_door|place|sprite)\.(index|show|store|update|destroy|create|edit)$/',
+                '/^(admin_api|web_api)\.(place_door|place|sprite|model_asset|model_instance)\.(index|show|store|update|destroy|create|edit)$/',
                 $routeName
             ) === 1;
     }
