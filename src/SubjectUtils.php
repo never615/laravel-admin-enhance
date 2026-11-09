@@ -416,6 +416,29 @@ class SubjectUtils
         return self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
     }
 
+    /**
+     * Optional double-hit read for a caller that also needs an array cache entry.
+     * A null observation means call the ordinary methods, including their loaders.
+     * Keep found/null/false/default/exception resolution in the same adapter.
+     * @return ?array{value: mixed, companion: array}
+     */
+    public static function getDynamicKeyConfigWithArray(
+        int $subjectId, string $key, object $companion, string $companionKey, $default = null
+    ): ?array {
+        if ($subjectId <= 0) {
+            return null;
+        }
+        $cache = app(SubjectConfigLiveCache::class);
+        if (get_class($cache) !== SubjectConfigLiveCache::class) {
+            return null;
+        }
+        $observed = $cache->getPrivateWithArray($subjectId, $key, $companion, $companionKey);
+        return $observed === null ? null : [
+            'value' => self::resolveDynamicConfigPayload($observed['config'], $key, $subjectId, $default),
+            'companion' => $observed['companion'],
+        ];
+    }
+
 
     /**
      * 获取可以动态设置key的配置项,保存在subject_configs表中

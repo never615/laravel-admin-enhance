@@ -67,6 +67,13 @@ class SubjectConfigLiveCache
         return $this->cache->getMany($entries);
     }
 
+    /** @return ?array{config: array{found: bool, value: mixed}, companion: array} */
+    public function getPrivateWithArray(int $subjectId, string $key, object $companion, string $companionKey): ?array
+    {
+        return $this->cache->getWithArray(RuntimeConfigIdentity::subjectPrivate($subjectId, $key),
+            SubjectConfigDefinitions::applyModeFor($key), $companion, $companionKey);
+    }
+
     /** @return array{shared_forget_succeeded: bool, warnings: array<int, string>} */
     public function invalidate(int $subjectId, string $key): array
     {
