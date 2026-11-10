@@ -44,6 +44,13 @@ class SubjectConfigLiveCache
         return $this->cache->remember(RuntimeConfigIdentity::subjectPrivate($subjectId, $key), $mode, $loader);
     }
 
+    /** A caller-used private key already missed getPrivateMany; keep the locked recheck. */
+    public function rememberPrivateAfterSharedMiss(int $subjectId, string $key, callable $loader): array
+    {
+        return $this->cache->rememberAfterSharedMiss(RuntimeConfigIdentity::subjectPrivate($subjectId, $key),
+            SubjectConfigDefinitions::applyModeFor($key), $loader);
+    }
+
     /** @param callable(): array{found: bool, value: mixed} $loader */
     public function rememberPublic(int $subjectId, string $key, string $mode, callable $loader): array
     {

@@ -416,6 +416,19 @@ class SubjectUtils
         return self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
     }
 
+    /** Resolve a required key after a batch miss, never eager-load unused optional keys. */
+    public static function getDynamicKeyConfigAfterSharedMiss(int $subjectId, string $key, $default = null)
+    {
+        $cache = app(SubjectConfigLiveCache::class);
+        if ($subjectId <= 0 || get_class($cache) !== SubjectConfigLiveCache::class) {
+            return self::getDynamicKeyConfigByOwner($key, $subjectId, $default);
+        }
+        $payload = $cache->rememberPrivateAfterSharedMiss($subjectId, $key,
+            static fn (): array => self::loadDynamicConfigPayload($subjectId, $key));
+
+        return self::resolveDynamicConfigPayload($payload, $key, $subjectId, $default);
+    }
+
     /**
      * Optional double-hit read for a caller that also needs an array cache entry.
      * A null observation means call the ordinary methods, including their loaders.
