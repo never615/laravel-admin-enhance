@@ -171,8 +171,8 @@ class FrontMenu extends Model
         } else {
             // 为非管理员用户添加语言标识到缓存键中，确保语言切换时菜单能正确更新
 //            $locale = app()->getLocale();
-            // Version the cache when grant semantics change, including legacy role/group support.
-            $cacheMenuKey = "front_menu_crud_v3_" . $adminUser->subject_id . '_' . $adminUser->id . '_' . $language;
+            // Version the cache when grants or menu identities change, including duplicate-menu repairs.
+            $cacheMenuKey = "front_menu_crud_v4_" . $adminUser->subject_id . '_' . $adminUser->id . '_' . $language;
 
             $result = Cache::get($cacheMenuKey);
 //            $result = null;

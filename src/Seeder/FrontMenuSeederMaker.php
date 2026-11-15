@@ -34,10 +34,15 @@ trait FrontMenuSeederMaker
 
         $path = $this->updatePath($parentId);
 
+        // 同 URI 可以挂在不同分组下；优先更新目标父级的节点，只有目标不存在时才迁移旧节点。
+        $menuQuery = FrontMenu::query()
+            ->orderByRaw('CASE WHEN parent_id = ? THEN 0 ELSE 1 END', [$parentId])
+            ->orderBy('id');
+
         $updateChildMenu = true;
         //如果修改了 parent_id,则修改所有子菜单的 path
         if ($parentId) {
-            $tempMenu = FrontMenu::query()->where('uri', $uri)
+            $tempMenu = (clone $menuQuery)->where('uri', $uri)
                 ->first();
             if ($tempMenu && $tempMenu->parent_id != $parentId) {
                 $updateChildMenu = true;
@@ -65,7 +70,7 @@ trait FrontMenuSeederMaker
             ]);
         }
 
-        $menu = FrontMenu::query()->updateOrCreate([
+        $menu = $menuQuery->updateOrCreate([
             'uri' => $uri,
         ], $updateData);
 
