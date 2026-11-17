@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class SubjectConfigException extends HttpException
 {
 
-    public function __construct($message = null, Exception $previous = null, $headers = [], $code = 0)
+    public function __construct($message = null, ?Exception $previous = null, $headers = [], $code = 0)
     {
 //        LogUtils::notConfigLogByOwner($message ?: "有参数未配置");
 
