@@ -7,6 +7,8 @@ namespace Mallto\Admin\Data;
 
 use Illuminate\Support\Facades\Schema;
 use Mallto\Admin\Data\Traits\BaseModel;
+use Mallto\Admin\Domain\SubjectConfig\SubjectConfigEnumSchema;
+use Mallto\Admin\Domain\SubjectConfig\SubjectConfigRegistry;
 use Mallto\Admin\Exception\SubjectConfigException;
 
 class SubjectConfig extends BaseModel
@@ -25,6 +27,10 @@ class SubjectConfig extends BaseModel
     protected static function booted(): void
     {
         static::saving(function (SubjectConfig $subjectConfig) {
+            $definition = SubjectConfigRegistry::definition((string)$subjectConfig->key);
+            if (is_array($definition) && array_key_exists('enum_options', $definition)) {
+                $subjectConfig->value = SubjectConfigEnumSchema::validate($definition, $subjectConfig->value);
+            }
             $subjectConfig->assertUniqueKey();
             $subjectConfig->assertSaveLocatorStationLimit();
         });

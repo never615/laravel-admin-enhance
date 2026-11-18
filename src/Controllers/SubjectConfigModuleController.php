@@ -240,6 +240,20 @@ HTML;
         $type = (string)($row['type'] ?? 'string');
         $placeholder = $this->placeholderAttribute($row);
 
+        if (is_array($row['enum_options'] ?? null)) {
+            $options = $this->option('', '继承全局默认', $value);
+            // Keep invalid historical values visible until explicitly corrected, rather than
+            // letting the browser silently select inheritance when the form is submitted.
+            if ($value !== '' && !array_key_exists($value, $row['enum_options'])) {
+                $options .= $this->option($value, '无效值：' . $value, $value);
+            }
+            foreach ($row['enum_options'] as $optionValue => $label) {
+                $options .= $this->option((string)$optionValue, (string)$label, $value);
+            }
+
+            return '<select class="form-control input-sm" name="' . $name . '">' . $options . '</select>';
+        }
+
         if ($type === 'boolean') {
             return '<select class="form-control input-sm" name="' . $name . '">'
                 . $this->option('0', '关闭', $value)

@@ -296,10 +296,11 @@ class SubjectConfigModuleForm
 
     private function rowSnapshot(string $key, array $definition, ?SubjectConfig $row, bool $history): array
     {
+        $enumOptions = SubjectConfigEnumSchema::options($definition);
         $value = $row ? $row->value : null;
         $source = '默认值';
         if ($value === null || $value === '') {
-            $value = $definition['default_value'] ?? '';
+            $value = $enumOptions !== null ? '' : ($definition['default_value'] ?? '');
         } else {
             $source = '已配置';
         }
@@ -313,6 +314,7 @@ class SubjectConfigModuleForm
             'value' => (string)$value,
             'type' => (string)($definition['type'] ?? 'string'),
             'ui' => (string)($definition['ui'] ?? 'input'),
+            'enum_options' => $enumOptions,
             'placeholder' => (string)($definition['placeholder'] ?? ''),
             'module' => $module,
             'module_label' => SubjectConfigDefinitions::moduleLabel($module),
@@ -332,6 +334,10 @@ class SubjectConfigModuleForm
 
     private function validateValue(string $key, array $definition, $value)
     {
+        if (array_key_exists('enum_options', $definition)) {
+            return SubjectConfigEnumSchema::validate($definition, $value);
+        }
+
         $name = (string)($definition['name'] ?? $key);
         $type = (string)($definition['type'] ?? 'string');
 
