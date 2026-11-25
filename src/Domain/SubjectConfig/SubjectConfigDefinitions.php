@@ -28,7 +28,7 @@ class SubjectConfigDefinitions
 
         foreach ((array)config('subject-config.subject_config_key', []) as $key => $name) {
             $key = (string)$key;
-            if ($key === '' || isset($definitions[$key])) {
+            if ($key === '' || isset($definitions[$key]) || SubjectConfigRegistry::isRetired($key)) {
                 continue;
             }
 

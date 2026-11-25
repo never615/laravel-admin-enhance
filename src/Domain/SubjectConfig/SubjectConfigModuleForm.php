@@ -39,6 +39,7 @@ class SubjectConfigModuleForm
                 ->orderBy('key')
                 ->orderBy('id', 'desc')
                 ->get();
+            $allRows = $allRows->reject(fn (SubjectConfig $row) => SubjectConfigRegistry::isRetired((string)$row->key));
             $duplicateKeys = $allRows->groupBy('key')->filter(fn($group) => $group->count() > 1)
                 ->map(fn($group) => $group->pluck('id')->sort()->values()->all())->all();
             // keyBy retains the last row: match runtime's lowest-ID selection.
@@ -137,6 +138,7 @@ class SubjectConfigModuleForm
                 ->where('subject_id', $subjectId)
                 ->orderBy('id')
                 ->get();
+            $existingRows = $existingRows->reject(fn (SubjectConfig $row) => SubjectConfigRegistry::isRetired((string)$row->key));
             $duplicates = $existingRows->groupBy('key')->filter(fn($rows) => $rows->count() > 1);
             if ($duplicates->isNotEmpty()) {
                 throw \Illuminate\Validation\ValidationException::withMessages([
@@ -297,10 +299,11 @@ class SubjectConfigModuleForm
     private function rowSnapshot(string $key, array $definition, ?SubjectConfig $row, bool $history): array
     {
         $enumOptions = SubjectConfigEnumSchema::options($definition);
+        $enumShowInherit = $enumOptions !== null && ($definition['enum_show_inherit'] ?? true);
         $value = $row ? $row->value : null;
         $source = '默认值';
         if ($value === null || $value === '') {
-            $value = $enumOptions !== null ? '' : ($definition['default_value'] ?? '');
+            $value = $enumShowInherit ? '' : ($definition['default_value'] ?? '');
         } else {
             $source = '已配置';
         }
@@ -315,6 +318,7 @@ class SubjectConfigModuleForm
             'type' => (string)($definition['type'] ?? 'string'),
             'ui' => (string)($definition['ui'] ?? 'input'),
             'enum_options' => $enumOptions,
+            'enum_show_inherit' => $enumShowInherit,
             'placeholder' => (string)($definition['placeholder'] ?? ''),
             'module' => $module,
             'module_label' => SubjectConfigDefinitions::moduleLabel($module),

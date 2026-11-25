@@ -241,7 +241,7 @@ HTML;
         $placeholder = $this->placeholderAttribute($row);
 
         if (is_array($row['enum_options'] ?? null)) {
-            $options = $this->option('', '继承全局默认', $value);
+            $options = ($row['enum_show_inherit'] ?? true) ? $this->option('', '继承全局默认', $value) : '';
             // Keep invalid historical values visible until explicitly corrected, rather than
             // letting the browser silently select inheritance when the form is submitted.
             if ($value !== '' && !array_key_exists($value, $row['enum_options'])) {
