@@ -11,6 +11,20 @@ class SubjectConfigRegistry
 
     private static array $definitions = [];
 
+    private static array $retiredKeys = [];
+
+    public static function registerRetiredKeys(array $keys): void
+    {
+        foreach ($keys as $key) {
+            self::$retiredKeys[$key] = true;
+        }
+    }
+
+    public static function isRetired(string $key): bool
+    {
+        return isset(self::$retiredKeys[$key]);
+    }
+
     public static function registerModule(string $key, array $module): void
     {
         if (isset(self::$modules[$key]) && self::$modules[$key] !== array_merge(['key' => $key], $module)) {
