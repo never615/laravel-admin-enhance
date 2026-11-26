@@ -88,7 +88,8 @@ class AutoPermissionMiddleware
             throw new ResourceException('Current account has no permission to access this project (subject mismatch)');
         }
 
-        $currentRouteName = $request->route() ? $request->route()->getName() : null;
+        $route = $request->route();
+        $currentRouteName = $route?->getName();
 
         if ($this->isEditorPermissionBypassRoute($currentRouteName)) {
             return $next($request);
@@ -109,6 +110,7 @@ class AutoPermissionMiddleware
         }
 
         $routenameArr = explode(".", (string)$currentRouteName);
+        $permissionSlug = $currentRouteName;
 
         if (count($routenameArr) == 2) {
             $subRouteName = $routenameArr[1];
@@ -116,18 +118,20 @@ class AutoPermissionMiddleware
             if (!Permission::where("slug", $currentRouteName)
                 ->exists()) {
                 if ($subRouteName === "edit" || $subRouteName === "show") {
-                    $currentRouteName = $routenameArr[0] . ".index";
+                    $permissionSlug = $routenameArr[0] . ".index";
                 }
 
                 if ($subRouteName === "store" || $subRouteName === "update") {
-                    $currentRouteName = $routenameArr[0] . ".create";
+                    $permissionSlug = $routenameArr[0] . ".create";
                 }
             }
         }
 
-        $this->exportPermissionHandler($request, $adminUser, $currentRouteName);
+        // Web data routes can reuse the permission of their page under a unique route name.
+        $permissionSlug = $route?->getAction('admin_permission') ?? $permissionSlug;
+        $this->exportPermissionHandler($request, $adminUser, $permissionSlug);
 
-        if (is_null($currentRouteName)) {
+        if (is_null($permissionSlug)) {
             //没有设置route name,使用uri来判断,目前直接通过, 目前主要就是管理端dashboard用的一些接口.
             return $next($request);
         }
@@ -142,7 +146,7 @@ class AutoPermissionMiddleware
         }
 
         //权限管理有该权限,检查用户是否有该权限
-        if ($adminUser->can($currentRouteName)) {
+        if ($adminUser->can($permissionSlug)) {
             //pass
             return $next($request);
         } //denied
